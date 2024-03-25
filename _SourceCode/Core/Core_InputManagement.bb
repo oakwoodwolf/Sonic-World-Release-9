@@ -165,7 +165,40 @@ End Function
 	; ---------------------------------------------------------------------------------------------------------
 	Function Input_Update()
 
-	
+	; If game window is minimized, have to reset controls
+       If  GetActiveWindow() <> ThisWindowNumber Then
+		FlushAll() : Input_ResetAllInput()
+	EndIf
+
+	If (Not(Menu\Menu=MENU_OPTIONS# And Menu\Menu2=MENU_CONTROLS#)) Or Menu\ButtonToChange=-1 Then
+
+		maymove = ( (Not(Game\ControlLock>0)) And (Not(Game\StartoutLock>0)) And Game\Victory=0 )
+
+		; ---- Check for input lock -----
+		If Menu\Pause=0 And (Input\Pressed\Start) And Menu\Stage<>0 And Game\Victory=0 And Menu\ExitedAStage=0 And Game\Interface\DebugPlacerOn=0 And (Menu\ChaoGarden=0 Or Menu\Stage=999) Then
+			Menu\Pause=1 : Input_ResetAllInput() : Game\SmartCameraRangeDontAffectTimer=3*secs#
+			Input_Lock = False
+			Menu\Option=1
+			PlaySmartSound(Sound_MenuPause)
+			Menu\Transition=0
+			If Menu\ChaoGarden=1 Then
+				SaveGame_AllChaoStuff()
+				Game\Interface\AutoSaveShowTimer=0.5*secs#
+				For i=1 to 3 : Game\Interface\GardenActionTimer[i]=0 : Next
+			Else
+				Game\Interface\ShowChaoItems=5
+			EndIf
+			PauseAllChannels()
+		ElseIf Menu\Pause=1 And (((Input\Pressed\Start Or Input\Pressed\ActionJump) And Menu\Option=1) Or (Input\Pressed\ActionRoll Or Input\Pressed\ActionSkill1 Or Input\Pressed\Back)) Then
+			Input_Lock = True
+			PlaySmartSound(Sound_MenuBack)
+			Menu\Pause=0 : Input_ResetAllInput() : Game\SmartCameraRangeDontAffectTimer=3*secs#
+			FlushMouse()
+			If Menu\ChaoGarden=1 Then
+				For i=1 to 3 : Game\Interface\GardenActionTimer[i]=0 : Next
+			EndIf
+			ResumeAllChannels()
+		EndIf
 		
 		; ---- Update mouse wheel, as it can only be checked once -----
 		Input_MouseX# = MouseXSpeed()
@@ -260,7 +293,7 @@ End Function
 		EndIf
 		Input\Camera_Pressure# = Sqr#(Input\Camera_AnalogX#*Input\Camera_AnalogX#+Input\Camera_AnalogY#*Input\Camera_AnalogY#)
 		If (Input\Camera_Pressure# <> 0.0) Then Input\Camera_Direction = WrapAngle#(ATan2#(Input\Camera_AnalogY#, Input\Camera_AnalogX#))
-
+EndIf
 	End Function 
 
 	; ---------------------------------------------------------------------------------------------------------
