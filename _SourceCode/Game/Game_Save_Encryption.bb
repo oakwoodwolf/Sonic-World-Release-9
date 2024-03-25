@@ -6,12 +6,15 @@ Global CurrentOpenFile
 Global CurrentOpenFileName$
 
 ;------------------------------------------------------------------------------------------------------------------------------
-
+;; Loads an encrypted file by name and decrypts it.
+;;param name the Filename
 Function LoadFileWithEncryption(name$)
 	CurrentOpenFileName$=name$
 	DecryptFile(name$)
 End Function
-
+;; Saves an encrypted file by name and encrypts it.
+;;param name the Filename
+;;param mainroot the body of the file to be written.
 Function WriteFileWithEncryption(name$,mainroot$="savedata")
 	CurrentOpenFileName$=name$
 	CurrentOpenFile=0

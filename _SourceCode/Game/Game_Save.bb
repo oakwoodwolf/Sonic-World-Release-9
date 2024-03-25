@@ -92,7 +92,8 @@ End Function
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+;; Saves the whole game as an encrypted save file.
+;;param saveemblems - Whether to save stage emblems.
 Function SaveGame(saveemblems=true)
 
 	WriteFileWithEncryption("SETTINGS")
@@ -424,7 +425,7 @@ End Function
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+;; Deletes your save directory.
 Function CleanUpSaveDirectory()
 	SaveDir = ReadDir(SaveDataPath$)
 	Repeat
@@ -433,7 +434,7 @@ Function CleanUpSaveDirectory()
 	Until (SaveFile$ = "")
 	CloseDir(SaveDir)
 End Function
-
+;; Resets your entire Save Directory
 Function ResetAll()
 	CleanUpSaveDirectory()
 	ResetOptions()
@@ -441,7 +442,8 @@ Function ResetAll()
 	ResetRecords()
 	ResetGarden()
 End Function
-
+;; sets the values for all options to the default. Also infers screen resolution from your monitor display.
+;;author ozcrashsonic
 Function ResetOptions_Values()
 	width#=GetSystemMetrics(0) : height#=GetSystemMetrics(1)
 	If width#=1066 and height#=568 Then
