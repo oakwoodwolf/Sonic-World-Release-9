@@ -17,7 +17,7 @@ This version of the game is built on V1.106 of [Blitz3D](https://www.blitzcoder.
 - User32
 
 As Blitz3D is no longer maintained, most of these userlibs' original links are down, so all the required .dll's and .decl's are provided.
-Assets are not included and need to be provided. See [Assets](Assets) to see how to acquire said assets.
+Assets are not included and need to be provided. See Assets heading to see how to acquire said assets.
 
 ## Installation
 
