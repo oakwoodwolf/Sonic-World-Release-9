@@ -1,7 +1,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Chao_Create.tObject(x#, y#, z#, yaw#)
+Function Object_Chao_Create.tObject(x#, y#, z#, yaw#)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_CHAO : o\ID=TempAttribute\ObjectID
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
 		o\AlwaysPresent=True
@@ -19,7 +19,7 @@
 	
 	; =========================================================================================================
 	
-	Function Object_Chao_Update(o.tObject, p.tPlayer)
+Function Object_Chao_Update(o.tObject, p.tPlayer)
 
 		; Obj pick up
 		If ChaoManager_ChaoAlive(o\ChaoObj\targetcc) Or o\ChaoObj\targetcc\Stats\Age=0 Then Object_EnforceObjPickUp(o,p)
@@ -28,7 +28,7 @@
 		EndIf
 
 		; Attack
-		If p\Flags\Attacking and o\Hit Then
+		If p\Flags\Attacking And o\Hit Then
 			If p\Flags\CantAttackChao=False Then
 				o\ObjPickedUp=-1
 			Else
@@ -39,8 +39,8 @@
 
 		; Whistle and pet
 		If ChaoManager_ChaoAlive(o\ChaoObj\targetcc) Then
-			If EntityDistance(p\Objects\Entity,o\Entity)<5 and o\ChaoObj\targetcc\Action=CHAOACTION_COMMON Then p\MayPetTimer=0.5*secs# : o\ChaoObj\targetcc\ShallBePettedTimer=0.5*secs#
-			If (Not(p\MayPetTimer>0)) and EntityDistance(p\Objects\Entity,o\Entity)<45 and EntityDistance(p\Objects\Entity,o\Entity)>5 Then p\MayWhistleTimer=0.5*secs# : o\ChaoObj\targetcc\ShallFollowWhistleTimer=0.5*secs#
+			If EntityDistance(p\Objects\Entity,o\Entity)<5 And o\ChaoObj\targetcc\Action=CHAOACTION_COMMON Then p\MayPetTimer=0.5*secs# : o\ChaoObj\targetcc\ShallBePettedTimer=0.5*secs#
+			If (Not(p\MayPetTimer>0)) And EntityDistance(p\Objects\Entity,o\Entity)<45 And EntityDistance(p\Objects\Entity,o\Entity)>5 Then p\MayWhistleTimer=0.5*secs# : o\ChaoObj\targetcc\ShallFollowWhistleTimer=0.5*secs#
 		EndIf
 		
 	End Function
@@ -48,11 +48,11 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_CreateChao(i,color=0,takepos=false,x#=0,y#=0,z#=0)
-		If CHAOSLOTS(1,i)=1 Or (i<=3 and CHAOFIRSTTIMER(1)=0) Then
+Function Object_CreateChao(i,Color=0,takepos=False,x#=0,y#=0,z#=0)
+		If CHAOSLOTS(1,i)=1 Or (i<=3 And CHAOFIRSTTIMER(1)=0) Then
 			CHAOSLOTS(1,i)=1
 			obj.tObject = Object_Chao_Create(0, 0, 0, 0)
-			cc.tChaoManager = Object_ChaoManager_Create(i, obj, false, color, takepos, x#, y#, z#)
+			cc.tChaoManager = Object_ChaoManager_Create(i, obj, False, Color, takepos, x#, y#, z#)
 		EndIf
 	End Function
 
@@ -63,7 +63,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Fruit_Create.tObject(fruittype, x#, y#, z#, growth=5, throw=false)
+Function Object_Fruit_Create.tObject(fruittype, x#, y#, z#, growth=5, throw=False)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_FRUIT : o\ID=TempAttribute\ObjectID
 		o\g = Object_Gravity_Create.tGravity() : o\HasGravity=True
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
@@ -94,14 +94,14 @@
 	
 	; =========================================================================================================
 	
-	Function Object_Fruit_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_Fruit_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		; Position mesh
 		PositionEntity o\Entity, o\Position\x#, o\Position\y#, o\Position\z#
 		RotateEntity o\Entity, o\Rotation\x#, o\Rotation\y#, o\Rotation\z#
 
 		; Resize
-		ScaleEntity o\Entity, 1.0-0.2*abs(o\ChaoObj\EatCycle-5), 1.0-0.2*abs(o\ChaoObj\EatCycle-5), 1.0-0.2*abs(o\ChaoObj\EatCycle-5)
+		ScaleEntity o\Entity, 1.0-0.2*Abs(o\ChaoObj\EatCycle-5), 1.0-0.2*Abs(o\ChaoObj\EatCycle-5), 1.0-0.2*Abs(o\ChaoObj\EatCycle-5)
 
 		If o\ChaoObj\ChaoTargetedThis=False Then
 			; Gravity
@@ -112,7 +112,7 @@
 		EndIf
 
 		; Attack
-		If p\Flags\Attacking and p\Flags\CantAttackChao=False and o\Hit Then o\ObjPickedUp=-1
+		If p\Flags\Attacking And p\Flags\CantAttackChao=False And o\Hit Then o\ObjPickedUp=-1
 		If o\BombHit Then o\ObjPickedUp=-1 : o\BombHit=False
 
 		; Delete the object
@@ -125,10 +125,10 @@
 					spawnseed#=Rand(1,10)
 					If spawnseed#=1 Then
 						If (Not(SEEDSUM(1)>=20)) Then
-							Object_Seed_Create(o\ChaoObj\FruitType, o\Position\x#, o\Position\y#, o\Position\z#, false)
+							Object_Seed_Create(o\ChaoObj\FruitType, o\Position\x#, o\Position\y#, o\Position\z#, False)
 							Interface_CreateChaoMsg("A seed was dropped.",248,241,135)
 						Else
-							ii.tItem = Item_Create(TOTALITEMS+1, 6, o\ChaoObj\FruitType, 0, false)
+							ii.tItem = Item_Create(TOTALITEMS+1, 6, o\ChaoObj\FruitType, 0, False)
 							Interface_CreateOverlapping2ChaoMsg(7,"Garden too full to spawn more seeds.","The rest has been sent to your inventory.",248,241,135)
 						EndIf
 					EndIf
@@ -143,7 +143,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Shell_Create.tObject(x#, y#, z#, yaw#, shelltype, shelltype2, throw=false)
+Function Object_Shell_Create.tObject(x#, y#, z#, yaw#, shelltype, shelltype2, throw=False)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_SHELL : o\ID=TempAttribute\ObjectID
 		o\g = Object_Gravity_Create.tGravity() : o\HasGravity=True
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
@@ -180,7 +180,7 @@
 	
 	; =========================================================================================================
 	
-	Function Object_Shell_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_Shell_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		; Position mesh
 		PositionEntity o\Entity, o\Position\x#, o\Position\y#, o\Position\z#
@@ -195,7 +195,7 @@
 		EndIf
 
 		; Attack
-		If p\Flags\Attacking and p\Flags\CantAttackChao=False and o\Hit Then o\ObjPickedUp=-1
+		If p\Flags\Attacking And p\Flags\CantAttackChao=False And o\Hit Then o\ObjPickedUp=-1
 		If o\BombHit Then o\ObjPickedUp=-1 : o\BombHit=False
 
 		; Enforce force delete
@@ -206,7 +206,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Hat_Create.tObject(x#, y#, z#, hattype, throw=false)
+Function Object_Hat_Create.tObject(x#, y#, z#, hattype, throw=False)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_HAT : o\ID=TempAttribute\ObjectID
 		o\g = Object_Gravity_Create.tGravity() : o\HasGravity=True
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
@@ -235,7 +235,7 @@
 	
 	; =========================================================================================================
 	
-	Function Object_Hat_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_Hat_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		; Position mesh
 		Select o\ChaoObj\HatType
@@ -255,7 +255,7 @@
 		EndIf
 
 		; Attack
-		If p\Flags\Attacking and p\Flags\CantAttackChao=False and o\Hit Then o\ObjPickedUp=-1
+		If p\Flags\Attacking And p\Flags\CantAttackChao=False And o\Hit Then o\ObjPickedUp=-1
 		If o\BombHit Then o\ObjPickedUp=-1 : o\BombHit=False
 
 		; Enforce force delete
@@ -266,7 +266,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Toy_Create.tObject(toytype, x#, y#, z#, throw=false)
+Function Object_Toy_Create.tObject(toytype, x#, y#, z#, throw=False)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_TOY : o\ID=TempAttribute\ObjectID
 		o\g = Object_Gravity_Create.tGravity() : o\HasGravity=True
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
@@ -300,7 +300,7 @@
 	
 	; =========================================================================================================
 	
-	Function Object_Toy_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_Toy_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		; Position mesh
 		PositionEntity o\Entity, o\Position\x#, o\Position\y#, o\Position\z#
@@ -326,7 +326,7 @@
 		Object_EnforceObjPickUp(o,p)
 
 		; Attack
-		If p\Flags\Attacking and p\Flags\CantAttackChao=False and o\Hit Then o\ObjPickedUp=-1
+		If p\Flags\Attacking And p\Flags\CantAttackChao=False And o\Hit Then o\ObjPickedUp=-1
 		If o\BombHit Then o\ObjPickedUp=-1 : o\BombHit=False
 
 		; Enforce force delete
@@ -337,7 +337,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Tropical_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, fruittype=1, isfromseed=false, growth1#=0, growth2#=0, growth3#=0, growth4#=0, treegrowth#=4)
+Function Object_Tropical_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, fruittype=1, isfromseed=False, growth1#=0, growth2#=0, growth3#=0, growth4#=0, treegrowth#=4)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_TROPICAL : o\ID=TempAttribute\ObjectID
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
 		o\AlwaysPresent=True
@@ -371,7 +371,7 @@
 		End Select
 		o\EntityX = FindChild(o\Entity, "items")
 
-		For i=1 to 4
+		For i=1 To 4
 			o\ChaoObj\FruitGrowthTimer[i]=(120+Rand(-30,30))*secs#
 			o\ChaoObj\FruitMesh[i]=CreatePivot()
 		Next
@@ -392,11 +392,11 @@
 	
 	; =========================================================================================================
 	
-	Function Object_Tropical_Update(o.tObject, p.tPlayer)
+Function Object_Tropical_Update(o.tObject, p.tPlayer)
 
 		If o\ChaoObj\IsFromSeed=False Or o\ChaoObj\TreeGrowth>=4 Then;!!!
 
-		For i=1 to 4 ;!
+		For i=1 To 4 ;!
 
 		; place fruits
 		If o\ChaoObj\FruitCreated[i] Then
@@ -410,11 +410,11 @@
 			Case 4: PositionEntity o\ChaoObj\FruitMesh[i], fruititemsX#-1.25, fruititemsY#-0.5, fruititemsZ#-1.25, 1
 			End Select
 			RotateEntity o\ChaoObj\FruitMesh[i], o\Rotation\x#, o\Rotation\y#, o\Rotation\z#
-			ScaleEntity o\ChaoObj\FruitMesh[i], 1.0-0.2*abs(o\ChaoObj\FruitGrowth[i]-5), 1.0-0.2*abs(o\ChaoObj\FruitGrowth[i]-5), 1.0-0.2*abs(o\ChaoObj\FruitGrowth[i]-5)
+			ScaleEntity o\ChaoObj\FruitMesh[i], 1.0-0.2*Abs(o\ChaoObj\FruitGrowth[i]-5), 1.0-0.2*Abs(o\ChaoObj\FruitGrowth[i]-5), 1.0-0.2*Abs(o\ChaoObj\FruitGrowth[i]-5)
 		EndIf
 
 		; create fruit
-		If o\ChaoObj\FruitGrowth[i]>0 and o\ChaoObj\FruitCreated[i]=False Then
+		If o\ChaoObj\FruitGrowth[i]>0 And o\ChaoObj\FruitCreated[i]=False Then
 			FreeEntity o\ChaoObj\FruitMesh[i]
 			o\ChaoObj\FruitMesh[i] = LoadAnimMesh("ChaoWorld\Fruits\"+FRUITS$(o\ChaoObj\FruitType)+".b3d", Game\Stage\Root)
 			o\ChaoObj\FruitCreated[i]=True
@@ -433,13 +433,13 @@
 		Next ;!
 
 		; attach
-		If EntityDistance(p\Objects\Entity,o\Entity)<4.25 and p\ObjPickUp=0 Then
+		If EntityDistance(p\Objects\Entity,o\Entity)<4.25 And p\ObjPickUp=0 Then
 			Select o\ChaoObj\TreeType
 				Case 3: Interface_ActivateGardenAction(2, CONTROLTIPS$(TIP_SHAKEVINE), 1)
 				Default: Interface_ActivateGardenAction(2, CONTROLTIPS$(TIP_SHAKETREE), 1)
 			End Select
 		EndIf
-		If p\ObjPickUpTimer>0 and p\ObjPickUp=0 and o\Hit Then
+		If p\ObjPickUpTimer>0 And p\ObjPickUp=0 And o\Hit Then
 			o\ObjPickedUp=1
 			p\ObjPickUp=1
 			p\ObjPickUpTarget=o
@@ -458,12 +458,12 @@
 			cam\Lock\Zoom#=15
 			cam\Lock\Speed#=10/10
 		EndIf
-		If p\Action=ACTION_SHAKETREE and o\Hit Then
+		If p\Action=ACTION_SHAKETREE And o\Hit Then
 			p\Animation\Direction#=(DeltaYaw#(p\Objects\Entity,o\Entity) - 180)
 		EndIf
 
 		; drop
-		If o\ObjPickedUp=1 and p\ObjPickUp=0 and p\GetFruit=1 Then
+		If o\ObjPickedUp=1 And p\ObjPickUp=0 And p\GetFruit=1 Then
 			o\ObjPickedUp=0
 			p\GetFruit=0
 			Animate o\Entity,1,0,1,10
@@ -477,12 +477,12 @@
 					planttype$="food"
 			End Select
 			If Not(FRUITSUM(1)>=30) Then
-				maydropfruits=false
-				For f=1 to 4
-					If o\ChaoObj\FruitGrowth[f]>=3 and o\ChaoObj\FruitCreated[f] Then maydropfruits=true
+				maydropfruits=False
+				For f=1 To 4
+					If o\ChaoObj\FruitGrowth[f]>=3 And o\ChaoObj\FruitCreated[f] Then maydropfruits=True
 				Next
 				If maydropfruits Then
-					Repeat : f=Rand(1,4) : Until (o\ChaoObj\FruitGrowth[f]>=3 and o\ChaoObj\FruitCreated[f]=True)
+					Repeat : f=Rand(1,4) : Until (o\ChaoObj\FruitGrowth[f]>=3 And o\ChaoObj\FruitCreated[f]=True)
 					obj.tObject = Object_Fruit_Create(o\ChaoObj\FruitType, EntityX(o\ChaoObj\FruitMesh[f]), EntityY(o\ChaoObj\FruitMesh[f]), EntityZ(o\ChaoObj\FruitMesh[f]), o\ChaoObj\FruitGrowth[f])
 					o\ChaoObj\FruitGrowth[f]=0
 					o\ChaoObj\FruitCreated[f]=False
@@ -539,7 +539,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Drive_Create.tObject(drivetype, x#, y#, z#, throw=false)
+Function Object_Drive_Create.tObject(drivetype, x#, y#, z#, throw=False)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_DRIVE : o\ID=TempAttribute\ObjectID
 		o\g = Object_Gravity_Create.tGravity() : o\HasGravity=True
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
@@ -573,14 +573,14 @@
 	
 	; =========================================================================================================
 	
-	Function Object_Drive_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_Drive_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		; Position mesh
 		PositionEntity o\Entity, o\Position\x#, o\Position\y#, o\Position\z#
 		RotateEntity o\Entity, o\Rotation\x#, o\Rotation\y#, o\Rotation\z#
 
 		; Movement
-		If o\ChaoObj\ChaoTargetedThis=False and o\ObjPickedUp=0 Then
+		If o\ChaoObj\ChaoTargetedThis=False And o\ObjPickedUp=0 Then
 			RotateEntity o\Entity, o\ChaoObj\DrivePitch, EntityYaw(o\Entity), 0
 			TurnEntity o\Entity, 0, -0.125*20*d\Delta, 0
 		EndIf
@@ -623,7 +623,7 @@
 				EndIf
 
 				; Attack
-				If p\Flags\Attacking and p\Flags\CantAttackChao=False and o\Hit Then o\ObjPickedUp=-1
+				If p\Flags\Attacking And p\Flags\CantAttackChao=False And o\Hit Then o\ObjPickedUp=-1
 				If o\BombHit Then o\ObjPickedUp=-1 : o\BombHit=False
 		End Select
 
@@ -635,7 +635,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_CreateDriveFromEnemy(objtype, x#, y#, z#)
+Function Object_CreateDriveFromEnemy(objtype, x#, y#, z#)
 		If Not(Object_IsEnemyRobot(objtype)) Then Return
 		Select(Rand(1,10))
 		Case 1: drivetype=8
@@ -741,7 +741,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_TrashCan_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#)
+Function Object_TrashCan_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\g = Object_Gravity_Create.tGravity() : o\HasGravity=True
 
@@ -763,7 +763,7 @@
 	
 	; =========================================================================================================
 	
-	Function Object_TrashCan_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_TrashCan_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		; Position mesh
 		PositionEntity o\Entity, o\Position\x#, o\Position\y#, o\Position\z#
@@ -799,7 +799,7 @@
 			For o2.tObject=Each tObject
 				Select o2\ObjType
 					Case OBJTYPE_FRUIT,OBJTYPE_SHELL,OBJTYPE_DRIVE,OBJTYPE_SEED:
-						If o2\Hit and o2\ObjPickedUp=0 Then
+						If o2\Hit And o2\ObjPickedUp=0 Then
 							Select o2\ObjType
 								Case OBJTYPE_FRUIT: Interface_CreateChaoMsg("A fruit was trashed.",75,75,75)
 								Case OBJTYPE_SHELL: Interface_CreateChaoMsg("A shell was trashed.",75,75,75)
@@ -818,7 +818,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Sack_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#)
+Function Object_Sack_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\g = Object_Gravity_Create.tGravity() : o\HasGravity=True
 
@@ -840,7 +840,7 @@
 	
 	; =========================================================================================================
 	
-	Function Object_Sack_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_Sack_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		; Position mesh
 		PositionEntity o\Entity, o\Position\x#, o\Position\y#, o\Position\z#
@@ -877,7 +877,7 @@
 			For o2.tObject=Each tObject
 				Select o2\ObjType
 					Case OBJTYPE_FRUIT,OBJTYPE_SHELL,OBJTYPE_HAT,OBJTYPE_TOY,OBJTYPE_SEED:
-						If o2\Hit and o2\ObjPickedUp=0 Then
+						If o2\Hit And o2\ObjPickedUp=0 Then
 							Select o2\ObjType
 								Case OBJTYPE_FRUIT: Interface_CreateChaoMsg("A fruit was sent to your inventory.",217,217,217)
 								Case OBJTYPE_SHELL: Interface_CreateChaoMsg("A shell was sent to your inventory.",217,217,217)
@@ -897,7 +897,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Breeder_Create.tObject(x#, y#, z#, targetcc.tChaoManager)
+Function Object_Breeder_Create.tObject(x#, y#, z#, targetcc.tChaoManager)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_BREEDER
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
 		o\AlwaysPresent=True
@@ -916,7 +916,7 @@
 	
 	; =========================================================================================================
 	
-	Function Object_Breeder_Update(o.tObject, p.tPlayer)
+Function Object_Breeder_Update(o.tObject, p.tPlayer)
 
 		; Position
 		PositionEntity o\Entity, o\ChaoObj\targetcc\Position\x#, o\ChaoObj\targetcc\Position\y#-0.25, o\ChaoObj\targetcc\Position\z#, 1
@@ -927,17 +927,17 @@
 				PositionEntity o\ChaoObj\targetcc2\Pivot, o\ChaoObj\targetcc\Position\x#, o\ChaoObj\targetcc\Position\y#, o\ChaoObj\targetcc\Position\z#, 1
 				o\ChaoObj\targetcc2\g\Motion\Direction#=o\ChaoObj\targetcc\g\Motion\Direction#+180
 				MoveEntity o\ChaoObj\targetcc2\Pivot, 0, 0, -1.875
-				If o\ChaoObj\targetcc\BreedTimer>0*secs# and o\ChaoObj\targetcc\BreedTimer<1*secs# Then
+				If o\ChaoObj\targetcc\BreedTimer>0*secs# And o\ChaoObj\targetcc\BreedTimer<1*secs# Then
 					offspringchance1#=Rand(1,o\ChaoObj\targetcc\Stats\Luck#)
 					offspringchance2#=Rand(1,o\ChaoObj\targetcc2\Stats\Luck#)
-					If offspringchance1#>=5 and offspringchance2#>=5 Then
+					If offspringchance1#>=5 And offspringchance2#>=5 Then
 						Interface_CreateChaoNamedMsg("mated with another chao and produced offspring.",o\ChaoObj\targetcc\Name$,0,141,240)
 						offspringcolor=ChaoManager_OffspringColor(o\ChaoObj\targetcc\Stats\Color,o\ChaoObj\targetcc2\Stats\Color)
 						If (Not(CHAOSUM(1)>=CHAOCOUNT)) Then
-							Object_ChaoManager_SpawnNewChao(offspringcolor, true, o\ChaoObj\targetcc\Position\x#, o\ChaoObj\targetcc\Position\y#, o\ChaoObj\targetcc\Position\z#)
+							Object_ChaoManager_SpawnNewChao(offspringcolor, True, o\ChaoObj\targetcc\Position\x#, o\ChaoObj\targetcc\Position\y#, o\ChaoObj\targetcc\Position\z#)
 						Else
 							Interface_Create2ChaoMsg("But there are already too many chao in the garden.","The egg has been sent to your inventory.",0,141,240)
-							ii.tItem = Item_Create(TOTALITEMS+1, 3, offspringcolor, 0, false)
+							ii.tItem = Item_Create(TOTALITEMS+1, 3, offspringcolor, 0, False)
 						EndIf
 					Else
 						Interface_CreateChaoNamedMsg("and another chao mated, but were not lucky enough to produce offspring.",o\ChaoObj\targetcc\Name$,0,141,240)
@@ -968,7 +968,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_GardenPoint_Create.tObject(x#, y#, z#, yaw#)
+Function Object_GardenPoint_Create.tObject(x#, y#, z#, yaw#)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\AlwaysPresent=True
 
@@ -977,7 +977,7 @@
 		Object_Acquire_Position(o,x#,y#,z#)
 		Object_Acquire_Rotation(o,90,yaw#,0)
 
-		If (Menu\Settings\Debug#=1 and Menu\Settings\DebugNodes#=1) and Menu\Developer=1 Then
+		If (Menu\Settings\Debug#=1 And Menu\Settings\DebugNodes#=1) And Menu\Developer=1 Then
 			o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Locker)), Game\Stage\Root)
 		Else
 			o\Entity = CreatePivot()
@@ -991,7 +991,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Whistle_Create.tObject(p.tPlayer)
+Function Object_Whistle_Create.tObject(p.tPlayer)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_WHISTLE
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
 		o\AlwaysPresent=True
@@ -1010,7 +1010,7 @@
 	
 	; =========================================================================================================
 	
-	Function Object_Whistle_Update(o.tObject, p.tPlayer)
+Function Object_Whistle_Update(o.tObject, p.tPlayer)
 
 		; Position
 		PositionEntity o\Entity, p\Objects\Position\x#, p\Objects\Position\y#+7+5*p\ScaleFactor#, p\Objects\Position\z#, 1
@@ -1038,7 +1038,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Petter_Create.tObject(p.tPlayer)
+Function Object_Petter_Create.tObject(p.tPlayer)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_PETTER
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
 		o\AlwaysPresent=True
@@ -1054,7 +1054,7 @@
 
 		For cc.tChaoManager = Each tChaoManager
 			If o\ChaoObj\ChaoTargetedThis=False Then
-			If cc\ShallBePettedTimer>0 and EntityDistance(p\Objects\Entity,cc\Pivot)<5 and (Not(cc\Action=CHAOACTION_PETTED)) Then
+			If cc\ShallBePettedTimer>0 And EntityDistance(p\Objects\Entity,cc\Pivot)<5 And (Not(cc\Action=CHAOACTION_PETTED)) Then
 				o\ChaoObj\targetcc=cc : cc\Action=CHAOACTION_PETTED
 				o\ChaoObj\ChaoTargetedThis=True
 			EndIf
@@ -1073,7 +1073,7 @@
 	
 	; =========================================================================================================
 	
-	Function Object_Petter_Update(o.tObject, p.tPlayer)
+Function Object_Petter_Update(o.tObject, p.tPlayer)
 
 		; Position
 		PositionEntity o\Entity, o\ChaoObj\targetcc\Position\x#, o\ChaoObj\targetcc\Position\y#+1.75, o\ChaoObj\targetcc\Position\z#, 1
@@ -1098,7 +1098,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Seed_Create.tObject(fruittype, x#, y#, z#, throw=false, seedmode=0, growth1#=0, growth2#=0, growth3#=0, growth4#=0, treegrowth#=0)
+Function Object_Seed_Create.tObject(fruittype, x#, y#, z#, throw=False, seedmode=0, growth1#=0, growth2#=0, growth3#=0, growth4#=0, treegrowth#=0)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_SEED : o\ID=TempAttribute\ObjectID
 		o\g = Object_Gravity_Create.tGravity() : o\HasGravity=True
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
@@ -1137,7 +1137,7 @@
 	
 	; =========================================================================================================
 	
-	Function Object_Seed_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_Seed_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		Select o\ChaoObj\SeedMode
 			Case 0:
@@ -1153,7 +1153,7 @@
 				If o\ObjPickedUp=1 Then Interface_CreateOverlappingChaoMsg(8,"Stomp on the seed to plant it.",248,241,135)
 
 				; Attack
-				If p\Flags\Attacking and p\Flags\CantAttackChao=False and o\Hit Then
+				If p\Flags\Attacking And p\Flags\CantAttackChao=False And o\Hit Then
 					If p\Action=ACTION_STOMP Then
 						o\ChaoObj\SeedMode=1 : o\ChaoObj\TreeGrowthTimer=0.75*secs#
 					Else
@@ -1168,7 +1168,7 @@
 				If o\ChaoObj\TreeGrowthTimer>0 Then
 					o\ChaoObj\TreeGrowthTimer=o\ChaoObj\TreeGrowthTimer-timervalue#
 				Else
-					o\ChaoObj\SeedsTree = Object_Tropical_Create.tObject(o\Position\x#, o\Position\y#-1.375, o\Position\z#, 0, 0, 0, o\ChaoObj\FruitType, true, o\ChaoObj\FruitGrowth[1], o\ChaoObj\FruitGrowth[2], o\ChaoObj\FruitGrowth[3], o\ChaoObj\FruitGrowth[4], o\ChaoObj\TreeGrowth)
+					o\ChaoObj\SeedsTree = Object_Tropical_Create.tObject(o\Position\x#, o\Position\y#-1.375, o\Position\z#, 0, 0, 0, o\ChaoObj\FruitType, True, o\ChaoObj\FruitGrowth[1], o\ChaoObj\FruitGrowth[2], o\ChaoObj\FruitGrowth[3], o\ChaoObj\FruitGrowth[4], o\ChaoObj\TreeGrowth)
 					Objects_Reset_HasMesh(o\ChaoObj\SeedsTree)
 					Objects_Reset_Repose(o\ChaoObj\SeedsTree)
 					Objects_Reset_Object(o\ChaoObj\SeedsTree)
@@ -1176,13 +1176,13 @@
 					o\ChaoObj\SeedMode=2
 				EndIf
 			Case 2:
-				If Game\Interface\ShallExplodeInventory=False and EntityDistance(p\Objects\Entity,o\Entity)<4.25 and p\ObjPickUp=0 and (Not(o\ChaoObj\SeedsTree\ChaoObj\TreeGrowth=-1)) Then
+				If Game\Interface\ShallExplodeInventory=False And EntityDistance(p\Objects\Entity,o\Entity)<4.25 And p\ObjPickUp=0 And (Not(o\ChaoObj\SeedsTree\ChaoObj\TreeGrowth=-1)) Then
 					Interface_ActivateGardenAction(1, CONTROLTIPS$(TIP_DEMOLISH)+"  ")
 					p\MayNotWhistleTimer=0.5*secs#
 					p\MayNotPetTimer=0.5*secs#
-					If o\ChaoObj\SeedsTree\Hit and Input\Pressed\ActionSkill2 Then
+					If o\ChaoObj\SeedsTree\Hit And Input\Pressed\ActionSkill2 Then
 						o\ChaoObj\SeedsTree\ChaoObj\TreeGrowth=-1
-						For i=1 to 4 : FreeEntity o\ChaoObj\SeedsTree\ChaoObj\FruitMesh[i] : Next
+						For i=1 To 4 : FreeEntity o\ChaoObj\SeedsTree\ChaoObj\FruitMesh[i] : Next
 					EndIf
 				EndIf
 				If o\ChaoObj\SeedsTree\ChaoObj\TreeGrowth=-1 Then

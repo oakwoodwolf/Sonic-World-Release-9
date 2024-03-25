@@ -22,26 +22,26 @@ Function Camera_Control(c.tCamera,d.tDeltaTime)
 		If Not(c\Lock\Pos=1) Then
 			If c\Lock\Immediate=0 Then
 				If Not(c\Lock\OnlyYawTimer>0) Then
-					If abs(c\TargetRotation\x#-c\Lock\Rotation\x#) < c\Lock\Speed# Then c\Lock\RealSpeed#=abs(c\TargetRotation\x#-c\Lock\Rotation\x#) Else c\Lock\RealSpeed#=c\Lock\Speed#
+					If Abs(c\TargetRotation\x#-c\Lock\Rotation\x#) < c\Lock\Speed# Then c\Lock\RealSpeed#=Abs(c\TargetRotation\x#-c\Lock\Rotation\x#) Else c\Lock\RealSpeed#=c\Lock\Speed#
 					If c\TargetRotation\x#>c\Lock\Rotation\x# Then c\TargetRotation\x#=c\TargetRotation\x#-c\Lock\RealSpeed#*d\Delta
 					If c\TargetRotation\x#<c\Lock\Rotation\x# Then c\TargetRotation\x#=c\TargetRotation\x#+c\Lock\RealSpeed#*d\Delta
 
-					If abs(c\TargetRotation\z#-c\Lock\Rotation\z#) < c\Lock\Speed# Then c\Lock\RealSpeed#=abs(c\TargetRotation\z#-c\Lock\Rotation\z#) Else c\Lock\RealSpeed#=c\Lock\Speed#
+					If Abs(c\TargetRotation\z#-c\Lock\Rotation\z#) < c\Lock\Speed# Then c\Lock\RealSpeed#=Abs(c\TargetRotation\z#-c\Lock\Rotation\z#) Else c\Lock\RealSpeed#=c\Lock\Speed#
 					If c\TargetRotation\z#>c\Lock\Rotation\z# Then c\TargetRotation\z#=c\TargetRotation\z#-c\Lock\RealSpeed#*d\Delta
 					If c\TargetRotation\z#<c\Lock\Rotation\z# Then c\TargetRotation\z#=c\TargetRotation\z#+c\Lock\RealSpeed#*d\Delta
 				Else
-					If c\Target\Motion\Ground=False and (Not(c\Target\Action=ACTION_BUOY Or c\Target\Action=ACTION_TORNADO Or c\Target\BoardWaterTimer>0)) Then
-						If abs(c\TargetRotation\x#-CAMERA_CONTROL_AIRAIRPITCH#) < 0.301 Then c\Lock\RealSpeed#=abs(c\TargetRotation\x#-CAMERA_CONTROL_AIRAIRPITCH#) Else c\Lock\RealSpeed#=0.301
+					If c\Target\Motion\Ground=False And (Not(c\Target\Action=ACTION_BUOY Or c\Target\Action=ACTION_TORNADO Or c\Target\BoardWaterTimer>0)) Then
+						If Abs(c\TargetRotation\x#-CAMERA_CONTROL_AIRAIRPITCH#) < 0.301 Then c\Lock\RealSpeed#=Abs(c\TargetRotation\x#-CAMERA_CONTROL_AIRAIRPITCH#) Else c\Lock\RealSpeed#=0.301
 						If c\TargetRotation\x#<CAMERA_CONTROL_AIRAIRPITCH# Then c\TargetRotation\x#=c\TargetRotation\x#+c\Lock\RealSpeed#*d\Delta
 					Else
-						If abs(c\TargetRotation\x#-CAMERA_CONTROL_AIRPITCH#) < 1.131 Then c\Lock\RealSpeed#=abs(c\TargetRotation\x#-CAMERA_CONTROL_AIRPITCH#) Else c\Lock\RealSpeed#=1.131
+						If Abs(c\TargetRotation\x#-CAMERA_CONTROL_AIRPITCH#) < 1.131 Then c\Lock\RealSpeed#=Abs(c\TargetRotation\x#-CAMERA_CONTROL_AIRPITCH#) Else c\Lock\RealSpeed#=1.131
 						If c\TargetRotation\x#>CAMERA_CONTROL_AIRPITCH# Then c\TargetRotation\x#=c\TargetRotation\x#-c\Lock\RealSpeed#*d\Delta
 						If c\TargetRotation\x#<CAMERA_CONTROL_AIRPITCH# Then c\TargetRotation\x#=c\TargetRotation\x#+c\Lock\RealSpeed#*d\Delta
 					EndIf
 				EndIf
 
-				If abs(c\TargetRotation\y#-c\Lock\Rotation\y#)<180 Then c\Lock\Turn=+1 Else c\Lock\Turn=-1
-				If abs(c\TargetRotation\y#-c\Lock\Rotation\y#) < c\Lock\Speed# Then c\Lock\RealSpeed#=abs(c\TargetRotation\y#-c\Lock\Rotation\y#) Else c\Lock\RealSpeed#=c\Lock\Speed#
+				If Abs(c\TargetRotation\y#-c\Lock\Rotation\y#)<180 Then c\Lock\Turn=+1 Else c\Lock\Turn=-1
+				If Abs(c\TargetRotation\y#-c\Lock\Rotation\y#) < c\Lock\Speed# Then c\Lock\RealSpeed#=Abs(c\TargetRotation\y#-c\Lock\Rotation\y#) Else c\Lock\RealSpeed#=c\Lock\Speed#
 				If c\TargetRotation\y#>c\Lock\Rotation\y# Then c\TargetRotation\y#=c\TargetRotation\y#-c\Lock\Turn*c\Lock\RealSpeed#*d\Delta
 				If c\TargetRotation\y#<c\Lock\Rotation\y# Then c\TargetRotation\y#=c\TargetRotation\y#+c\Lock\Turn*c\Lock\RealSpeed#*d\Delta
 			Else
@@ -53,10 +53,10 @@ Function Camera_Control(c.tCamera,d.tDeltaTime)
 
 		If c\Lock\Immediate=0 Then
 			If Not(c\Lock\OnlyYawTimer>0) Then
-				If abs(CAMERA_DISTANCE_NEAR#-c\Lock\Zoom#) < c\Lock\Speed# Then c\Lock\RealSpeed#=abs(CAMERA_DISTANCE_NEAR#-c\Lock\Zoom#) Else c\Lock\RealSpeed#=c\Lock\Speed#
+				If Abs(CAMERA_DISTANCE_NEAR#-c\Lock\Zoom#) < c\Lock\Speed# Then c\Lock\RealSpeed#=Abs(CAMERA_DISTANCE_NEAR#-c\Lock\Zoom#) Else c\Lock\RealSpeed#=c\Lock\Speed#
 				If CAMERA_DISTANCE_NEAR#>c\Lock\Zoom# Then CAMERA_DISTANCE_NEAR#=CAMERA_DISTANCE_NEAR#-c\Lock\RealSpeed#*d\Delta
 				If CAMERA_DISTANCE_NEAR#<c\Lock\Zoom# Then CAMERA_DISTANCE_NEAR#=CAMERA_DISTANCE_NEAR#+c\Lock\RealSpeed#*d\Delta
-				If abs(CAMERA_DISTANCE_FAR#-c\Lock\Zoom#) < c\Lock\Speed# Then c\Lock\RealSpeed#=abs(CAMERA_DISTANCE_FAR#-c\Lock\Zoom#) Else c\Lock\RealSpeed#=c\Lock\Speed#
+				If Abs(CAMERA_DISTANCE_FAR#-c\Lock\Zoom#) < c\Lock\Speed# Then c\Lock\RealSpeed#=Abs(CAMERA_DISTANCE_FAR#-c\Lock\Zoom#) Else c\Lock\RealSpeed#=c\Lock\Speed#
 				If CAMERA_DISTANCE_FAR#>c\Lock\Zoom# Then CAMERA_DISTANCE_FAR#=CAMERA_DISTANCE_FAR#-c\Lock\RealSpeed#*d\Delta
 				If CAMERA_DISTANCE_FAR#<c\Lock\Zoom# Then CAMERA_DISTANCE_FAR#=CAMERA_DISTANCE_FAR#+c\Lock\RealSpeed#*d\Delta
 			EndIf
@@ -79,7 +79,7 @@ Function Camera_Control(c.tCamera,d.tDeltaTime)
 				c\Position\x#=EntityX(c\Lock\PosMeshTarget) : c\Position\y#=EntityY(c\Lock\PosMeshTarget) : c\Position\z#=EntityZ(c\Lock\PosMeshTarget)
 			EndIf
 		Else
-			If c\Lock\PreviousPos>0 and c\Lock\PosTimer>0 and EntityDistance(c\Lock\PosMesh,c\Target\Objects\Entity)>0 Then
+			If c\Lock\PreviousPos>0 And c\Lock\PosTimer>0 And EntityDistance(c\Lock\PosMesh,c\Target\Objects\Entity)>0 Then
 				c\Lock\PosTimer=0.1*secs#
 				If EntityDistance(c\Lock\PosMesh,c\Target\Objects\Entity)<c\Lock\Speed# Then c\Lock\RealSpeed#=EntityDistance(c\Lock\PosMesh,c\Target\Objects\Entity) Else c\Lock\RealSpeed#=c\Lock\Speed#
 				PointEntity(c\Lock\PosMesh,c\Target\Objects\Entity)
@@ -98,7 +98,7 @@ Function Camera_Control(c.tCamera,d.tDeltaTime)
 
 		If c\Lock\OutOfLockTimer>0 Then
 			c\Lock\OutOfLockTimer=c\Lock\OutOfLockTimer-timervalue#
-			If c\Lock\PreviousPos>0 and c\Lock\PosTimer>0 Then
+			If c\Lock\PreviousPos>0 And c\Lock\PosTimer>0 Then
 				If EntityDistance(c\Lock\PosMesh,c\Target\Objects\Entity)>1.5 Then
 					c\Lock\PosTimer=0.1*secs#
 					If EntityDistance(c\Lock\PosMesh,c\Target\Objects\Entity)<5+cam\Target\SpeedLength# Then c\Lock\RealSpeed#=EntityDistance(c\Lock\PosMesh,c\Target\Objects\Entity)+cam\Target\SpeedLength# Else c\Lock\RealSpeed#=5
@@ -125,66 +125,68 @@ Function Camera_Control(c.tCamera,d.tDeltaTime)
 			c\Lock\Immediate=0
 		EndIf
 
-		If abs(c\TargetRotation\z#-0) < 1 Then c\Lock\RealSpeed#=abs(c\TargetRotation\z#-0) Else c\Lock\RealSpeed#=1
+		If Abs(c\TargetRotation\z#-0) < 1 Then c\Lock\RealSpeed#=Abs(c\TargetRotation\z#-0) Else c\Lock\RealSpeed#=1
 		If c\TargetRotation\z#>0 Then c\TargetRotation\z#=c\TargetRotation\z#-c\Lock\RealSpeed#*d\Delta
 		If c\TargetRotation\z#<0 Then c\TargetRotation\z#=c\TargetRotation\z#+c\Lock\RealSpeed#*d\Delta
 
 		If Menu\ChaoGarden=0 Then
-			If abs(c\Target\Rotation#)<30 Then
-				If abs(CAMERA_DISTANCE_NEAR#-CAMERA_ZOOMVALUE#) < 1 Then c\Lock\RealSpeed#=abs(CAMERA_DISTANCE_NEAR#-CAMERA_ZOOMVALUE#) Else c\Lock\RealSpeed#=1
+			If Abs(c\Target\Rotation#)<30 Then
+				If Abs(CAMERA_DISTANCE_NEAR#-CAMERA_ZOOMVALUE#) < 1 Then c\Lock\RealSpeed#=Abs(CAMERA_DISTANCE_NEAR#-CAMERA_ZOOMVALUE#) Else c\Lock\RealSpeed#=1
 				If CAMERA_DISTANCE_NEAR#>CAMERA_ZOOMVALUE# Then CAMERA_DISTANCE_NEAR#=CAMERA_DISTANCE_NEAR#-c\Lock\RealSpeed#*d\Delta
 				If CAMERA_DISTANCE_NEAR#<CAMERA_ZOOMVALUE# Then CAMERA_DISTANCE_NEAR#=CAMERA_DISTANCE_NEAR#+c\Lock\RealSpeed#*d\Delta
-				If abs(CAMERA_DISTANCE_FAR#-CAMERA_ZOOMVALUE#) < 1 Then c\Lock\RealSpeed#=abs(CAMERA_DISTANCE_FAR#-CAMERA_ZOOMVALUE#) Else c\Lock\RealSpeed#=1
+				If Abs(CAMERA_DISTANCE_FAR#-CAMERA_ZOOMVALUE#) < 1 Then c\Lock\RealSpeed#=Abs(CAMERA_DISTANCE_FAR#-CAMERA_ZOOMVALUE#) Else c\Lock\RealSpeed#=1
 				If CAMERA_DISTANCE_FAR#>CAMERA_ZOOMVALUE# Then CAMERA_DISTANCE_FAR#=CAMERA_DISTANCE_FAR#-c\Lock\RealSpeed#*d\Delta
 				If CAMERA_DISTANCE_FAR#<CAMERA_ZOOMVALUE# Then CAMERA_DISTANCE_FAR#=CAMERA_DISTANCE_FAR#+c\Lock\RealSpeed#*d\Delta
 			Else
-				If abs(CAMERA_DISTANCE_NEAR#-(CAMERA_ZOOMVALUE#+4.75)) < 1 Then c\Lock\RealSpeed#=abs(CAMERA_DISTANCE_NEAR#-(CAMERA_ZOOMVALUE#+4.75)) Else c\Lock\RealSpeed#=1
+				If Abs(CAMERA_DISTANCE_NEAR#-(CAMERA_ZOOMVALUE#+4.75)) < 1 Then c\Lock\RealSpeed#=Abs(CAMERA_DISTANCE_NEAR#-(CAMERA_ZOOMVALUE#+4.75)) Else c\Lock\RealSpeed#=1
 				If CAMERA_DISTANCE_NEAR#>CAMERA_ZOOMVALUE#+4.75 Then CAMERA_DISTANCE_NEAR#=CAMERA_DISTANCE_NEAR#-c\Lock\RealSpeed#*d\Delta
 				If CAMERA_DISTANCE_NEAR#<CAMERA_ZOOMVALUE#+4.75 Then CAMERA_DISTANCE_NEAR#=CAMERA_DISTANCE_NEAR#+c\Lock\RealSpeed#*d\Delta
-				If abs(CAMERA_DISTANCE_FAR#-(CAMERA_ZOOMVALUE#+4.75)) < 1 Then c\Lock\RealSpeed#=abs(CAMERA_DISTANCE_FAR#-(CAMERA_ZOOMVALUE#+4.75)) Else c\Lock\RealSpeed#=1
+				If Abs(CAMERA_DISTANCE_FAR#-(CAMERA_ZOOMVALUE#+4.75)) < 1 Then c\Lock\RealSpeed#=Abs(CAMERA_DISTANCE_FAR#-(CAMERA_ZOOMVALUE#+4.75)) Else c\Lock\RealSpeed#=1
 				If CAMERA_DISTANCE_FAR#>CAMERA_ZOOMVALUE#+4.75 Then CAMERA_DISTANCE_FAR#=CAMERA_DISTANCE_FAR#-c\Lock\RealSpeed#*d\Delta
 				If CAMERA_DISTANCE_FAR#<CAMERA_ZOOMVALUE#+4.75 Then CAMERA_DISTANCE_FAR#=CAMERA_DISTANCE_FAR#+c\Lock\RealSpeed#*d\Delta
 			EndIf
 		Else
 			If c\Target\ObjPickUp=0 Then
-				If abs(CAMERA_DISTANCE_NEAR#-(CAMERA_ZOOMVALUE#-3.125)) < 0.225 Then c\Lock\RealSpeed#=abs(CAMERA_DISTANCE_NEAR#-(CAMERA_ZOOMVALUE#-6.25/2)) Else c\Lock\RealSpeed#=0.225
+				If Abs(CAMERA_DISTANCE_NEAR#-(CAMERA_ZOOMVALUE#-3.125)) < 0.225 Then c\Lock\RealSpeed#=Abs(CAMERA_DISTANCE_NEAR#-(CAMERA_ZOOMVALUE#-6.25/2)) Else c\Lock\RealSpeed#=0.225
 				If CAMERA_DISTANCE_NEAR#>CAMERA_ZOOMVALUE#-3.125 Then CAMERA_DISTANCE_NEAR#=CAMERA_DISTANCE_NEAR#-c\Lock\RealSpeed#*d\Delta
 				If CAMERA_DISTANCE_NEAR#<CAMERA_ZOOMVALUE#-3.125 Then CAMERA_DISTANCE_NEAR#=CAMERA_DISTANCE_NEAR#+c\Lock\RealSpeed#*d\Delta
-				If abs(CAMERA_DISTANCE_FAR#-(CAMERA_ZOOMVALUE#-3.125)) < 0.225 Then c\Lock\RealSpeed#=abs(CAMERA_DISTANCE_FAR#-(CAMERA_ZOOMVALUE#-6.25/2)) Else c\Lock\RealSpeed#=0.225
+				If Abs(CAMERA_DISTANCE_FAR#-(CAMERA_ZOOMVALUE#-3.125)) < 0.225 Then c\Lock\RealSpeed#=Abs(CAMERA_DISTANCE_FAR#-(CAMERA_ZOOMVALUE#-6.25/2)) Else c\Lock\RealSpeed#=0.225
 				If CAMERA_DISTANCE_FAR#>CAMERA_ZOOMVALUE#-3.125 Then CAMERA_DISTANCE_FAR#=CAMERA_DISTANCE_FAR#-c\Lock\RealSpeed#*d\Delta
 				If CAMERA_DISTANCE_FAR#<CAMERA_ZOOMVALUE#-3.125 Then CAMERA_DISTANCE_FAR#=CAMERA_DISTANCE_FAR#+c\Lock\RealSpeed#*d\Delta
 			Else
 				If c\Target\ObjPickUpTarget\ObjType=OBJTYPE_CHAO Then
-					If abs(CAMERA_DISTANCE_NEAR#-(CAMERA_ZOOMVALUE#-8.25)) < 0.225 Then c\Lock\RealSpeed#=abs(CAMERA_DISTANCE_NEAR#-(CAMERA_ZOOMVALUE#-6.25)) Else c\Lock\RealSpeed#=0.225
+					If Abs(CAMERA_DISTANCE_NEAR#-(CAMERA_ZOOMVALUE#-8.25)) < 0.225 Then c\Lock\RealSpeed#=Abs(CAMERA_DISTANCE_NEAR#-(CAMERA_ZOOMVALUE#-6.25)) Else c\Lock\RealSpeed#=0.225
 					If CAMERA_DISTANCE_NEAR#>CAMERA_ZOOMVALUE#-8.25 Then CAMERA_DISTANCE_NEAR#=CAMERA_DISTANCE_NEAR#-c\Lock\RealSpeed#*d\Delta
 					If CAMERA_DISTANCE_NEAR#<CAMERA_ZOOMVALUE#-8.25 Then CAMERA_DISTANCE_NEAR#=CAMERA_DISTANCE_NEAR#+c\Lock\RealSpeed#*d\Delta
-					If abs(CAMERA_DISTANCE_FAR#-(CAMERA_ZOOMVALUE#-8.25)) < 0.225 Then c\Lock\RealSpeed#=abs(CAMERA_DISTANCE_FAR#-(CAMERA_ZOOMVALUE#-6.25)) Else c\Lock\RealSpeed#=0.225
+					If Abs(CAMERA_DISTANCE_FAR#-(CAMERA_ZOOMVALUE#-8.25)) < 0.225 Then c\Lock\RealSpeed#=Abs(CAMERA_DISTANCE_FAR#-(CAMERA_ZOOMVALUE#-6.25)) Else c\Lock\RealSpeed#=0.225
 					If CAMERA_DISTANCE_FAR#>CAMERA_ZOOMVALUE#-8.25 Then CAMERA_DISTANCE_FAR#=CAMERA_DISTANCE_FAR#-c\Lock\RealSpeed#*d\Delta
 					If CAMERA_DISTANCE_FAR#<CAMERA_ZOOMVALUE#-8.25 Then CAMERA_DISTANCE_FAR#=CAMERA_DISTANCE_FAR#+c\Lock\RealSpeed#*d\Delta
 				Else
-					If abs(CAMERA_DISTANCE_NEAR#-(CAMERA_ZOOMVALUE#-6.25)) < 0.225 Then c\Lock\RealSpeed#=abs(CAMERA_DISTANCE_NEAR#-(CAMERA_ZOOMVALUE#-6.25)) Else c\Lock\RealSpeed#=0.225
+					If Abs(CAMERA_DISTANCE_NEAR#-(CAMERA_ZOOMVALUE#-6.25)) < 0.225 Then c\Lock\RealSpeed#=Abs(CAMERA_DISTANCE_NEAR#-(CAMERA_ZOOMVALUE#-6.25)) Else c\Lock\RealSpeed#=0.225
 					If CAMERA_DISTANCE_NEAR#>CAMERA_ZOOMVALUE#-6.25 Then CAMERA_DISTANCE_NEAR#=CAMERA_DISTANCE_NEAR#-c\Lock\RealSpeed#*d\Delta
 					If CAMERA_DISTANCE_NEAR#<CAMERA_ZOOMVALUE#-6.25 Then CAMERA_DISTANCE_NEAR#=CAMERA_DISTANCE_NEAR#+c\Lock\RealSpeed#*d\Delta
-					If abs(CAMERA_DISTANCE_FAR#-(CAMERA_ZOOMVALUE#-6.25)) < 0.225 Then c\Lock\RealSpeed#=abs(CAMERA_DISTANCE_FAR#-(CAMERA_ZOOMVALUE#-6.25)) Else c\Lock\RealSpeed#=0.225
+					If Abs(CAMERA_DISTANCE_FAR#-(CAMERA_ZOOMVALUE#-6.25)) < 0.225 Then c\Lock\RealSpeed#=Abs(CAMERA_DISTANCE_FAR#-(CAMERA_ZOOMVALUE#-6.25)) Else c\Lock\RealSpeed#=0.225
 					If CAMERA_DISTANCE_FAR#>CAMERA_ZOOMVALUE#-6.25 Then CAMERA_DISTANCE_FAR#=CAMERA_DISTANCE_FAR#-c\Lock\RealSpeed#*d\Delta
 					If CAMERA_DISTANCE_FAR#<CAMERA_ZOOMVALUE#-6.25 Then CAMERA_DISTANCE_FAR#=CAMERA_DISTANCE_FAR#+c\Lock\RealSpeed#*d\Delta
 				EndIf
 			EndIf
 		EndIf
 
-		If Game\Interface\DebugPlacerOn=0 and Game\CinemaMode=0 Then
+		If Game\Interface\DebugPlacerOn=0 And Game\CinemaMode=0 Then
 			If c\Target\Action=ACTION_DRIFT Or c\Target\Action=ACTION_BOARDDRIFT Or c\Target\Action=ACTION_CARDRIFT Then
 				If c\Target\DriftDirection=-1 Then c\TargetRotation\y# = c\TargetRotation\y# + (0.538)*d\Delta
 				If c\Target\DriftDirection=1 Then c\TargetRotation\y# = c\TargetRotation\y# - (0.538)*d\Delta
 			ElseIf Input\Pressed\CamCenter Then
 				c\ShouldCenterCamera=True
 				c\ShouldCenterCameraDirection#=c\Target\Animation\Direction#+180
+				CAMERA_ACTUALZOOMVALUE#=21
+				
 				Repeat
 				If c\ShouldCenterCameraDirection#>360 Then c\ShouldCenterCameraDirection#=c\ShouldCenterCameraDirection#-360
 				If c\ShouldCenterCameraDirection#<0 Then c\ShouldCenterCameraDirection#=c\ShouldCenterCameraDirection#+360
-				Until c\ShouldCenterCameraDirection#<=360 and c\ShouldCenterCameraDirection#>=0
+				Until c\ShouldCenterCameraDirection#<=360 And c\ShouldCenterCameraDirection#>=0
 			Else
-				If (Input\Hold\CamLeft) and (Input\Hold\CamRight) Then Input_ResetCameraInput()
+				If (Input\Hold\CamLeft) And (Input\Hold\CamRight) Then Input_ResetCameraInput()
 				If (Input\Hold\CamLeft) Then
 					If (Not(Input\Hold\CamRight)) Then c\TargetRotation\y#=c\TargetRotation\y#-3.3333*d\Delta
 				EndIf
@@ -195,16 +197,16 @@ Function Camera_Control(c.tCamera,d.tDeltaTime)
 		EndIf
 
 		If Not(c\MouseCameraTimer>0) Then
-			If c\Target\Motion\Ground=False and (Not(c\Target\Action=ACTION_BUOY Or c\Target\Action=ACTION_TORNADO Or c\Target\BoardWaterTimer>0)) Then
+			If c\Target\Motion\Ground=False And (Not(c\Target\Action=ACTION_BUOY Or c\Target\Action=ACTION_TORNADO Or c\Target\BoardWaterTimer>0)) Then
 				If Not(c\Target\Action=ACTION_GLIDER) Then
-					If abs(c\TargetRotation\x#-CAMERA_CONTROL_AIRAIRPITCH#) < 0.301 Then c\Lock\RealSpeed#=abs(c\TargetRotation\x#-CAMERA_CONTROL_AIRAIRPITCH#) Else c\Lock\RealSpeed#=0.301
+					If Abs(c\TargetRotation\x#-CAMERA_CONTROL_AIRAIRPITCH#) < 0.301 Then c\Lock\RealSpeed#=Abs(c\TargetRotation\x#-CAMERA_CONTROL_AIRAIRPITCH#) Else c\Lock\RealSpeed#=0.301
 					If c\TargetRotation\x#<CAMERA_CONTROL_AIRAIRPITCH# Then c\TargetRotation\x#=c\TargetRotation\x#+c\Lock\RealSpeed#*d\Delta
 				Else
-					If abs(c\TargetRotation\x#-CAMERA_CONTROL_AIRAIRPITCH#/6.0) < 0.301 Then c\Lock\RealSpeed#=abs(c\TargetRotation\x#-CAMERA_CONTROL_AIRAIRPITCH#/6.0) Else c\Lock\RealSpeed#=0.301
+					If Abs(c\TargetRotation\x#-CAMERA_CONTROL_AIRAIRPITCH#/6.0) < 0.301 Then c\Lock\RealSpeed#=Abs(c\TargetRotation\x#-CAMERA_CONTROL_AIRAIRPITCH#/6.0) Else c\Lock\RealSpeed#=0.301
 					If c\TargetRotation\x#<CAMERA_CONTROL_AIRAIRPITCH#/6.0 Then c\TargetRotation\x#=c\TargetRotation\x#+c\Lock\RealSpeed#*d\Delta
 				EndIf
 			Else
-				If abs(c\TargetRotation\x#-CAMERA_CONTROL_AIRPITCH#) < 1.131 Then c\Lock\RealSpeed#=abs(c\TargetRotation\x#-CAMERA_CONTROL_AIRPITCH#) Else c\Lock\RealSpeed#=1.131
+				If Abs(c\TargetRotation\x#-CAMERA_CONTROL_AIRPITCH#) < 1.131 Then c\Lock\RealSpeed#=Abs(c\TargetRotation\x#-CAMERA_CONTROL_AIRPITCH#) Else c\Lock\RealSpeed#=1.131
 				If c\TargetRotation\x#>CAMERA_CONTROL_AIRPITCH# Then c\TargetRotation\x#=c\TargetRotation\x#-c\Lock\RealSpeed#*d\Delta
 				If c\TargetRotation\x#<CAMERA_CONTROL_AIRPITCH# Then c\TargetRotation\x#=c\TargetRotation\x#+c\Lock\RealSpeed#*d\Delta
 			EndIf
@@ -212,15 +214,15 @@ Function Camera_Control(c.tCamera,d.tDeltaTime)
 
 		If c\ShouldCenterCamera Then
 			If Input\Hold\CamCenter Then
-				If abs(c\TargetRotation\y#-c\ShouldCenterCameraDirection#)>5.5 Then c\ShouldCenterCameraTimer=0.2*secs#
+				If Abs(c\TargetRotation\y#-c\ShouldCenterCameraDirection#)>5.5 Then c\ShouldCenterCameraTimer=0.2*secs#
 				If c\ShouldCenterCameraTimer>0 Then c\ShouldCenterCameraTimer=c\ShouldCenterCameraTimer-timervalue#
 
-				If abs(c\TargetRotation\y#-c\ShouldCenterCameraDirection#)<180 Then c\Lock\Turn=+1 Else c\Lock\Turn=-1
-				If abs(c\TargetRotation\y#-c\ShouldCenterCameraDirection#) < 6.3333 Then c\Lock\RealSpeed#=abs(c\TargetRotation\y#-c\ShouldCenterCameraDirection#) Else c\Lock\RealSpeed#=6.3333
+				If Abs(c\TargetRotation\y#-c\ShouldCenterCameraDirection#)<180 Then c\Lock\Turn=+1 Else c\Lock\Turn=-1
+				If Abs(c\TargetRotation\y#-c\ShouldCenterCameraDirection#) < 6.3333 Then c\Lock\RealSpeed#=Abs(c\TargetRotation\y#-c\ShouldCenterCameraDirection#) Else c\Lock\RealSpeed#=6.3333
 				If c\TargetRotation\y#<c\ShouldCenterCameraDirection# Then c\TargetRotation\y#=c\TargetRotation\y#+c\Lock\Turn*c\Lock\RealSpeed#*d\Delta
 				If c\TargetRotation\y#>c\ShouldCenterCameraDirection# Then c\TargetRotation\y#=c\TargetRotation\y#-c\Lock\Turn*c\Lock\RealSpeed#*d\Delta
 
-				If abs(c\TargetRotation\y#-c\ShouldCenterCameraDirection#)<=5 Or (Not(c\ShouldCenterCameraTimer>0)) Then c\ShouldCenterCamera=False
+				If Abs(c\TargetRotation\y#-c\ShouldCenterCameraDirection#)<=5 Or (Not(c\ShouldCenterCameraTimer>0)) Then c\ShouldCenterCamera=False
 			Else
 				c\ShouldCenterCamera=False
 			EndIf
@@ -231,9 +233,9 @@ Function Camera_Control(c.tCamera,d.tDeltaTime)
 		EndIf
 		If Input\Hold\MouseCamZoomOut Then
 			If c\Target\Action=ACTION_DEBUG Then
-				If CAMERA_ACTUALZOOMVALUE#<155 Then CAMERA_ACTUALZOOMVALUE#=CAMERA_ACTUALZOOMVALUE#+2.5*d\Delta
+				If CAMERA_ACTUALZOOMVALUE#<350 Then CAMERA_ACTUALZOOMVALUE#=CAMERA_ACTUALZOOMVALUE#+2.5*d\Delta
 			Else
-				If CAMERA_ACTUALZOOMVALUE#<50 Then CAMERA_ACTUALZOOMVALUE#=CAMERA_ACTUALZOOMVALUE#+2.5*d\Delta
+				If CAMERA_ACTUALZOOMVALUE#<350 Then CAMERA_ACTUALZOOMVALUE#=CAMERA_ACTUALZOOMVALUE#+2.5*d\Delta
 			EndIf
 		EndIf
 		If c\Target\Action=ACTION_TORNADO Then
@@ -254,11 +256,11 @@ Function Camera_Control(c.tCamera,d.tDeltaTime)
 		Game\CamLock=0
 		Game\RunLock=0
 
-		If Input\Hold\Up Then c\CinemaZ#=c\CinemaZ#+cos(EntityYaw(c\Entity))*c\CinemaSpeed#*d\Delta : c\CinemaX#=c\CinemaX#-sin(EntityYaw(c\Entity))*c\CinemaSpeed#*d\Delta
-		If Input\Hold\Down Then c\CinemaZ#=c\CinemaZ#-cos(EntityYaw(c\Entity))*c\CinemaSpeed#*d\Delta : c\CinemaX#=c\CinemaX#+sin(EntityYaw(c\Entity))*c\CinemaSpeed#*d\Delta
+		If Input\Hold\Up Then c\CinemaZ#=c\CinemaZ#+Cos(EntityYaw(c\Entity))*c\CinemaSpeed#*d\Delta : c\CinemaX#=c\CinemaX#-Sin(EntityYaw(c\Entity))*c\CinemaSpeed#*d\Delta
+		If Input\Hold\Down Then c\CinemaZ#=c\CinemaZ#-Cos(EntityYaw(c\Entity))*c\CinemaSpeed#*d\Delta : c\CinemaX#=c\CinemaX#+Sin(EntityYaw(c\Entity))*c\CinemaSpeed#*d\Delta
 
-		If Input\Hold\Right Then c\CinemaZ#=c\CinemaZ#+sin(EntityYaw(c\Entity))*c\CinemaSpeed#*d\Delta : c\CinemaX#=c\CinemaX#+cos(EntityYaw(c\Entity))*c\CinemaSpeed#*d\Delta
-		If Input\Hold\Left Then c\CinemaZ#=c\CinemaZ#-sin(EntityYaw(c\Entity))*c\CinemaSpeed#*d\Delta : c\CinemaX#=c\CinemaX#-cos(EntityYaw(c\Entity))*c\CinemaSpeed#*d\Delta
+		If Input\Hold\Right Then c\CinemaZ#=c\CinemaZ#+Sin(EntityYaw(c\Entity))*c\CinemaSpeed#*d\Delta : c\CinemaX#=c\CinemaX#+Cos(EntityYaw(c\Entity))*c\CinemaSpeed#*d\Delta
+		If Input\Hold\Left Then c\CinemaZ#=c\CinemaZ#-Sin(EntityYaw(c\Entity))*c\CinemaSpeed#*d\Delta : c\CinemaX#=c\CinemaX#-Cos(EntityYaw(c\Entity))*c\CinemaSpeed#*d\Delta
 
 		If Input\Hold\ActionJump Then c\CinemaY#=c\CinemaY#+c\CinemaSpeed#*d\Delta
 		If Input\Hold\ActionRoll Then c\CinemaY#=c\CinemaY#-c\CinemaSpeed#*d\Delta
@@ -274,11 +276,11 @@ Function Camera_Control(c.tCamera,d.tDeltaTime)
 		EndIf
 
 		If Input\Pressed\ActionSkill2 Then
-			Game\Interface\CinemaAllowUpdate=abs(Game\Interface\CinemaAllowUpdate-1)
+			Game\Interface\CinemaAllowUpdate=Abs(Game\Interface\CinemaAllowUpdate-1)
 			PlaySmartSound(Sound_MenuMove)
 		EndIf
 	EndIf
 
-	If Game\RunLock>0 Then c\Mode=CAMERA_MODE_NORMAL Else c\Mode=CAMERA_MODE_TARGETPOV
+	If Game\RunLock>0 Or Game\TwoDLock=1 Then c\Mode=CAMERA_MODE_NORMAL Else c\Mode=CAMERA_MODE_TARGETPOV
 
 End Function

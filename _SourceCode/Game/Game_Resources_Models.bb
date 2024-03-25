@@ -73,9 +73,9 @@ ShortCharNames$(CHAR_FRO,1) = "Fro"
 
 	Const CHAR_SON			= 1
 	Const CHAR_TAI			= 2
-	Const CHAR_KNU			= 3
-	Const CHAR_AMY			= 4
-	Const CHAR_SHA			= 5
+	Const CHAR_KNU			= 4
+	Const CHAR_AMY			= 5
+	Const CHAR_SHA			= 3
 	Const CHAR_ROU			= 6
 	Const CHAR_CRE			= 7
 	Const CHAR_BLA			= 8
@@ -158,7 +158,7 @@ ShortCharNames$(CHAR_FRO,1) = "Fro"
 
 	; ---- Character Meshes ----
 	Global CharacterMesh
-	Function LoadCharacterMesh(char,mode=0,super=0,costume=0)
+Function LoadCharacterMesh(char,mode=0,super=0,costume=0)
 		If costume=0 Then
 			costume=1
 			If Not(Menu\Stage=0) Then
@@ -171,41 +171,40 @@ ShortCharNames$(CHAR_FRO,1) = "Fro"
 		Select char
 			Case -2: CharacterMesh = LoadAnimMesh("Objects/Rings/Emblem.b3d") : ExtractAllCharacterAnimations_Character(char,-2)
 			Case -1: CharacterMesh = LoadAnimMesh("Objects/Unknown.b3d") : ExtractAllCharacterAnimations_Character(char,-1)
-			Case CHAR_CHE,CHAR_CHC: CharacterMesh = LoadAnimMesh("Characters/"+ShortCharNames$(char,costume)+".b3d") : ExtractAllCharacterAnimations_Chao(char,mode)
+			Case CHAR_CHC: CharacterMesh = LoadAnimMesh("Characters/"+ShortCharNames$(char,costume)+".b3d") : ExtractAllCharacterAnimations_Chao(char,mode)
 			Case CHAR_FRO: CharacterMesh = LoadAnimMesh("Characters/"+ShortCharNames$(char,costume)+".b3d") : ExtractAllCharacterAnimations_Froggy(char,mode)
+			Case CHAR_CHE : CharacterMesh = LoadAnimMesh("Characters/"+ShortCharNames$(char,costume)+".b3d") : ExtractAllCharacterAnimations_Cheese(char,mode)
 			Default:
 				If IsCharMod(char) Then
 					If super=0 Then
-					CharacterMesh = LoadAnimMesh("Mods/Characters/"+MODCHARS_PATH$(char-CHAR_MOD1+1)+"/model/"+MODCHARS_MODEL$(char-CHAR_MOD1+1))
-					ElseIf super=1 Then
-					CharacterMesh = LoadAnimMesh("Mods/Characters/"+MODCHARS_PATH$(char-CHAR_MOD1+1)+"/model/"+MODCHARS_SMODEL$(char-CHAR_MOD1+1))
-					ElseIf super=2 Then
-					CharacterMesh = LoadAnimMesh("Mods/Characters/"+MODCHARS_PATH$(char-CHAR_MOD1+1)+"/model/"+MODCHARS_HMODEL$(char-CHAR_MOD1+1))
+					CharacterMesh = LoadAnimMesh("Mods/Characters/"+MODCHARS_PATH$(char-CHAR_MOD1+1)+"/model/"+MODCHARS_MODEL$(char-CHAR_MOD1+1)) : ExtractAllCharacterAnimations_Character(char,mode)
+					Else
+					CharacterMesh = LoadAnimMesh("Mods/Characters/"+MODCHARS_PATH$(char-CHAR_MOD1+1)+"/model/"+MODCHARS_SMODEL$(char-CHAR_MOD1+1)) : ExtractAllCharacterAnimations_Character(char,mode)
 					EndIf
 				Else
 					If char>900 Then
 						If super=0 Then
-						CharacterMesh = LoadAnimMesh("Characters/"+ShortCharNames$(InterfaceChar(char),costume+1)+".b3d")
-						ElseIf super=1 Then
-						CharacterMesh = LoadAnimMesh("Characters/s"+ShortCharNames$(InterfaceChar(char),costume+1)+".b3d")
-						ElseIf super=2 Then
-						CharacterMesh = LoadAnimMesh("Characters/h"+ShortCharNames$(InterfaceChar(char),costume+1)+".b3d")
+						CharacterMesh = LoadAnimMesh("Characters/"+ShortCharNames$(InterfaceChar(char),costume+1)+"/model.b3d") : ExtractAllCharacterAnimations_Character(char,mode)
+						Else
+						CharacterMesh = LoadAnimMesh("Characters/"+ShortCharNames$(InterfaceChar(char),costume+1)+"/super.b3d") : ExtractAllCharacterAnimations_Character(char,mode)
 						EndIf
 					Else
 						If super=0 Then
-						CharacterMesh = LoadAnimMesh("Characters/"+ShortCharNames$(char,costume)+".b3d")
-						ElseIf super=1 Then
-						CharacterMesh = LoadAnimMesh("Characters/s"+ShortCharNames$(char,costume)+".b3d")
-						ElseIf super=2 Then
-						CharacterMesh = LoadAnimMesh("Characters/h"+ShortCharNames$(char,costume)+".b3d")
+							Select mode 
+								Case 1
+									CharacterMesh = LoadAnimMesh("Characters/"+ShortCharNames$(char,costume)+"/bio.b3d") : ExtractAllCharacterAnimations_Character(char,mode)
+								Default
+									CharacterMesh = LoadAnimMesh("Characters/"+ShortCharNames$(char,costume)+"/model.b3d") : ExtractAllCharacterAnimations_Character(char,mode)
+							End Select 
+						Else
+							CharacterMesh = LoadAnimMesh("Characters/"+ShortCharNames$(char,costume)+"/super.b3d") : ExtractAllCharacterAnimations_Character(char,mode)
 						EndIf
 					EndIf
 				EndIf
-				ExtractAllCharacterAnimations_Character(char,mode)
 		End Select
 		MoveEntity(CharacterMesh),0,-99999,0 : HideEntity(CharacterMesh)
 	End Function
-	Function DeleteCharacterMesh()
+Function DeleteCharacterMesh()
 		FreeEntity CharacterMesh
 		CharacterMesh = CreatePivot()
 	End Function
@@ -213,7 +212,7 @@ ShortCharNames$(CHAR_FRO,1) = "Fro"
 	;-----------------------------------------------------------------------------------------------------------------------
 	;-----------------------------------------------------------------------------------------------------------------------
 
-	Function ExtractAllCharacterAnimations_Character(char,mode=0)
+Function ExtractAllCharacterAnimations_Character(char,mode=0)
 
 		a=1
 
@@ -226,25 +225,7 @@ ShortCharNames$(CHAR_FRO,1) = "Fro"
 			ExtractAnimSeq(CharacterMesh,		0,	0)					;Run
 			ExtractAnimSeq(CharacterMesh,		a,	-1+a+17)			;Spin
 		Case 1: ;character menu
-			ExtractAnimSeq(CharacterMesh,		0,	0) : a=a+17			;Victory
-			ExtractAnimSeq(CharacterMesh,		0,	0) : a=a+17			;Idle
-			ExtractAnimSeq(CharacterMesh,		0,	0) : a=a+17			;Walk
-			ExtractAnimSeq(CharacterMesh,		0,	0) : a=a+17			;Jog
-			Select char
-			Case CHAR_SHA:
-				ExtractAnimSeq(CharacterMesh,	0,	0) : a=a+33			;Run
-			Default:
-				If IsCharMod(char) Then
-					If MODCHARS_SKATES(char-CHAR_MOD1+1)>0 Then
-					ExtractAnimSeq(CharacterMesh,	0,	0) : a=a+33		;Run
-					Else
-					ExtractAnimSeq(CharacterMesh,	0,	0) : a=a+17		;Run
-					EndIf
-				Else
-					ExtractAnimSeq(CharacterMesh,	0,	0) : a=a+17			;Run
-				EndIf
-			End Select
-			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9)				;Spin
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9	;bio
 		Case 2: ;bio menu
 			ExtractAnimSeq(CharacterMesh,		a,	-1+a+17) : a=a+17	;Victory
 			ExtractAnimSeq(CharacterMesh,		a,	-1+a+17) : a=a+17	;Idle
@@ -278,25 +259,40 @@ ShortCharNames$(CHAR_FRO,1) = "Fro"
 		Default:
 			actualchar=char
 			If IsCharMod(char) Then char=MODCHARS_TYPE(char-CHAR_MOD1+1)
-			ExtractAnimSeq(CharacterMesh,		a,	-1+a+17) : a=a+17	;Victory
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+17) : a=a+17	;Bio
 			ExtractAnimSeq(CharacterMesh,		a,	-1+a+17) : a=a+17	;Idle
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+70) : a=a+70	;Wait
 			ExtractAnimSeq(CharacterMesh,		a,	-1+a+17) : a=a+17	;Walk
 			ExtractAnimSeq(CharacterMesh,		a,	-1+a+17) : a=a+17	;Jog
 			Select actualchar
 			Case CHAR_SHA:
 				ExtractAnimSeq(CharacterMesh,	a,	-1+a+33) : a=a+33	;Run
+				ExtractAnimSeq(CharacterMesh,	a,	-1+a+33) : a=a+33	;MachRun
 			Default:
 				If IsCharMod(actualchar) Then
 					If MODCHARS_SKATES(actualchar-CHAR_MOD1+1)>0 Then
 					ExtractAnimSeq(CharacterMesh,	a,	-1+a+33) : a=a+33	;Run
+					ExtractAnimSeq(CharacterMesh,	a,	-1+a+33) : a=a+33	;MachRun
 					Else
 					ExtractAnimSeq(CharacterMesh,	a,	-1+a+17) : a=a+17	;Run
+					ExtractAnimSeq(CharacterMesh,	a,	-1+a+17) : a=a+17	;MachRun
 					EndIf
 				Else
 					ExtractAnimSeq(CharacterMesh,	a,	-1+a+17) : a=a+17	;Run
+					ExtractAnimSeq(CharacterMesh,	a,	-1+a+17) : a=a+17	;MachRun
 				EndIf
 			End Select
 			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;Spin
+			Select char
+				Case CHAR_EGR,CHAR_GAM,CHAR_AMY,CHAR_BET,CHAR_ROU,CHAR_ESP:
+					ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9	;Jump
+					ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9	;Charge
+					ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9	;Dash
+				Default:
+					ExtractAnimSeq(CharacterMesh,	0,	0)	;Jump
+					ExtractAnimSeq(CharacterMesh,	0,	0)	;Charge
+					ExtractAnimSeq(CharacterMesh,	0,	0)	;Dash
+			End Select 
 			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;Fall
 			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;FallFast
 			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;Forward
@@ -306,7 +302,32 @@ ShortCharNames$(CHAR_FRO,1) = "Fro"
 			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;Hurt
 			ExtractAnimSeq(CharacterMesh,		a,	-1+a+1) : a=a+1		;Dead
 			ExtractAnimSeq(CharacterMesh,		a,	-1+a+1) : a=a+1		;DeadFall
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;Grind
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;GrindSwitch
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;GrindFast
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;SkyDive
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;SkyDiveFast
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+17) : a=a+17	;CarryIdle
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+17) : a=a+17	;CarryWalk
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;CarryJump
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;Hold1
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;Hold2
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+17) : a=a+17	;DriftL
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+17) : a=a+17	;DriftR
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;Stomp
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;Land
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;Transform
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+33) : a=a+33	;Trick
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;Vehicle
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;Board
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;BoardFall
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;BoardL
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;BoardR
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+140) : a=a+140	;Victory
+			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;VictoryLoop
 
+			
+			
 			Select char
 			Case CHAR_TAI,CHAR_ROU,CHAR_CRE,CHAR_SIL,CHAR_CHA,CHAR_TDL,CHAR_TIK,CHAR_RAY,CHAR_JET,CHAR_WAV,CHAR_TIA,CHAR_MPH,CHAR_OME,CHAR_EME,CHAR_MT3,CHAR_GME,CHAR_EGR,CHAR_BEA,CHAR_INF:
 				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Fly
@@ -315,81 +336,70 @@ ShortCharNames$(CHAR_FRO,1) = "Fro"
 			Default:
 				ExtractAnimSeq(CharacterMesh,	0,	0)					;Fly
 			End Select
-
+			
 			Select char
-			Case CHAR_KNU,CHAR_ROU,CHAR_OME,CHAR_MKN,CHAR_RAY,CHAR_CHO,CHAR_JET,CHAR_STO,CHAR_TIA,CHAR_BAR,CHAR_TIK,CHAR_HBO,CHAR_HON,CHAR_SHD,CHAR_GAM,CHAR_EME,CHAR_EGG,CHAR_BET,CHAR_GME,CHAR_COM,CHAR_CHW,CHAR_TMH:
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Glide
-			Case CHAR_VEC,CHAR_BIG,CHAR_MAR:
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+17) : a=a+17	;Glide
-			Default:
-				ExtractAnimSeq(CharacterMesh,	0,	0)					;Glide
+				Case CHAR_SON,CHAR_SHA,CHAR_ESP
+					ExtractAnimSeq(CharacterMesh,	a,	-1+a+17) : a=a+17		;Homing 1
+					ExtractAnimSeq(CharacterMesh,	a,	-1+a+17) : a=a+17		;Homing 2
+					ExtractAnimSeq(CharacterMesh,	a,	-1+a+17) : a=a+17		;Homing 3
+				Default:
+					ExtractAnimSeq(CharacterMesh,	0,	0)					;Homing 1
+					ExtractAnimSeq(CharacterMesh,	0,	0)					;Homing 2
+					ExtractAnimSeq(CharacterMesh,	0,	0)					;Homing 3
 			End Select
-
+			
 			Select char
-			Case CHAR_KNU,CHAR_ROU,CHAR_ESP,CHAR_MKN,CHAR_CHO,CHAR_TIK,CHAR_SHD,CHAR_EME,CHAR_GME,CHAR_COM:
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+17) : a=a+17	;ClimbIdle
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+17) : a=a+17	;Climb
-			Default:
-				ExtractAnimSeq(CharacterMesh,	0,	0)					;ClimbIdle
-				ExtractAnimSeq(CharacterMesh,	0,	0)					;Climb
-			End Select
-
-			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;Grind
-			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;GrindFast
-			ExtractAnimSeq(CharacterMesh,		a,	-1+a+17) : a=a+17	;CarryIdle
-			ExtractAnimSeq(CharacterMesh,		a,	-1+a+17) : a=a+17	;CarryWalk
-			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;CarryJump
-			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;Hold1
-			ExtractAnimSeq(CharacterMesh,		a,	-1+a+9) : a=a+9		;Hold2
-
-			Select char
-			Case CHAR_SON,CHAR_TAI,CHAR_KNU,CHAR_SHA,CHAR_CHA,CHAR_ROU,CHAR_BLA,CHAR_BIG,CHAR_RAY,CHAR_CHO,CHAR_BEA,CHAR_BAR,CHAR_JET,CHAR_WAV,CHAR_STO,CHAR_TIA,CHAR_MPH,CHAR_TDL,CHAR_MKN,CHAR_MIG,CHAR_TIK,CHAR_INF:
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Throw
-				ExtractAnimSeq(CharacterMesh,	0,	0)					;Throw2
-				ExtractAnimSeq(CharacterMesh,	0,	0)					;ThrowAir
-			Case CHAR_SIL,CHAR_MAR:
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Throw
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Throw2
-				ExtractAnimSeq(CharacterMesh,	0,	0)					;ThrowAir
-			Case CHAR_CRE:
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Throw
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Throw2
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;ThrowAir
-			Case CHAR_AMY:
-				ExtractAnimSeq(CharacterMesh,	0,	0)					;Throw
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Throw2
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;ThrowAir
-			Case CHAR_OME,CHAR_ESP,CHAR_NAC,CHAR_GME,CHAR_COM,CHAR_EGR,CHAR_SHD:
+			Case CHAR_TAI
 				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Throw
 				ExtractAnimSeq(CharacterMesh,	0,	0)					;Throw2
 				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;ThrowAir
-			Case CHAR_GAM,CHAR_EME,CHAR_MET,CHAR_EGG,CHAR_BET,CHAR_MT3,CHAR_CHW,CHAR_TMH:
+				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;ThrowAir2
+			Case CHAR_CRE
+				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Throw
+				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9	        ;Throw2
+				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9	 	;ThrowAir
+				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9	 	;ThrowAir2
+			Case CHAR_EGR
+				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Throw
+				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Throw2
+				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;ThrowAir
+				ExtractAnimSeq(CharacterMesh,	0,	0)					;ThrowAir2
+			Case CHAR_SHA
 				ExtractAnimSeq(CharacterMesh,	0,	0)					;Throw
 				ExtractAnimSeq(CharacterMesh,	0,	0)					;Throw2
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;ThrowAir
+				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9					;ThrowAir
+				ExtractAnimSeq(CharacterMesh,	0,	0)					;ThrowAir2
 			Default:
 				ExtractAnimSeq(CharacterMesh,	0,	0)					;Throw
 				ExtractAnimSeq(CharacterMesh,	0,	0)					;Throw2
 				ExtractAnimSeq(CharacterMesh,	0,	0)					;ThrowAir
+				ExtractAnimSeq(CharacterMesh,	0,	0)					;ThrowAir2
 			End Select
-
+			
 			Select char
-			Case CHAR_SON,CHAR_AMY,CHAR_SHA,CHAR_NAC,CHAR_BEA,CHAR_WAV,CHAR_EME,CHAR_MKN,CHAR_GME,CHAR_PRS,CHAR_INF,CHAR_CHO:
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Kick
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;KickAir
-			Case CHAR_KNU,CHAR_ROU,CHAR_BLA,CHAR_MAR,CHAR_RAY,CHAR_COM:
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Kick
-				ExtractAnimSeq(CharacterMesh,	0,	0)					;KickAir
-			Case CHAR_TAI,CHAR_TDL:
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+17) : a=a+17	;Kick
-				ExtractAnimSeq(CharacterMesh,	0,	0)					;KickAir
-			Case CHAR_ESP,CHAR_CHA,CHAR_MIG,CHAR_JET,CHAR_HON,CHAR_MET,CHAR_MT3:
-				ExtractAnimSeq(CharacterMesh,	0,	0)					;Kick
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;KickAir
-			Default:
-				ExtractAnimSeq(CharacterMesh,	0,	0)					;Kick
-				ExtractAnimSeq(CharacterMesh,	0,	0)					;KickAir
-			End Select
+				Case CHAR_SON
+					ExtractAnimSeq(CharacterMesh,	a,	-1+a+17) : a=a+17	;Kick
+					ExtractAnimSeq(CharacterMesh,	0,	0)					;Kick2
+					ExtractAnimSeq(CharacterMesh,	0,	0)					;Kick3
+					ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;KickAir	
+					ExtractAnimSeq(CharacterMesh,	0,	0)					;KickAir2
+				Case CHAR_TAI
+					ExtractAnimSeq(CharacterMesh,	a,	-1+a+17) : a=a+17	;Kick
+					ExtractAnimSeq(CharacterMesh,	0,	0)					;Kick2
+					ExtractAnimSeq(CharacterMesh,	0,	0)					;Kick3
+					ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;KickAir	
+					ExtractAnimSeq(CharacterMesh,	a,	-1+a+17) : a=a+17	;KickAir2
+				Default
+					ExtractAnimSeq(CharacterMesh,	0,	0)					;Throw
+					ExtractAnimSeq(CharacterMesh,	0,	0)					;Throw2
+					ExtractAnimSeq(CharacterMesh,	0,	0)					;ThrowAir
+					ExtractAnimSeq(CharacterMesh,	0,	0)					;ThrowAir2
+					ExtractAnimSeq(CharacterMesh,	0,	0)					;ThrowAir2
+			End Select 
+			
+		
+	
+			
 
 			Select char
 			Case CHAR_KNU,CHAR_CHO,CHAR_TIK,CHAR_BAR,CHAR_STO,CHAR_HBO,CHAR_MKN,CHAR_COM:
@@ -402,11 +412,12 @@ ShortCharNames$(CHAR_FRO,1) = "Fro"
 				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Punch2
 				ExtractAnimSeq(CharacterMesh,	0,	0)					;Punch3
 				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;PunchAir
-			Case CHAR_OME:
+			Case CHAR_OME,CHAR_SHA:
 				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Punch1
 				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Punch2
 				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Punch3
 				ExtractAnimSeq(CharacterMesh,	0,	0)					;PunchAir
+				ExtractAnimSeq(CharacterMesh,	0,	0)					;PunchAir2
 			Case CHAR_VEC,CHAR_EGG,CHAR_TMH:
 				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Punch1
 				ExtractAnimSeq(CharacterMesh,	0,	0)					;Punch2
@@ -434,30 +445,8 @@ ShortCharNames$(CHAR_FRO,1) = "Fro"
 				ExtractAnimSeq(CharacterMesh,	0,	0)					;PunchAir
 			End Select
 
-			Select char
-			Case CHAR_OME:
-				ExtractAnimSeq(CharacterMesh,	0,	0)					;Kick2
-				ExtractAnimSeq(CharacterMesh,	0,	0)					;KickAir2
-				ExtractAnimSeq(CharacterMesh,	0,	0)					;Kick3
-				ExtractAnimSeq(CharacterMesh,	0,	0)					;PunchAir2
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Glide2
-			Case CHAR_VEC,CHAR_BIG:
-				ExtractAnimSeq(CharacterMesh,	0,	0)					;Kick2
-				ExtractAnimSeq(CharacterMesh,	0,	0)					;KickAir2
-				ExtractAnimSeq(CharacterMesh,	0,	0)					;Kick3
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;PunchAir2
-			Case CHAR_EME:
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Kick2
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;KickAir2
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+17) : a=a+17	;Kick3
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;PunchAir2
-			Case CHAR_GME:
-				ExtractAnimSeq(CharacterMesh,	0,	0)					;Kick2
-				ExtractAnimSeq(CharacterMesh,	0,	0)					;KickAir2
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+17) : a=a+17	;Kick3
-				ExtractAnimSeq(CharacterMesh,	0,	0)					;PunchAir2
-				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Glide2
-			End Select
+			
+			
 
 		End Select
 
@@ -466,7 +455,7 @@ ShortCharNames$(CHAR_FRO,1) = "Fro"
 	;-----------------------------------------------------------------------------------------------------------------------
 	;-----------------------------------------------------------------------------------------------------------------------
 
-	Function ExtractAllCharacterAnimations_Chao(char,mode=0)
+Function ExtractAllCharacterAnimations_Chao(char,mode=0)
 
 		b=1
 
@@ -492,7 +481,7 @@ ShortCharNames$(CHAR_FRO,1) = "Fro"
 	;-----------------------------------------------------------------------------------------------------------------------
 	;-----------------------------------------------------------------------------------------------------------------------
 
-	Function ExtractAllCharacterAnimations_Froggy(char,mode=0)
+Function ExtractAllCharacterAnimations_Froggy(char,mode=0)
 
 		c=1
 
@@ -507,7 +496,7 @@ ShortCharNames$(CHAR_FRO,1) = "Fro"
 	;-----------------------------------------------------------------------------------------------------------------------
 	;-----------------------------------------------------------------------------------------------------------------------
 
-	Function ExtractAllCharacterAnimations_PetChao(mesh)
+Function ExtractAllCharacterAnimations_PetChao(mesh)
 
 		d=1
 
@@ -555,10 +544,31 @@ ShortCharNames$(CHAR_FRO,1) = "Fro"
 	;-----------------------------------------------------------------------------------------------------------------------
 	;-----------------------------------------------------------------------------------------------------------------------
 
-	Function ExtractAllCharacterAnimations_DealerChao(mesh)
+Function ExtractAllCharacterAnimations_DealerChao(mesh)
 
 		e=1
 
 		ExtractAnimSeq(mesh,				e,	-1+e+17) : e=e+17	;Idle
 
 	End Function
+
+Function ExtractAllCharacterAnimations_Cheese(char,mode=0)
+
+		f=1
+
+		Select mode
+		Default:
+			ExtractAnimSeq(CharacterMesh,		f,	-1+f+17) : f=f+17	;Idle
+			ExtractAnimSeq(CharacterMesh,		f,	-1+f+17) : f=f+17	;Move
+			ExtractAnimSeq(CharacterMesh,		f,	-1+f+70) : f=f+70	;Wait
+			ExtractAnimSeq(CharacterMesh,		f,	-1+f+9) : f=f+9	;Attack
+			ExtractAnimSeq(CharacterMesh,		f,	-1+f+9) : f=f+9	;Spin
+			ExtractAnimSeq(CharacterMesh,		f,	-1+f+140) : f=f+140	;Victory
+			ExtractAnimSeq(CharacterMesh,		f,	-1+f+9) : f=f+9	;VictoryLoop
+			ExtractAnimSeq(CharacterMesh,		f,	-1+f+9) : f=f+9	;Shield
+			ExtractAnimSeq(CharacterMesh,		f,	-1+f+9) : f=f+9	;Hurt
+		End Select
+
+	End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

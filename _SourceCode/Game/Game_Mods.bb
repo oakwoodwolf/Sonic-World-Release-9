@@ -4,7 +4,7 @@
 	Dim MODCHARS_TYPE(MODCHAR_AMOUNT)
 	Dim MODCHARS_MODEL$(MODCHAR_AMOUNT)
 	Dim MODCHARS_SMODEL$(MODCHAR_AMOUNT)
-	Dim MODCHARS_HMODEL$(MODCHAR_AMOUNT)
+
 	Dim MODCHARS_BIGHOLD(MODCHAR_AMOUNT)
 	Dim MODCHARS_METALSTEPS(MODCHAR_AMOUNT)
 	Dim MODCHARS_SKATES(MODCHAR_AMOUNT)
@@ -20,18 +20,16 @@
 	Dim MODCHARS_JUMPSOUND(MODCHAR_AMOUNT)
 
 Function IsCharMod(charno)
-	If charno>=CHAR_MOD1 and charno<=CHAR_PLAYABLECOUNT Then Return true Else Return false
+	If charno>=CHAR_MOD1 And charno<=CHAR_PLAYABLECOUNT Then Return True Else Return False
 End Function
 
 Function CharModHasSuper(charno)
-	If Len(MODCHARS_SMODEL$(charno-CHAR_MOD1+1))>0 Then Return true Else Return false
-End Function
-Function CharModHasHyper(charno)
-	If Len(MODCHARS_HMODEL$(charno-CHAR_MOD1+1))>0 Then Return true Else Return false
+	If Len(MODCHARS_SMODEL$(charno-CHAR_MOD1+1))>0 Then Return True Else Return False
 End Function
 
+
 Function LoadMods_Characters()
-	For i=1 to MODCHAR_AMOUNT
+	For i=1 To MODCHAR_AMOUNT
 		MODCHARS_FOUND(i)=0
 	Next
 
@@ -42,7 +40,7 @@ Function LoadMods_Characters()
 		Select xmlNodeNameGet$(Child)
 			Case "char":
 				charno = xmlNodeAttributeValueGet(Child, "slot")
-				If charno <= MODCHAR_AMOUNT and charno > 0 Then
+				If charno <= MODCHAR_AMOUNT And charno > 0 Then
 					MODCHARS_PATH$(charno) = xmlNodeAttributeValueGet(Child, "folder")
 					If Not(FileType("Mods/Characters/"+MODCHARS_PATH$(charno)+"/Character.xml")=1) Then
 						MODCHARS_FOUND(charno)=0
@@ -56,7 +54,7 @@ Function LoadMods_Characters()
 	Next
 	xmlNodeDelete(ListRoot)
 
-	For i=1 to MODCHAR_AMOUNT
+	For i=1 To MODCHAR_AMOUNT
 		UNLOCKEDCHAR[i+CHAR_MOD1-1]=1
 		If MODCHARS_FOUND(i)=0 Then LoadMods_DisableCharacter(i)
 	Next
@@ -80,7 +78,6 @@ Function LoadMods_Character(charno)
 			Case "char":
 				MODCHARS_MODEL$(charno) = xmlNodeAttributeValueGet(Child, "model")
 				MODCHARS_SMODEL$(charno) = xmlNodeAttributeValueGet(Child, "smodel")
-				MODCHARS_HMODEL$(charno) = xmlNodeAttributeValueGet(Child, "hmodel")
 				MODCHARS_BIGHOLD(charno) = xmlNodeAttributeValueGet(Child, "bighold")
 				MODCHARS_METALSTEPS(charno) = xmlNodeAttributeValueGet(Child, "metalsteps")
 				MODCHARS_SKATES(charno) = xmlNodeAttributeValueGet(Child, "skates")
@@ -158,7 +155,7 @@ Dim MODVOICES_FOUND(CHAR_PLAYABLECOUNT)
 Dim MODVOICES_PATH$(CHAR_PLAYABLECOUNT)
 
 Function LoadMods_Voices()
-	For i=1 to CHAR_PLAYABLECOUNT
+	For i=1 To CHAR_PLAYABLECOUNT
 		MODVOICES_FOUND(i)=0
 	Next
 
@@ -169,7 +166,7 @@ Function LoadMods_Voices()
 		Select xmlNodeNameGet$(Child)
 			Case "char":
 				charno = xmlNodeAttributeValueGet(Child, "no")
-				If charno <= CHAR_PLAYABLECOUNT and charno > 0 Then
+				If charno <= CHAR_PLAYABLECOUNT And charno > 0 Then
 					MODVOICES_PATH$(charno) = xmlNodeAttributeValueGet(Child, "folder")
 					If Not(FileType("Mods/Voices/"+MODVOICES_PATH$(charno)+"/jump1.ogg")=1) Then
 						MODVOICES_FOUND(charno)=0

@@ -75,6 +75,7 @@ Const HITBOXTYPE_SPEEDY_LOCKER = 21
 Const HITBOXTYPE_SPEEDY_CHECKPOINT = 22
 Const HITBOXTYPE_SPEEDY_TRANSFERER = 23
 Const HITBOXTYPE_SPEEDY_POLE = 24
+Const HITBOXTYPE_SPEEDY_THORN = 25
 Const HITBOXTYPE_RING = 3
 Const HITBOXTYPE_BOX = 4
 Const HITBOXTYPE_ENEMY = 5
@@ -89,16 +90,16 @@ Function Object_CreateHitBox(hittype,o.tObject,hitboxx#,hitboxy#,hitboxz#)
 End Function
 
 Function Object_CheckHitBox(o.tObject,p.tPlayer)
-	If o\IsInBox=0 and o\Psychoed=0 and o\Rubied=0 and o\PsychoedThrown=False Then
+	If o\IsInBox=0 And o\Psychoed=0 And o\Rubied=0 And o\PsychoedThrown=False Then
 	Select o\HitType
 		Case HITBOXTYPE_NORMAL:
 			If (Abs(p\Objects\Position\x# - o\Position\x#) < o\HitBox\x#) And (Abs(p\Objects\Position\y# - o\Position\y#) < o\HitBox\y#) And (Abs(p\Objects\Position\z# - o\Position\z#) < o\HitBox\z#) Then o\Hit=True Else o\Hit=False
 		Case HITBOXTYPE_NORMAL_LASER:
 			If (Abs(p\Objects\Position\x# - o\Position\x#) < o\HitBox\x#) And (Abs(p\Objects\Position\y# - o\Position\y#) < o\HitBox\y#) And (Abs(p\Objects\Position\z# - o\Position\z#) < o\HitBox\z#) Then
 				o\Hit=True
-			ElseIf (Abs(p\Objects\Position\x# - (o\Position\x#-5*cos(o\Rotation\y#))) < o\HitBox\x#) And (Abs(p\Objects\Position\y# - o\Position\y#) < o\HitBox\y#) And (Abs(p\Objects\Position\z# - (o\Position\z#-5*sin(o\Rotation\y#))) < o\HitBox\z#) Then
+			ElseIf (Abs(p\Objects\Position\x# - (o\Position\x#-5*Cos(o\Rotation\y#))) < o\HitBox\x#) And (Abs(p\Objects\Position\y# - o\Position\y#) < o\HitBox\y#) And (Abs(p\Objects\Position\z# - (o\Position\z#-5*Sin(o\Rotation\y#))) < o\HitBox\z#) Then
 				o\Hit=True
-			ElseIf (Abs(p\Objects\Position\x# - (o\Position\x#+5*cos(o\Rotation\y#))) < o\HitBox\x#) And (Abs(p\Objects\Position\y# - o\Position\y#) < o\HitBox\y#) And (Abs(p\Objects\Position\z# - (o\Position\z#+5*sin(o\Rotation\y#))) < o\HitBox\z#) Then
+			ElseIf (Abs(p\Objects\Position\x# - (o\Position\x#+5*Cos(o\Rotation\y#))) < o\HitBox\x#) And (Abs(p\Objects\Position\y# - o\Position\y#) < o\HitBox\y#) And (Abs(p\Objects\Position\z# - (o\Position\z#+5*Sin(o\Rotation\y#))) < o\HitBox\z#) Then
 				o\Hit=True
 			Else
 				o\Hit=False
@@ -140,12 +141,22 @@ Function Object_CheckHitBox(o.tObject,p.tPlayer)
 			EndIf
 		Case HITBOXTYPE_SPEEDY:
 			If (Abs(p\Objects\Position\x# - o\Position\x#) < o\HitBox\x#+(p\SpeedLength#/3.0)) And (Abs(EntityY(p\Objects\Entity#) - o\Position\y) < o\HitBox\y#+(p\SpeedLength#/3.0)) And (Abs(p\Objects\Position\z# - o\Position\z#) < o\HitBox\z#+(p\SpeedLength#/3.0)) Then o\Hit=True Else o\Hit=False
+		Case HITBOXTYPE_SPEEDY_THORN:
+			If (Abs(p\Objects\Position\x# - o\Position\x#) < o\HitBox\x#+(p\SpeedLength#/3.0)) And (Abs(EntityY(p\Objects\Entity#) - o\Position\y) < o\HitBox\y#) And (Abs(p\Objects\Position\z# - o\Position\z#) < o\HitBox\z#+(p\SpeedLength#/3.0)) Then
+				o\Hit=True 
+			Else 
+				o\Hit=False
+			EndIf 
+			
+			
+			
+					
 		Case HITBOXTYPE_SPEEDY_BSPRING:
 			If (Abs(p\Objects\Position\x# - o\Position\x#) < o\HitBox\x#+(p\SpeedLength#/3.0)) And (Abs(p\Objects\Position\y# - o\Position\y#) < o\HitBox\y#+(p\SpeedLength#/3.0)) And (Abs(p\Objects\Position\z# - o\Position\z#) < o\HitBox\z#+(p\SpeedLength#/3.0)) Then
 				o\Hit=True : o\Translator\BigSpringPoint=0
-			ElseIf (Abs(p\Objects\Position\x# - (o\Position\x#-6.5*cos(o\Rotation\y#))) < o\HitBox\x#+(p\SpeedLength#/3.0)) And (Abs(p\Objects\Position\y# - o\Position\y#) < o\HitBox\y#+(p\SpeedLength#/3.0)) And (Abs(p\Objects\Position\z# - (o\Position\z#-6.5*sin(o\Rotation\y#))) < o\HitBox\z#+(p\SpeedLength#/3.0)) Then
+			ElseIf (Abs(p\Objects\Position\x# - (o\Position\x#-6.5*Cos(o\Rotation\y#))) < o\HitBox\x#+(p\SpeedLength#/3.0)) And (Abs(p\Objects\Position\y# - o\Position\y#) < o\HitBox\y#+(p\SpeedLength#/3.0)) And (Abs(p\Objects\Position\z# - (o\Position\z#-6.5*Sin(o\Rotation\y#))) < o\HitBox\z#+(p\SpeedLength#/3.0)) Then
 				o\Hit=True : o\Translator\BigSpringPoint=-1
-			ElseIf (Abs(p\Objects\Position\x# - (o\Position\x#+6.5*cos(o\Rotation\y#))) < o\HitBox\x#+(p\SpeedLength#/3.0)) And (Abs(p\Objects\Position\y# - o\Position\y#) < o\HitBox\y#+(p\SpeedLength#/3.0)) And (Abs(p\Objects\Position\z# - (o\Position\z#+6.5*sin(o\Rotation\y#))) < o\HitBox\z#+(p\SpeedLength#/3.0)) Then
+			ElseIf (Abs(p\Objects\Position\x# - (o\Position\x#+6.5*Cos(o\Rotation\y#))) < o\HitBox\x#+(p\SpeedLength#/3.0)) And (Abs(p\Objects\Position\y# - o\Position\y#) < o\HitBox\y#+(p\SpeedLength#/3.0)) And (Abs(p\Objects\Position\z# - (o\Position\z#+6.5*Sin(o\Rotation\y#))) < o\HitBox\z#+(p\SpeedLength#/3.0)) Then
 				o\Hit=True : o\Translator\BigSpringPoint=1
 			Else
 				o\Hit=False
@@ -176,7 +187,7 @@ Function Object_CheckHitBox(o.tObject,p.tPlayer)
 				o\Hit=False
 			EndIf
 		Case HITBOXTYPE_SPEEDY_TRANSFERER:
-			If o\Hit and p\Action=ACTION_HOLD Then
+			If o\Hit And p\Action=ACTION_HOLD Then
 				If (Abs(p\Objects\Position\x# - o\Position\x#) < o\HitBox\x#*4) And (Abs(EntityY(p\Objects\Entity#) - o\Position\y) < o\HitBox\y#*4) And (Abs(p\Objects\Position\z# - o\Position\z#) < o\HitBox\z#*4) Then o\Hit=True Else o\Hit=False
 			Else
 				If (Abs(p\Objects\Position\x# - o\Position\x#) < o\HitBox\x#+(p\SpeedLength#/3.0)) And (Abs(EntityY(p\Objects\Entity#) - o\Position\y) < o\HitBox\y#+(p\SpeedLength#/3.0)) And (Abs(p\Objects\Position\z# - o\Position\z#) < o\HitBox\z#+(p\SpeedLength#/3.0)) Then o\Hit=True Else o\Hit=False
@@ -188,7 +199,7 @@ Function Object_CheckHitBox(o.tObject,p.tPlayer)
 				o\Hit=False
 			EndIf
 		Case HITBOXTYPE_RING:
-			If p\Action=ACTION_LIGHTDASH and (Not(o\ObjType=OBJTYPE_SPEWRING)) Then
+			If p\Action=ACTION_LIGHTDASH And (Not(o\ObjType=OBJTYPE_SPEWRING)) Then
 				If (Abs(p\Objects\Position\x# - o\Position\x#) < o\HitBox\x#*3) And (Abs(EntityY(p\Objects\Entity#) - o\Position\y) < o\HitBox\y#*3) And (Abs(p\Objects\Position\z# - o\Position\z#) < o\HitBox\z#*3) Then o\Hit=True Else o\Hit=False
 			Else
 				If p\SpeedLength#<5 Then
@@ -204,23 +215,37 @@ Function Object_CheckHitBox(o.tObject,p.tPlayer)
 				If (Abs(p\Objects\Position\x# - o\Position\x#) < o\HitBox\x#*(1+p\ScaleFactor#/4.0)) And (Abs(p\Objects\Position\y# - o\Position\y#) < o\HitBox\y#+4.5) And p\Objects\Position\y#>(o\Position\y#-2.2) And (Abs(p\Objects\Position\z# - o\Position\z#) < o\HitBox\z#*(1+p\ScaleFactor#/4.0)) Then o\Hit=True Else o\Hit=False
 			EndIf
 		Case HITBOXTYPE_ENEMY:
-			If o\Enemy\EnemyShallAppear and o\Enemy\WasKilledByBombMonitor=False Then Object_CheckEnemyHitBox(o,p)
+			If o\Enemy\EnemyShallAppear And o\Enemy\WasKilledByBombMonitor=False Then Object_CheckEnemyHitBox(o,p)
 		Case HITBOXTYPE_FAN:
 			If (Abs(p\Objects\Position\x# - o\Position\x#) < o\HitBox\x#) And (p\Objects\Position\y# > o\Position\y#-5) And (p\Objects\Position\y# < o\Position\y#+o\HitBox\y#+20) And (Abs(p\Objects\Position\z# - o\Position\z#) < o\HitBox\z#) Then o\Hit=True Else o\Hit=False
+			
 	End Select
 	Else
 		o\Hit=False
 	EndIf
 
 	For ch.tCheese=Each tCheese
-	If Game\CheeseTimer>0 and (o\ThisIsAMonitor Or (o\ThisIsAnEnemy and o\AttackDetectRestrict=False)) and (Abs(ch\Position\x# - o\Position\x#) < o\HitBox\x#) And (Abs(ch\Position\y# - o\Position\y#) < o\HitBox\y#) And (Abs(ch\Position\z# - o\Position\z#) < o\HitBox\z#) Then o\CheeseHit=True Else o\CheeseHit=False
+	If Game\CheeseTimer>0 And (o\ThisIsAMonitor Or (o\ThisIsAnEnemy And o\AttackDetectRestrict=False)) And (Abs(ch\Position\x# - o\Position\x#) < o\HitBox\x#) And (Abs(ch\Position\y# - o\Position\y#) < o\HitBox\y#) And (Abs(ch\Position\z# - o\Position\z#) < o\HitBox\z#) Then 
+		o\CheeseHit=True  
+		Select p\ThrowType
+			Case 1 :  Game\CheeseTimer=0
+			Case 2
+				If Game\CheeseAttacked<3 Then
+					Game\CheeseAttacked=Game\CheeseAttacked+1
+					Game\CheeseTimer=Game\CheeseTimer+0.5*secs#
+				EndIf 
+				If Game\CheeseAttacked=3 Then Game\CheeseTimer=0 : Game\CheeseAttacked=0
+		End Select 
+	Else 
+		o\CheeseHit=False
+	EndIf 
 	Next
 
 	For f.tFroggy=Each tFroggy
 	If o\ThisIsAnEnemy Then
-		If Game\FroggyTimer>0 and o\AttackDetectRestrict=False and (Abs(f\Position\x# - o\Position\x#) < o\HitBox\x#) And (Abs(f\Position\y# - o\Position\y#) < o\HitBox\y#) And (Abs(f\Position\z# - o\Position\z#) < o\HitBox\z#) Then o\FroggyStunTimer=12*secs#
+		If Game\FroggyTimer>0 And o\AttackDetectRestrict=False And (Abs(f\Position\x# - o\Position\x#) < o\HitBox\x#) And (Abs(f\Position\y# - o\Position\y#) < o\HitBox\y#) And (Abs(f\Position\z# - o\Position\z#) < o\HitBox\z#) Then o\FroggyStunTimer=12*secs#
 	Else
-		If Game\FroggyTimer>0 and (o\ThisIsAMonitor Or (o\ThisIsAnEnemy and o\AttackDetectRestrict=False)) and (Abs(f\Position\x# - o\Position\x#) < o\HitBox\x#) And (Abs(f\Position\y# - o\Position\y#) < o\HitBox\y#) And (Abs(f\Position\z# - o\Position\z#) < o\HitBox\z#) Then o\FroggyHit=True Else o\FroggyHit=False
+		If Game\FroggyTimer>0 And (o\ThisIsAMonitor Or (o\ThisIsAnEnemy And o\AttackDetectRestrict=False)) And (Abs(f\Position\x# - o\Position\x#) < o\HitBox\x#) And (Abs(f\Position\y# - o\Position\y#) < o\HitBox\y#) And (Abs(f\Position\z# - o\Position\z#) < o\HitBox\z#) Then o\FroggyHit=True Else o\FroggyHit=False
 	EndIf
 	Next
 
@@ -230,21 +255,21 @@ End Function
 Function Object_CheckHitBox_Bomb(o.tObject,p.tPlayer)
 	For b.tBomb=Each tBomb
 	If b\MustDestroy=0 Then
-		If o\ThisIsAMonitor Or (o\ObjType=OBJTYPE_BALLOON and (Not(o\State>0))) Or o\ObjType=OBJTYPE_SPIKEBOMB Or o\ObjType=OBJTYPE_SPIKECRUSHER Or o\ObjType=OBJTYPE_SWITCH Or (o\ObjType=OBJTYPE_SWITCHBASE and o\State=1) Or o\ObjType=OBJTYPE_SWITCHWATER Or o\ObjType=OBJTYPE_SWITCHAIR Or (o\ObjType=OBJTYPE_HOMMER and o\Mode=0) Then
+		If o\ThisIsAMonitor Or (o\ObjType=OBJTYPE_BALLOON And (Not(o\State>0))) Or o\ObjType=OBJTYPE_SPIKEBOMB Or o\ObjType=OBJTYPE_SPIKECRUSHER Or o\ObjType=OBJTYPE_SWITCH Or (o\ObjType=OBJTYPE_SWITCHBASE And o\State=1) Or o\ObjType=OBJTYPE_SWITCHWATER Or o\ObjType=OBJTYPE_SWITCHAIR Or (o\ObjType=OBJTYPE_HOMMER And o\Mode=0) Then
 			o\BombHittable=True
 		ElseIf o\ThisIsAnEnemy Then
-			If o\AttackDetectRestrict=False and o\Enemy\EnemyShallAppear Then o\BombHittable=True Else o\BombHittable=False
-		ElseIf (o\ThisIsAnEnemyMissile Or o\ObjType=OBJTYPE_SPIKEBALL) and (b\BombType=BOMB_BUBBLES Or b\BombType=BOMB_TYPHOON) Then
+			If o\AttackDetectRestrict=False And o\Enemy\EnemyShallAppear Then o\BombHittable=True Else o\BombHittable=False
+		ElseIf (o\ThisIsAnEnemyMissile Or o\ObjType=OBJTYPE_SPIKEBALL) And (b\BombType=BOMB_BUBBLES Or b\BombType=BOMB_TYPHOON) Then
 			o\BombHittable=True
-		ElseIf (o\ObjType=OBJTYPE_BOXIRON) and (b\BombType=BOMB_BUBBLES Or b\BombType=BOMB_TYPHOON) Then
+		ElseIf (o\ObjType=OBJTYPE_BOXIRON) And (b\BombType=BOMB_BUBBLES Or b\BombType=BOMB_TYPHOON) Then
 			o\BombHittable=True
-		ElseIf (o\ObjType=OBJTYPE_BOXWOODEN Or o\ObjType=OBJTYPE_BOXMETAL Or o\ObjType=OBJTYPE_BOXTNT Or o\ObjType=OBJTYPE_BOXNITRO) and (Not(b\BombType=BOMB_RING Or b\BombType=BOMB_NOTE Or b\BombType=BOMB_ICE)) Then
+		ElseIf (o\ObjType=OBJTYPE_BOXWOODEN Or o\ObjType=OBJTYPE_BOXMETAL Or o\ObjType=OBJTYPE_BOXTNT Or o\ObjType=OBJTYPE_BOXNITRO) And (Not(b\BombType=BOMB_RING Or b\BombType=BOMB_NOTE Or b\BombType=BOMB_ICE)) Then
 			o\BombHittable=True
-		ElseIf (o\ObjType=OBJTYPE_BOXCAGE) and (b\BombType=BOMB_PSYCHIC Or b\BombType=BOMB_BOOMERANG Or b\BombType=BOMB_GEAR Or b\BombType=BOMB_TYPHOON Or b\BombType=BOMB_PUNCH Or b\BombType=BOMB_BULLET3 Or b\BombType=BOMB_BULLET2 Or b\BombType=BOMB_BULLET Or b\BombType=BOMB_ROCK Or b\BombType=BOMB_JUSTICE Or b\BombType=BOMB_HOOKSHOT Or b\BombType=BOMB_CUBETRAIL Or b\BombType=BOMB_BELLYFLOP) Then
+		ElseIf (o\ObjType=OBJTYPE_BOXCAGE) And (b\BombType=BOMB_PSYCHIC Or b\BombType=BOMB_BOOMERANG Or b\BombType=BOMB_GEAR Or b\BombType=BOMB_TYPHOON Or b\BombType=BOMB_PUNCH Or b\BombType=BOMB_BULLET3 Or b\BombType=BOMB_BULLET2 Or b\BombType=BOMB_BULLET Or b\BombType=BOMB_ROCK Or b\BombType=BOMB_JUSTICE Or b\BombType=BOMB_HOOKSHOT Or b\BombType=BOMB_CUBETRAIL Or b\BombType=BOMB_BELLYFLOP) Then
 			o\BombHittable=True
-		ElseIf (o\ObjType=OBJTYPE_OMOCHAO Or o\ObjType=OBJTYPE_SWITCHTOP Or o\ObjType=OBJTYPE_CHAO Or o\ObjType=OBJTYPE_BELL) and (Not(b\BombType=-1 Or b\BombType=-2)) Then
+		ElseIf (o\ObjType=OBJTYPE_OMOCHAO Or o\ObjType=OBJTYPE_SWITCHTOP Or o\ObjType=OBJTYPE_CHAO Or o\ObjType=OBJTYPE_BELL) And (Not(b\BombType=-1 Or b\BombType=-2)) Then
 			o\BombHittable=True
-		ElseIf (o\ObjType=OBJTYPE_ROCK Or o\ObjType=OBJTYPE_CRYSTAL Or o\ObjType=OBJTYPE_AUTO Or o\ObjType=OBJTYPE_ICICLE Or o\ObjType=OBJTYPE_ICICLEBIG Or o\ObjType=OBJTYPE_ICEDECOR) and (Not(b\BombType=BOMB_RING Or b\BombType=BOMB_NOTE)) Then
+		ElseIf (o\ObjType=OBJTYPE_ROCK Or o\ObjType=OBJTYPE_CRYSTAL Or o\ObjType=OBJTYPE_AUTO Or o\ObjType=OBJTYPE_ICICLE Or o\ObjType=OBJTYPE_ICICLEBIG Or o\ObjType=OBJTYPE_ICEDECOR) And (Not(b\BombType=BOMB_RING Or b\BombType=BOMB_NOTE)) Then
 			o\BombHittable=True
 		Else
 			o\BombHittable=False
@@ -255,9 +280,9 @@ Function Object_CheckHitBox_Bomb(o.tObject,p.tPlayer)
 
 	If (Not(b\targetp=pp(1))) Or o\IsInBox Or p\Flags\Targeter=1 Or b\NotAffectable Then o\BombHittable=False
 
-	If o\ThisIsABox and b\Position\y#<(o\Position\y#-2.2) Then o\BombHittable=False
+	If o\ThisIsABox And b\Position\y#<(o\Position\y#-2.2) Then o\BombHittable=False
 
-	If o\ObjType=OBJTYPE_AUTO and b\Position\y#<o\Position\y# Then o\BombHittable=False
+	If o\ObjType=OBJTYPE_AUTO And b\Position\y#<o\Position\y# Then o\BombHittable=False
 
 	If o\ThisIsAnEnemy Then
 		Select o\ObjType
@@ -269,53 +294,53 @@ Function Object_CheckHitBox_Bomb(o.tObject,p.tPlayer)
 		End Select
 	EndIf
 
-	If o\BombHittable and o\BombHit=False and o\Psychoed=0 and o\Rubied=0 and o\ObjPickedUp=0 Then
-		bombhitted=false
+	If o\BombHittable And o\BombHit=False And o\Psychoed=0 And o\Rubied=0 And o\ObjPickedUp=0 Then
+		bombhitted=False
 		Select b\BombType
 			Case BOMB_BUBBLES:
 				If o\ThisIsAnEnemy Or o\ThisIsAnEnemyMissile Or o\ThisIsABox Or o\ObjType=OBJTYPE_SPIKEBALL Or o\ObjType=OBJTYPE_SPIKEBOMB Or o\ObjType=OBJTYPE_SPIKECRUSHER Or o\ObjType=OBJTYPE_OMOCHAO Then
-					If (Not(o\BubbleStunTimer>0)) and (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BubbleStunTimer=4.5*secs# : bombhitted=true
+					If (Not(o\BubbleStunTimer>0)) And (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BubbleStunTimer=4.5*secs# : bombhitted=True
 				Else
-					If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=true
+					If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=True
 				EndIf
 			Case BOMB_BOOMERANG,BOMB_GEAR:
 				If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : b\TargetAssigned=False
 			Case BOMB_CURSE:
 				If o\ThisIsAnEnemy Or o\ThisIsAnEnemyMissile Or o\ThisIsABox Or o\ObjType=OBJTYPE_SPIKEBALL Or o\ObjType=OBJTYPE_SPIKEBOMB Or o\ObjType=OBJTYPE_SPIKECRUSHER Then
-					If (Not(o\CurseStunTimer>0)) and (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\CurseStunTimer=5.5*secs# : bombhitted=true
+					If (Not(o\CurseStunTimer>0)) And (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\CurseStunTimer=5.5*secs# : bombhitted=True
 				Else
-					If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=true
+					If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=True
 				EndIf
 			Case BOMB_TYPHOON:
 				If o\ThisIsAnEnemy Or o\ThisIsAnEnemyMissile Or o\ThisIsABox Or o\ObjType=OBJTYPE_SPIKEBALL Or o\ObjType=OBJTYPE_SPIKEBOMB Or o\ObjType=OBJTYPE_SPIKECRUSHER Or o\ObjType=OBJTYPE_OMOCHAO Then
-					If (Not(o\FlowerStunTimer>0)) and (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\FlowerStunTimer=4.5*secs# : bombhitted=true
+					If (Not(o\FlowerStunTimer>0)) And (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\FlowerStunTimer=4.5*secs# : bombhitted=True
 				Else
-					If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=true
+					If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=True
 				EndIf
 			Case BOMB_ICE:
 				If Not o\ThisIsAnEnemyMissile Then
 				If o\ThisIsAnEnemy Then
-					i=true
+					i=True
 					If o\ThisIsAnEnemy Then
-						If o\Enemy\IsBoss=1 Then i=false
+						If o\Enemy\IsBoss=1 Then i=False
 					EndIf
-					If i and (Not(o\FrozenStunTimer>0)) and (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then
-						o\FrozenStunTimer=5.5*secs# : bombhitted=true
+					If i And (Not(o\FrozenStunTimer>0)) And (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then
+						o\FrozenStunTimer=5.5*secs# : bombhitted=True
 						EmitSmartSound(Sound_Bounce,o\Entity)
-						Player_CreateRazer.tRazer(p,o\Entity,1,4,0.25*o\HitBox\x#,0.125*o\HitBox\y#,0.25*o\HitBox\z#,o\FrozenStunTimer,false)
+						Player_CreateRazer.tRazer(p,o\Entity,1,4,0.25*o\HitBox\x#,0.125*o\HitBox\y#,0.25*o\HitBox\z#,o\FrozenStunTimer,False)
 					EndIf
 				Else
-					If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=true
+					If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=True
 				EndIf
 				EndIf
 			Case BOMB_HOOKSHOT:
-				i=true
+				i=True
 				If o\ThisIsAnEnemy Then
-					If o\Enemy\IsBoss=1 Then i=false
+					If o\Enemy\IsBoss=1 Then i=False
 				EndIf
-				If i and (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=true
+				If i And (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=True
 			Default:
-				If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=true
+				If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=True
 		End Select
 		If bombhitted Then
 			If Not o\InView Then o\InView=True
@@ -340,7 +365,7 @@ Function Object_CheckHitBox_Bomb(o.tObject,p.tPlayer)
 			o\BombHitType=b\BombType
 		EndIf
 
-		If b\TargetAssigned=False and o\GotAssignedBomb=False Then
+		If b\TargetAssigned=False And o\GotAssignedBomb=False Then
 			i=False
 			If (Not(b\DisappearTimer=-100)) Then
 				If EntityDistance(o\Entity,b\Entity)<b\HitBox\y#+20 Then i=True
@@ -360,7 +385,7 @@ End Function
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Function Object_UpdatePosition(o.tObject)
-	If o\OBJTYPE=OBJTYPE_SPEWRING Or o\OBJTYPE=OBJTYPE_SPEWREDRING Or o\HasGravity Then
+	If o\ObjType=OBJTYPE_SPEWRING Or o\ObjType=OBJTYPE_SPEWSHARD Or o\HasGravity Then
 		o\Position\x# = EntityX(o\Pivot,1) : o\Position\y# = EntityY(o\Pivot,1) : o\Position\z# = EntityZ(o\Pivot,1)
 	Else
 		o\Position\x# = EntityX(o\Entity,1) : o\Position\y# = EntityY(o\Entity,1) : o\Position\z# = EntityZ(o\Entity,1)
@@ -394,7 +419,7 @@ Function Object_EnforcePsychokinesis(o.tObject,p.tPlayer,d.tDeltaTime)
 	Select o\Psychoed
 		Case 0:
 			Object_HandleGlow(o,p)
-			If p\PsychokinesisTimer>0 and EntityDistance(o\Entity,p\Objects\Entity)<40 Then
+			If p\PsychokinesisTimer>0 And EntityDistance(o\Entity,p\Objects\Entity)<40 Then
 				o\Psychoed=1
 				o\PsychokineticX#=p\Objects\Position\x#-EntityX(o\Entity)
 				o\PsychokineticY#=p\Objects\Position\y#-EntityY(o\Entity)
@@ -452,7 +477,7 @@ Function Object_EnforceRubyGravity(o.tObject,p.tPlayer,d.tDeltaTime)
 	Select o\Rubied
 		Case 0:
 			Object_HandleGlow(o,p)
-			If p\RubyGravityTimer>0 and EntityDistance(o\Entity,p\Objects\Entity)<40 Then
+			If p\RubyGravityTimer>0 And EntityDistance(o\Entity,p\Objects\Entity)<40 Then
 				o\Rubied=1
 				o\RubiedTimer=0.5*secs#
 				RotateEntity o\Entity, 0, EntityYaw(o\Entity), 180, 1
@@ -482,23 +507,23 @@ End Function
 
 Function Object_HandleGlow(o.tObject,p.tPlayer)
 	If o\ThisIsAnEnemyMissile Then
-		If p\ChaosControlActiveTimer>0 Then
+		If Game\ChaosControlTimer>0 Then
 			EntityTexture o\EntityX,Object_Texture_ChaosGlow,0,3
-		ElseIf (Not(o\CurseStunTimer>0)) and (Not(o\FrozenStunTimer>0)) Then
+		ElseIf (Not(o\CurseStunTimer>0)) And (Not(o\FrozenStunTimer>0)) Then
 			EntityTexture o\EntityX,Object_Texture_AntiGlow,0,3
-		ElseIf (Not(o\CurseStunTimer>0)) and ((o\FrozenStunTimer>0)) Then
+		ElseIf (Not(o\CurseStunTimer>0)) And ((o\FrozenStunTimer>0)) Then
 			EntityTexture o\EntityX,Object_Texture_IceGlow,0,3
-		ElseIf ((o\CurseStunTimer>0)) and (Not(o\FrozenStunTimer>0)) Then
+		ElseIf ((o\CurseStunTimer>0)) And (Not(o\FrozenStunTimer>0)) Then
 			EntityTexture o\EntityX,Object_Texture_CurseGlow,0,3
 		EndIf
 	ElseIf o\ThisIsAnEnemy Then
-		If p\ChaosControlActiveTimer>0 Then
-			EntityTexture o\Entity,Object_Texture_ChaosGlow,0,3
-		ElseIf (Not(o\CurseStunTimer>0)) and (Not(o\FrozenStunTimer>0)) Then
+		If Game\ChaosControlTimer>0 Then
+			EntityTexture o\Entity,Object_Texture_ChaosControl,0,3
+		ElseIf (Not(o\CurseStunTimer>0)) And (Not(o\FrozenStunTimer>0)) Then
 			EntityTexture o\Entity,Object_Texture_AntiGlow,0,3
-		ElseIf (Not(o\CurseStunTimer>0)) and ((o\FrozenStunTimer>0)) Then
+		ElseIf (Not(o\CurseStunTimer>0)) And ((o\FrozenStunTimer>0)) Then
 			EntityTexture o\Entity,Object_Texture_IceGlow,0,3
-		ElseIf ((o\CurseStunTimer>0)) and (Not(o\FrozenStunTimer>0)) Then
+		ElseIf ((o\CurseStunTimer>0)) And (Not(o\FrozenStunTimer>0)) Then
 			EntityTexture o\Entity,Object_Texture_CurseGlow,0,3
 		EndIf
 	Else
@@ -509,9 +534,9 @@ End Function
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Function Object_EnforceObjPickUp(o.tObject,p.tPlayer)
-	pickable=true
+	pickable=True
 	If o\ThisIsAChaoTargetableObj Then
-		If o\ChaoObj\ChaoTargetedThis Then pickable=false
+		If o\ChaoObj\ChaoTargetedThis Then pickable=False
 	EndIf
 
 	If pickable Then
@@ -530,15 +555,15 @@ Function Object_EnforceObjPickUp_Normal(o.tObject,p.tPlayer)
 	Select o\ObjPickedUp
 		Case 0:
 			If EntityDistance(o\Entity,p\Objects\Entity)<(o\HitBox\y#+2) Then
-				If p\ObjPickUpTimer>0 and p\ObjPickUp=0 Then
+				If p\ObjPickUpTimer>0 And p\ObjPickUp=0 Then
 					Player_PlayJumpVoice(p)
 					p\ObjPickUpTimer=0 : p\ObjPickUp=1 : p\ObjPickUpTarget=o
 					p\Action=ACTION_CARRY
 				EndIf
-				If Menu\ChaoGarden=1 and Menu\Stage=999 and p\ObjPickUp=0 Then Interface_ActivateGardenAction(2, CONTROLTIPS$(TIP_PICKUP))
+				If Menu\ChaoGarden=1 And Menu\Stage=999 And p\ObjPickUp=0 Then Interface_ActivateGardenAction(2, CONTROLTIPS$(TIP_PICKUP))
 				Interface_ControlTipUpdate_PickUp(1)
 			EndIf
-			If p\ObjPickUp=1 and p\Action=ACTION_CARRY Then
+			If p\ObjPickUp=1 And p\Action=ACTION_CARRY Then
 			If EntityDistance(o\Entity,p\Objects\Entity)<(o\HitBox\y#+2) Then
 				o\ObjPickedUp=1
 				p\ObjPickUp=3
@@ -546,11 +571,11 @@ Function Object_EnforceObjPickUp_Normal(o.tObject,p.tPlayer)
 			EndIf
 		Case 1:
 			If (Input\Hold\Up Or Input\Hold\Left Or Input\Hold\Right Or Input\Hold\Down) Or p\Motion\Ground=False Then
-				canthrow=true
+				canthrow=True
 				If Menu\ChaoGarden=1 Then Interface_ActivateGardenAction(2, CONTROLTIPS$(TIP_THROW))
 				Interface_ControlTipUpdate_PickUp(2)
 			Else
-				canthrow=false
+				canthrow=False
 				If Menu\ChaoGarden=1 Then Interface_ActivateGardenAction(2, CONTROLTIPS$(TIP_DROP)+" ")
 				Interface_ControlTipUpdate_PickUp(3)
 			EndIf
@@ -647,15 +672,15 @@ Function Object_EnforceObjPickUp_Pivot(o.tObject,p.tPlayer)
 	Select o\ObjPickedUp
 		Case 0:
 			If EntityDistance(o\Pivot,p\Objects\Entity)<(o\HitBox\y#+2) Then
-				If p\ObjPickUpTimer>0 and p\ObjPickUp=0 Then
+				If p\ObjPickUpTimer>0 And p\ObjPickUp=0 Then
 					Player_PlayJumpVoice(p)
 					p\ObjPickUpTimer=0 : p\ObjPickUp=1 : p\ObjPickUpTarget=o
 					p\Action=ACTION_CARRY
 				EndIf
-				If Menu\ChaoGarden=1 and Menu\Stage=999 and p\ObjPickUp=0 Then Interface_ActivateGardenAction(2, CONTROLTIPS$(TIP_PICKUP))
+				If Menu\ChaoGarden=1 And Menu\Stage=999 And p\ObjPickUp=0 Then Interface_ActivateGardenAction(2, CONTROLTIPS$(TIP_PICKUP))
 				Interface_ControlTipUpdate_PickUp(1)
 			EndIf
-			If p\ObjPickUp=1 and p\Action=ACTION_CARRY Then
+			If p\ObjPickUp=1 And p\Action=ACTION_CARRY Then
 			If EntityDistance(o\Pivot,p\Objects\Entity)<(o\HitBox\y#+2) Then
 				o\ObjPickedUp=1
 				p\ObjPickUp=3
@@ -663,11 +688,11 @@ Function Object_EnforceObjPickUp_Pivot(o.tObject,p.tPlayer)
 			EndIf
 		Case 1:
 			If (Input\Hold\Up Or Input\Hold\Left Or Input\Hold\Right Or Input\Hold\Down) Or p\Motion\Ground=False Then
-				canthrow=true
+				canthrow=True
 				If Menu\ChaoGarden=1 Then Interface_ActivateGardenAction(2, CONTROLTIPS$(TIP_THROW))
 				Interface_ControlTipUpdate_PickUp(2)
 			Else
-				canthrow=false
+				canthrow=False
 				If Menu\ChaoGarden=1 Then Interface_ActivateGardenAction(2, CONTROLTIPS$(TIP_DROP)+" ")
 				Interface_ControlTipUpdate_PickUp(3)
 			EndIf
@@ -767,7 +792,7 @@ End Function
 
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Function Object_EnforceTreasureRadar(o.tObject,p.tPlayer,redringno)
+Function Object_EnforceTreasureRadar(o.tObject,p.tPlayer,shardno)
 	If Not Game\Interface\DebugPlacerOn=0 Then Return
 
 	; Radar sound
@@ -781,16 +806,16 @@ Function Object_EnforceTreasureRadar(o.tObject,p.tPlayer,redringno)
 			PlaySmartSound(Sound_Treasure)
 
 			; Radar interface
-			For i=1 to 3
-			If redringno=Game\Gameplay\RedRing[i] Then
-				Game\Gameplay\RedRingTimer[i]=2*secs#
-				Game\Gameplay\RedRingBeepTimer[i]=0.105*secs#
+			For i=1 To 3
+			If shardno=Game\Gameplay\shard[i] Then
+				Game\Gameplay\ShardTimer[i]=2*secs#
+				Game\Gameplay\ShardBeepTimer[i]=0.105*secs#
 				If EntityDistance(p\Objects\Entity,o\Entity)>200 Then
-					Game\Gameplay\RedRingDistance[i]=1
+					Game\Gameplay\ShardDistance[i]=1
 				ElseIf EntityDistance(p\Objects\Entity,o\Entity)>50 Then
-					Game\Gameplay\RedRingDistance[i]=2
+					Game\Gameplay\ShardDistance[i]=2
 				ElseIf EntityDistance(p\Objects\Entity,o\Entity)>0 Then
-					Game\Gameplay\RedRingDistance[i]=3
+					Game\Gameplay\ShardDistance[i]=3
 				EndIf
 			EndIf
 			Next
@@ -833,8 +858,8 @@ Function Object_EnforceRingBouncing(o.tObject,p.tPlayer,d.tDeltaTime)
 	Select o\ObjType
 		Case OBJTYPE_SPEWRING
 			TranslateEntity(o\Pivot, o\Speed\x#*d\Delta, o\Speed\y#*d\Delta, o\Speed\z*d\Delta)
-		Case OBJTYPE_SPEWREDRING
-			If (o\Treasure\RedRingFly=0) Or (o\Treasure\RedRingFly=1 And o\Treasure\RedRingFlyStopTimer>0) Then TranslateEntity(o\Pivot, o\Speed\x#*d\Delta, o\Speed\y#*d\Delta, o\Speed\z*d\Delta)
+		Case OBJTYPE_SPEWSHARD
+			If (o\Treasure\ShardFly=0) Or (o\Treasure\ShardFly=1 And o\Treasure\ShardFlyStopTimer>0) Then TranslateEntity(o\Pivot, o\Speed\x#*d\Delta, o\Speed\y#*d\Delta, o\Speed\z*d\Delta)
 	End Select
 
 End Function
@@ -862,7 +887,7 @@ End Function
 
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Function Object_EnforceStun(o.tObject,p.tPlayer,d.tDeltaTime,canbeothers=true)
+Function Object_EnforceStun(o.tObject,p.tPlayer,d.tDeltaTime,canbeothers=True)
 
 	Object_EnforceBubbleStun(o,p,d)
 	Object_EnforceFlowerStun(o,p,d)
@@ -957,8 +982,8 @@ End Function
 Function Object_EnforceAimingShooting(o.tObject,p.tPlayer)
 
 	If o\AimedAt=0 Then
-		If p\Aiming=1 and p\AimedTargets<10 Then
-			If EntityDistance(p\Objects\Entity,o\Entity)<140 and Player_IsStaring(p,o\Entity) and o\IsInBox=0 Then o\AimedAt=1 : p\AimedTargets=p\AimedTargets+1
+		If p\Aiming=1 And p\AimedTargets<10 Then
+			If EntityDistance(p\Objects\Entity,o\Entity)<140 And Player_IsStaring(p,o\Entity) And o\IsInBox=0 Then o\AimedAt=1 : p\AimedTargets=p\AimedTargets+1
 		EndIf
 	Else
 		If o\ThisIsAMonitor Then
@@ -1001,3 +1026,5 @@ Function Object_UpdateCollisions(o.tObject, entity)
 	EndIf
 	
 End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

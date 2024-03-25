@@ -165,11 +165,11 @@ Function Menu_BlackMarket_BuyList()
 	End Select
 	Menu\BlackMarketYesNo=0
 
-	If Menu\BlackMarketBuyCategory=3 and CHAOSUM(1)+Menu\EggsBought>=CHAOCOUNT Then Menu\BuyRefused=1 Else Menu\BuyRefused=0
+	If Menu\BlackMarketBuyCategory=3 And CHAOSUM(1)+Menu\EggsBought>=CHAOCOUNT Then Menu\BuyRefused=1 Else Menu\BuyRefused=0
 
 	If Menu\BuyRefused=0 Then ;!
 
-	If Input\Pressed\Down and TOTALDEALERITEMS>1 Then
+	If Input\Pressed\Down And TOTALDEALERITEMS>1 Then
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option+1
 		If Menu\Option>4 Then Menu\Option=4 : Menu\OptionOrder=Menu\OptionOrder+1
@@ -178,7 +178,7 @@ Function Menu_BlackMarket_BuyList()
 		Menu\CurrentItemInfo$=""
 	EndIf
 
-	If Input\Pressed\Up and TOTALDEALERITEMS>1 Then
+	If Input\Pressed\Up And TOTALDEALERITEMS>1 Then
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option-1
 		If Menu\Option<1 Then Menu\Option=1 : Menu\OptionOrder=Menu\OptionOrder-1
@@ -237,7 +237,7 @@ Function Menu_BlackMarket_BuyList()
 	DrawBetterNumber(Menu\Wallet, GAME_WINDOW_W/2+(277.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*2-32.5)*GAME_WINDOW_SCALE#, 0, 1)
 
 	If Input\Pressed\Right Then
-		If ( Menu\ItemAmount<50 and (Not(Menu\BlackMarketBuyCategory=3)) ) Or (Menu\ItemAmount+CHAOSUM(1)+Menu\EggsBought)<CHAOCOUNT Then
+		If ( Menu\ItemAmount<50 And (Not(Menu\BlackMarketBuyCategory=3)) ) Or (Menu\ItemAmount+CHAOSUM(1)+Menu\EggsBought)<CHAOCOUNT Then
 			If Not(Menu\CurrentPrice*(Menu\ItemAmount+1)>Menu\Wallet) Then
 				Menu\ItemAmount=Menu\ItemAmount+1
 				PlaySmartSound(Sound_MenuMove)
@@ -293,7 +293,7 @@ Function Menu_BlackMarket_BuyList()
 
 	EndIf ;!
 
-	If Menu\BuyRefused=1 and Menu\Transition=0 Then
+	If Menu\BuyRefused=1 And Menu\Transition=0 Then
 		PlaySmartSound(Sound_MenuRefuse)
 		Menu\Transition=1
 		Menu\MeshChange=3
@@ -365,13 +365,13 @@ Function Menu_BlackMarket_BuyConfirm()
 				Case 1:
 					Menu\OptionOrder2=1
 					Menu\ChaoMenuTimer=0.701*secs#
-					For item=1 to Menu\ItemAmount
+					For item=1 To Menu\ItemAmount
 						Select Menu\BlackMarketBuyCategory
-							Case 1: ii.tItem = Item_Create(TOTALITEMS+1, Menu\BlackMarketBuyCategory, Menu\CurrentItem, 5, true)
-							Case 2: ii.tItem = Item_Create(TOTALITEMS+1, Menu\BlackMarketBuyCategory, Menu\CurrentItem, 0, true)
-							Case 3: ii.tItem = Item_Create(TOTALITEMS+1, Menu\BlackMarketBuyCategory, Menu\CurrentItem, 0, true) : Menu\EggsBought=Menu\EggsBought+1
-							Case 5: ii.tItem = Item_Create(TOTALITEMS+1, Menu\BlackMarketBuyCategory, Menu\CurrentItem, 0, true)
-							Default: ii.tItem = Item_Create(TOTALITEMS+1, Menu\BlackMarketBuyCategory, Menu\CurrentItem, 0, true)
+							Case 1: ii.tItem = Item_Create(TOTALITEMS+1, Menu\BlackMarketBuyCategory, Menu\CurrentItem, 5, True)
+							Case 2: ii.tItem = Item_Create(TOTALITEMS+1, Menu\BlackMarketBuyCategory, Menu\CurrentItem, 0, True)
+							Case 3: ii.tItem = Item_Create(TOTALITEMS+1, Menu\BlackMarketBuyCategory, Menu\CurrentItem, 0, True) : Menu\EggsBought=Menu\EggsBought+1
+							Case 5: ii.tItem = Item_Create(TOTALITEMS+1, Menu\BlackMarketBuyCategory, Menu\CurrentItem, 0, True)
+							Default: ii.tItem = Item_Create(TOTALITEMS+1, Menu\BlackMarketBuyCategory, Menu\CurrentItem, 0, True)
 						End Select
 						Menu\Wallet=Menu\Wallet-Menu\CurrentPrice
 					Next
@@ -392,7 +392,7 @@ Function Menu_BlackMarket_BuyConfirm()
 		Menu\Convo$="Thank you!!"
 		Menu\BlackMarketYesNo=0
 
-		If (Not(Menu\ChaoMenuTimer>0)) and Menu\Transition=0 Then
+		If (Not(Menu\ChaoMenuTimer>0)) And Menu\Transition=0 Then
 			PlaySmartSound(Sound_MenuBack)
 			Menu\Transition=1
 			Menu\NewMenu2=MENU_BLACKMARKET_BUYLIST#
@@ -413,7 +413,7 @@ Function Menu_BlackMarket_BuyRefuse()
 	End Select
 	Menu\BlackMarketYesNo=0
 
-	If (Not(Menu\ChaoMenuTimer>0)) and Menu\Transition=0 Then
+	If (Not(Menu\ChaoMenuTimer>0)) And Menu\Transition=0 Then
 		PlaySmartSound(Sound_MenuBack)
 		Menu\Transition=1
 		Menu\NewOption=Menu\BlackMarketBuyCategory
@@ -437,7 +437,7 @@ Function Menu_BlackMarket_SellList()
 
 	If TOTALITEMS>0 Then ;!
 
-	If Input\Pressed\Down and TOTALITEMS>1 Then
+	If Input\Pressed\Down And TOTALITEMS>1 Then
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option+1
 		If Menu\Option>Min(4,TOTALITEMS) Then Menu\Option=Min(4,TOTALITEMS) : Menu\OptionOrder=Menu\OptionOrder+1
@@ -445,7 +445,7 @@ Function Menu_BlackMarket_SellList()
 		Menu\CurrentItemInfo$=""
 	EndIf
 
-	If Input\Pressed\Up and TOTALITEMS>1 Then
+	If Input\Pressed\Up And TOTALITEMS>1 Then
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option-1
 		If Menu\Option<1 Then Menu\Option=1 : Menu\OptionOrder=Menu\OptionOrder-1
@@ -453,7 +453,7 @@ Function Menu_BlackMarket_SellList()
 		Menu\CurrentItemInfo$=""
 	EndIf
 
-	For i=1 to Min(4,TOTALITEMS)
+	For i=1 To Min(4,TOTALITEMS)
 		Menu_BlackMarket_SellListItem(i)
 	Next
 	If TOTALITEMS>1 Then
@@ -526,7 +526,7 @@ Function Menu_BlackMarket_SellList()
 
 	EndIf ;!
 
-	If (Not(TOTALITEMS>0)) and Menu\Transition=0 Then
+	If (Not(TOTALITEMS>0)) And Menu\Transition=0 Then
 		PlaySmartSound(Sound_MenuRefuse)
 		Menu\Transition=1
 		Menu\MeshChange=3
@@ -597,7 +597,7 @@ Function Menu_BlackMarket_SellConfirm()
 					Menu\ChaoMenuTimer=0.701*secs#
 					For ii.tItem=Each tItem
 						If ii\ID=Menu\CurrentItem Then
-							If ii\Type1=3 and ii\IsHeld Then Menu\EggsBought=Menu\EggsBought-1
+							If ii\Type1=3 And ii\IsHeld Then Menu\EggsBought=Menu\EggsBought-1
 							Delete ii : TOTALITEMS=TOTALITEMS-1
 						EndIf
 					Next
@@ -622,7 +622,7 @@ Function Menu_BlackMarket_SellConfirm()
 		Menu\Convo$="Thank you!!"
 		Menu\BlackMarketYesNo=0
 
-		If (Not(Menu\ChaoMenuTimer>0)) and Menu\Transition=0 Then
+		If (Not(Menu\ChaoMenuTimer>0)) And Menu\Transition=0 Then
 			PlaySmartSound(Sound_MenuBack)
 			Menu\Transition=1
 			Menu\NewMenu2=MENU_BLACKMARKET_SELLLIST#
@@ -642,7 +642,7 @@ Function Menu_BlackMarket_SellRefuse()
 	Menu\Convo$="You have no items to offer."
 	Menu\BlackMarketYesNo=0
 
-	If (Not(Menu\ChaoMenuTimer>0)) and Menu\Transition=0 Then
+	If (Not(Menu\ChaoMenuTimer>0)) And Menu\Transition=0 Then
 		PlaySmartSound(Sound_MenuBack)
 		Menu\Transition=1
 		Menu\NewOption=2
@@ -708,7 +708,7 @@ Function Menu_BlackMarket_ExitReal()
 	Menu\Convo$="Good bye!! Come again!"
 	Menu\BlackMarketYesNo=0
 
-	If (Not(Menu\ChaoMenuTimer>0)) and Menu\Transition=0 Then
+	If (Not(Menu\ChaoMenuTimer>0)) And Menu\Transition=0 Then
 		PlaySmartSound(Sound_MenuBack)
 		Menu\WentToChaoMenu=0
 		Menu\Transition=1
@@ -835,7 +835,7 @@ Function Menu_Principal_ExitReal()
 
 	DrawRealText("Have a nice day! Goodbye!", GAME_WINDOW_W/2+(BUTTON_PLACE1#-60)*GAME_WINDOW_SCALE#-15*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-100*GAME_WINDOW_SCALE#, (Interface_Text_2), 1)
 
-	If (Not(Menu\ChaoMenuTimer>0)) and Menu\Transition=0 Then
+	If (Not(Menu\ChaoMenuTimer>0)) And Menu\Transition=0 Then
 		PlaySmartSound(Sound_MenuBack)
 		Menu\WentToChaoMenu=0
 		Menu\Transition=1

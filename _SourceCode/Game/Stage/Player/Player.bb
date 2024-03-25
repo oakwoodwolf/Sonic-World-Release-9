@@ -19,7 +19,8 @@
 
 		; Debug object placer values
 		Field ObjType
-
+		Field DebugSpam
+		Field UpFromBouncing 
 		; Main values
 		Field Character
 		Field RealCharacter
@@ -31,9 +32,18 @@
 		Field Underwater
 		Field UnderwaterFeet
 		Field Frame
+		Field TwoDDirection
+		
+		Field PanelX#
+		Field PanelY#
+		Field PanelZ#
+		Field PanelRotation#
 
 		; Other values
 		Field DriftDirection
+		Field HasShotOnce
+		Field FlyingSwipe
+		Field WaterRunning
 		Field FlyDistanceLimit
 		Field ScaleFactor#
 		Field LevitatedOnce
@@ -52,6 +62,7 @@
 		Field DieButDontLoseLife
 		Field TranslatorsTouched
 		Field CheeseAttackedCount
+		Field CheeseAttackType
 		Field ObjPickUp
 		Field ObjPickUpTarget.tObject
 		Field GrindTurn
@@ -89,6 +100,8 @@
 		Field TornadoShoot
 		Field TornadoStance
 		Field JumpDashedOnce
+		Field LightAttackHits
+		Field PanelStayActivated
 
 		; Channels
 		Field Channel_Voice
@@ -114,15 +127,25 @@
 		Field Channel_Tinkle
 		Field Channel_ChaosDrive
 		Field Channel_Aim
+		Field Channel_Spindash
+		Field Channel_BoostStart
+		Field CHannel_BoostWind
+		Field Channel_BoostCharge
+		Field Channel_Dive
+		Field Channel_Skydive
+		Field Channel_SkydiveFast
 
 		; Sounds and voices
-		Field Voice[31]
+		Field Voice[33]
 
 		; Timers
 		Field UsedFrameTimer
+		Field PanelStayTimer
+		Field PunchWindowTimer
 		Field TranslatorsTouchedTimer
 		Field JumpHopTimer
 		Field JumpTimer
+		Field CheeseShieldTimer
 		Field ChargeTimer
 		Field JustChargedTimer
 		Field HomingTimer
@@ -215,6 +238,11 @@
 		Field JustGrabbedPulleyTimer
 		Field ForceBeingAbleToChangeLeaderTimer
 		Field CantJumpTimer
+		Field DebugSpamTimer
+		Field BoostingTimer
+		Field LightAttackTimer
+		Field AroundEnemyTimer
+		Field JumpPanelTimer
 
 		; Particle templates
 		Field Particle.tParticleTemplate
@@ -259,12 +287,14 @@
 		Field ShadowCircle
 
 		; light meshes
-        Field JumpBall
+       		Field JumpBall
 		Field Stomp 
 		Field Forth
 		Field ForthRotation#
 		Field ForthAlpha#
 		Field ForthScale#
+		
+		Field BoostBarrier
 
 		Field Follower
 		Field Cheese
@@ -386,6 +416,9 @@
 		Field CanStomp
 		Field CanSuperTransform
 		Field CanClimb
+		Field InALocker
+		Field ReadyToLightAttack 
+		Field OnJumpPanel
 
 		;homing flags
 		Field HomingTarget.tVector
@@ -409,6 +442,9 @@
 		Field Align.tVector
 		Field Speed#
 		Field SpeedChangeBlockTimer
+		Field IdleCount
+		Field IdleType
+		Field VictoryStage
 	End Type
 
 	; ---------------------------------------------------------------------------------------------------------	
@@ -537,6 +573,7 @@
 	Global ACTION_HOP				= i : i=i+1
 	Global ACTION_LAND				= i : i=i+1
 	Global ACTION_FALL				= i : i=i+1
+	Global ACTION_BOOSTFALL				= i : i=i+1
 	Global ACTION_JUMPFALL			= i : i=i+1
 	Global ACTION_CHARGE			= i : i=i+1
 	Global ACTION_ROLL				= i : i=i+1
@@ -588,6 +625,7 @@
 	Global ACTION_HOLD				= i : i=i+1
 	Global ACTION_HOLD2				= i : i=i+1
 	Global ACTION_BOARD				= i : i=i+1
+	Global ACTION_BOARDGRIND				= i : i=i+1
 	Global ACTION_BOARDJUMP			= i : i=i+1
 	Global ACTION_BOARDDRIFT		= i : i=i+1
 	Global ACTION_BOARDFALL			= i : i=i+1
@@ -608,11 +646,18 @@
 	Global ACTION_PUDDLE			= i : i=i+1
 	Global ACTION_VICTORYHOLD		= i : i=i+1
 	Global ACTION_TORNADO			= i : i=i+1
+	Global ACTION_POSTHOM			= i : i=i+1
+	Global ACTION_TRICK			= i : i=i+1
+	Global ACTION_BOOST			= i : i=i+1
+	Global ACTION_PANEL			= i : i=i+1
+	Global ACTION_PANEL2			= i : i=i+1
+	Global ACTION_PANEL3			= i : i=i+1
+	Global ACTION_LIGHTATTACK			= i : i=i+1
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Player_DetermineChar(p.tPlayer, realchar)
+Function Player_DetermineChar(p.tPlayer, realchar)
 		p\RealCharacter = realchar
 		If IsCharMod(p\RealCharacter) Then
 			p\Character=MODCHARS_TYPE(p\RealCharacter-CHAR_MOD1+1)
@@ -624,7 +669,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-	Function Player_Create.tPlayer(no#,rivalrun#=0,rivalfixed#=0)
+Function Player_Create.tPlayer(no#,rivalrun#=0,rivalfixed#=0)
 		; Create new player object
 		p.tPlayer 	= New tPlayer
 		p\No#=no#
@@ -639,7 +684,7 @@
 			randomrival#=0
 			If rivalfixed#>0 Then
 				i = 0
-				j = false
+				j = False
 				If (Not(IsCharMod(Menu\Character[1]))) Then char=Menu\Character[1] Else char=MODCHARS_TYPE(Menu\Character[1]-CHAR_MOD1+1)
 				Repeat
 					Select rivalfixed#
@@ -676,15 +721,15 @@
 							Case 4: i=i+1
 							End Select
 					End Select
-					j=true
-					If (p\Character=Menu\Character[1]) Or (Menu\Members>=2 and p\Character=Menu\Character[2]) Or (Menu\Members>=3 and p\Character=Menu\Character[3]) Then j=false
+					j=True
+					If (p\Character=Menu\Character[1]) Or (Menu\Members>=2 And p\Character=Menu\Character[2]) Or (Menu\Members>=3 And p\Character=Menu\Character[3]) Then j=False
 					If Game\RivalAmount>=2 Then
-						If (p\Character=ppe(1)\Character) Then j=false
+						If (p\Character=ppe(1)\Character) Then j=False
 					EndIf
 					If Game\RivalAmount>=3 Then
-						If (p\Character=ppe(2)\Character) Then j=false
+						If (p\Character=ppe(2)\Character) Then j=False
 					EndIf
-					If i=4 Then j=true
+					If i=4 Then j=True
 				Until j
 			Else
 				randomrival#=1
@@ -710,7 +755,7 @@
 								Case 3:
 								Repeat : p\Character = Menu_RandomNonmodChar() : Until Menu_RandomNonmodChar_RivalAcceptableAt3(p\Character,Menu\Character[1],Menu\Character[2],Menu\Character[3])
 							End Select
-						Until Menu_RandomNonmodChar_AcceptableAt2(ppe(1)\Character,p\Character,false)
+						Until Menu_RandomNonmodChar_AcceptableAt2(ppe(1)\Character,p\Character,False)
 					Case 3:
 						Repeat
 							Select Menu\Members
@@ -721,7 +766,7 @@
 								Case 3:
 								Repeat : p\Character = Menu_RandomNonmodChar() : Until Menu_RandomNonmodChar_RivalAcceptableAt3(p\Character,Menu\Character[1],Menu\Character[2],Menu\Character[3])
 							End Select
-						Until Menu_RandomNonmodChar_AcceptableAt3(ppe(1)\Character,ppe(2)\Character,p\Character,false)
+						Until Menu_RandomNonmodChar_AcceptableAt3(ppe(1)\Character,ppe(2)\Character,p\Character,False)
 				End Select
 			EndIf
 			Player_DetermineChar(p,p\Character)
@@ -739,7 +784,7 @@
 		p\Animation\Align = Vector(0, 1, 0)
 		p\Objects\Entity = CreatePivot(Game\Stage\Root)
 		p\Objects\Position = New tVector
-		For i=0 to 4 : p\Objects\PPivot[i] = CreatePivot(p\Objects\Entity) : ScaleEntity(p\Objects\PPivot[i],1.075,1.075,1.075) : Next
+		For i=0 To 4 : p\Objects\PPivot[i] = CreatePivot(p\Objects\Entity) : ScaleEntity(p\Objects\PPivot[i],1.075,1.075,1.075) : Next
 		p\Objects\TrailPivot = CreatePivot(p\Objects\Entity)
 
 		; Homing Attack flags
@@ -763,10 +808,11 @@
 		p\Objects\DestinationTarget=CreatePivot()
 		DeformCharacter(p)
 		p\Objects\JumpBall=CopyEntity(MESHES(Mesh_JumpBall), Game\Stage\Root) : Animate p\Objects\JumpBall,1,1 : HideEntity(p\Objects\JumpBall)
+		p\Objects\BoostBarrier=CopyEntity(MESHES(Mesh_BoostBarrier), Game\Stage\Root) : Animate p\Objects\BoostBarrier,1,1 : HideEntity(p\Objects\BoostBarrier)
 		p\Objects\Stomp=CopyEntity(MESHES(Mesh_Stomp), Game\Stage\Root) : Animate p\Objects\Stomp,1,1 : HideEntity(p\Objects\Stomp)
 		p\Objects\Forth=CopyEntity(MESHES(Mesh_Forth), Game\Stage\Root) : Animate p\Objects\Forth,1,1 : HideEntity(p\Objects\Forth)
 		p\Objects\Scanner=CopyEntity(MESHES(Mesh_Scanner), Game\Stage\Root) : HideEntity(p\Objects\Scanner)
-		If Menu\Settings\Shadows#>0 and (Menu\ChaoGarden=0 Or Menu\Stage=999) Then p\Objects\ShadowCircle = Init_CircleShadow(p\Objects\Entity , p\Objects\Mesh, 1.25)
+		If Menu\Settings\Shadows#>0 And (Menu\ChaoGarden=0 Or Menu\Stage=999) Then p\Objects\ShadowCircle = Init_CircleShadow(p\Objects\Entity , p\Objects\Mesh, 1.25)
 
 		; Form places
 		p\Objects\Follower=CreatePivot()
@@ -796,7 +842,7 @@
 		TextureBlend p\Objects\LevitationGlowRuby,3
 
 		; Initiate camera target
-		If Menu\Stage<>0 and Player_IsPlayable(p) Then
+		If Menu\Stage<>0 And Player_IsPlayable(p) Then
 			For c.tCamera=Each tCamera : Camera_Bind(c,p) : Next
 		EndIf
 		
@@ -829,7 +875,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-	Function Player_Destroy(p.tPlayer)
+Function Player_Destroy(p.tPlayer)
 		FreeEntity(p\Objects\Entity)
 		FreeEntity(p\Objects\Mesh)
 		If p\Objects\Shield<>0 Then FreeEntity(p\Objects\Shield)
@@ -846,11 +892,11 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-	Function Player_Update(p.tPlayer, d.tDeltaTime)
+Function Player_Update(p.tPlayer, d.tDeltaTime)
 	If p\No#=1 Or Game\Interface\DebugPlacerOn=0 Then
 
 		; Run cheats
-		If Menu\Settings\Debug#=1 and ((Menu\ChaoGarden=0 and Menu\Stage>0 and Menu\MarathonMode=0) Or Menu\Developer=1) Then Player_HandleCheats(p)
+		If Menu\Settings\Debug#=1 And ((Menu\ChaoGarden=0 And Menu\Stage>0 And Menu\MarathonMode=0) Or Menu\Developer=1) Then Player_HandleCheats(p)
 
 		If (Not(Game\CinemaMode=1)) Then
 			; Perform player's movement
@@ -863,22 +909,31 @@
 					Player_Action_Debug(p,d)
 				Case ACTION_CHAORACE
 					Player_Action_ChaoRace(p)
-				Case ACTION_COMMON
+				Case ACTION_COMMON,ACTION_BOOST
 					Player_Action_Common(p)
 				Case ACTION_JUMP
 					Player_Action_Jump(p)
+				Case ACTION_LIGHTATTACK
+					Player_Action_LightAttack(p)
 				Case ACTION_HOP
 					Player_Action_Hop(p)
 				Case ACTION_LAND
 					Player_Action_Land(p)
-				Case ACTION_FALL
+				Case ACTION_FALL,ACTION_BOOSTFALL
 					Player_Action_Fall(p)
+				Case ACTION_POSTHOM
+					Player_Action_PostHom(p)
+					
+				Case ACTION_PANEL,ACTION_PANEL2,ACTION_PANEL3
+					Player_Action_Panel(p)
 				Case ACTION_JUMPFALL
 					Player_Action_JumpFall(p)
 				Case ACTION_CHARGE
 					Player_Action_Charge(p)
 				Case ACTION_ROLL
 					Player_Action_Roll(p)
+					Case ACTION_TRICK
+					Player_Action_Trick(p)
 				Case ACTION_DRIFT
 					Player_Action_Drift(p)
 				Case ACTION_FWD
@@ -934,7 +989,7 @@
 				Case ACTION_CLAW
 					Player_Action_Claw(p)
 				Case ACTION_FULLFALL
-					Player_Action_FULLFall(p)
+					Player_Action_FullFall(p)
 				Case ACTION_FLUTTER
 					Player_Action_Flutter(p)
 				Case ACTION_BUOY
@@ -967,7 +1022,7 @@
 					Player_Action_ShakeTree(p)
 				Case ACTION_HOLD,ACTION_HOLD2
 					Player_Action_Hold(p)
-				Case ACTION_BOARD
+				Case ACTION_BOARD,ACTION_BOARDGRIND
 					Player_Action_Board(p)
 				Case ACTION_BOARDJUMP
 					Player_Action_BoardJump(p)
@@ -1017,7 +1072,7 @@
 				For ee.tEmerald = Each tEmerald : Update_Emerald(ee, p, d) : Next
 			EndIf
 			For sp.tSpark = Each tSpark : Update_Spark(sp, p, d) : Next
-			If Menu\Settings\Shadows#>0 and (Menu\ChaoGarden=0 Or Menu\Stage=999) Then
+			If Menu\Settings\Shadows#>0 And (Menu\ChaoGarden=0 Or Menu\Stage=999) Then
 				If p\No#<0 Then
 					Update_CircleShadow(p\Objects\ShadowCircle, p\Objects\Mesh, pp(1)\Objects\Camera\Entity)
 				Else
@@ -1039,7 +1094,7 @@
 
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	Function DeformCharacter_FixUps(p.tPlayer)
+Function DeformCharacter_FixUps(p.tPlayer)
 		p\ScaleFactor#=0.125*GetCharScaleFactor#(p\RealCharacter)
 		If p\No#=1 Then CAMERA_CONTROL_SIZEFACTOR#=5*p\ScaleFactor#
 
@@ -1047,7 +1102,7 @@
 		If Menu\Members=1 Then p\Invisibility=0
 	End Function
 
-	Function DeformCharacter(p.tPlayer,dontstartoutlock=false)
+Function DeformCharacter(p.tPlayer,dontstartoutlock=False)
 		p\Flags\LongTrailCreated=0
 		Player_FreeLongTrails(p,2)
 
@@ -1063,31 +1118,38 @@
 		If Menu\Stage=0 Then
 			p\Objects\Mesh=CopyEntity(MESHES(Mesh_Empty), Game\Stage\Root)
 		Else
-			If (Menu\Members>1 Or Game\CheaterChangedCharacter=0) and Player_IsPlayable(p) Then
+			If (Menu\Members>1 Or Game\CheaterChangedCharacter=0) And Player_IsPlayable(p) Then
 				If (Game\SuperForm=0 Or (Not(Player_IsPlayable(p)))) Then
 					Select p\RealCharacter
 						Case Menu\Character[1]: p\Objects\Mesh=CopyEntity(Game\CharacterMesh[1], Game\Stage\Root)
 						Case Menu\Character[2]: p\Objects\Mesh=CopyEntity(Game\CharacterMesh[2], Game\Stage\Root)
 						Case Menu\Character[3]: p\Objects\Mesh=CopyEntity(Game\CharacterMesh[3], Game\Stage\Root)
 					End Select
-				ElseIf Game\SuperForm=1 Then
+				Else
 					Select p\RealCharacter
 						Case Menu\Character[1]: p\Objects\Mesh=CopyEntity(Game\SuperCharacterMesh[1], Game\Stage\Root)
 						Case Menu\Character[2]: p\Objects\Mesh=CopyEntity(Game\SuperCharacterMesh[2], Game\Stage\Root)
 						Case Menu\Character[3]: p\Objects\Mesh=CopyEntity(Game\SuperCharacterMesh[3], Game\Stage\Root)
 					End Select
-				ElseIf Game\SuperForm=2 Then
-					Select p\RealCharacter
-						Case Menu\Character[1]: p\Objects\Mesh=CopyEntity(Game\HyperCharacterMesh[1], Game\Stage\Root)
-						Case Menu\Character[2]: p\Objects\Mesh=CopyEntity(Game\HyperCharacterMesh[2], Game\Stage\Root)
-						Case Menu\Character[3]: p\Objects\Mesh=CopyEntity(Game\HyperCharacterMesh[3], Game\Stage\Root)
-					End Select
 				EndIf
 			Else
-				If Game\SuperForm=0 Or (Not(Player_IsPlayable(p))) Then
+				If (Game\SuperForm=0 Or (Not(Player_IsPlayable(p)))) Then
 					LoadCharacterMesh(p\RealCharacter,0)
-				ElseIf Game\SuperForm>0 Then
-					LoadCharacterMesh(p\RealCharacter,0,CharHasSuperModel(Game\SuperForm,p\RealCharacter))
+				Else
+					Select p\RealCharacter
+						Case CHAR_SON,CHAR_TAI,CHAR_KNU,CHAR_SHA,CHAR_SIL,CHAR_BLA:
+							LoadCharacterMesh(p\RealCharacter,0,1)
+						Default:
+							If IsCharMod(p\RealCharacter) Then
+								If CharModHasSuper(p\RealCharacter) Then
+									LoadCharacterMesh(p\RealCharacter,0,1)
+								Else
+									LoadCharacterMesh(p\RealCharacter,0,0)
+								EndIf
+							Else
+								LoadCharacterMesh(p\RealCharacter,0,0)
+							EndIf
+					End Select
 				EndIf
 				p\Objects\Mesh=CopyEntity(CharacterMesh, Game\Stage\Root)
 				DeleteCharacterMesh()
@@ -1095,6 +1157,7 @@
 				For trail.tLongTrail=Each tLongTrail : trail\char=p\RealCharacter : Next
 			EndIf
 		EndIf
+
 		DeformCharacter_GetTheBoneEntities(p)
 
 		EntityShininess(p\Objects\Mesh, 0)
@@ -1107,7 +1170,7 @@
 			Default: p\Motion\Speed\y#=0.30*p\Physics\UNDERWATERTRIGGER#
 		End Select
 
-		If dontstartoutlock=False and p\No#=1 Then
+		If dontstartoutlock=False And p\No#=1 Then
 			Game\ControlLock=0.5*secs#
 		EndIf
 
@@ -1125,25 +1188,23 @@
 		Game\SmartCameraRangeDontAffectTimer=5*secs#
 	End Function
 
-	Function Player_HasSuperModel(char)
+Function Player_HasSuperModel(char)
 		Select char
 			Case CHAR_SON,CHAR_TAI,CHAR_KNU,CHAR_SHA,CHAR_SIL,CHAR_BLA:
-				Return true
+				Return True
 			Default:
-				Return false
+				Return False
 		End Select
 	End Function
 
-	Function CharHasSuperModel(superform,char)
+Function CharHasSuperModel(superform,char)
 		If superform=0 Then
 			Return 0
 		Else
 			If IsCharMod(char) Then
-				If superform=1 and CharModHasSuper(char) Then
+				If superform=1 And CharModHasSuper(char) Then
 					Return 1
-				ElseIf superform=2 and CharModHasHyper(char) Then
-					Return 2
-				ElseIf superform=2 and CharModHasSuper(char) Then
+				ElseIf superform=2 And CharModHasSuper(char) Then
 					Return 1
 				Else
 					Return 0
@@ -1158,7 +1219,7 @@
 		EndIf
 	End Function
 
-	Function ChangeCharacter(newcharacter)
+Function ChangeCharacter(newcharacter)
 		pp(1)\Psychokinesis=0
 		If pp(1)\ObjPickUp=1 Then pp(1)\Action=ACTION_COMMON : pp(1)\ObjPickUp=0
 
@@ -1182,7 +1243,7 @@
 		Delay(1)
 	End Function
 
-	Function DeformCharacter_GetTheBoneEntities(p.tPlayer)
+Function DeformCharacter_GetTheBoneEntities(p.tPlayer)
 		Select p\Character
 			Case CHAR_SHA,CHAR_STO:
 				p\Objects\Jet1=FindChild(p\Objects\Mesh, "jetBL")
@@ -1205,6 +1266,7 @@
 				p\Objects\Extra=FindChild(p\Objects\Mesh, "tail1")
 			Case CHAR_TAI,CHAR_TDL:
 				p\Objects\Extra=FindChild(p\Objects\Mesh, "tailroot")
+				p\Objects\Extra2=FindChild(p\Objects\Mesh, "scanner")
 			Case CHAR_HBO:
 				p\Objects\Extra=FindChild(p\Objects\Mesh, "spine_b")
 			Case CHAR_SHD:
@@ -1280,7 +1342,7 @@
 		p\Objects\Hips=FindChild(p\Objects\Mesh, "hips")
 	End Function
 
-	Function DeformCharacter_DeleteTheBoneEntities(p.tPlayer)
+Function DeformCharacter_DeleteTheBoneEntities(p.tPlayer)
 		Select p\Character
 			Case CHAR_SHA,CHAR_STO:
 				FreeEntity p\Objects\Jet1
@@ -1299,8 +1361,11 @@
 				FreeEntity p\Objects\Extra
 			Case CHAR_MET,CHAR_MT3:
 				FreeEntity p\Objects\Jet1
-			Case CHAR_BIG,CHAR_HBO,CHAR_SHD,CHAR_AMY,CHAR_TAI,CHAR_TDL,CHAR_RAY:
+			Case CHAR_BIG,CHAR_HBO,CHAR_SHD,CHAR_AMY,CHAR_TDL,CHAR_RAY:
 				FreeEntity p\Objects\Extra
+			Case CHAR_TAI
+				FreeEntity p\Objects\Extra
+				FreeEntity p\Objects\Extra2
 			Case CHAR_GAM,CHAR_EGG,CHAR_CHW:
 				FreeEntity p\Objects\Jet1
 				FreeEntity p\Objects\Jet2
@@ -1346,7 +1411,7 @@ Function Player_UpdateBoneEntities(p.tPlayer)
 	Select p\Character
 		Case CHAR_SHA:
 			Select p\Animation\Animation
-				Case ANIMATION_RUN:
+				Case ANIMATION_RUN,ANIMATION_MACHRUN:
 					If (Game\SuperForm=0 Or (Not(Player_IsPlayable(p)))) Then
 						ParticleTemplate_Call(p\JetParticle1,PARTICLE_PLAYER_ROCKET,p\Objects\Jet1)
 						ParticleTemplate_Call(p\JetParticle2,PARTICLE_PLAYER_ROCKET,p\Objects\Jet2)
@@ -1362,7 +1427,7 @@ Function Player_UpdateBoneEntities(p.tPlayer)
 				Case ANIMATION_KICK:
 					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\FootR,1.0,0.34,2,p\Character,1)
 			End Select
-		Case CHAR_OME,CHAR_EGR:
+		Case CHAR_OME:
 			Select p\Animation\Animation
 				Case ANIMATION_RUN:
 					If (Game\SuperForm=0 Or (Not(Player_IsPlayable(p)))) Then
@@ -1370,6 +1435,17 @@ Function Player_UpdateBoneEntities(p.tPlayer)
 						ParticleTemplate_Call(p\JetParticle2,PARTICLE_PLAYER_ROCKET,p\Objects\Jet2)
 					EndIf
 				Case ANIMATION_GLIDE,ANIMATION_FLY,ANIMATION_GLIDE2:
+					ParticleTemplate_Call(p\JetParticle1,PARTICLE_PLAYER_ROCKET,p\Objects\Jet1)
+					ParticleTemplate_Call(p\JetParticle2,PARTICLE_PLAYER_ROCKET,p\Objects\Jet2)
+			End Select
+		Case CHAR_EGR:
+			Select p\Animation\Animation
+				Case ANIMATION_RUN:
+					If (Game\SuperForm=0 Or (Not(Player_IsPlayable(p)))) Then
+						ParticleTemplate_Call(p\JetParticle1,PARTICLE_PLAYER_ROCKET,p\Objects\Jet1)
+						ParticleTemplate_Call(p\JetParticle2,PARTICLE_PLAYER_ROCKET,p\Objects\Jet2)
+					EndIf
+				Case ANIMATION_FLY,ANIMATION_SKYDIVEFAST,ANIMATION_ROLL,ANIMATION_DRIFTL,ANIMATION_DRIFTR
 					ParticleTemplate_Call(p\JetParticle1,PARTICLE_PLAYER_ROCKET,p\Objects\Jet1)
 					ParticleTemplate_Call(p\JetParticle2,PARTICLE_PLAYER_ROCKET,p\Objects\Jet2)
 			End Select
@@ -1536,7 +1612,8 @@ End Function
 ;______________________________________________________________________________________________________________________________________________________________________
 ;______________________________________________________________________________________________________________________________________________________________________
 
-	Function Player_Create_RingLoss(p.tPlayer)
+Function Player_Create_RingLoss(p.tPlayer)
+	If p\CheeseShieldTimer>0 Then Return
 		rings = Game\Gameplay\Rings
 		If Menu\Stage>0 Then
 			If rings > 30 Then rings = 30
@@ -1559,7 +1636,7 @@ End Function
 		EmitSmartSound(Sound_RingLoss,p\Objects\Entity)
 	End Function
 
-	Function Player_GainExtraLife(p.tPlayer)
+Function Player_GainExtraLife(p.tPlayer)
 		Game\Gameplay\Lives=Game\Gameplay\Lives+1
 		Game\Gameplay\GainedLives=Game\Gameplay\GainedLives+1
 		If Not(ChannelPlaying(Game\Channel_1Up)) Then Game\Channel_1Up=PlaySmartSound(Sound_1Up)
@@ -1579,3 +1656,5 @@ End Function
 
 ;______________________________________________________________________________________________________________________________________________________________________
 ;______________________________________________________________________________________________________________________________________________________________________
+;~IDEal Editor Parameters:
+;~C#Blitz3D

@@ -90,7 +90,7 @@ Type tGame_Interface_ChaoMsg
 End Type
 
 Function Interface_CreateChaoMsg(msg$, r=255, g=255, b=255, overlap=0)
-	chaomsg.tGame_Interface_ChaoMsg = new tGame_Interface_ChaoMsg
+	chaomsg.tGame_Interface_ChaoMsg = New tGame_Interface_ChaoMsg
 	chaomsg\msg$=msg$
 	chaomsg\r=r : chaomsg\g=g : chaomsg\b=b
 	chaomsg\timer=4*secs#
@@ -117,21 +117,21 @@ Function Interface_CreateChaoNamedMsg(msg$, name$, r=255, g=255, b=255)
 End Function
 
 Function Interface_CreateOverlappingChaoMsg(overlap, msg$, r=255, g=255, b=255)
-	foundoverlap=false
+	foundoverlap=False
 	For otherchaomsg.tGame_Interface_ChaoMsg = Each tGame_Interface_ChaoMsg
 		If otherchaomsg\overlap=overlap Then foundoverlap=True
 	Next
-	If foundoverlap=false Then
+	If foundoverlap=False Then
 		Interface_CreateChaoMsg(msg$, r, g, b, overlap)
 	EndIf
 End Function
 
 Function Interface_CreateOverlapping2ChaoMsg(overlap, msg$, msg2$, r=255, g=255, b=255)
-	foundoverlap=false
+	foundoverlap=False
 	For otherchaomsg.tGame_Interface_ChaoMsg = Each tGame_Interface_ChaoMsg
 		If otherchaomsg\overlap=overlap Then foundoverlap=True
 	Next
-	If foundoverlap=false Then
+	If foundoverlap=False Then
 		Interface_CreateChaoMsg(msg$, r, g, b, overlap)
 		Interface_CreateChaoMsg(msg2$, r, g, b, overlap)
 	EndIf
@@ -145,7 +145,7 @@ Function Interface_DeleteChaoMsg(chaomsg.tGame_Interface_ChaoMsg)
 End Function
 
 Function Interface_ActivateGardenAction(gardenactionno, gardenactiomsg$, overlapping=0)
-	If Game\Interface\GardenActionOverlapping[gardenactionno]=0 Or (overlapping=1 and Game\Interface\GardenActionOverlapping[gardenactionno]=1) Then
+	If Game\Interface\GardenActionOverlapping[gardenactionno]=0 Or (overlapping=1 And Game\Interface\GardenActionOverlapping[gardenactionno]=1) Then
 		Select gardenactionno
 			Case 3: Game\Interface\GardenActionTimer[gardenactionno]=0.05*secs#
 			Default: Game\Interface\GardenActionTimer[gardenactionno]=0.5*secs#
@@ -163,16 +163,16 @@ End Function
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Function DrawKarateHealth(health, x#, y#, backwards=false)
+Function DrawKarateHealth(health, x#, y#, backwards=False)
 
 	If health<0 Then health=0
 
 	spacefactor#=0.90909
 	If backwards Then spacefactor#=-spacefactor#
 
-	For i=health+1 to 250
+	For i=health+1 To 250
 		Select backwards
-		Case false:
+		Case False:
 			Select i
 			Case 1: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+1-1)
 			Case 2: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+2-1)
@@ -188,7 +188,7 @@ Function DrawKarateHealth(health, x#, y#, backwards=false)
 			Case 250-0: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+6-1)
 			Default: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7-1)
 			End Select
-		Case true:
+		Case True:
 			Select i
 			Case 250-5: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+6-1)
 			Case 250-4: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+5-1)
@@ -208,9 +208,9 @@ Function DrawKarateHealth(health, x#, y#, backwards=false)
 	Next
 
 	If health>0 Then
-	For i=1 to health
+	For i=1 To health
 		Select backwards
-		Case false:
+		Case False:
 			Select i
 			Case 1: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 1-1)
 			Case 2: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 2-1)
@@ -226,7 +226,7 @@ Function DrawKarateHealth(health, x#, y#, backwards=false)
 			Case 250-0: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+6-1)
 			Default: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7-1)
 			End Select
-		Case true:
+		Case True:
 			Select i
 			Case 250-5: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 6-1)
 			Case 250-4: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 5-1)
@@ -248,25 +248,25 @@ Function DrawKarateHealth(health, x#, y#, backwards=false)
 
 End Function
 
-Function DrawKarateZeal(zeal, x#, y#, backwards=false)
+Function DrawKarateZeal(zeal, x#, y#, backwards=False)
 
 	If zeal<0 Then zeal=0
 
 	spacefactor#=0.90909
 	If backwards Then spacefactor#=-spacefactor#
 
-	For i=zeal+1 to 285
+	For i=zeal+1 To 285
 		Select backwards
-		Case false: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 41+((i-1) Mod 15))
-		Case true: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 30+41+abs(15-((i) Mod 15)))
+		Case False: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 41+((i-1) Mod 15))
+		Case True: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 30+41+Abs(15-((i) Mod 15)))
 		End Select
 	Next
 
 	If zeal>0 Then
-	For i=1 to zeal
+	For i=1 To zeal
 		Select backwards
-		Case false: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 26+((i-1) Mod 15))
-		Case true: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 30+26+abs(15-((i) Mod 15)))
+		Case False: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 26+((i-1) Mod 15))
+		Case True: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 30+26+Abs(15-((i) Mod 15)))
 		End Select
 	Next
 	EndIf
@@ -313,7 +313,7 @@ Function Interface_Render_Stage_Chao(p.tPlayer,d.tDeltatime)
 
 	;garden action system
 	gardenactionposy#=0
-	For i=1 to 3
+	For i=1 To 3
 		If Game\Interface\GardenActionTimer[i]>0 Then
 			Game\Interface\GardenActionTimer[i]=Game\Interface\GardenActionTimer[i]-timervalue#
 			Select i
@@ -345,9 +345,9 @@ Function Interface_Render_Stage_Chao(p.tPlayer,d.tDeltatime)
 	Next
 
 	;race
-	If Menu\Stage=998 and Game\Interface\RaceEnded=False Then
+	If Menu\Stage=998 And Game\Interface\RaceEnded=False Then
 		ChaoManager_Race_GetChaoOrder()
-		For i=1 to 8
+		For i=1 To 8
 			racechaox#=45*GAME_WINDOW_SCALE#
 			If Game\Interface\RaceBegan=False Then
 				racechaoy#=(40+(i-1)*35)*GAME_WINDOW_SCALE#
@@ -374,23 +374,23 @@ Function Interface_Render_Stage_Chao(p.tPlayer,d.tDeltatime)
 	EndIf
 
 	;karate
-	If Menu\Stage=997 and Game\Interface\RaceEnded=False Then
+	If Menu\Stage=997 And Game\Interface\RaceEnded=False Then
 		DrawImageEx(INTERFACE(Interface_Karate), GAME_WINDOW_W/2, 40*GAME_WINDOW_SCALE#, 0)
 		If Game\Interface\RaceTime>0 Then Game\Interface\RaceTime=Game\Interface\RaceTime-timervalue#
 		SetColor(31,31,99)
 		DrawRealText("TIME", GAME_WINDOW_W/2, 28*GAME_WINDOW_SCALE#, Interface_Text_2, 1)
 		SetColor(255,255,255)
 		DrawRealText(Int(Game\Interface\RaceTime/secs#), GAME_WINDOW_W/2, 47*GAME_WINDOW_SCALE#, Interface_TextButtons_1, 1)
-		DrawKarateHealth(Game\Interface\KarateHealth#[1]*12.5, GAME_WINDOW_W/2-36*GAME_WINDOW_SCALE#, 31*GAME_WINDOW_SCALE#, true)
-		DrawKarateHealth(Game\Interface\KarateHealth#[2]*12.5, GAME_WINDOW_W/2+36*GAME_WINDOW_SCALE#, 31*GAME_WINDOW_SCALE#, false)
+		DrawKarateHealth(Game\Interface\KarateHealth#[1]*12.5, GAME_WINDOW_W/2-36*GAME_WINDOW_SCALE#, 31*GAME_WINDOW_SCALE#, True)
+		DrawKarateHealth(Game\Interface\KarateHealth#[2]*12.5, GAME_WINDOW_W/2+36*GAME_WINDOW_SCALE#, 31*GAME_WINDOW_SCALE#, False)
 
 		DrawImageEx(INTERFACE(Interface_Karate), GAME_WINDOW_W/2, GAME_WINDOW_H-26*GAME_WINDOW_SCALE#, 1)
 		DrawRealText("Zeal", GAME_WINDOW_W/2, GAME_WINDOW_H-18.5*GAME_WINDOW_SCALE#, Interface_Text_2, 1)
-		DrawKarateZeal(Game\Interface\KarateZeal#[1]*3.8, GAME_WINDOW_W/2-29.25*GAME_WINDOW_SCALE#, GAME_WINDOW_H-19*GAME_WINDOW_SCALE#, true)
-		DrawKarateZeal(Game\Interface\KarateZeal#[2]*3.8, GAME_WINDOW_W/2+29.25*GAME_WINDOW_SCALE#, GAME_WINDOW_H-19*GAME_WINDOW_SCALE#, false)
+		DrawKarateZeal(Game\Interface\KarateZeal#[1]*3.8, GAME_WINDOW_W/2-29.25*GAME_WINDOW_SCALE#, GAME_WINDOW_H-19*GAME_WINDOW_SCALE#, True)
+		DrawKarateZeal(Game\Interface\KarateZeal#[2]*3.8, GAME_WINDOW_W/2+29.25*GAME_WINDOW_SCALE#, GAME_WINDOW_H-19*GAME_WINDOW_SCALE#, False)
 	EndIf
 
 	;race results
-	If Game\Interface\RaceEnded Then Interface_Render_Result(p,d,true) : p\MayNotCheerTimer=0.5*secs#
+	If Game\Interface\RaceEnded Then Interface_Render_Result(p,d,True) : p\MayNotCheerTimer=0.5*secs#
 
 End Function

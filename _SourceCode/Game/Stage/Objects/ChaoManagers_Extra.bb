@@ -1,34 +1,34 @@
 
 
 Function LoadChaoVoices()
-	For i=1 to 2	: LoadGoodSound(ChaoVoice_Amazed[i],3,"ChaoWorld/Voices/amazed"+i+".ogg",2) : Next
-	For i=1 to 7	: LoadGoodSound(ChaoVoice_Attack[i],3,"ChaoWorld/Voices/attack"+i+".ogg",2) : Next
-	For i=1 to 25	: LoadGoodSound(ChaoVoice_Casual[i],3,"ChaoWorld/Voices/casual"+i+".ogg",2) : Next
-	For i=1 to 3	: LoadGoodSound(ChaoVoice_Crazy[i],3,"ChaoWorld/Voices/crazy"+i+".ogg",2) : Next
-	For i=1 to 4	: LoadGoodSound(ChaoVoice_Crying[i],3,"ChaoWorld/Voices/crying"+i+".ogg",2) : Next
-	For i=1 to 4	: LoadGoodSound(ChaoVoice_Disgusted[i],3,"ChaoWorld/Voices/disgusted"+i+".ogg",2) : Next
-	For i=1 to 2	: LoadGoodSound(ChaoVoice_Drowning[i],3,"ChaoWorld/Voices/drowning"+i+".ogg",2) : Next
-	For i=1 to 4	: LoadGoodSound(ChaoVoice_Eating[i],3,"ChaoWorld/Voices/eating"+i+".ogg",2) : Next
-	For i=1 to 2	: LoadGoodSound(ChaoVoice_Figured[i],3,"ChaoWorld/Voices/figured"+i+".ogg",2) : Next
-	For i=1 to 6	: LoadGoodSound(ChaoVoice_Frustrated[i],3,"ChaoWorld/Voices/frustrated"+i+".ogg",2) : Next
-	For i=1 to 1	: LoadGoodSound(ChaoVoice_Humming[i],3,"ChaoWorld/Voices/humming"+i+".ogg",2) : Next
-	For i=1 to 6	: LoadGoodSound(ChaoVoice_Hurt[i],3,"ChaoWorld/Voices/hurt"+i+".ogg",2) : Next
-	For i=1 to 6	: LoadGoodSound(ChaoVoice_Laughing[i],3,"ChaoWorld/Voices/laughing"+i+".ogg",2) : Next
-	For i=1 to 3	: LoadGoodSound(ChaoVoice_Mumbling[i],3,"ChaoWorld/Voices/mumbling"+i+".ogg",2) : Next
-	For i=1 to 6	: LoadGoodSound(ChaoVoice_Playing[i],3,"ChaoWorld/Voices/playing"+i+".ogg",2) : Next
-	For i=1 to 3	: LoadGoodSound(ChaoVoice_Ready[i],3,"ChaoWorld/Voices/ready"+i+".ogg",2) : Next
-	For i=1 to 4	: LoadGoodSound(ChaoVoice_Refusing[i],3,"ChaoWorld/Voices/refusing"+i+".ogg",2) : Next
-	For i=1 to 3	: LoadGoodSound(ChaoVoice_Sad[i],3,"ChaoWorld/Voices/sad"+i+".ogg",2) : Next
-	For i=1 to 3	: LoadGoodSound(ChaoVoice_Satisfied[i],3,"ChaoWorld/Voices/satisfied"+i+".ogg",2) : Next
-	For i=1 to 3	: LoadGoodSound(ChaoVoice_Scared[i],3,"ChaoWorld/Voices/scared"+i+".ogg",2) : Next
-	For i=1 to 9	: LoadGoodSound(ChaoVoice_Singing[i],3,"ChaoWorld/Voices/singing"+i+".ogg",2) : Next
-	For i=1 to 6	: LoadGoodSound(ChaoVoice_Sleeping[i],3,"ChaoWorld/Voices/sleeping"+i+".ogg",2) : Next
-	For i=1 to 5	: LoadGoodSound(ChaoVoice_Surprised[i],3,"ChaoWorld/Voices/surprised"+i+".ogg",2) : Next
-	For i=1 to 10	: LoadGoodSound(ChaoVoice_Talking[i],3,"ChaoWorld/Voices/talking"+i+".ogg",2) : Next
-	For i=1 to 7	: LoadGoodSound(ChaoVoice_Thinking[i],3,"ChaoWorld/Voices/thinking"+i+".ogg",2) : Next
-	For i=1 to 2	: LoadGoodSound(ChaoVoice_Tired[i],3,"ChaoWorld/Voices/tired"+i+".ogg",2) : Next
-	For i=1 to 4	: LoadGoodSound(ChaoVoice_Waking[i],3,"ChaoWorld/Voices/waking"+i+".ogg",2) : Next
-	For i=1 to 3	: LoadGoodSound(ChaoVoice_Yawning[i],3,"ChaoWorld/Voices/yawning"+i+".ogg",2) : Next
+	For i=1 To 2	: LoadGoodSound(ChaoVoice_Amazed[i],3,"ChaoWorld/Voices/amazed"+i+".ogg",2) : Next
+	For i=1 To 7	: LoadGoodSound(ChaoVoice_Attack[i],3,"ChaoWorld/Voices/attack"+i+".ogg",2) : Next
+	For i=1 To 25	: LoadGoodSound(ChaoVoice_Casual[i],3,"ChaoWorld/Voices/casual"+i+".ogg",2) : Next
+	For i=1 To 3	: LoadGoodSound(ChaoVoice_Crazy[i],3,"ChaoWorld/Voices/crazy"+i+".ogg",2) : Next
+	For i=1 To 4	: LoadGoodSound(ChaoVoice_Crying[i],3,"ChaoWorld/Voices/crying"+i+".ogg",2) : Next
+	For i=1 To 4	: LoadGoodSound(ChaoVoice_Disgusted[i],3,"ChaoWorld/Voices/disgusted"+i+".ogg",2) : Next
+	For i=1 To 2	: LoadGoodSound(ChaoVoice_Drowning[i],3,"ChaoWorld/Voices/drowning"+i+".ogg",2) : Next
+	For i=1 To 4	: LoadGoodSound(ChaoVoice_Eating[i],3,"ChaoWorld/Voices/eating"+i+".ogg",2) : Next
+	For i=1 To 2	: LoadGoodSound(ChaoVoice_Figured[i],3,"ChaoWorld/Voices/figured"+i+".ogg",2) : Next
+	For i=1 To 6	: LoadGoodSound(ChaoVoice_Frustrated[i],3,"ChaoWorld/Voices/frustrated"+i+".ogg",2) : Next
+	For i=1 To 1	: LoadGoodSound(ChaoVoice_Humming[i],3,"ChaoWorld/Voices/humming"+i+".ogg",2) : Next
+	For i=1 To 6	: LoadGoodSound(ChaoVoice_Hurt[i],3,"ChaoWorld/Voices/hurt"+i+".ogg",2) : Next
+	For i=1 To 6	: LoadGoodSound(ChaoVoice_Laughing[i],3,"ChaoWorld/Voices/laughing"+i+".ogg",2) : Next
+	For i=1 To 3	: LoadGoodSound(ChaoVoice_Mumbling[i],3,"ChaoWorld/Voices/mumbling"+i+".ogg",2) : Next
+	For i=1 To 6	: LoadGoodSound(ChaoVoice_Playing[i],3,"ChaoWorld/Voices/playing"+i+".ogg",2) : Next
+	For i=1 To 3	: LoadGoodSound(ChaoVoice_Ready[i],3,"ChaoWorld/Voices/ready"+i+".ogg",2) : Next
+	For i=1 To 4	: LoadGoodSound(ChaoVoice_Refusing[i],3,"ChaoWorld/Voices/refusing"+i+".ogg",2) : Next
+	For i=1 To 3	: LoadGoodSound(ChaoVoice_Sad[i],3,"ChaoWorld/Voices/sad"+i+".ogg",2) : Next
+	For i=1 To 3	: LoadGoodSound(ChaoVoice_Satisfied[i],3,"ChaoWorld/Voices/satisfied"+i+".ogg",2) : Next
+	For i=1 To 3	: LoadGoodSound(ChaoVoice_Scared[i],3,"ChaoWorld/Voices/scared"+i+".ogg",2) : Next
+	For i=1 To 9	: LoadGoodSound(ChaoVoice_Singing[i],3,"ChaoWorld/Voices/singing"+i+".ogg",2) : Next
+	For i=1 To 6	: LoadGoodSound(ChaoVoice_Sleeping[i],3,"ChaoWorld/Voices/sleeping"+i+".ogg",2) : Next
+	For i=1 To 5	: LoadGoodSound(ChaoVoice_Surprised[i],3,"ChaoWorld/Voices/surprised"+i+".ogg",2) : Next
+	For i=1 To 10	: LoadGoodSound(ChaoVoice_Talking[i],3,"ChaoWorld/Voices/talking"+i+".ogg",2) : Next
+	For i=1 To 7	: LoadGoodSound(ChaoVoice_Thinking[i],3,"ChaoWorld/Voices/thinking"+i+".ogg",2) : Next
+	For i=1 To 2	: LoadGoodSound(ChaoVoice_Tired[i],3,"ChaoWorld/Voices/tired"+i+".ogg",2) : Next
+	For i=1 To 4	: LoadGoodSound(ChaoVoice_Waking[i],3,"ChaoWorld/Voices/waking"+i+".ogg",2) : Next
+	For i=1 To 3	: LoadGoodSound(ChaoVoice_Yawning[i],3,"ChaoWorld/Voices/yawning"+i+".ogg",2) : Next
 
 	LoadGoodSound(Sound_ChaoDarkEvo,1,"Sounds/ChaoDarkEvo.ogg")
 	LoadGoodSound(Sound_ChaoDeath,1,"Sounds/ChaoDeath.ogg")
@@ -172,7 +172,7 @@ End Function
 
 
 Function Chao_Interface_NameTag(cc.tChaoManager, c.tCamera)
-	If EntityInView(cc\Mesh,c\Entity) and EntityDistance(cc\Mesh,c\Entity)<750 Then
+	If EntityInView(cc\Mesh,c\Entity) And EntityDistance(cc\Mesh,c\Entity)<750 Then
 		height# = MeshHeight#(cc\Mesh)+0.5
 		CameraProject c\Entity, EntityX(cc\Pivot), EntityY(cc\Pivot)+height#, EntityZ(cc\Pivot)
 		x = ProjectedX () - 1
@@ -220,7 +220,7 @@ Function Object_CreateRaceChao()
 	y#=31.25
 	z#=-2
 
-	For i=1 to 8
+	For i=1 To 8
 		Select i
 		Case 1: Object_CreateRaceChao_Held(i,x#,y#,z#)
 		Default: Object_CreateRaceChao_Random(i,x#,y#,z#)
@@ -252,7 +252,7 @@ Function Object_CreateKarateChao()
 	y#=4.25
 	z#=0
 
-	For i=1 to 2
+	For i=1 To 2
 		Select i
 		Case 1: Object_CreateRaceChao_Held(i,x#,y#,z#)
 		Default: Object_CreateRaceChao_Random(i,-x#,y#,z#)
@@ -283,7 +283,7 @@ Function Object_CreateRaceChao_Held(chaonumber,x#,y#,z#)
 	racehat=Menu\HeldChaoHat
 
 	obj.tObject = Object_Chao_Create(0, 0, 0, 0)
-	racecc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, false, 0, true, x#, y#, z#, true, raceage, racepersona, racecolor, raceshape, raceside, racehat)
+	racecc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, False, 0, True, x#, y#, z#, True, raceage, racepersona, racecolor, raceshape, raceside, racehat)
 
 	racecc\Stats\Run# = Menu\HeldChaoSkills[1] : racecc\Stats\CurrentRun# = Menu\HeldChaoCurrentSkills[1]
 	racecc\Stats\Swim# = Menu\HeldChaoSkills[2] : racecc\Stats\CurrentSwim# = Menu\HeldChaoCurrentSkills[2]
@@ -324,9 +324,9 @@ Function Object_CreateRaceChao_Random(chaonumber,x#,y#,z#)
 	End Select
 
 	obj.tObject = Object_Chao_Create(0, 0, 0, 0)
-	racecc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, false, 0, true, x#, y#, z#, true, raceage, racepersona, racecolor, raceshape, raceside, racehat)
+	racecc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, False, 0, True, x#, y#, z#, True, raceage, racepersona, racecolor, raceshape, raceside, racehat)
 
-	For h=1 to 7
+	For h=1 To 7
 		downlimit#=Menu\HeldChaoSkills[h]-5 : uplimit#=Menu\HeldChaoSkills[h]+2*Menu\Settings\StadiumDifficulty#
 		If downlimit#<0 Then downlimit#=0
 		If uplimit#>50 Then uplimit#=50
@@ -402,11 +402,11 @@ Function ChaoManager_Race_Camera(cc.tChaoManager, d.tDeltaTime)
 			End Select
 		Default:
 			If Game\Interface\RaceEnded=False Then
-				dontlookchaoracefront=false : If cc\g\Motion\Align\x#<-0.25 Or cc\Action=CHAOACTION_RACE_CLIMB Or (Menu\RaceType=3 and cc\Position\x#<440) Then dontlookchaoracefront=true
-				dontlookchaoraceback=false : If cc\Position\x#<13.75 Or cc\g\Motion\Align\x#>0.25 Then dontlookchaoraceback=true
+				dontlookchaoracefront=False : If cc\g\Motion\Align\x#<-0.25 Or cc\Action=CHAOACTION_RACE_CLIMB Or (Menu\RaceType=3 And cc\Position\x#<440) Then dontlookchaoracefront=True
+				dontlookchaoraceback=False : If cc\Position\x#<13.75 Or cc\g\Motion\Align\x#>0.25 Then dontlookchaoraceback=True
 				If Not(cam\Lock\ChaoRaceCamTimer>0) Then
 					cam\Lock\ChaoRaceCamTimer=(10+Rand(-2,2))*secs#
-					If dontlookchaoracefront and dontlookchaoraceback Then
+					If dontlookchaoracefront And dontlookchaoraceback Then
 						Game\Interface\RaceCam=1
 					ElseIf dontlookchaoracefront Then
 						Select(Rand(1,4))
@@ -492,13 +492,13 @@ Function ChaoManager_Race_EndRace(cc.tChaoManager)
 
 	endedrace=0
 
-	For i=1 to 8
-		If Game\Interface\WinningChao[i]=0 and endedrace=0 Then
+	For i=1 To 8
+		If Game\Interface\WinningChao[i]=0 And endedrace=0 Then
 			Game\Interface\WinningChao[i]=cc\Number
 			cc\WinningChao=i
 			If i>3 Then endedrace=2 Else endedrace=1
 			If i>=8 Then ChaoManager_Race_EndRace_End()
-			If cc\Number=1 Then Game\Interface\YourWinningChao=i : Game\ResultRingsForBank=2500.0*(abs(i-8)/7.0)*(Menu\RaceType/4.0)*(Menu\Settings\StadiumDifficulty#/5.0)
+			If cc\Number=1 Then Game\Interface\YourWinningChao=i : Game\ResultRingsForBank=2500.0*(Abs(i-8)/7.0)*(Menu\RaceType/4.0)*(Menu\Settings\StadiumDifficulty#/5.0)
 		EndIf
 	Next
 
@@ -519,7 +519,7 @@ Function ChaoManager_Race_EndRace_End()
 	Game\Interface\ResultOrder=-1
 
 	PostEffect_Create_FadeIn(0.008, 255, 255, 255)
-	For i=0 to 2 : StopChannel(Game\Stage\Properties\MusicChn[i]) : Next
+	For i=0 To 2 : StopChannel(Game\Stage\Properties\MusicChn[i]) : Next
 	Game\Victory=2
 
 	Game\Channel_MissionCompleted=PlaySmartSound(Sound_ChaoRaceCompleted)
@@ -531,7 +531,7 @@ Function ChaoManager_Race_Manage(cc.tChaoManager, d.tDeltaTime)
 
 	If cc\Number=1 Then
 		ChaoManager_Race_Camera(cc,d)
-		If (Not(Game\Interface\RaceTime>0)) and Game\Interface\RaceEnded=False Then
+		If (Not(Game\Interface\RaceTime>0)) And Game\Interface\RaceEnded=False Then
 			For racecc.tChaoManager = Each tChaoManager
 				racecc\WinningChao=-1
 				racecc\Action=CHAOACTION_RACE_LOST
@@ -542,41 +542,41 @@ Function ChaoManager_Race_Manage(cc.tChaoManager, d.tDeltaTime)
 	EndIf
 
 	If Game\Interface\RaceEnded=False Then
-		If cc\Position\x#>=Game\Interface\RaceEndPoint# and cc\WinningChao=0 Then ChaoManager_Race_EndRace(cc)
+		If cc\Position\x#>=Game\Interface\RaceEndPoint# And cc\WinningChao=0 Then ChaoManager_Race_EndRace(cc)
 
 		Select Menu\RaceType
 			Case 2:
-				If ChaoManager_Race_Manage_PositionCheck(cc,70.25) and (Not(cc\Action=CHAOACTION_RACE_SWIM)) Then cc\Action=CHAOACTION_RACE_SWIM
-				If ChaoManager_Race_Manage_PositionCheck(cc,407.75) and (Not(cc\Action=CHAOACTION_RACE_COMMON)) Then cc\Action=CHAOACTION_RACE_COMMON
+				If ChaoManager_Race_Manage_PositionCheck(cc,70.25) And (Not(cc\Action=CHAOACTION_RACE_SWIM)) Then cc\Action=CHAOACTION_RACE_SWIM
+				If ChaoManager_Race_Manage_PositionCheck(cc,407.75) And (Not(cc\Action=CHAOACTION_RACE_COMMON)) Then cc\Action=CHAOACTION_RACE_COMMON
 			Case 3:
-				If ChaoManager_Race_Manage_PositionCheck(cc,75.75) and cc\Position\y#<-5+45.5 and (Not(cc\Action=CHAOACTION_RACE_CLIMB)) Then cc\Action=CHAOACTION_RACE_CLIMB
-				If ChaoManager_Race_Manage_PositionCheck(cc,75.75) and cc\Position\y#>45.5 and (Not(cc\Action=CHAOACTION_RACE_COMMON)) Then cc\Action=CHAOACTION_RACE_COMMON : MoveEntity cc\Pivot, 0, 0.25, 0.5
-				If ChaoManager_Race_Manage_PositionCheck(cc,100.25) and cc\Position\y#<-5+60.75 and (Not(cc\Action=CHAOACTION_RACE_CLIMB)) Then cc\Action=CHAOACTION_RACE_CLIMB
-				If ChaoManager_Race_Manage_PositionCheck(cc,100.25) and cc\Position\y#>60.75 and (Not(cc\Action=CHAOACTION_RACE_COMMON)) Then cc\Action=CHAOACTION_RACE_COMMON : MoveEntity cc\Pivot, 0, 0.25, 0.5
-				If ChaoManager_Race_Manage_PositionCheck(cc,123.5) and cc\Position\y#<-5+75.5 and (Not(cc\Action=CHAOACTION_RACE_CLIMB)) Then cc\Action=CHAOACTION_RACE_CLIMB
-				If ChaoManager_Race_Manage_PositionCheck(cc,123.5) and cc\Position\y#>75.5 and (Not(cc\Action=CHAOACTION_RACE_COMMON)) Then cc\Action=CHAOACTION_RACE_COMMON : MoveEntity cc\Pivot, 0, 0.25, 0.5
-				If ChaoManager_Race_Manage_PositionCheck(cc,209.5) and cc\Position\y#<-5+74.5 and (Not(cc\Action=CHAOACTION_RACE_CLIMB)) Then cc\Action=CHAOACTION_RACE_CLIMB
-				If ChaoManager_Race_Manage_PositionCheck(cc,209.5) and cc\Position\y#>74.5 and (Not(cc\Action=CHAOACTION_RACE_COMMON)) Then cc\Action=CHAOACTION_RACE_COMMON : MoveEntity cc\Pivot, 0, 0.25, 0.5
-				If ChaoManager_Race_Manage_PositionCheck(cc,228.75) and cc\Position\y#<-5+95.25 and (Not(cc\Action=CHAOACTION_RACE_CLIMB)) Then cc\Action=CHAOACTION_RACE_CLIMB
-				If ChaoManager_Race_Manage_PositionCheck(cc,228.75) and cc\Position\y#>95.25 and (Not(cc\Action=CHAOACTION_RACE_COMMON)) Then cc\Action=CHAOACTION_RACE_COMMON : MoveEntity cc\Pivot, 0, 0.25, 0.5
-				If ChaoManager_Race_Manage_PositionCheck(cc,306.5) and cc\Position\y#<-5+95 and (Not(cc\Action=CHAOACTION_RACE_CLIMB)) Then cc\Action=CHAOACTION_RACE_CLIMB
-				If ChaoManager_Race_Manage_PositionCheck(cc,306.5) and cc\Position\y#>95 and (Not(cc\Action=CHAOACTION_RACE_COMMON)) Then cc\Action=CHAOACTION_RACE_COMMON : MoveEntity cc\Pivot, 0, 0.25, 0.5
+				If ChaoManager_Race_Manage_PositionCheck(cc,75.75) And cc\Position\y#<-5+45.5 And (Not(cc\Action=CHAOACTION_RACE_CLIMB)) Then cc\Action=CHAOACTION_RACE_CLIMB
+				If ChaoManager_Race_Manage_PositionCheck(cc,75.75) And cc\Position\y#>45.5 And (Not(cc\Action=CHAOACTION_RACE_COMMON)) Then cc\Action=CHAOACTION_RACE_COMMON : MoveEntity cc\Pivot, 0, 0.25, 0.5
+				If ChaoManager_Race_Manage_PositionCheck(cc,100.25) And cc\Position\y#<-5+60.75 And (Not(cc\Action=CHAOACTION_RACE_CLIMB)) Then cc\Action=CHAOACTION_RACE_CLIMB
+				If ChaoManager_Race_Manage_PositionCheck(cc,100.25) And cc\Position\y#>60.75 And (Not(cc\Action=CHAOACTION_RACE_COMMON)) Then cc\Action=CHAOACTION_RACE_COMMON : MoveEntity cc\Pivot, 0, 0.25, 0.5
+				If ChaoManager_Race_Manage_PositionCheck(cc,123.5) And cc\Position\y#<-5+75.5 And (Not(cc\Action=CHAOACTION_RACE_CLIMB)) Then cc\Action=CHAOACTION_RACE_CLIMB
+				If ChaoManager_Race_Manage_PositionCheck(cc,123.5) And cc\Position\y#>75.5 And (Not(cc\Action=CHAOACTION_RACE_COMMON)) Then cc\Action=CHAOACTION_RACE_COMMON : MoveEntity cc\Pivot, 0, 0.25, 0.5
+				If ChaoManager_Race_Manage_PositionCheck(cc,209.5) And cc\Position\y#<-5+74.5 And (Not(cc\Action=CHAOACTION_RACE_CLIMB)) Then cc\Action=CHAOACTION_RACE_CLIMB
+				If ChaoManager_Race_Manage_PositionCheck(cc,209.5) And cc\Position\y#>74.5 And (Not(cc\Action=CHAOACTION_RACE_COMMON)) Then cc\Action=CHAOACTION_RACE_COMMON : MoveEntity cc\Pivot, 0, 0.25, 0.5
+				If ChaoManager_Race_Manage_PositionCheck(cc,228.75) And cc\Position\y#<-5+95.25 And (Not(cc\Action=CHAOACTION_RACE_CLIMB)) Then cc\Action=CHAOACTION_RACE_CLIMB
+				If ChaoManager_Race_Manage_PositionCheck(cc,228.75) And cc\Position\y#>95.25 And (Not(cc\Action=CHAOACTION_RACE_COMMON)) Then cc\Action=CHAOACTION_RACE_COMMON : MoveEntity cc\Pivot, 0, 0.25, 0.5
+				If ChaoManager_Race_Manage_PositionCheck(cc,306.5) And cc\Position\y#<-5+95 And (Not(cc\Action=CHAOACTION_RACE_CLIMB)) Then cc\Action=CHAOACTION_RACE_CLIMB
+				If ChaoManager_Race_Manage_PositionCheck(cc,306.5) And cc\Position\y#>95 And (Not(cc\Action=CHAOACTION_RACE_COMMON)) Then cc\Action=CHAOACTION_RACE_COMMON : MoveEntity cc\Pivot, 0, 0.25, 0.5
 			Case 4:
-				If ChaoManager_Race_Manage_PositionCheck(cc,75.5) and (Not(cc\Action=CHAOACTION_RACE_FLY)) Then cc\Action=CHAOACTION_RACE_FLY
-				If ChaoManager_Race_Manage_PositionCheck(cc,155) and (Not(cc\Action=CHAOACTION_RACE_COMMON)) Then cc\Action=CHAOACTION_RACE_COMMON
-				If ChaoManager_Race_Manage_PositionCheck(cc,198.5) and (Not(cc\Action=CHAOACTION_RACE_FLY)) Then cc\Action=CHAOACTION_RACE_FLY
-				If ChaoManager_Race_Manage_PositionCheck(cc,267.5) and (Not(cc\Action=CHAOACTION_RACE_COMMON)) Then cc\Action=CHAOACTION_RACE_COMMON
-				If ChaoManager_Race_Manage_PositionCheck(cc,313) and (Not(cc\Action=CHAOACTION_RACE_FLY)) Then cc\Action=CHAOACTION_RACE_FLY
-				If ChaoManager_Race_Manage_PositionCheck(cc,378.25) and (Not(cc\Action=CHAOACTION_RACE_COMMON)) Then cc\Action=CHAOACTION_RACE_COMMON
-				If ChaoManager_Race_Manage_PositionCheck(cc,423.5) and (Not(cc\Action=CHAOACTION_RACE_FLY)) Then cc\Action=CHAOACTION_RACE_FLY
-				If ChaoManager_Race_Manage_PositionCheck(cc,477) and (Not(cc\Action=CHAOACTION_RACE_COMMON)) Then cc\Action=CHAOACTION_RACE_COMMON
+				If ChaoManager_Race_Manage_PositionCheck(cc,75.5) And (Not(cc\Action=CHAOACTION_RACE_FLY)) Then cc\Action=CHAOACTION_RACE_FLY
+				If ChaoManager_Race_Manage_PositionCheck(cc,155) And (Not(cc\Action=CHAOACTION_RACE_COMMON)) Then cc\Action=CHAOACTION_RACE_COMMON
+				If ChaoManager_Race_Manage_PositionCheck(cc,198.5) And (Not(cc\Action=CHAOACTION_RACE_FLY)) Then cc\Action=CHAOACTION_RACE_FLY
+				If ChaoManager_Race_Manage_PositionCheck(cc,267.5) And (Not(cc\Action=CHAOACTION_RACE_COMMON)) Then cc\Action=CHAOACTION_RACE_COMMON
+				If ChaoManager_Race_Manage_PositionCheck(cc,313) And (Not(cc\Action=CHAOACTION_RACE_FLY)) Then cc\Action=CHAOACTION_RACE_FLY
+				If ChaoManager_Race_Manage_PositionCheck(cc,378.25) And (Not(cc\Action=CHAOACTION_RACE_COMMON)) Then cc\Action=CHAOACTION_RACE_COMMON
+				If ChaoManager_Race_Manage_PositionCheck(cc,423.5) And (Not(cc\Action=CHAOACTION_RACE_FLY)) Then cc\Action=CHAOACTION_RACE_FLY
+				If ChaoManager_Race_Manage_PositionCheck(cc,477) And (Not(cc\Action=CHAOACTION_RACE_COMMON)) Then cc\Action=CHAOACTION_RACE_COMMON
 		End Select
 	EndIf
 
 End Function
 
 Function ChaoManager_Race_Manage_PositionCheck(cc.tChaoManager, pos#)
-	If cc\Position\x#>=pos# and cc\Position\x#<pos#+5 Then Return true Else Return false
+	If cc\Position\x#>=pos# And cc\Position\x#<pos#+5 Then Return True Else Return False
 End Function
 
 ;_________________________________________________________________________________________________________
@@ -593,7 +593,7 @@ Function ChaoManager_Race_GetChaoOrder()
 				If cc\WinningChao=0 Then
 					Game\Interface\RaceChaoOrderChecker[cc\Number]=cc\Position\x#
 				Else
-					Game\Interface\RaceChaoOrderChecker[cc\Number]=1000+abs(cc\WinningChao-8)*10
+					Game\Interface\RaceChaoOrderChecker[cc\Number]=1000+Abs(cc\WinningChao-8)*10
 				EndIf
 				Game\Interface\RaceChaoOrder[cc\Number]=cc\Number
 			Next
@@ -601,7 +601,7 @@ Function ChaoManager_Race_GetChaoOrder()
 			ChaoManager_Race_GetChaoOrder_Sort()
 		EndIf
 	Else
-		For i=1 to 8 : Game\Interface\RaceChaoOrder[i]=i : Next
+		For i=1 To 8 : Game\Interface\RaceChaoOrder[i]=i : Next
 	EndIf
 
 End Function
@@ -622,28 +622,28 @@ Function ChaoManager_Race_GetChaoOrder_QuickSort_Partition(p, q)
 	y = q
 
 	j = p + 1
-	while(j <= q)
-			if (Game\Interface\RaceChaoOrderChecker[j] < x) then
+	While(j <= q)
+			If (Game\Interface\RaceChaoOrderChecker[j] < x) Then
 				i = i + 1
 				ChaoManager_Race_GetChaoOrder_Sort_Swap(i, j)
-			else if (Game\Interface\RaceChaoOrderChecker[j] = x) then
+			Else If (Game\Interface\RaceChaoOrderChecker[j] = x) Then
 				y = y - 1
 				ChaoManager_Race_GetChaoOrder_Sort_Swap(i, y)
-			endif
+			EndIf
 		j = j + 1
-	wend
+	Wend
 
 	ChaoManager_Race_GetChaoOrder_Sort_Swap(p, i)
 
-	return i
+	Return i
 End Function
 
 Function ChaoManager_Race_GetChaoOrder_QuickSort_Conquer(p, r)
-	if (p < r) then
+	If (p < r) Then
 		q = ChaoManager_Race_GetChaoOrder_QuickSort_Partition(p, r)
 		ChaoManager_Race_GetChaoOrder_QuickSort_Conquer(p, q - 1)
 		ChaoManager_Race_GetChaoOrder_QuickSort_Conquer(q + 1, r)
-	endif
+	EndIf
 End Function
 
 Function ChaoManager_Race_GetChaoOrder_Sort()
@@ -775,7 +775,7 @@ Function ChaoManager_Karate_EndRace_End(lose)
 	Game\Interface\ResultOrder=-1
 
 	PostEffect_Create_FadeIn(0.008, 255, 255, 255)
-	For i=0 to 2 : StopChannel(Game\Stage\Properties\MusicChn[i]) : Next
+	For i=0 To 2 : StopChannel(Game\Stage\Properties\MusicChn[i]) : Next
 	Game\Victory=2
 
 	Select lose
@@ -864,9 +864,9 @@ Function Object_CreateRandomChao(chaonumber,x#,y#,z#)
 	End Select
 
 	obj.tObject = Object_Chao_Create(0, 0, 0, 0)
-	cc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, false, 0, true, x#, y#, z#, true, randomchaoage, randomchaopersona, randomchaocolor, randomchaoshape, randomchaoside, randomchaohat)
+	cc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, False, 0, True, x#, y#, z#, True, randomchaoage, randomchaopersona, randomchaocolor, randomchaoshape, randomchaoside, randomchaohat)
 
-	For h=1 to 7
+	For h=1 To 7
 		downlimit#=0 : uplimit#=50
 		downlimit2#=0 : uplimit2#=10
 		Select h
@@ -900,7 +900,7 @@ Function OverwriteGardenAndCreateRandomChao()
 		EndIf
 	Next
 
-	For i=1 to CHAOCOUNT
+	For i=1 To CHAOCOUNT
 		If FileType(SaveDataPath$+"CHAO"+i+".dat")=1 Then Menu_Transporter_Goodbye_DeleteAChao(i) : i=i-1
 	Next
 
@@ -908,7 +908,7 @@ Function OverwriteGardenAndCreateRandomChao()
 	x#=pp(1)\Objects\Position\x# : y#=pp(1)\Objects\Position\y# : z#=pp(1)\Objects\Position\z#
 	gardenoverwriter=CreatePivot()
 	EntityType(gardenoverwriter,COLLISION_OBJECT)
-	For i=1 to CHAOCOUNT
+	For i=1 To CHAOCOUNT
 		PositionEntity gardenoverwriter, x#, y#, z#, 1
 		MoveEntity gardenoverwriter, Rand(-10,10), 0, Rand(-10,10)
 		Object_CreateRandomChao(i,EntityX(gardenoverwriter),EntityY(gardenoverwriter),EntityZ(gardenoverwriter))

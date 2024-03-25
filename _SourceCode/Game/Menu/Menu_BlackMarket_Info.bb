@@ -8,7 +8,7 @@
 	End Type
 	Global TOTALITEMS
 
-	Function Item_Create.tItem(id#, type1#, type2#, type3#, isheld=false)
+	Function Item_Create.tItem(id#, type1#, type2#, type3#, isheld=False)
 		ii.tItem = New tItem
 		TOTALITEMS=TOTALITEMS+1
 		ii\ID=id#
@@ -53,12 +53,12 @@
 ;--------------------------------------------------------------------------------------------------------------------------
 
 Function GetShallExplodeInventory()
-	foundsomething=false
+	foundsomething=False
 	For cii.tCarriedItem=Each tCarriedItem
-		foundsomething=true
+		foundsomething=True
 	Next
 	For ii.tItem=Each tItem
-		If ii\IsHeld Then foundsomething=true
+		If ii\IsHeld Then foundsomething=True
 	Next
 	Game\Interface\ShallExplodeInventory=foundsomething
 End Function
@@ -95,16 +95,16 @@ End Function
 		ITEM_AVAILABLE_EGGS(1) = 1
 		ITEM_AVAILABLE_TOYS(1) = 1
 		Repeat
-			For i=5 to ITEM_MAX(1) : ITEM_AVAILABLE_FRUITS(i) = Rand(0,1) : Next
+			For i=5 To ITEM_MAX(1) : ITEM_AVAILABLE_FRUITS(i) = Rand(0,1) : Next
 		Until(CountDealersInventory(1)>=4)
 		Repeat
-			For i=2 to ITEM_MAX(2) : ITEM_AVAILABLE_HATS(i) = Rand(0,1) : Next
+			For i=2 To ITEM_MAX(2) : ITEM_AVAILABLE_HATS(i) = Rand(0,1) : Next
 		Until(CountDealersInventory(2)>=4)
 		Repeat
-			For i=2 to ITEM_MAX(3) : ITEM_AVAILABLE_EGGS(i) = Rand(0,1) : Next
+			For i=2 To ITEM_MAX(3) : ITEM_AVAILABLE_EGGS(i) = Rand(0,1) : Next
 		Until(CountDealersInventory(3)>=4)
 		Repeat
-			For i=2 to ITEM_MAX(5) : ITEM_AVAILABLE_TOYS(i) = Rand(0,1) : Next
+			For i=2 To ITEM_MAX(5) : ITEM_AVAILABLE_TOYS(i) = Rand(0,1) : Next
 		Until(CountDealersInventory(4)>=4)
 	End Function
 
@@ -112,19 +112,19 @@ End Function
 		j=0
 		Select mode
 			Case 1:
-				For i=1 to ITEM_MAX(1)
+				For i=1 To ITEM_MAX(1)
 					If ITEM_AVAILABLE_FRUITS(i)=1 Then j=j+1
 				Next
 			Case 2:
-				For i=1 to ITEM_MAX(2)
+				For i=1 To ITEM_MAX(2)
 					If ITEM_AVAILABLE_HATS(i)=1 Then j=j+1
 				Next
 			Case 3:
-				For i=1 to ITEM_MAX(3)
+				For i=1 To ITEM_MAX(3)
 					If ITEM_AVAILABLE_EGGS(i)=1 Then j=j+1
 				Next
 			Case 4:
-				For i=1 to ITEM_MAX(5)
+				For i=1 To ITEM_MAX(5)
 					If ITEM_AVAILABLE_TOYS(i)=1 Then j=j+1
 				Next
 		End Select
@@ -153,19 +153,19 @@ End Function
 
 		Select mode
 			Case 1:
-				For i=1 to ITEM_MAX(mode)
+				For i=1 To ITEM_MAX(mode)
 					If ITEM_AVAILABLE_FRUITS(i)=1 Then dii.tDealerItem = DealerItem_Create(TOTALDEALERITEMS+1, i)
 				Next
 			Case 2:
-				For i=1 to ITEM_MAX(mode)
+				For i=1 To ITEM_MAX(mode)
 					If ITEM_AVAILABLE_HATS(i)=1 Then dii.tDealerItem = DealerItem_Create(TOTALDEALERITEMS+1, i)
 				Next
 			Case 3:
-				For i=1 to ITEM_MAX(mode)
+				For i=1 To ITEM_MAX(mode)
 					If ITEM_AVAILABLE_EGGS(i)=1 Then dii.tDealerItem = DealerItem_Create(TOTALDEALERITEMS+1, i)
 				Next
 			Case 5:
-				For i=1 to ITEM_MAX(mode)
+				For i=1 To ITEM_MAX(mode)
 					If ITEM_AVAILABLE_TOYS(i)=1 Then dii.tDealerItem = DealerItem_Create(TOTALDEALERITEMS+1, i)
 				Next
 		End Select

@@ -1,20 +1,17 @@
 
-Global SaveDataPath$ = GetEnv$("AppData")+"\Sonic World\SaveData\"
+Global SaveDataPath$ = GetEnv$("AppData")+"\Sonic World DX\SaveData\"
 Global SaveDataFormat$ = ".dat"
 Global SaveDataTmp$ = SaveDataPath$+"tmp"+SaveDataFormat$
 Global CurrentOpenFile
 Global CurrentOpenFileName$
 
 ;------------------------------------------------------------------------------------------------------------------------------
-;; Loads an encrypted file by name and decrypts it.
-;;param name the Filename
+
 Function LoadFileWithEncryption(name$)
 	CurrentOpenFileName$=name$
 	DecryptFile(name$)
 End Function
-;; Saves an encrypted file by name and encrypts it.
-;;param name the Filename
-;;param mainroot the body of the file to be written.
+
 Function WriteFileWithEncryption(name$,mainroot$="savedata")
 	CurrentOpenFileName$=name$
 	CurrentOpenFile=0
@@ -42,11 +39,11 @@ Function EncryptFile(name$)
 	filein = OpenFile(SaveDataTmp$)
 	fileout = WriteFile(SaveDataPath$+name$+SaveDataFormat$)
 	WriteInt(fileout, EncryptThereto(111)) : WriteInt(fileout, EncryptThereto(122))
-	while not eof(filein)
+	While Not Eof(filein)
 		a = ReadInt(filein)
 		WriteInt(fileout, EncryptThereto(a))
-		for i=1 to 3 : WriteInt(fileout, EncryptThereto(Rand(0,130))) : next
-	wend
+		For i=1 To 3 : WriteInt(fileout, EncryptThereto(Rand(0,130))) : Next
+	Wend
 	CloseFile(filein)
 	CloseFile(fileout)
 End Function
@@ -55,12 +52,12 @@ Function DecryptFile(name$)
 	filein = OpenFile(SaveDataPath$+name$+SaveDataFormat$)
 	fileout = WriteFile(SaveDataTmp$)
 	oz1 = DecryptTherefrom(ReadInt(filein)) : oz2 = DecryptTherefrom(ReadInt(filein))
-	If Not(oz1=111 and oz2=122) Then CloseFile(filein) : CloseFile(fileout) : ErrorDecryption()
-	while not eof(filein)
+	If Not(oz1=111 And oz2=122) Then CloseFile(filein) : CloseFile(fileout) : ErrorDecryption()
+	While Not Eof(filein)
 		a = ReadInt(filein)
 		WriteInt(fileout, DecryptTherefrom(a))
-		for i=1 to 3 : ReadInt(filein) : next
-	wend
+		For i=1 To 3 : ReadInt(filein) : Next
+	Wend
 	CloseFile(filein)
 	CloseFile(fileout)
 End Function

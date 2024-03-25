@@ -1,25 +1,28 @@
 
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
-	Function Game_Stage_Step(d.tDeltaTime)
-
+Function Game_Stage_Step(d.tDeltaTime)
+	
+	
+	GAME_TITLE$="Sonic World DX - Playing as "+SingleCharNames$(Menu\Character[1])
+	
 		;deal with mouse
 		HidePointer()
-			Input\AllowMouse=false
+			Input\AllowMouse=False
 			If Menu\Stage<>0 Then
-				If Menu\Pause=0 and (Menu\ChaoGarden=0 Or Menu\Stage=999) Then Input\AllowMouse=true
+				If Menu\Pause=0 And (Menu\ChaoGarden=0 Or Menu\Stage=999) Then Input\AllowMouse=True
 			Else
-				If Menu\Menu=MENU_CHARACTERS# Or Menu\Menu=MENU_BIOS# Or (Menu\Menu=MENU_TRANSPORTER# and (Menu\Menu2=MENU_TRANSPORTER_GOODBYE# Or Menu\Menu2=MENU_TRANSPORTER_STADIUM#)) Then Input\AllowMouse=true
+				If Menu\Menu=MENU_CHARACTERS# Or Menu\Menu=MENU_BIOS# Or (Menu\Menu=MENU_TRANSPORTER# And (Menu\Menu2=Menu_Transporter_Goodbye# Or Menu\Menu2=Menu_Transporter_Stadium#)) Then Input\AllowMouse=True
 			EndIf
-			If Game\Interface\DebugPlacerOn=1 and Menu\Pause=0 Then Input\AllowMouse=true
+			If Game\Interface\DebugPlacerOn=1 And Menu\Pause=0 Then Input\AllowMouse=True
 		If Input\AllowMouse Then
 			If (Input\Hold\MouseCamUp Or Input\Hold\MouseCamDown Or Input\Hold\MouseCamLeft Or Input\Hold\MouseCamRight) Then MoveMouse(GAME_WINDOW_W Shr 1, GAME_WINDOW_H Shr 1)
 		EndIf
 
 		;music organization
-		If Menu\Stage<>0 and Game\Victory=0 Then
+		If Menu\Stage<>0 And Game\Victory=0 Then
 			If ChannelPlaying(Game\Stage\Properties\MusicChn[Game\Stage\Properties\MusicMode])=False Then Game\Stage\Properties\MusicChn[Game\Stage\Properties\MusicMode]=PlaySound(Game\Stage\Properties\Music[Game\Stage\Properties\MusicMode])
-			For i=0 to 2
+			For i=0 To 2
 				If i=Game\Stage\Properties\MusicMode Then
 					If Game\Stage\Properties\MusicFade#[i]<1.0 Then Game\Stage\Properties\MusicFade#[i]=Game\Stage\Properties\MusicFade#[i]+0.025*d\Delta
 					If Game\Stage\Properties\MusicFade#[i]>1.0 Then Game\Stage\Properties\MusicFade#[i]=1.0
@@ -30,29 +33,37 @@
 			Next
 		EndIf
 		If (Game\SpeedShoes=1 Or Game\Invinc=1) And Game\SuperForm=0 And (ChannelPlaying(Game\Channel_Drown)=False) Then
-			For i=0 to 2 : ChannelVolume Game\Stage\Properties\MusicChn[i],0 : Next
+			For i=0 To 2 : ChannelVolume Game\Stage\Properties\MusicChn[i],0 : Next
 			ChannelVolume(Game\Channel_Invincible,Menu\Settings\VolumeM#*Menu\Settings\Volume#)
 			ChannelVolume(Game\Channel_SpeedShoes,Menu\Settings\VolumeM#*Menu\Settings\Volume#)
 			If Not(Game\SpeedShoeTimer>0) Then Game\SpeedShoes=0
 			If Not(Game\InvincTimer>0) Then Game\Invinc=0
 		ElseIf ChannelPlaying(Game\Channel_ChaoEffect) Then
-			For i=0 to 2 : ChannelVolume Game\Stage\Properties\MusicChn[i],0 : Next
+			For i=0 To 2 : ChannelVolume Game\Stage\Properties\MusicChn[i],0 : Next
 			ChannelVolume(Game\Channel_Invincible,0)
 			ChannelVolume(Game\Channel_SpeedShoes,0)
 			ChannelVolume(Game\Channel_ChaoEffect,Menu\Settings\VolumeM#*Menu\Settings\Volume#)
 		Else
 			If ChannelPlaying(Game\Channel_Drown) Or pp(1)\DrownState>1 Then
-				For i=0 to 2 : ChannelVolume Game\Stage\Properties\MusicChn[i],0 : Next
+				For i=0 To 2 : ChannelVolume Game\Stage\Properties\MusicChn[i],0 : Next
 			Else
-				For i=0 to 2 : ChannelVolume Game\Stage\Properties\MusicChn[i],Menu\Settings\VolumeM#*Menu\Settings\Volume#*Game\Stage\Properties\MusicFade#[i] : Next
+				For i=0 To 2
+					If ChannelPlaying(Game\Channel_AmbientWater) Then
+						ChannelVolume Game\Stage\Properties\MusicChn[i],((Menu\Settings\VolumeM#*Menu\Settings\Volume#)*0.35)*Game\Stage\Properties\MusicFade#[i] : 
+					Else
+						ChannelVolume Game\Stage\Properties\MusicChn[i],Menu\Settings\VolumeM#*Menu\Settings\Volume#*Game\Stage\Properties\MusicFade#[i] : 
+					EndIf 
+				Next
 			EndIf
 			ChannelVolume(Game\Channel_Invincible,0)
 			ChannelVolume(Game\Channel_SpeedShoes,0)
 		EndIf
-
+		
+		
+		
 		;save the counters
-		If Game\Gameplay\Rings>999 Then
-			Game\Gameplay\Rings=999
+		If Game\Gameplay\Rings>9999 Then
+			Game\Gameplay\Rings=9999
 		ElseIf Game\Gameplay\Rings<0 Then
 			Game\Gameplay\Rings=0
 		EndIf
@@ -110,7 +121,9 @@
 		If Not(ChannelPlaying(Game\Stage\Properties\Channel_AmbientWind)) Then Game\Stage\Properties\Channel_AmbientWind=PlaySmartSound(Sound_AmbientWind)
 		Else
 		If ChannelPlaying(Game\Stage\Properties\Channel_AmbientWind) Then StopChannel(Game\Stage\Properties\Channel_AmbientWind)
-		EndIf
+	EndIf
+	
+	
 
 		; For menu models to overcome images
 		For c.tCamera = Each tCamera
@@ -137,12 +150,16 @@
 		timervalue#=(d\TimeCurrentFrame-d\TimePreviousFrame)*TimeControl#
 		For p.tPlayer=Each tPlayer
 		If p\No#=1 Then
-			If (Not(p\Action=ACTION_DEBUG)) Then Game\Gameplay\Time = Game\Gameplay\Time+(d\TimeCurrentFrame-d\TimePreviousFrame)*TimeControl#
+			If (Not(p\Action=ACTION_DEBUG)) Then 
+				If (Not(Game\ChaosControlTimer>0))
+					Game\Gameplay\Time = Game\Gameplay\Time+(d\TimeCurrentFrame-d\TimePreviousFrame)*TimeControl#
+				EndIf
+			EndIf 
 		EndIf
 		Next
 		Game\Others\Frames = Game\Others\Frames + 1
 		If (Game\Others\NextFrame < d\TimeCurrentFrame) Then
-			Game\Others\FPS   	  = Game\Others\Frames
+			Game\Others\Fps   	  = Game\Others\Frames
 			Game\Others\Frames	  = 0
 			Game\Others\NextFrame = d\TimeCurrentFrame+1000
 		End If
@@ -175,209 +192,37 @@
 							Case 1: ScaleEntity p\Objects\Head, 0, 0, 0
 						End Select
 					Case CHAR_EME:
-						If Game\SuperForm>0 and p\No#>0 Then
+						If Game\SuperForm>0 And p\No#>0 Then
 							ScaleEntity p\Objects\Extra, 0, 0, 0
 							ScaleEntity p\Objects\Extra2, 0, 0, 0
 						EndIf
 				End Select
 
-				If p\No#>0 Then
-					Select p\Animation\Animation
-						Case ANIMATION_IDLE,ANIMATION_WALK,ANIMATION_JOG,ANIMATION_RUN,ANIMATION_GRIND,ANIMATION_GRINDFAST:
-							For o.tObject = Each tObject
-							If o\Done=0 Then
-								pointheadtoobject=false
-								If Menu\ChaoGarden=0 Then
-									If o\ThisIsAnEnemy Then
-										If o\Enemy\EnemyShallAppear Then pointheadtoobject=true
-									EndIf
-									If (o\ThisIsAnEnemyMissile Or o\ThisIsAMonitor Or o\ObjType=OBJTYPE_OMOCHAO) Then pointheadtoobject=true
-								Else
-									If (o\ObjType=OBJTYPE_CHAO Or o\ObjType=OBJTYPE_FRUIT Or o\ObjType=OBJTYPE_SHELL Or o\ObjType=OBJTYPE_DRIVE Or o\ObjType=OBJTYPE_TOY) Then pointheadtoobject=true
-								EndIf
-								If pointheadtoobject Then Player_PointHeadToObject(p,o)
-							EndIf
-							Next
-					End Select
-
+				If Game\Vehicle>0 Then
 					Select Game\Vehicle
-						Case 3:
-							ScaleEntity p\Objects\HipR, 0, 0, 0
-							ScaleEntity p\Objects\HipL, 0, 0, 0
-							PositionEntity p\Objects\Hips, EntityX(p\Objects\Mesh,1), EntityY(p\Objects\Mesh,1), EntityZ(p\Objects\Mesh,1), 1
-							MoveEntity p\Objects\Hips, 0, 0.4, 0
+						Case 9
 							Select p\Character
-								Case CHAR_GAM,CHAR_BET:
-									MoveEntity p\Objects\Hips, 0, 2, 0
+								Case CHAR_SON,CHAR_SHA,CHAR_TAI
+									MoveEntity(p\Objects\Mesh,0,0.15,-1)
 							End Select
-						Case 4,9:
-							Select p\Character
-								Case CHAR_GAM,CHAR_BET,CHAR_EGG,CHAR_TMH,CHAR_PRS,CHAR_COM:
-									TurnEntity p\Objects\HipR, -95, 0, 20
-									TurnEntity p\Objects\HipL, -95, 0, -20
-								Case CHAR_CHW:
-								Default:
-									TurnEntity p\Objects\HipR, -95, 0, 35
-									TurnEntity p\Objects\HipL, -95, 0, -35
-							End Select
-							Select p\Character
-								Case CHAR_CHW:
-								Default:
-									TurnEntity p\Objects\LegR, 25, 0, 0
-									TurnEntity p\Objects\LegL, 25, 0, 0
-							End Select
-							Select p\Character
-								Case CHAR_EGG,CHAR_TMH:
-								Case CHAR_OME:
-									TurnEntity p\Objects\ArmR, 10, 30, 70
-									TurnEntity p\Objects\ArmL, 10, -30, -70
-								Case CHAR_VEC:
-									TurnEntity p\Objects\ArmR, -20, 30, 20
-									TurnEntity p\Objects\ArmL, -20, -30, -20
-									ScaleEntity p\Objects\Extra, 0, 0, 0
-								Case CHAR_BIG:
-									TurnEntity p\Objects\ArmR, -35, 30, 10
-									TurnEntity p\Objects\ArmL, -35, -30, -10
-									ScaleEntity p\Objects\Extra, 0, 0, 0
-								Case CHAR_BAR,CHAR_STO,CHAR_HBO,CHAR_PRS,CHAR_COM:
-									TurnEntity p\Objects\ArmR, -25, 30, 25
-									TurnEntity p\Objects\ArmL, -25, -30, -25
-								Case CHAR_GAM,CHAR_BET:
-									TurnEntity p\Objects\ArmR, -25, 30, 25
-									TurnEntity p\Objects\ArmL, -25, -30, -25
-									TurnEntity p\Objects\HandL, 0, 20, 0
-								Case CHAR_CHW:
-									TurnEntity p\Objects\ArmL, -80, 0, 0
-								Default:
-									TurnEntity p\Objects\ArmR, -30, 30, 70
-									TurnEntity p\Objects\ArmL, -30, -30, -70
-							End Select
-							PositionEntity p\Objects\Hips, EntityX(p\Objects\Mesh,1), EntityY(p\Objects\Mesh,1), EntityZ(p\Objects\Mesh,1), 1
-							MoveEntity p\Objects\Hips, 0, 1.45, -0.2
-							TurnEntity p\Objects\Spine, 5, 0, 0
-							Select p\Character
-								Case CHAR_CHO,CHAR_MET,CHAR_MT3,CHAR_EGR:
-									MoveEntity p\Objects\Hips, 0, 0.75, 0
-								Case CHAR_GAM,CHAR_BET,CHAR_EGG,CHAR_TMH,CHAR_CHW:
-									MoveEntity p\Objects\Hips, 0, 3.2, 0
-								Case CHAR_PRS,CHAR_COM:
-									MoveEntity p\Objects\Hips, 0, 0, -1
-							End Select
-							If Game\Vehicle=9 Then
-								MoveEntity p\Objects\Hips, 0, -0.75, -0.908
-								Select p\Character
-									Case CHAR_CHW:
-									Default:
-										TurnEntity p\Objects\HipR, 7.5, 0, -15
-										TurnEntity p\Objects\HipL, 7.5, 0, 15
-								End Select
-								TurnEntity p\Objects\ArmR, 15, 15, -45
-								TurnEntity p\Objects\ArmL, 15, -15, 45
-								Select p\Character
-									Case CHAR_VEC,CHAR_BIG:
-										TurnEntity p\Objects\ArmR, -30, -40, 10
-										TurnEntity p\Objects\ArmL, -30, 40, -10
-									Case CHAR_OME:
-										TurnEntity p\Objects\ArmR, -30, -40, -50
-										TurnEntity p\Objects\ArmL, -30, 40, 50
-									Case CHAR_BAR,CHAR_STO,CHAR_HBO,CHAR_PRS,CHAR_COM:
-										TurnEntity p\Objects\ArmR, -30, -40, -5
-										TurnEntity p\Objects\ArmL, -30, 40, 5
-									Case CHAR_GAM,CHAR_BET:
-										TurnEntity p\Objects\ArmR, -35, -50, -5
-										TurnEntity p\Objects\ArmL, -35, 50, 5
-								End Select
-								Select p\Character
-									Case CHAR_MET,CHAR_MT3:
-										MoveEntity p\Objects\Hips, 0, -0.5, 0
-									Case CHAR_GAM,CHAR_BET:
-										MoveEntity p\Objects\Hips, 0, -1, 0
-									Case CHAR_PRS,CHAR_COM:
-										MoveEntity p\Objects\Hips, 0, 0.5, 0
-								End Select
-							EndIf
-						Case 5,8:
-							TurnEntity p\Objects\HandR, 85, 0, 0
-							TurnEntity p\Objects\HandL, 85, 0, 0
-							MoveEntity p\Objects\Hips, 0, 2.1, -0.3
-							Select p\Character
-								Case CHAR_PRS,CHAR_COM:
-									TurnEntity p\Objects\LegR, 120, 0, 0
-									TurnEntity p\Objects\LegL, 120, 0, 0
-									TurnEntity p\Objects\FootR, 10, 0, 0
-									TurnEntity p\Objects\FootL, 10, 0, 0
-									MoveEntity p\Objects\Hips, 0, -3.25, -1
-								Case CHAR_INF:
-									TurnEntity p\Objects\FootR, -27.5, 0, 0
-									MoveEntity p\Objects\Hips, 0, -1, 0
-								Case CHAR_CHW:
-									TurnEntity p\Objects\ArmL, -80, 0, 0
-							End Select
-							Select p\Character
-								Case CHAR_TAI:
-									TurnEntity p\Objects\ArmR, -10, 37.5, 0
-									TurnEntity p\Objects\ArmL, -10, -37.5, 0
-								Case CHAR_CRE,CHAR_RAY,CHAR_TDL:
-									TurnEntity p\Objects\ArmR, -15, 42.1875, 0
-									TurnEntity p\Objects\ArmL, -15, -42.1875, 0
-									MoveEntity p\Objects\Hips, 0, 0, -0.25
-								Case CHAR_AMY,CHAR_CHA,CHAR_HBO,CHAR_EME,CHAR_GME:
-									TurnEntity p\Objects\ArmR, -5, 18.75, 0
-									TurnEntity p\Objects\ArmL, -5, -18.75, 0
-								Case CHAR_MAR,CHAR_BEA,CHAR_MET,CHAR_MT3:
-									TurnEntity p\Objects\ArmR, -7.5, 28.125, 0
-									TurnEntity p\Objects\ArmL, -7.5, -28.125, 0
-									MoveEntity p\Objects\Hips, 0, 0, -0.25
-							End Select
-							If Game\Vehicle=8 Then
-								TurnEntity p\Objects\ArmR, 2.5, -5, 0
-								TurnEntity p\Objects\ArmL, 2.5, 5, 0
-								TurnEntity p\Objects\HipR, 0, 0, 10
-								TurnEntity p\Objects\HipL, 0, 0, -10
-								TurnEntity p\Objects\FootR, 0, 0, -10
-								TurnEntity p\Objects\FootL, 0, 0, 10
-								MoveEntity p\Objects\Hips, 0, 0.375, 0
-								Select p\Character
-									Case CHAR_BIG,CHAR_BAR,CHAR_HBO,CHAR_GAM,CHAR_BET,CHAR_EGG,CHAR_CHW,CHAR_EGR,CHAR_TMH:
-										MoveEntity p\Objects\Hips, 0, 0.45, 0
-									Case CHAR_TIA,CHAR_PRS,CHAR_COM:
-										MoveEntity p\Objects\Hips, 0, 0.15, 0
-								End Select
-							EndIf
-						Case 6,7:
-							If p\No#=1 Then
-								If Menu\Members>1 Then
-									If Menu\Members>2 Then Player_PlaceOnTornado(pp(3),3)
-									Player_PlaceOnTornado(pp(2),2)
-									Player_PlaceOnTornado(pp(1),1)
-								Else
-									Player_PlaceOnTornado(pp(1),2)
-								EndIf
-							EndIf
-					End Select
-					If Game\Vehicle>0 Then
-						Select Game\Vehicle
-							Case 6,7:
-								If p\No#=1 Then
-									Player_PlacementsOfVehicle(pp(1))
-									If Menu\Members>1 Then Player_PlacementsOfVehicle(pp(2))
-									If Menu\Members>2 Then Player_PlacementsOfVehicle(pp(3))
-								EndIf
-							Default:
-								Player_PlacementsOfVehicle(p)
-						End Select
-					EndIf
+					End Select 
+				EndIf 
+				
+				If p\UnderWater=1 Then
+					If Not(ChannelPlaying(Game\Channel_AmbientWater)) Then Game\Channel_AmbientWater=PlaySmartSound(Sound_AmbientUnderWater)
+				Else
+					If ChannelPlaying(Game\Channel_AmbientWater) Then StopChannel(Game\Channel_AmbientWater)
 				EndIf
 			Next
 		Else
 			Select Menu\Menu
 				Case MENU_CHARACTERS#,MENU_CHARACTERS2#,MENU_BIOS#:
 					If Menu_Character(Menu\Option,Menu\Option2)=CHAR_SHD Then
-						If Menu\MeshBone<>0 and Menu\HasMeshBone=1 and UNLOCKEDCHAR[Menu\Option]=1 Then ScaleEntity Menu\MeshBone, 0, 0, 0
+						If Menu\MeshBone<>0 And Menu\HasMeshBone=1 And UNLOCKEDCHAR[Menu\Option]=1 Then ScaleEntity Menu\MeshBone, 0, 0, 0
 					EndIf
 				Case MENU_TEAMS#:
 					If Menu\Option+Menu\TeamOrder=TEAM_RELIC Then
-						If Menu\MeshBone<>0 and Menu\HasMeshBone=1 and UNLOCKEDTEAM[Menu\Option]=1 Then ScaleEntity Menu\MeshBone, 0, 0, 0
+						If Menu\MeshBone<>0 And Menu\HasMeshBone=1 And UNLOCKEDTEAM[Menu\Option]=1 Then ScaleEntity Menu\MeshBone, 0, 0, 0
 					EndIf
 			End Select
 		EndIf
@@ -391,7 +236,7 @@
 				For cc.tChaoManager=Each tChaoManager
 					If ChaoManager_ChaoAlive(cc) Or ChaoManager_ChaoCocoonAlive(cc) Then
 						Object_ChaoEmo_Update(cc\Mesh, cc\Emo, d)
-						If cc\Stats\Hat>0 and cc\HatCoversHorn Then
+						If cc\Stats\Hat>0 And cc\HatCoversHorn Then
 							ScaleEntity cc\Mesh_horn2, 0, 0, 0
 							PositionEntity cc\Mesh_horn2, EntityX(cc\Mesh_horn1,1), EntityY(cc\Mesh_horn1,1), EntityZ(cc\Mesh_horn1,1), 1
 							RotateEntity cc\Mesh_horn2, EntityPitch(cc\Emo\Objects\emotionsroot), EntityYaw(cc\Emo\Objects\emotionsroot), EntityRoll(cc\Emo\Objects\emotionsroot)
@@ -420,6 +265,9 @@
 		If Game\CounterChanceTimer>0 Then Game\CounterChanceTimer=Game\CounterChanceTimer-timervalue# Else Game\CounterChance=0
 		If Game\SmartCameraRangeDontAffectTimer>0 Then Game\SmartCameraRangeDontAffectTimer=Game\SmartCameraRangeDontAffectTimer-timervalue#
 		If Game\BishopMagicTimer>0 Then Game\BishopMagicTimer=Game\BishopMagicTimer-timervalue#
+		If Game\ChaosControlTimer>0 Then Game\ChaosControlTimer=Game\ChaosControlTimer-timervalue#
+		If Game\ChaosSnapTimer>0 Then Game\ChaosSnapTimer=Game\ChaosSnapTimer-timervalue#
+		
 
 		; Carnival
 		If Menu\Mission=MISSION_CARNIVAL# Then
@@ -429,13 +277,13 @@
 				If Game\CurrentCarnivalTimer>0 Then
 					Game\CurrentCarnivalTimer=Game\CurrentCarnivalTimer-timervalue#
 				Else
-					foundcarnivals = false
+					foundcarnivals = False
 					For o.tObject = Each tObject
 						If o\ThisIsAnEnemy Then
-							If o\Enemy\CarnivalNo=Game\CarnivalLevel and o\Done=0 Then foundcarnivals=true
+							If o\Enemy\CarnivalNo=Game\CarnivalLevel And o\Done=0 Then foundcarnivals=True
 						EndIf
 					Next
-					If foundcarnivals = false Then
+					If foundcarnivals = False Then
 						Game\CarnivalLevel=Game\CarnivalLevel+1
 						Game\CarnivalAppearTimer=1*secs#
 					EndIf
@@ -453,6 +301,7 @@
 
 		; Update animated textures for objects
 		PositionTexture(Object_Texture_Pads, 0, -0.0035*Game\Gameplay\Time)
+		PositionTexture(Object_Texture_Panel, 0, -0.0025*Game\Gameplay\Time)
 		PositionTexture(Object_Texture_DashHoop, 0, 0.5*0.0035*Game\Gameplay\Time)
 		PositionTexture(Object_Texture_RainbowHoop, 0, 0.5*0.0035*Game\Gameplay\Time)
 		PositionTexture(Object_Texture_AcceleratorLight, 0, -0.75*0.0035*Game\Gameplay\Time)
@@ -469,7 +318,7 @@
 			If Game\Stage\Properties\SpecialStageSkydomeG>Game\Stage\Properties\SpecialStageSkydomeTargetG Then Game\Stage\Properties\SpecialStageSkydomeG=Game\Stage\Properties\SpecialStageSkydomeG-2*d\Delta
 			If Game\Stage\Properties\SpecialStageSkydomeB<Game\Stage\Properties\SpecialStageSkydomeTargetB Then Game\Stage\Properties\SpecialStageSkydomeB=Game\Stage\Properties\SpecialStageSkydomeB+2*d\Delta
 			If Game\Stage\Properties\SpecialStageSkydomeB>Game\Stage\Properties\SpecialStageSkydomeTargetB Then Game\Stage\Properties\SpecialStageSkydomeB=Game\Stage\Properties\SpecialStageSkydomeB-2*d\Delta
-			If (abs(Game\Stage\Properties\SpecialStageSkydomeR-Game\Stage\Properties\SpecialStageSkydomeTargetR)<5) and (abs(Game\Stage\Properties\SpecialStageSkydomeG-Game\Stage\Properties\SpecialStageSkydomeTargetG)<5) and (abs(Game\Stage\Properties\SpecialStageSkydomeB-Game\Stage\Properties\SpecialStageSkydomeTargetB)<5) Then
+			If (Abs(Game\Stage\Properties\SpecialStageSkydomeR-Game\Stage\Properties\SpecialStageSkydomeTargetR)<5) And (Abs(Game\Stage\Properties\SpecialStageSkydomeG-Game\Stage\Properties\SpecialStageSkydomeTargetG)<5) And (Abs(Game\Stage\Properties\SpecialStageSkydomeB-Game\Stage\Properties\SpecialStageSkydomeTargetB)<5) Then
 			Game\Stage\Properties\SpecialStageSkydomeTargetR=Rand(50,200)
 			Game\Stage\Properties\SpecialStageSkydomeTargetG=Rand(50,200)
 			Game\Stage\Properties\SpecialStageSkydomeTargetB=Rand(50,200)
@@ -482,7 +331,7 @@
 			If Menu\Stage<0 Then
 				j# = pp(1)\Objects\Position\z#
 				If m\ForSpecialStage>0 Then
-					If abs(m\InitialPosZ#-j#)>500+7000*(m\ForSpecialStage-1) Then
+					If Abs(m\InitialPosZ#-j#)>500+7000*(m\ForSpecialStage-1) Then
 						HideEntity(m\Entity)
 					Else
 						ShowEntity(m\Entity)
@@ -536,8 +385,8 @@
 		If Game\PenguinatorMovingTimer>0 Then Game\PenguinatorMovingTimer=Game\PenguinatorMovingTimer-timervalue#
 
 		; Gain extra live
-		For i=1 to 9
-		If Game\Gameplay\Rings>=100*i and Game\Gameplay\GainedLives < i Then Player_GainExtraLife(p)
+		For i=1 To 9
+		If Game\Gameplay\Rings>=100*i And Game\Gameplay\GainedLives < i Then Player_GainExtraLife(p)
 		Next
 
 		; Cancel old EMBM
@@ -573,7 +422,7 @@
 			; water level changing
 			If Game\Stage\Properties\WaterLevelChanged=1 Then
 				If (Not(ChannelPlaying(Game\Stage\Properties\WaterLevelChangeChannel))) Then Game\Stage\Properties\WaterLevelChangeChannel=PlaySmartSound(Sound_WaterRise)
-				If abs(Game\Stage\Properties\WaterLevel-Game\Stage\Properties\WaterLevelTarget)<2 Then
+				If Abs(Game\Stage\Properties\WaterLevel-Game\Stage\Properties\WaterLevelTarget)<2 Then
 					Game\Stage\Properties\WaterLevelChanged=0
 					Game\Stage\Properties\WaterLevel=Game\Stage\Properties\WaterLevelTarget
 				Else
@@ -607,15 +456,15 @@
 
 		; Smart view range
 		If Menu\Settings\ViewRange#=0 Then
-			If Game\Victory=0 and (Not(Game\SmartCameraRangeDontAffectTimer>0)) and Game\Interface\DebugPlacerOn=0 Then
-				i = 4000+(Game\Others\FPS-40)*200
+			If Game\Victory=0 And (Not(Game\SmartCameraRangeDontAffectTimer>0)) And Game\Interface\DebugPlacerOn=0 Then
+				i = 4000+(Game\Others\Fps-40)*200
 				If i<4000 Then i=4000
 				If Game\Others\CurrentCameraRange>i Then
 					Game\Others\CurrentCameraRange=i
 					CameraRange(c\Entity, 1, Game\Others\CurrentCameraRange)
 				EndIf
 
-				i = 200+(Game\Others\FPS-40)*10
+				i = 200+(Game\Others\Fps-40)*10
 				If i<200 Then i=200
 				If OBJECT_VIEWDISTANCE#>i Then
 					OBJECT_VIEWDISTANCE#=i
@@ -632,9 +481,9 @@
 			PositionEntity(Game\Stage\Properties\Skydome, EntityX(c\Entity), EntityY(c\Entity), EntityZ(c\Entity))
 			PositionEntity(Game\Stage\Properties\Earth, EntityX(c\Entity), EntityY(c\Entity), EntityZ(c\Entity))
 			PositionEntity(Game\Stage\Properties\Moon, EntityX(c\Entity), EntityY(c\Entity), EntityZ(c\Entity))
-			PositionEntity(Game\Stage\Properties\Sun, EntityX(c\Entity)+Game\Stage\Properties\SunPos\X#, EntityY(c\Entity)+Game\Stage\Properties\SunPos\Y#, EntityZ(c\Entity)+Game\Stage\Properties\SunPos\Z#)
-			If Menu\ChaoGarden=1 and Menu\Stage=999 Then
-				PositionEntity(Game\Stage\Properties\SunMoon, EntityX(c\Entity)+Game\Stage\Properties\SunPos\X#, EntityY(c\Entity)+Game\Stage\Properties\SunPos\Y#, EntityZ(c\Entity)+Game\Stage\Properties\SunPos\Z#)
+			PositionEntity(Game\Stage\Properties\Sun, EntityX(c\Entity)+Game\Stage\Properties\SunPos\x#, EntityY(c\Entity)+Game\Stage\Properties\SunPos\y#, EntityZ(c\Entity)+Game\Stage\Properties\SunPos\z#)
+			If Menu\ChaoGarden=1 And Menu\Stage=999 Then
+				PositionEntity(Game\Stage\Properties\SunMoon, EntityX(c\Entity)+Game\Stage\Properties\SunPos\x#, EntityY(c\Entity)+Game\Stage\Properties\SunPos\y#, EntityZ(c\Entity)+Game\Stage\Properties\SunPos\z#)
 				Stage_UpdateCyclingSkyBox(c\Entity, d)
 			EndIf
 		EndIf
@@ -642,12 +491,12 @@
 		; Sun stuff
 		If Game\Stage\Properties\Sun>0 Then
 			PointEntity(Game\Stage\Properties\Sun, c\Entity)
-			If Menu\ChaoGarden=1 and Menu\Stage=999 Then PointEntity(Game\Stage\Properties\SunMoon, c\Entity)
+			If Menu\ChaoGarden=1 And Menu\Stage=999 Then PointEntity(Game\Stage\Properties\SunMoon, c\Entity)
 		EndIf
 
 		; Is camera under water?
 		If c\DontDoUnderwaterEffectsTimer>0 Then c\DontDoUnderwaterEffectsTimer=c\DontDoUnderwaterEffectsTimer-timervalue#
-		If c\Underwater=1 and (Not c\DontDoUnderwaterEffectsTimer>0) Then
+		If c\Underwater=1 And (Not c\DontDoUnderwaterEffectsTimer>0) Then
 			CameraFogMode c\Entity, 1
 			Select Game\Stage\Properties\WaterType
 				Case 2:
@@ -666,7 +515,7 @@
 					CameraFogColor c\Entity, 70, 80, 120
 			End Select
 			CameraFogRange c\Entity, 0.1, 390
-			If Game\Stage\Properties\Water=1 and EntityY(c\Entity) < Game\Stage\Properties\WaterLevel Then RotateEntity Game\Stage\Properties\WaterMesh,180,0,0
+			If Game\Stage\Properties\Water=1 And EntityY(c\Entity) < Game\Stage\Properties\WaterLevel Then RotateEntity Game\Stage\Properties\WaterMesh,180,0,0
 			Select Game\Stage\Properties\WaterType
 				Case 2:
 					Game\FilterIntensity#=0.525 : Game\FilterColorR#=196 : Game\FilterColorG#=030 : Game\FilterColorB#=013
@@ -684,22 +533,20 @@
 					Game\FilterIntensity#=0.375 : Game\FilterColorR#=000 : Game\FilterColorG#=157 : Game\FilterColorB#=225
 			End Select
 		Else
-			;If Game\Stage\Properties\AmbientSnow=1 Then
-			;	CameraFogMode c\Entity, 1
-			;	CameraFogColor c\Entity, 230, 230, 230
-			;	CameraFogRange c\Entity, 160, 420
-			;ElseIf Game\Stage\Properties\AmbientRain=1 Then
-			;	CameraFogMode c\Entity, 1
-			;	CameraFogColor c\Entity, 130, 130, 130
-			;	CameraFogRange c\Entity, 145, 420
-			;Else
-				CameraFogMode c\Entity, 0
-			;EndIf
-			If Game\Stage\Properties\Water=1 and EntityY(c\Entity) > Game\Stage\Properties\WaterLevel Then RotateEntity Game\Stage\Properties\WaterMesh,0,0,0
-			Game\FilterIntensity#=0.000 : Game\FilterColorR#=255 : Game\FilterColorG#=255 : Game\FilterColorB#=255
+			CameraFogMode c\Entity, Game\Stage\Properties\Fog
+			CameraFogColor c\Entity, Game\Stage\Properties\FogR, Game\Stage\Properties\FogG, Game\Stage\Properties\FogB	
+			CameraFogRange c\Entity, Game\Stage\Properties\FogNearDist, Game\Stage\Properties\FogFarDist
+			If Game\Stage\Properties\Water=1 And EntityY(c\Entity) > Game\Stage\Properties\WaterLevel Then RotateEntity Game\Stage\Properties\WaterMesh,0,0,0
+			If Game\Stage\Properties\FilterOn=1 Then 
+				Game\FilterIntensity#=Game\Stage\Properties\FilterIntesity : Game\FilterColorR#=Game\Stage\Properties\FilterR : Game\FilterColorG#=Game\Stage\Properties\FilterG : Game\FilterColorB#=Game\Stage\Properties\FilterB
+			Else
+				Game\FilterIntensity#=0.000 : Game\FilterColorR#=255 : Game\FilterColorG#=255 : Game\FilterColorB#=255
+			EndIf
 		EndIf
 
 		SetFilterColor(c\Filter, Game\FilterIntensity#, Game\FilterColorR#, Game\FilterColorG#, Game\FilterColorB#)
+
+
 
 		FxManager_RenderWorldFast()
 		CameraProjMode (c\Entity, 0)
@@ -729,11 +576,11 @@
 
 		; Render FastExt effects
 		If Menu\Stage<>0 Then
-			RenderPostprocess(FE_GLOW)
-			If TimeControl#<0.0 Then RenderPostprocess(FE_Inverse)
+			If TimeControl#<0.0 Or Game\ChaosControlTimer>0 Then RenderPostprocess(FE_Inverse)
 			If Menu\Settings\DepthOfField#=1 Then RenderPostprocess(FE_DOF)
-			If Menu\Settings\MotionBlur#=1 and Game\Interface\DebugPlacerOn=0 Then Postprocess_BlurHandle(1,1,0,0,((pp(1)\SpeedLength#-2.2)/6.5),(pp(1)\Objects\Camera\Rotation\y#-(pp(1)\Animation\Direction#-90)))
-			If Game\Stage\Properties\Sun>0 and Game\Stage\Properties\SunRays=1 Then Postprocess_SunRays(Menu\Settings\SunRays#)
+			If Menu\Settings\MotionBlur#=1 And Game\Interface\DebugPlacerOn=0 Then Postprocess_BlurHandle(1,1,0,0,((pp(1)\SpeedLength#-2.2)/6.5),(pp(1)\Objects\Camera\Rotation\y#-(pp(1)\Animation\Direction#-90)))
+			If Game\Stage\Properties\Sun>0 And Game\Stage\Properties\SunRays=1 Then Postprocess_SunRays(Menu\Settings\SunRays#)
+			
 		EndIf
 			
 		PostEffect_UpdateAll(d)
@@ -741,7 +588,6 @@
 		; Render menu
 		If Menu\Stage = 0 Then
 			If Menu\Background=0 Then Menu_Update(d)
-			If Menu\Background<>0 and Menu\Background<>4 and Menu\Settings\Theme#=7 Then UpdateFlakes()
 		EndIf
 				
 		; Render interface
@@ -754,7 +600,7 @@
 					End Select
 				EndIf
 				If Input\Pressed\Change Then Menu\Settings\ChaoNameTag#=Abs(Menu\Settings\ChaoNameTag#-1)
-				If Menu\Settings\ChaoNameTag#=1 and Menu\Stage=999 and (Not(Game\MustQuitStage>0)) Then
+				If Menu\Settings\ChaoNameTag#=1 And Menu\Stage=999 And (Not(Game\MustQuitStage>0)) Then
 					For cc.tChaoManager = Each tChaoManager
 						Chao_Interface_NameTag(cc, c)	
 					Next
@@ -784,12 +630,12 @@
 	Next
 
 	; chao garden cheats
-	If Menu\Settings\Debug#=1 and Menu\Developer=1 and Menu\ChaoGarden=1 and Menu\Stage=999 Then
+	If Menu\Settings\Debug#=1 And Menu\Developer=1 And Menu\ChaoGarden=1 And Menu\Stage=999 Then
 		;random chao overwriting
 		If (KeyHit(KEY_F9)) Then OverwriteGardenAndCreateRandomChao() : Game\SmartCameraRangeDontAffectTimer=5*secs#
 
 		; chao sky cheat
-		If (KeyHit(Key_F8)) Then
+		If (KeyHit(KEY_F8)) Then
 			Game\Stage\Properties\SkyCycle=Game\Stage\Properties\SkyCycle+1
 			If Game\Stage\Properties\SkyCycle>4 Then Game\Stage\Properties\SkyCycle=1
 			Select Game\Stage\Properties\SkyCycle
@@ -813,7 +659,7 @@ Function Stage_CreateCyclingSkyBox(path$)
 	DaySkyTexture = LoadTexture(path$+"Skydome/skyDay.png")
 	NightSkyTexture = LoadTexture(path$+"Skydome/skyNight.png")
 
-	For i=1 to 3
+	For i=1 To 3
 		Game\Stage\Properties\SkyMesh[i] = LoadAnimMesh(path$+"Skydome/Sky.b3d")
 		ScaleEntity(Game\Stage\Properties\SkyMesh[i], 0.1, 0.1, 0.1)
 		Select i
@@ -888,7 +734,7 @@ Function Stage_UpdateCyclingSkyBox(camera, d.tDeltaTime)
 	AmbientLight(Game\Stage\Properties\AmbientCycle[1],Game\Stage\Properties\AmbientCycle[2],Game\Stage\Properties\AmbientCycle[3])
 	For m.MeshStructure = Each MeshStructure : EntityColor(m\Entity,Game\Stage\Properties\AmbientCycle[1]+50,Game\Stage\Properties\AmbientCycle[2]+50,Game\Stage\Properties\AmbientCycle[3]+50) : Next
 
-	For i=1 to 3
+	For i=1 To 3
 		If Game\Stage\Properties\SkyMeshAlpha[i]>1.0 Then Game\Stage\Properties\SkyMeshAlpha[i]=1.0
 		If Game\Stage\Properties\SkyMeshAlpha[i]<0.0 Then Game\Stage\Properties\SkyMeshAlpha[i]=0.0
 		PositionEntity(Game\Stage\Properties\SkyMesh[i], EntityX(camera), EntityY(camera), EntityZ(camera))
@@ -936,7 +782,7 @@ End Function
 
 Function Stage_ResetStageMusic()
 	Game\Stage\Properties\MusicMode=0
-	For i=0 to 2
+	For i=0 To 2
 		Game\Stage\Properties\MusicFade#[i]=1.0
 		StopChannel(Game\Stage\Properties\MusicChn[i])
 	Next
@@ -945,6 +791,8 @@ End Function
 ;---------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------------------------------------------------------
 
-	Function DummyDebug()
-		PlaySmartSound(Sound_AmbientAlarm)
+Function DummyDebug()
+	PlaySmartSound(Sound_Ring)
 	End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

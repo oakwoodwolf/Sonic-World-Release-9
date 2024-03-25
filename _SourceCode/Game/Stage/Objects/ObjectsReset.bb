@@ -68,7 +68,7 @@ Function Objects_Reset_All()
 			rz\Timer=0
 		Next
 
-		If Menu\Mission=MISSION_HUNT# Then Objects_Reset_RedRings()
+		If Menu\Mission=MISSION_HUNT# Then Objects_Reset_Shards()
 
 		;repose all obj
 		For o.tobject=Each tObject
@@ -107,6 +107,7 @@ Function Objects_Reset_Object(o.tObject, dontdelete=0)
 	o\WhirlwindStunTimer=0
 	o\ObjPickedUp=0
 	o\Psychoed=0
+	o\RingDrawIn=0
 	o\PsychoedThrown=False
 	o\Rubied=0
 	o\Repose=0
@@ -115,6 +116,11 @@ Function Objects_Reset_Object(o.tObject, dontdelete=0)
 	o\SavedFromInsideBoxOnce=0
 	If o\ThisIsATranslator Then
 		o\Translator\WasJustUsedTimer=0
+		If o\ObjType=OBJTYPE_PANEL1 Or o\ObjType=OBJTYPE_PANEL2 Then
+			o\Translator\PanelDisabler=0
+			o\Translator\PanelDisablerTimer=0
+			o\Translator\PanelSoundDisabler=0
+		EndIf 
 	ElseIf o\ThisIsASpike Then
 		Object_Spike_CollisionReset(o)
 	EndIf
@@ -163,7 +169,7 @@ Function Objects_Reset_Object(o.tObject, dontdelete=0)
 		o\Enemy\MayNotHurtTimer=0
 		o\Enemy\HiddenSeenTimer=0
 		o\Enemy\Shield=o\Enemy\InitialShield
-		o\HasRedRing=False
+		o\HasShard=False
 		o\Enemy\Health=o\Enemy\InitialHealth
 		Select o\ObjType
 			Case OBJTYPE_ORBINAUT,OBJTYPE_SPONA: o\Mode=5 : o\Enemy\ShouldSpawnMissile=True
@@ -190,15 +196,15 @@ Function Objects_Reset_Object(o.tObject, dontdelete=0)
 				o\Mode=0
 			Case OBJTYPE_SPEWRING:
 				o\Spew\CollectTimer#=10501
-			Case OBJTYPE_SPEWREDRING:
+			Case OBJTYPE_SPEWSHARD:
 				o\Spew\CollectTimer#=10501
-				o\HasRedRing=False
+				o\HasShard=False
 			Case OBJTYPE_RING:
 				o\State=0
 				o\CanRingDash=True
 				o\AlwaysPresent=False
-			Case OBJTYPE_REDRING:
-				o\HasRedRing=False
+			Case OBJTYPE_SHARD:
+				o\HasShard=False
 				o\AlwaysPresent=False
 				o\Treasure\BoxShouldHide=False
 			Case OBJTYPE_THOOP:
@@ -248,7 +254,7 @@ Function Objects_Reset_Object(o.tObject, dontdelete=0)
 				Delete o
 				Return
 			Case OBJTYPE_FLICKY:
-				If o\Treasure\RedRingNo=0 Then o\State=-1
+				If o\Treasure\ShardNo=0 Then o\State=-1
 			Case OBJTYPE_REPEATER:
 				o\Translator\HasDestination=1
 			Case OBJTYPE_FPLAT:
@@ -372,7 +378,7 @@ Function Objects_Reset_HasMesh(o.tObject)
 	End Select
 
 	Select o\ObjType
-		Case OBJTYPE_PLATEBUMPER,OBJTYPE_PROPELLER,OBJTYPE_PULLEY,OBJTYPE_ROCKET,OBJTYPE_ELEVATOR,OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA,OBJTYPE_SWITCHBASE:
+		Case OBJTYPE_PLATEBUMPER,OBJTYPE_CHECK,OBJTYPE_PROPELLER,OBJTYPE_PULLEY,OBJTYPE_ROCKET,OBJTYPE_ELEVATOR,OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA,OBJTYPE_SWITCHBASE:
 			o\HasEntity3=True
 	End Select
 
@@ -382,7 +388,7 @@ Function Objects_Reset_HasMesh(o.tObject)
 	End Select
 
 	Select o\ObjType
-		Case OBJTYPE_RING,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_ACCEL,OBJTYPE_BOXLIGHT,OBJTYPE_SWITCH,OBJTYPE_SWITCHWATER,OBJTYPE_SWITCHBASE,OBJTYPE_LASERV,OBJTYPE_LASERH,OBJTYPE_RINGGATEV,OBJTYPE_RINGGATEH,OBJTYPE_PULLEY,OBJTYPE_BELL,OBJTYPE_BUTTERFLY,OBJTYPE_SEAGULL,OBJTYPE_SEAC,OBJTYPE_FLICKY,OBJTYPE_FPLAT,OBJTYPE_WISP:
+		Case OBJTYPE_RING,OBJTYPE_SPRINGTHORN,OBJTYPE_REDRING,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_ACCEL,OBJTYPE_SWITCH,OBJTYPE_SWITCHWATER,OBJTYPE_SWITCHBASE,OBJTYPE_LASERV,OBJTYPE_LASERH,OBJTYPE_RINGGATEV,OBJTYPE_RINGGATEH,OBJTYPE_PULLEY,OBJTYPE_BELL,OBJTYPE_BUTTERFLY,OBJTYPE_SEAGULL,OBJTYPE_SEAC,OBJTYPE_FLICKY,OBJTYPE_FPLAT,OBJTYPE_WISP,OBJTYPE_BOXLIGHT:
 			o\HasEntityX=True
 		Default:
 			If o\ThisIsAMonitor Or o\ThisIsAPlant Then
@@ -412,10 +418,10 @@ Function Objects_Reset_HasMesh(o.tObject)
 	;_____________________________________________________________________________
 
 		Select o\ObjType
-			Case OBJTYPE_RING,OBJTYPE_REDRING,OBJTYPE_SWITCH,OBJTYPE_SWITCHBASE,OBJTYPE_SWITCHTOP,OBJTYPE_SWITCHWATER,OBJTYPE_SWITCHAIR,OBJTYPE_SPIKEBALL,OBJTYPE_SPIKEBOMB,OBJTYPE_SPIKECRUSHER,OBJTYPE_OMOCHAO,OBJTYPE_TELEPORTER,OBJTYPE_TELEPORTER2,OBJTYPE_TELEPORTER3,OBJTYPE_TELEPORTER5,OBJTYPE_TELEPORTER6,OBJTYPE_ELEVATOR,OBJTYPE_BOMBER2,OBJTYPE_BELL:
+			Case OBJTYPE_RING,OBJTYPE_REDRING,OBJTYPE_SHARD,OBJTYPE_SWITCH,OBJTYPE_SWITCHBASE,OBJTYPE_SWITCHTOP,OBJTYPE_SWITCHWATER,OBJTYPE_SWITCHAIR,OBJTYPE_SPIKEBALL,OBJTYPE_SPIKEBOMB,OBJTYPE_SPIKECRUSHER,OBJTYPE_OMOCHAO,OBJTYPE_TELEPORTER,OBJTYPE_TELEPORTER2,OBJTYPE_TELEPORTER3,OBJTYPE_TELEPORTER5,OBJTYPE_TELEPORTER6,OBJTYPE_ELEVATOR,OBJTYPE_BOMBER2,OBJTYPE_BELL:
 				o\CanBeInsideBox=True
 			Default:
-				If o\ThisIsABox Or o\ThisIsATranslator Or o\ThisIsAMonitor Or o\ThisIsAnEnemy Then
+				If o\ThisIsABox Or o\ThisIsATranslator Or o\ThisIsAMonitor Or o\ThisIsAnEnemy Or (Not(o\ObjType=OBJTYPE_SPRING)) Then
 					o\CanBeInsideBox=True
 				EndIf
 		End Select
@@ -424,45 +430,47 @@ End Function
 
 ;-----------------------------------------------------------
 
-Function Objects_Reset_RedRings()
-	For i=1 to 3
-		If Game\Gameplay\RedRingDistance[i]<9 Then
+Function Objects_Reset_Shards()
+	For i=1 To 3
+		If Game\Gameplay\ShardDistance[i]<9 Then
 			Select i
 				Case 1:
-					Game\Gameplay\RedRing[i]=Objects_Reset_DecideRedRings()
+					Game\Gameplay\Shard[i]=Objects_Reset_DecideShards()
 				Case 2:
-					Repeat : Game\Gameplay\RedRing[i]=Objects_Reset_DecideRedRings() : Until (Not(Game\Gameplay\RedRing[i]=Game\Gameplay\RedRing[i-1]))
+					Repeat : Game\Gameplay\Shard[i]=Objects_Reset_DecideShards() : Until (Not(Game\Gameplay\Shard[i]=Game\Gameplay\Shard[i-1]))
 				Case 3:
-					Repeat : Game\Gameplay\RedRing[i]=Objects_Reset_DecideRedRings() : Until (Not(Game\Gameplay\RedRing[i]=Game\Gameplay\RedRing[i-1])) and (Not(Game\Gameplay\RedRing[i]=Game\Gameplay\RedRing[i-2]))
+					Repeat : Game\Gameplay\Shard[i]=Objects_Reset_DecideShards() : Until (Not(Game\Gameplay\Shard[i]=Game\Gameplay\Shard[i-1])) And (Not(Game\Gameplay\Shard[i]=Game\Gameplay\Shard[i-2]))
 			End Select
-			Game\Gameplay\RedRingDistance[i]=0
+			Game\Gameplay\ShardDistance[i]=0
 		EndIf
 	Next
 
 	For o.tObject = Each tObject
 		Select o\ObjType
-			Case OBJTYPE_REDRING,OBJTYPE_SPEWREDRING:
-				For i=1 to 3
-					If o\Treasure\RedRingNo=Game\Gameplay\RedRing[i] Then o\HasRedRing=True : o\AlwaysPresent=True
+			Case OBJTYPE_SHARD,OBJTYPE_SPEWSHARD:
+				For i=1 To 3
+					If o\Treasure\ShardNo=Game\Gameplay\Shard[i] Then o\HasShard=True : o\AlwaysPresent=True
 				Next
 			Default:
 				If o\ThisIsAnEnemy Then
-					For i=1 to 3
-						If o\Enemy\EnemyNo=-Game\Gameplay\RedRing[i] And Game\Gameplay\RedRingDistance[i]<9 Then o\HasRedRing=True
+					For i=1 To 3
+						If o\Enemy\EnemyNo=-Game\Gameplay\Shard[i] And Game\Gameplay\ShardDistance[i]<9 Then o\HasShard=True
 					Next
 				EndIf
 		End Select
 	Next
 End Function
 
-Function Objects_Reset_DecideRedRings()
-	redringdecision#=Rand(1,Game\Gameplay\TotalEnemies/2.5+Game\Gameplay\TotalRedRings)
+Function Objects_Reset_DecideShards()
+	sharddecision#=Rand(1,Game\Gameplay\TotalEnemies/2.5+Game\Gameplay\TotalShards)
 
-	If redringdecision#<=Game\Gameplay\TotalEnemies/2.5 Then
-		redringdecision=-Rand(1,Game\Gameplay\TotalEnemies)
+	If sharddecision#<=Game\Gameplay\TotalEnemies/2.5 Then
+		sharddecision=-Rand(1,Game\Gameplay\TotalEnemies)
 	Else
-		redringdecision=Rand(1,Game\Gameplay\TotalRedRings)
+		sharddecision=Rand(1,Game\Gameplay\TotalShards)
 	EndIf
 
-	Return redringdecision
+	Return sharddecision
 End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

@@ -2,11 +2,11 @@
 	Function Object_SwitchManager_FindSwitchAndAssign(o.tObject)
 		If Object_WhetherHasSwitches(o) Then
 			o\Switch\SwitchFound=True
-			For i=0 to 2
+			For i=0 To 2
 				If o\Switch\SwitchNo[i]>0 Then
 					switchfound=False
 					For s.tSwitchManager=Each tSwitchManager
-						If switchfound=False and s\No=o\Switch\SwitchNo[i] Then
+						If switchfound=False And s\No=o\Switch\SwitchNo[i] Then
 							Select i
 							Case 0: o\Switch\s1=s
 							Case 1: o\Switch\s2=s
@@ -15,7 +15,7 @@
 							switchfound=True
 						EndIf
 					Next
-					If switchfound=false Then o\Switch\SwitchFound=False
+					If switchfound=False Then o\Switch\SwitchFound=False
 				EndIf
 			Next
 		EndIf
@@ -71,7 +71,7 @@
 	End Function
 
 	Function Object_WhetherHasSwitches(o.tObject)
-		For i=0 to 2
+		For i=0 To 2
 			If o\Switch\SwitchNo[i]>0 Then Return True
 		Next
 		Return False

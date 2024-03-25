@@ -41,6 +41,7 @@
 	Global Sound_AmbientSnow		= cm : cm=cm+1
 	Global Sound_AmbientVoid		= cm : cm=cm+1
 	Global Sound_AmbientWind		= cm : cm=cm+1
+	Global Sound_AmbientUnderWater		= cm : cm=cm+1
 
 	Global SOUNDS_AMBIENTTOTAL=cm-1
 
@@ -67,10 +68,13 @@
 	Global Sound_Bounce			= cm : cm=cm+1
 	Global Sound_Bounce2		= cm : cm=cm+1
 	Global Sound_Boxdestroy			= cm : cm=cm+1
+	Global Sound_BoxYellowBreak			= cm : cm=cm+1
+	Global Sound_BoxYellowAppear			= cm : cm=cm+1
 	Global Sound_Boxirondestroy		= cm : cm=cm+1
 	Global Sound_Break			= cm : cm=cm+1
 	Global Sound_Breath			= cm : cm=cm+1
 	Global Sound_BreathCount		= cm : cm=cm+1
+	Global Sound_BreathCountLast		= cm : cm=cm+1
 	Global Sound_BubbleBeam			= cm : cm=cm+1
 	Global Sound_Bumper1			= cm : cm=cm+1
 	Global Sound_Bumper2			= cm : cm=cm+1
@@ -83,11 +87,21 @@
 	Global Sound_Car4			= cm : cm=cm+1
 	Global Sound_Chao			= cm : cm=cm+1
 	Global Sound_ChaosControl		= cm : cm=cm+1
+	Global Sound_ChaosBoost		= cm : cm=cm+1
 	Global Sound_ChaosDrive			= cm : cm=cm+1
 	Global Sound_Check			= cm : cm=cm+1
+	Global Sound_CheckEnd			= cm : cm=cm+1
+	Global Sound_CheckFlash			= cm : cm=cm+1
 	Global Sound_Climb			= cm : cm=cm+1
 	Global Sound_Cloud			= cm : cm=cm+1
 	Global Sound_Counter			= cm : cm=cm+1
+	Global Sound_CounterWrong			= cm : cm=cm+1
+	Global Sound_Counter1			= cm : cm=cm+1
+	Global Sound_Counter2		= cm : cm=cm+1
+	Global Sound_Counter3		= cm : cm=cm+1
+	Global Sound_Counter4			= cm : cm=cm+1
+	Global Sound_Counter5		= cm : cm=cm+1
+	
 	Global Sound_Crumble			= cm : cm=cm+1
 	Global Sound_Crusher			= cm : cm=cm+1
 	Global Sound_Curse			= cm : cm=cm+1
@@ -161,6 +175,8 @@
 	Global Sound_GlideStart3		= cm : cm=cm+1
 	Global Sound_Goal			= cm : cm=cm+1
 	Global Sound_GoalIdle			= cm : cm=cm+1
+	Global Sound_RubyGoal			= cm : cm=cm+1
+	Global Sound_RubyIdle			= cm : cm=cm+1
 	Global Sound_Grab			= cm : cm=cm+1
 	Global Sound_Grabber			= cm : cm=cm+1
 	Global Sound_Grind			= cm : cm=cm+1
@@ -225,8 +241,13 @@
 	Global Sound_Minion			= cm : cm=cm+1
 	Global Sound_MissionCompleted		= cm : cm=cm+1
 	Global Sound_Monitor			= cm : cm=cm+1
+	Global Sound_MonitorRing			= cm : cm=cm+1
 	Global Sound_MonitorBalloon		= cm : cm=cm+1
 	Global Sound_MonitorShield		= cm : cm=cm+1
+	Global Sound_MonitorShieldFlame		= cm : cm=cm+1
+	Global Sound_MonitorShieldBubble		= cm : cm=cm+1
+	Global Sound_MonitorShieldThunder		= cm : cm=cm+1
+	Global Sound_MonitorShieldEarth		= cm : cm=cm+1
 	Global Sound_MonitorTrap		= cm : cm=cm+1
 	Global Sound_MonsterBite			= cm : cm=cm+1
 	Global Sound_MonsterDamage			= cm : cm=cm+1
@@ -248,6 +269,8 @@
 	Global Sound_PlaneShoot				= cm : cm=cm+1
 	Global Sound_Pole				= cm : cm=cm+1
 	Global Sound_Propel			= cm : cm=cm+1
+	Global Sound_JumpPanelLand			= cm : cm=cm+1
+	Global Sound_JumpPanelExit				= cm : cm=cm+1
 	Global Sound_Propeller			= cm : cm=cm+1
 	Global Sound_PsychoDash			= cm : cm=cm+1
 	Global Sound_PsychoHold			= cm : cm=cm+1
@@ -257,7 +280,14 @@
 	Global Sound_Punch			= cm : cm=cm+1
 	Global Sound_PunchBig			= cm : cm=cm+1
 	Global Sound_PunchSmall			= cm : cm=cm+1
+	Global Sound_RingSuper			= cm : cm=cm+1
 	Global Sound_Ring			= cm : cm=cm+1
+	Global Sound_RedRing			= cm : cm=cm+1
+	Global Sound_RingSparkle1			= cm : cm=cm+1
+	Global Sound_RingSparkle2			= cm : cm=cm+1
+	Global Sound_RingSparkle3			= cm : cm=cm+1
+
+
 	Global Sound_RingBig			= cm : cm=cm+1
 	Global Sound_RingLoss			= cm : cm=cm+1
 	Global Sound_Robot1			= cm : cm=cm+1
@@ -280,6 +310,7 @@
 	Global Sound_Shotgun1			= cm : cm=cm+1
 	Global Sound_Shotgun2			= cm : cm=cm+1
 	Global Sound_Skydive			= cm : cm=cm+1
+	Global Sound_SkydiveFast			= cm : cm=cm+1
 	Global Sound_Slap			= cm : cm=cm+1
 	Global Sound_SoldierHurt1		= cm : cm=cm+1
 	Global Sound_SoldierHurt2		= cm : cm=cm+1
@@ -297,11 +328,16 @@
 	Global Sound_SpikeDrill2		= cm : cm=cm+1
 	Global Sound_Spikes			= cm : cm=cm+1
 	Global Sound_Spin			= cm : cm=cm+1
+	Global Sound_BoostStart			= cm : cm=cm+1
+	Global Sound_BoostCharge			= cm : cm=cm+1
+	Global Sound_BoostWind			= cm : cm=cm+1
 	Global Sound_SpinDashCharge		= cm : cm=cm+1
 	Global Sound_SpinDashRelease		= cm : cm=cm+1
 	Global Sound_SpinKick			= cm : cm=cm+1
 	Global Sound_Spirit			= cm : cm=cm+1
 	Global Sound_Spring			= cm : cm=cm+1
+	Global Sound_SpringThorn			= cm : cm=cm+1
+	Global Sound_SpringBounce			= cm : cm=cm+1
 	Global Sound_SpringTrap		= cm : cm=cm+1
 	Global Sound_Sting			= cm : cm=cm+1
 	Global Sound_Stomp			= cm : cm=cm+1
@@ -309,6 +345,8 @@
 	Global Sound_Swinger			= cm : cm=cm+1
 	Global Sound_Swipe			= cm : cm=cm+1
 	Global Sound_Switch			= cm : cm=cm+1
+	Global Sound_SwitchOn			= cm : cm=cm+1
+	Global Sound_SwitchOff			= cm : cm=cm+1
 	Global Sound_SwitchAir			= cm : cm=cm+1
 	Global Sound_Teleport			= cm : cm=cm+1
 	Global Sound_Throw			= cm : cm=cm+1
@@ -318,6 +356,8 @@
 	Global Sound_Treasure			= cm : cm=cm+1
 	Global Sound_Trick				= cm : cm=cm+1
 	Global Sound_Umbrella			= cm : cm=cm+1
+	
+
 	Global Sound_Warp			= cm : cm=cm+1
 	Global Sound_WaterBoosting		= cm : cm=cm+1
 	Global Sound_WaterDash			= cm : cm=cm+1
@@ -333,40 +373,40 @@
 
 	Global SOUNDS_STAGETOTAL=cm-1
 
-	Global Voice_OMO_Fact[16]		: For i=1 to 16 : Voice_OMO_Fact[i] = cm : cm=cm+1 : Next
-	Global Voice_OMO_Hurt[5]		: For i=1 to 5 : Voice_OMO_Hurt[i] = cm : cm=cm+1 : Next
-	Global Voice_OMO_Sad[15]		: For i=1 to 15 : Voice_OMO_Sad[i] = cm : cm=cm+1 : Next
+	Global Voice_OMO_Fact[16]		: For i=1 To 16 : Voice_OMO_Fact[i] = cm : cm=cm+1 : Next
+	Global Voice_OMO_Hurt[5]		: For i=1 To 5 : Voice_OMO_Hurt[i] = cm : cm=cm+1 : Next
+	Global Voice_OMO_Sad[15]		: For i=1 To 15 : Voice_OMO_Sad[i] = cm : cm=cm+1 : Next
 
 	Global SOUNDS_OMOCHAOTOTAL=cm-1
 
-	Global ChaoVoice_Amazed[2]		: For i=1 to 2 : ChaoVoice_Amazed[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Attack[7]		: For i=1 to 7 : ChaoVoice_Attack[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Casual[25]		: For i=1 to 25 : ChaoVoice_Casual[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Crazy[3]		: For i=1 to 3 : ChaoVoice_Crazy[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Crying[4]		: For i=1 to 4 : ChaoVoice_Crying[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Disgusted[4]		: For i=1 to 4 : ChaoVoice_Disgusted[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Drowning[2]		: For i=1 to 2 : ChaoVoice_Drowning[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Eating[4]		: For i=1 to 4 : ChaoVoice_Eating[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Figured[2]		: For i=1 to 2 : ChaoVoice_Figured[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Frustrated[6]		: For i=1 to 6 : ChaoVoice_Frustrated[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Humming[1]		: For i=1 to 1 : ChaoVoice_Humming[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Hurt[6]		: For i=1 to 6 : ChaoVoice_Hurt[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Laughing[6]		: For i=1 to 6 : ChaoVoice_Laughing[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Mumbling[3]		: For i=1 to 3 : ChaoVoice_Mumbling[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Playing[6]		: For i=1 to 6 : ChaoVoice_Playing[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Ready[3]		: For i=1 to 3 : ChaoVoice_Ready[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Refusing[4]		: For i=1 to 4 : ChaoVoice_Refusing[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Sad[3]			: For i=1 to 3 : ChaoVoice_Sad[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Satisfied[3]		: For i=1 to 3 : ChaoVoice_Satisfied[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Scared[3]		: For i=1 to 3 : ChaoVoice_Scared[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Singing[9]		: For i=1 to 9 : ChaoVoice_Singing[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Sleeping[6]		: For i=1 to 6 : ChaoVoice_Sleeping[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Surprised[5]		: For i=1 to 5 : ChaoVoice_Surprised[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Talking[10]		: For i=1 to 10 : ChaoVoice_Talking[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Thinking[7]		: For i=1 to 7 : ChaoVoice_Thinking[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Tired[2]		: For i=1 to 2 : ChaoVoice_Tired[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Waking[4]		: For i=1 to 4 : ChaoVoice_Waking[i] = cm : cm=cm+1 : Next
-	Global ChaoVoice_Yawning[3]		: For i=1 to 3 : ChaoVoice_Yawning[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Amazed[2]		: For i=1 To 2 : ChaoVoice_Amazed[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Attack[7]		: For i=1 To 7 : ChaoVoice_Attack[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Casual[25]		: For i=1 To 25 : ChaoVoice_Casual[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Crazy[3]		: For i=1 To 3 : ChaoVoice_Crazy[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Crying[4]		: For i=1 To 4 : ChaoVoice_Crying[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Disgusted[4]		: For i=1 To 4 : ChaoVoice_Disgusted[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Drowning[2]		: For i=1 To 2 : ChaoVoice_Drowning[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Eating[4]		: For i=1 To 4 : ChaoVoice_Eating[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Figured[2]		: For i=1 To 2 : ChaoVoice_Figured[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Frustrated[6]		: For i=1 To 6 : ChaoVoice_Frustrated[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Humming[1]		: For i=1 To 1 : ChaoVoice_Humming[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Hurt[6]		: For i=1 To 6 : ChaoVoice_Hurt[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Laughing[6]		: For i=1 To 6 : ChaoVoice_Laughing[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Mumbling[3]		: For i=1 To 3 : ChaoVoice_Mumbling[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Playing[6]		: For i=1 To 6 : ChaoVoice_Playing[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Ready[3]		: For i=1 To 3 : ChaoVoice_Ready[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Refusing[4]		: For i=1 To 4 : ChaoVoice_Refusing[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Sad[3]			: For i=1 To 3 : ChaoVoice_Sad[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Satisfied[3]		: For i=1 To 3 : ChaoVoice_Satisfied[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Scared[3]		: For i=1 To 3 : ChaoVoice_Scared[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Singing[9]		: For i=1 To 9 : ChaoVoice_Singing[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Sleeping[6]		: For i=1 To 6 : ChaoVoice_Sleeping[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Surprised[5]		: For i=1 To 5 : ChaoVoice_Surprised[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Talking[10]		: For i=1 To 10 : ChaoVoice_Talking[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Thinking[7]		: For i=1 To 7 : ChaoVoice_Thinking[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Tired[2]		: For i=1 To 2 : ChaoVoice_Tired[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Waking[4]		: For i=1 To 4 : ChaoVoice_Waking[i] = cm : cm=cm+1 : Next
+	Global ChaoVoice_Yawning[3]		: For i=1 To 3 : ChaoVoice_Yawning[i] = cm : cm=cm+1 : Next
 
 	Global Sound_ChaoDarkEvo		= cm : cm=cm+1
 	Global Sound_ChaoDeath			= cm : cm=cm+1
@@ -383,10 +423,12 @@
 
 	Global SOUNDS_CHAOVOICESTOTAL=cm-1
 
-	Global Voice_EGG_Attack[5]		: For i=1 to 5 : Voice_EGG_Attack[i] = cm : cm=cm+1 : Next
-	Global Voice_EGG_Lose[3]		: For i=1 to 3 : Voice_EGG_Lose[i] = cm : cm=cm+1 : Next
-	Global Voice_EGG_Win[2]			: For i=1 to 2 : Voice_EGG_Win[i] = cm : cm=cm+1 : Next
+	Global Voice_EGG_Attack[5]		: For i=1 To 5 : Voice_EGG_Attack[i] = cm : cm=cm+1 : Next
+	Global Voice_EGG_Lose[3]		: For i=1 To 3 : Voice_EGG_Lose[i] = cm : cm=cm+1 : Next
+	Global Voice_EGG_Win[2]			: For i=1 To 2 : Voice_EGG_Win[i] = cm : cm=cm+1 : Next
 
 	Global SOUNDS_EGGMANTOTAL=cm-1
 
 	Global SOUNDS_TOTAL=cm-1
+;~IDEal Editor Parameters:
+;~C#Blitz3D

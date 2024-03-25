@@ -1,4 +1,4 @@
-Function DrawSmartButtonT(buttonno, text$, x#, y#, color, inactive=false, forcecolor=0, small=false)
+Function DrawSmartButtonT(buttonno, text$, x#, y#, color, inactive=False, forcecolor=0, small=False)
 	option=Menu\Option
 	If option=buttonno Then
 		If Menu\ButtonState2=0 Then Menu\ButtonSize2#=Menu\ButtonSize2#-BUTTON_SCALESPEED#*Game\DeltaTime\Delta# : If Menu\ButtonSize2#<0 Then Menu\ButtonState2=1 : Menu\ButtonSize2#=0
@@ -7,36 +7,36 @@ Function DrawSmartButtonT(buttonno, text$, x#, y#, color, inactive=false, forcec
 	EndIf
 
 	Select small
-		Case false: buttontype=Interface_ButtonsT : buttontypesize=1 : buttontypetext1=Interface_TextButtons2_1 : buttontypetext2=Interface_TextButtons_1
-		Case true: buttontype=Interface_ButtonsT_2 : buttontypesize=0.75 : buttontypetext1=Interface_TextButtons2_2 : buttontypetext2=Interface_TextButtons_2
+		Case False: buttontype=Interface_ButtonsT : buttontypesize=1 : buttontypetext1=Interface_TextButtons2_1 : buttontypetext2=Interface_TextButtons_1
+		Case True: buttontype=Interface_ButtonsT_2 : buttontypesize=0.75 : buttontypetext1=Interface_TextButtons2_2 : buttontypetext2=Interface_TextButtons_2
 	End Select
 
 	If inactive Then
 		SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
 		DrawImageEx(INTERFACE(buttontype), x#, y#, 6)
-		DrawRealText(text$, x#, y#+2.5*buttontypesize, (buttontypetext2), 1)
+		DrawRealText(Text$, x#, y#+2.5*buttontypesize, (buttontypetext2), 1)
 	Else
 		If forcecolor=0 Then
 			If option=buttonno Then
 				SetScale(GAME_WINDOW_SCALE#+Menu\ButtonSize#, GAME_WINDOW_SCALE#+Menu\ButtonSize#)
 				DrawImageEx(INTERFACE(buttontype), x#, y#, 0)
 				SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
-				DrawRealText(text$, x#, y#+2.5*buttontypesize, (buttontypetext1), 1)
+				DrawRealText(Text$, x#, y#+2.5*buttontypesize, (buttontypetext1), 1)
 			Else
 				SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
-				DrawImageEx(INTERFACE(buttontype), x#, y#, color)
-				DrawRealText(text$, x#, y#+2.5*buttontypesize, (buttontypetext2), 1)
+				DrawImageEx(INTERFACE(buttontype), x#, y#, Color)
+				DrawRealText(Text$, x#, y#+2.5*buttontypesize, (buttontypetext2), 1)
 			EndIf
 		Else
 			If option=buttonno Then
 				SetScale(GAME_WINDOW_SCALE#+Menu\ButtonSize#, GAME_WINDOW_SCALE#+Menu\ButtonSize#)
 				DrawImageEx(INTERFACE(buttontype), x#, y#, forcecolor)
 				SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
-				DrawRealText(text$, x#, y#+2.5*buttontypesize, (buttontypetext1), 1)
+				DrawRealText(Text$, x#, y#+2.5*buttontypesize, (buttontypetext1), 1)
 			Else
 				SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
 				DrawImageEx(INTERFACE(buttontype), x#, y#, forcecolor)
-				DrawRealText(text$, x#, y#+2.5*buttontypesize, (buttontypetext2), 1)
+				DrawRealText(Text$, x#, y#+2.5*buttontypesize, (buttontypetext2), 1)
 			EndIf
 		EndIf
 	EndIf
@@ -111,8 +111,8 @@ Function Menu_Transporter_Main()
 		DrawSmartButtonT(1, "Name", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-75*GAME_WINDOW_SCALE#, 1)
 		DrawSmartButtonT(2, "Good-bye", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-25*GAME_WINDOW_SCALE#, 1)
 	Else
-		DrawSmartButtonT(1, "Name", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-75*GAME_WINDOW_SCALE#, 1, true)
-		DrawSmartButtonT(2, "Good-bye", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-25*GAME_WINDOW_SCALE#, 1, true)
+		DrawSmartButtonT(1, "Name", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-75*GAME_WINDOW_SCALE#, 1, True)
+		DrawSmartButtonT(2, "Good-bye", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-25*GAME_WINDOW_SCALE#, 1, True)
 	EndIf
 	DrawSmartButtonT(3, "Inventory", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+25*GAME_WINDOW_SCALE#, 1)
 	DrawSmartButtonT(4, "Exit", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+75*GAME_WINDOW_SCALE#, 1)
@@ -165,21 +165,21 @@ Function Menu_Transporter_Inventory()
 
 	DrawRealText("Choose items to take out with you.", GAME_WINDOW_W/2-(BUTTON_PLACE1#+100)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-110*GAME_WINDOW_SCALE#, (Interface_Text_3), 0, GAME_WINDOW_W/2-(BUTTON_PLACE1#+100)*GAME_WINDOW_SCALE#+275*GAME_WINDOW_SCALE#)
 
-	If Input\Pressed\Down and TOTALITEMS>1 Then
+	If Input\Pressed\Down And TOTALITEMS>1 Then
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option+1
 		If Menu\Option>Menu_Transporter_Inventory_Amount(TOTALITEMS) Then Menu\Option=Menu_Transporter_Inventory_Amount(TOTALITEMS) : Menu\OptionOrder=Menu\OptionOrder+1
 		If Menu\OptionOrder>TOTALITEMS-1 Then Menu\OptionOrder=0
 	EndIf
 
-	If Input\Pressed\Up and TOTALITEMS>1 Then
+	If Input\Pressed\Up And TOTALITEMS>1 Then
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option-1
 		If Menu\Option<1 Then Menu\Option=1 : Menu\OptionOrder=Menu\OptionOrder-1
 		If Menu\OptionOrder<0 Then Menu\OptionOrder=TOTALITEMS-1
 	EndIf
 
-	For i=1 to Menu_Transporter_Inventory_Amount(TOTALITEMS)
+	For i=1 To Menu_Transporter_Inventory_Amount(TOTALITEMS)
 		Menu_Transporter_InventoryItem(i)
 	Next
 	If TOTALITEMS>1 Then
@@ -231,16 +231,16 @@ Function Menu_Transporter_InventoryItem(option)
 	EndIf
 
 	Select isheld
-		Case false: forcecolor=0
-		Case true: forcecolor=5
+		Case False: forcecolor=0
+		Case True: forcecolor=5
 	End Select
 	Select Menu\BlackMarketBuyCategory
-		Case 1: DrawSmartButtonT(option, FRUITS$(Menu\BlackMarketSellCategory), GAME_WINDOW_W/2+(BUTTON_PLACE1#-15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-50*(option-1))*GAME_WINDOW_SCALE#, 4, false, forcecolor)
-		Case 2: DrawSmartButtonT(option, HATS$(Menu\BlackMarketSellCategory), GAME_WINDOW_W/2+(BUTTON_PLACE1#-15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-50*(option-1))*GAME_WINDOW_SCALE#, 4, false, forcecolor)
-		Case 3: DrawSmartButtonT(option, CHAOCOLORS$(Menu\BlackMarketSellCategory)+" egg", GAME_WINDOW_W/2+(BUTTON_PLACE1#-15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-50*(option-1))*GAME_WINDOW_SCALE#, 4, false, forcecolor)
-		Case 4: DrawSmartButtonT(option, SHELLS$(Menu\BlackMarketSellCategory), GAME_WINDOW_W/2+(BUTTON_PLACE1#-15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-50*(option-1))*GAME_WINDOW_SCALE#, 4, false, forcecolor)
-		Case 5: DrawSmartButtonT(option, TOYS$(Menu\BlackMarketSellCategory), GAME_WINDOW_W/2+(BUTTON_PLACE1#-15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-50*(option-1))*GAME_WINDOW_SCALE#, 4, false, forcecolor)
-		Case 6: DrawSmartButtonT(option, "Seed", GAME_WINDOW_W/2+(BUTTON_PLACE1#-15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-50*(option-1))*GAME_WINDOW_SCALE#, 4, false, forcecolor)
+		Case 1: DrawSmartButtonT(option, FRUITS$(Menu\BlackMarketSellCategory), GAME_WINDOW_W/2+(BUTTON_PLACE1#-15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-50*(option-1))*GAME_WINDOW_SCALE#, 4, False, forcecolor)
+		Case 2: DrawSmartButtonT(option, HATS$(Menu\BlackMarketSellCategory), GAME_WINDOW_W/2+(BUTTON_PLACE1#-15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-50*(option-1))*GAME_WINDOW_SCALE#, 4, False, forcecolor)
+		Case 3: DrawSmartButtonT(option, CHAOCOLORS$(Menu\BlackMarketSellCategory)+" egg", GAME_WINDOW_W/2+(BUTTON_PLACE1#-15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-50*(option-1))*GAME_WINDOW_SCALE#, 4, False, forcecolor)
+		Case 4: DrawSmartButtonT(option, SHELLS$(Menu\BlackMarketSellCategory), GAME_WINDOW_W/2+(BUTTON_PLACE1#-15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-50*(option-1))*GAME_WINDOW_SCALE#, 4, False, forcecolor)
+		Case 5: DrawSmartButtonT(option, TOYS$(Menu\BlackMarketSellCategory), GAME_WINDOW_W/2+(BUTTON_PLACE1#-15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-50*(option-1))*GAME_WINDOW_SCALE#, 4, False, forcecolor)
+		Case 6: DrawSmartButtonT(option, "Seed", GAME_WINDOW_W/2+(BUTTON_PLACE1#-15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-50*(option-1))*GAME_WINDOW_SCALE#, 4, False, forcecolor)
 	End Select
 
 End Function
@@ -267,7 +267,7 @@ Function Menu_Transporter_Goodbye()
 	If Menu\OptionOrder2<3 Then
 		DrawChaoStats_Menu(GAME_WINDOW_W/2-(BUTTON_PLACE1#+210)*GAME_WINDOW_SCALE#,GAME_WINDOW_H/2-(87.5)*GAME_WINDOW_SCALE#)
 
-		DrawSmartButtonT(1, "Accept", GAME_WINDOW_W/2+(BUTTON_PLACE1#+205)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+95*GAME_WINDOW_SCALE#, 1, false, 2)
+		DrawSmartButtonT(1, "Accept", GAME_WINDOW_W/2+(BUTTON_PLACE1#+205)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+95*GAME_WINDOW_SCALE#, 1, False, 2)
 
 		If Input\Pressed\ActionJump Or Input\Pressed\Start Then
 			PlaySmartSound(Sound_MenuAccept)
@@ -282,7 +282,7 @@ Function Menu_Transporter_Goodbye()
 			Menu\NewMenu2=0
 		EndIf
 	Else
-		If (Not(Menu\ChaoMenuTimer>0)) and Menu\Transition=0 Then
+		If (Not(Menu\ChaoMenuTimer>0)) And Menu\Transition=0 Then
 			PlaySmartSound(Sound_MenuBack)
 			Menu\Transition=1
 			Menu\NewOption=4
@@ -298,8 +298,8 @@ Function Menu_Transporter_Goodbye_DeleteAChao(chaonumber)
 	DeleteFile(SaveDataPath$+"CHAO"+chaonumber+".dat")
 	CHAOSLOTS(1,chaonumber)=0
 
-	For i=1 to CHAOCOUNT
-		If i>chaonumber and CHAOSLOTS(1,i)=1 Then
+	For i=1 To CHAOCOUNT
+		If i>chaonumber And CHAOSLOTS(1,i)=1 Then
 			RenameFile(SaveDataPath$+"CHAO"+i+".dat",SaveDataPath$+"CHAO"+(i-1)+".dat")
 			DeleteFile(SaveDataPath$+"CHAO"+i+".dat")
 			CHAOSLOTS(1,i)=0
@@ -474,8 +474,8 @@ Function Menu_Transporter_LetterBox(x#, y#, row, column, spacing#, boxtype#=0)
 		Case 1: boxtype#=SmartImage(Interface_Principal)
 	End Select
 
-	For i=0 to row-1
-	For h=0 to column-1
+	For i=0 To row-1
+	For h=0 To column-1
 		Select h
 			Case 0:
 				Select i
@@ -513,8 +513,8 @@ End Function
 Function Menu_Transporter_Letters(x#, y#, row, column, spacing#)
 
 	j=0
-	For h=0 to column-1
-		For i=0 to row-1
+	For h=0 To column-1
+		For i=0 To row-1
 			If (i+h+j)<70 Then
 				If Menu\Option=(i+h+j)+10 Then
 					If Menu\ButtonState2=0 Then Menu\ButtonSize2#=Menu\ButtonSize2#-BUTTON_SCALESPEED#*Game\DeltaTime\Delta# : If Menu\ButtonSize2#<0 Then Menu\ButtonState2=1 : Menu\ButtonSize2#=0
@@ -538,15 +538,15 @@ End Function
 Function Menu_Transporter_NameBox(x#, y#, row, column, spacing#)
 
 	SetScale(GAME_WINDOW_SCALE#*1.25, GAME_WINDOW_SCALE#*1.25)
-	For h=0 to column-1
-	For i=0 to row-1
+	For h=0 To column-1
+	For i=0 To row-1
 		DrawImageEx(INTERFACE(Interface_Naming), x#+i*spacing#*GAME_WINDOW_SCALE#, y#+h*spacing#*GAME_WINDOW_SCALE#, 9)
 	Next
 	Next
 	SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
 
-	For h=0 to column-1
-	For i=0 to row-1
+	For h=0 To column-1
+	For i=0 To row-1
 		DrawImageEx(INTERFACE(Interface_Naming), x#+i*spacing#*GAME_WINDOW_SCALE#, y#+h*spacing#*GAME_WINDOW_SCALE#, 10)
 	Next
 	Next
@@ -596,7 +596,7 @@ Function Menu_Transporter_Stadium()
 			DrawSmartButtonT(2, "Karate", GAME_WINDOW_W/2+(-BUTTON_PLACE1#+180)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#, 5)
 			DrawSmartButtonT(3, "Exit", GAME_WINDOW_W/2+(-BUTTON_PLACE1#+180)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+50*GAME_WINDOW_SCALE#, 5)
 
-			DrawSmartButtonT(4, "Difficulty", GAME_WINDOW_W-80*GAME_WINDOW_SCALE#, GAME_WINDOW_H-(58+BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, 5, false, 0, true)
+			DrawSmartButtonT(4, "Difficulty", GAME_WINDOW_W-80*GAME_WINDOW_SCALE#, GAME_WINDOW_H-(58+BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, 5, False, 0, True)
 			DrawSmartKey(INPUT_BUTTON_ACTIONSKILL2, GAME_WINDOW_W-160*GAME_WINDOW_SCALE#, GAME_WINDOW_H-(58+BUTTON_PLACE1#)*GAME_WINDOW_SCALE#)
 
 			DrawRealText("Competitions won: "+Menu\HeldChaoCompetitionsWon, GAME_WINDOW_W/2+(-10)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(-95+BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
@@ -609,7 +609,7 @@ Function Menu_Transporter_Stadium()
 			DrawSmartButtonT(2, "Karate", GAME_WINDOW_W/2+(BUTTON_PLACE1#+180)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#, 5)
 			DrawSmartButtonT(3, "Exit", GAME_WINDOW_W/2+(BUTTON_PLACE1#+180)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+50*GAME_WINDOW_SCALE#, 5)
 
-			DrawSmartButtonT(4, "Difficulty", GAME_WINDOW_W-80*GAME_WINDOW_SCALE#, GAME_WINDOW_H-(58-BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, 5, false, 0, true)
+			DrawSmartButtonT(4, "Difficulty", GAME_WINDOW_W-80*GAME_WINDOW_SCALE#, GAME_WINDOW_H-(58-BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, 5, False, 0, True)
 			DrawSmartKey(INPUT_BUTTON_ACTIONSKILL2, GAME_WINDOW_W-160*GAME_WINDOW_SCALE#, GAME_WINDOW_H-(58-BUTTON_PLACE1#)*GAME_WINDOW_SCALE#)
 
 			DrawRealText("Competitions won: "+Menu\HeldChaoCompetitionsWon, GAME_WINDOW_W/2+(-10)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(-95-BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
@@ -619,12 +619,12 @@ Function Menu_Transporter_Stadium()
 		EndIf
 	Else
 		DrawRealText("Bring a chao with you to enter it to competitions.", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-87.5*GAME_WINDOW_SCALE#, (Interface_Text_2), 1)
-		DrawSmartButtonT(1, "Race", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-50*GAME_WINDOW_SCALE#, 5, true)
-		DrawSmartButtonT(2, "Karate", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#, 5, true)
+		DrawSmartButtonT(1, "Race", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-50*GAME_WINDOW_SCALE#, 5, True)
+		DrawSmartButtonT(2, "Karate", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#, 5, True)
 		DrawSmartButtonT(3, "Exit", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+50*GAME_WINDOW_SCALE#, 5)
 	EndIf
 
-	If Input\Pressed\Down and Menu\HeldChaoNumber>0 Then
+	If Input\Pressed\Down And Menu\HeldChaoNumber>0 Then
 		PlaySmartSound(Sound_MenuMove)
 		Select Menu\Option
 			Case 4: Menu\Option=1
@@ -634,7 +634,7 @@ Function Menu_Transporter_Stadium()
 		End Select
 	EndIf
 
-	If Input\Pressed\Up and Menu\HeldChaoNumber>0 Then
+	If Input\Pressed\Up And Menu\HeldChaoNumber>0 Then
 		PlaySmartSound(Sound_MenuMove)
 		Select Menu\Option
 			Case 4: Menu\Option=1
@@ -644,7 +644,7 @@ Function Menu_Transporter_Stadium()
 		End Select
 	EndIf
 
-	If Input\Pressed\ActionSkill2 and Menu\Option<>4 Then
+	If Input\Pressed\ActionSkill2 And Menu\Option<>4 Then
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=4
 	EndIf
@@ -680,13 +680,13 @@ Function Menu_Transporter_Races()
 	DrawSmartButtonT(3, "Cup 3", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+25*GAME_WINDOW_SCALE#, 5)
 	DrawSmartButtonT(4, "Cup 4", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+75*GAME_WINDOW_SCALE#, 5)
 
-	If Input\Pressed\Down and Menu\HeldChaoNumber>0 Then
+	If Input\Pressed\Down And Menu\HeldChaoNumber>0 Then
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option+1
 		If Menu\Option>4 Then Menu\Option=1
 	EndIf
 
-	If Input\Pressed\Up and Menu\HeldChaoNumber>0 Then
+	If Input\Pressed\Up And Menu\HeldChaoNumber>0 Then
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option-1
 		If Menu\Option<1 Then Menu\Option=4

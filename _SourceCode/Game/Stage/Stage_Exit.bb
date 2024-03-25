@@ -1,7 +1,7 @@
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
 
-	Function Game_Stage_End_Camera()
+Function Game_Stage_End_Camera()
 		FreeEntity CameraSprite
 		For c.tCamera = Each tCamera
 			If c\Filter<>0 Then FreeEntity(c\Filter)
@@ -20,7 +20,7 @@
 		Next
 	End Function
 
-	Function Game_Stage_End_Objects_ObjectIndividual(o.tObject)
+Function Game_Stage_End_Objects_ObjectIndividual(o.tObject)
 		If o\ThisIsAnEnemy Then
 			If o\Enemy\HasJets>=1 Then FreeEntity o\Enemy\Jet1 : ParticleTemplate_Delete(o\Enemy\JetParticle1)
 			If o\Enemy\HasJets>=2 Then FreeEntity o\Enemy\Jet2 : ParticleTemplate_Delete(o\Enemy\JetParticle2)
@@ -74,7 +74,7 @@
 		Delete o
 	End Function
 
-	Function Game_Stage_End_Objects()
+Function Game_Stage_End_Objects()
 		For o.tObject = Each tObject
 			Game_Stage_End_Objects_ObjectIndividual(o)
 		Next
@@ -119,10 +119,10 @@
 		Next
 	End Function
 
-	Function Game_Stage_End_Player()
+Function Game_Stage_End_Player()
 		For p.tPlayer = Each tPlayer
 			DeformCharacter_DeleteTheBoneEntities(p)
-			If Menu\Settings\Shadows#>0 and (Menu\ChaoGarden=0 Or Menu\Stage=999) Then FreeEntity(p\Objects\ShadowCircle)
+			If Menu\Settings\Shadows#>0 And (Menu\ChaoGarden=0 Or Menu\Stage=999) Then FreeEntity(p\Objects\ShadowCircle)
 			FreeEntity p\Objects\Staring
 			If p\Objects\Entity<>0 Then FreeEntity p\Objects\Entity
 			If p\Objects\Mesh<>0 Then FreeEntity p\Objects\Mesh
@@ -159,7 +159,7 @@
 			ParticleTemplate_Delete(p\BubbleBreatheParticle)
 			Player_FreeTrails(p,1)
 			Player_FreeLongTrails(p,2)
-			For i=0 to PLAYER_VOICES : FreeSound p\Voice[i] : p\Voice[i]=0 : Next
+			For i=0 To PLAYER_VOICES : FreeSound p\Voice[i] : p\Voice[i]=0 : Next
 			Delete p\Motion\Speed
 			Delete p\Motion\Align
 			Delete p\Animation\Align
@@ -191,12 +191,12 @@
 		Next
 		
 		For ee.tEmerald = Each tEmerald
-			For i=1 to 7 : FreeEntity(ee\Mesh[i]) : Next
+			For i=1 To 7 : FreeEntity(ee\Mesh[i]) : Next
 			Delete ee
 		Next
 	End Function
 
-	Function Game_Stage_End_Chao()
+Function Game_Stage_End_Chao()
 		For cc.tChaoManager = Each tChaoManager
 			If Menu\Settings\Shadows#>0 Then FreeEntity(cc\ShadowCircle)
 			If cc\Stats\Hat>0 Then FreeEntity cc\HatMesh
@@ -208,12 +208,12 @@
 		Next
 	End Function
 
-	Function Game_Stage_End_Stage()
+Function Game_Stage_End_Stage()
 		For m.MeshStructure = Each MeshStructure
 			FreeEntity m\Entity
 			Select m\AnimTexType
 				Case 1: FreeTexture m\DiffuseTexture[1]
-				Case 2: For i=1 to 4 : FreeTexture m\DiffuseTexture[i] : Next
+				Case 2: For i=1 To 4 : FreeTexture m\DiffuseTexture[i] : Next
 			End Select
 			Delete m
 		Next
@@ -240,8 +240,8 @@
 		FreeParticles()
 
 		FreeEntity Game\Stage\Properties\Skydome
-		If Menu\Stage<>0 and Menu\ChaoGarden=1 and Menu\Stage=999 Then
-			For i=1 to 3 : FreeEntity Game\Stage\Properties\SkyMesh[i] : Next
+		If Menu\Stage<>0 And Menu\ChaoGarden=1 And Menu\Stage=999 Then
+			For i=1 To 3 : FreeEntity Game\Stage\Properties\SkyMesh[i] : Next
 			FreeEntity Game\Stage\Properties\SunMoon
 		EndIf
 		FreeEntity Game\Stage\Properties\Earth
@@ -255,12 +255,12 @@
 		If Game\Stage\Properties\Water=1 Then FreeEntity Game\Stage\Properties\WaterMesh
 
 		If Menu\Stage<>0 Then
-			For i=0 to 2
+			For i=0 To 2
 				If Game\Stage\Properties\Music[i]<>0 Then FreeSound Game\Stage\Properties\Music[i]
 			Next
 		EndIf
 
-		For i =1 to 3
+		For i =1 To 3
 		If Game\CharacterMesh[i]<>0 Then FreeEntity Game\CharacterMesh[i]
 		If Game\SuperCharacterMesh[i]<>0 Then FreeEntity Game\SuperCharacterMesh[i]
 		Next
@@ -269,9 +269,9 @@
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
 
-	Function Game_Stage_End()
+Function Game_Stage_End()
 
-		For i=0 to 2 : StopChannel(Game\Stage\Properties\MusicChn[i]) : Next
+		For i=0 To 2 : StopChannel(Game\Stage\Properties\MusicChn[i]) : Next
 		StopChannel(Game\Channel_Invincible)
 		StopChannel(Game\Channel_SpeedShoes)
 		StopChannel(Game\Channel_Drown)
@@ -295,11 +295,11 @@
 
 		Game_Stage_End_Stage()
 
-		For x = MESHES_ALWAYSTOTAL+1 to MESHES_TOTAL : FreeSmartEntity(x) : Next
+		For x = MESHES_ALWAYSTOTAL+1 To MESHES_TOTAL : FreeSmartEntity(x) : Next
 
-		For x = INTERFACE_ALWAYSTOTAL+1 to INTERFACE_TOTAL : FreeSmartImage(x) : Next
+		For x = INTERFACE_ALWAYSTOTAL+1 To INTERFACE_TOTAL : FreeSmartImage(x) : Next
 
-		For x = SOUNDS_ALWAYSTOTAL+1 to SOUNDS_TOTAL : FreeSmartSound(x) : Next
+		For x = SOUNDS_ALWAYSTOTAL+1 To SOUNDS_TOTAL : FreeSmartSound(x) : Next
 				
 		ClearCollisions()
 
@@ -316,7 +316,7 @@
 
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
-	Function Game_Stage_Restart()
+Function Game_Stage_Restart()
 
 		Game\State=GAME_STATE_END
 		Game_Stage_End()
@@ -334,14 +334,14 @@
 
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
-	Function Game_Stage_Quit(mode)
+Function Game_Stage_Quit(mode)
 		Game\MustQuitStage=mode
 		If Menu\Stage<>0 Then CARD_PLACE#=80 : Menu\ExitedAStage=1
 	End Function
 
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
-	Function Game_Stage_ReallyQuit(mode)
+Function Game_Stage_ReallyQuit(mode)
 
 		PostEffect_Create_FadeOut(0.5, 10, 10, 10)
 		Menu\Transition=1
@@ -356,14 +356,16 @@
 				Menu\Stage=0
 				Menu\NewMenu=MENU_GAMEOVER#
 				Menu\NewOption=0
+			
 			Case 2: ;restart
-				If Menu\MarathonMode and Menu\MarathonRandom Then Menu_Stage_RandomizeTeam(true)
+				If Menu\MarathonMode And Menu\MarathonRandom Then Menu_Stage_RandomizeTeam(True)
 				Menu\Stage=Menu\SelectedStage
 				Menu\NewMenu=MENU_LOADING#
 				Menu\NewOption=0
 				Menu\ExitedAStage=0
 			Case 3: ;exit
 				Menu\Stage=0
+			
 				Select Menu\ChaoGarden
 				Case 0:
 					If Menu\MarathonMode=0 Then
@@ -383,10 +385,11 @@
 					Menu\SelectedStage=1
 				EndIf
 			Case 4: ;result quit
+				
 				If Menu\MarathonMode Then
 					If Menu\SelectedStage>0 Then
 						Menu\MarathonStage=Menu\MarathonStage+1
-						If Game\ResultRings>=100 and Game\Cheater=0 Then Menu\MarathonGotSpecial=1 Else Menu\MarathonGotSpecial=0
+						If Game\ResultRings>=100 And Game\Cheater=0 Then Menu\MarathonGotSpecial=1 Else Menu\MarathonGotSpecial=0
 					Else
 						Menu\MarathonGotSpecial=0
 					EndIf
@@ -481,8 +484,8 @@
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
 
-	Function PauseAllChannels()
-			For i=0 to 2 : PauseChannel(Game\Stage\Properties\MusicChn[i]) : Next
+Function PauseAllChannels()
+			For i=0 To 2 : PauseChannel(Game\Stage\Properties\MusicChn[i]) : Next
 			PauseChannel(Game\Channel_Invincible)
 			PauseChannel(Game\Channel_SpeedShoes)
 			PauseChannel(Game\Channel_Drown)
@@ -490,6 +493,7 @@
 			PauseChannel(Game\Channel_Result)
 			PauseChannel(Game\Channel_1Up)
 			PauseChannel(Game\Channel_ChaoEffect)
+			PauseChannel(Game\Channel_AmbientWater)
 			PauseChannel(Game\Stage\Properties\Channel_AmbientAlarm)
 			PauseChannel(Game\Stage\Properties\Channel_AmbientBeach)
 			PauseChannel(Game\Stage\Properties\Channel_AmbientForest)
@@ -562,8 +566,8 @@
 			Next
 	End Function
 
-	Function ResumeAllChannels()
-			For i=0 to 2 : ResumeChannel(Game\Stage\Properties\MusicChn[i]) : Next
+Function ResumeAllChannels()
+			For i=0 To 2 : ResumeChannel(Game\Stage\Properties\MusicChn[i]) : Next
 			ResumeChannel(Game\Channel_Invincible)
 			ResumeChannel(Game\Channel_SpeedShoes)
 			ResumeChannel(Game\Channel_Drown)
@@ -571,6 +575,7 @@
 			ResumeChannel(Game\Channel_Result)
 			ResumeChannel(Game\Channel_1Up)
 			ResumeChannel(Game\Channel_ChaoEffect)
+			ResumeChannel(Game\Channel_AmbientWater)
 			ResumeChannel(Game\Stage\Properties\Channel_AmbientAlarm)
 			ResumeChannel(Game\Stage\Properties\Channel_AmbientBeach)
 			ResumeChannel(Game\Stage\Properties\Channel_AmbientForest)
@@ -642,3 +647,5 @@
 				ResumeChannel(p\Channel_ChaosDrive)
 			Next
 	End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

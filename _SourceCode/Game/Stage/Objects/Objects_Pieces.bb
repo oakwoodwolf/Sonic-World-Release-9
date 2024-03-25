@@ -1,11 +1,11 @@
 
-	Function Object_Pieces_Create_RobotPieces(x#, y#, z#, pitch#, yaw#, roll#, enemygold#=0)
-		For i=1 to 12
+Function Object_Pieces_Create_RobotPieces(x#, y#, z#, pitch#, yaw#, roll#, enemygold#=0)
+		For i=1 To 12
 			Object_Piece_Create.tObject(Mesh_EnemyPiece1+Rand(1,7)-1, x#, y#, z#, pitch#, yaw#, roll#, 0.25, enemygold#)
 		Next
 	End Function
 
-	Function Object_Pieces_Create(thisisanenemy, objectno#, psychoed#, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#=1, enemygold#=0, dontspawnmesh=false, special#=0)
+Function Object_Pieces_Create(thisisanenemy, objectno#, psychoed#, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#=1, enemygold#=0, dontspawnmesh=False, special#=0)
 
 		If thisisanenemy Then
 			If Object_IsEnemyRobot(objectno#) Then
@@ -13,7 +13,7 @@
 			EndIf
 		EndIf
 
-		If dontspawnmesh=false Then
+		If dontspawnmesh=False Then
 		Select objectno#
 			Case OBJTYPE_PAWN,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSWORD
 				Select objectno#
@@ -29,6 +29,13 @@
 				Object_Piece_Create.tObject(Mesh_Enemy_PawnShield, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#)
 			Case OBJTYPE_FLAPPER
 				Object_Piece_Create.tObject(Mesh_Enemy_Flapper, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#)
+			Case OBJTYPE_GUNNER
+				Object_Piece_Create.tObject(Mesh_Enemy_Gunner, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#)
+			Case OBJTYPE_SEARCHER
+				Object_Piece_Create.tObject(Mesh_Enemy_Searcher, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#)
+			Case OBJTYPE_EGGHUNTER
+				Object_Piece_Create.tObject(Mesh_Enemy_EggHunter, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#)
+				
 			Case OBJTYPE_FLAPPERGUN
 				Object_Piece_Create.tObject(Mesh_Enemy_FlapperGun, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#)
 			Case OBJTYPE_FLAPPERBOMB
@@ -46,7 +53,7 @@
 			Case OBJTYPE_CATERKILLER
 				Object_Piece_Create.tObject(Mesh_Enemy_CaterkillerBody, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#)
 				If psychoed#=0 Then
-					Object_Piece_Create.tObject(Mesh_Enemy_CaterkillerBase, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#, true)
+					Object_Piece_Create.tObject(Mesh_Enemy_CaterkillerBase, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#, True)
 				Else
 					Object_Piece_Create.tObject(Mesh_Enemy_CaterkillerBase, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#)
 				EndIf
@@ -151,7 +158,7 @@
 			Case OBJTYPE_MADMOLE
 				Object_Piece_Create.tObject(Mesh_Enemy_MadmoleBody, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#)
 				If psychoed#=0 Then
-					Object_Piece_Create.tObject(Mesh_Enemy_MadmoleBase, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#, true)
+					Object_Piece_Create.tObject(Mesh_Enemy_MadmoleBase, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#, True)
 				Else
 					Object_Piece_Create.tObject(Mesh_Enemy_MadmoleBase, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#)
 				EndIf
@@ -174,9 +181,9 @@
 			Case OBJTYPE_TAKER
 				Object_Piece_Create.tObject(Mesh_Enemy_Taker, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#)
 			Case OBJTYPE_BOO,OBJTYPE_BOOSCARE
-				Object_Piece_Create.tObject(Mesh_Enemy_Boo, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#, false, 0, false, true)
+				Object_Piece_Create.tObject(Mesh_Enemy_Boo, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#, False, 0, False, True)
 			Case OBJTYPE_GHOST:
-				Object_Piece_Create.tObject(Mesh_Enemy_Ghost, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#, false, 0, false, true)
+				Object_Piece_Create.tObject(Mesh_Enemy_Ghost, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#, False, 0, False, True)
 			Case OBJTYPE_E1000
 				Object_Piece_Create.tObject(Mesh_Enemy_E1000, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#)
 			Case OBJTYPE_BALLHOG
@@ -252,155 +259,180 @@
 			Case OBJTYPE_FCANNON3
 				Object_Piece_Create.tObject(Mesh_Enemy_FCannon3, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#)
 			Case OBJTYPE_BOXWOODEN
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Wooden)
+			Case OBJTYPE_BOXYELLOW
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Yellow)
 			Case OBJTYPE_BOXMETAL
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Metal)
 			Case OBJTYPE_BOXIRON
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Iron)
 			Case OBJTYPE_BOXCAGE
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Cage)
 			Case OBJTYPE_BOXTNT
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Tnt)
 			Case OBJTYPE_BOXNITRO
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
-				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, false, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+90, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#+180, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#, yaw#-90, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#-90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece1, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece2, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece3, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
+				Object_Piece_Create.tObject(Mesh_BoxPiece4, x#, y#, z#, pitch#+90, yaw#, roll#, scalefactor#, 0, False, Object_Texture_Box_Nitro)
 			Case OBJTYPE_SPIKEBOMB,OBJTYPE_SPEWSPIKEBOMB
 				Object_Piece_Create.tObject(Mesh_SpikeBombPiece1, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#)
 				Object_Piece_Create.tObject(Mesh_SpikeBombPiece2, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#)
@@ -408,7 +440,7 @@
 				Object_Piece_Create.tObject(Mesh_SpikeCrusherPiece1, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#)
 				Object_Piece_Create.tObject(Mesh_SpikeCrusherPiece2, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#)
 			Case OBJTYPE_BALLOON
-				For i=1 to 12
+				For i=1 To 12
 				Select(Rand(1,5))
 				Case 1: Object_Piece_Create.tObject(Mesh_Balloonpiece1, x#+Rand(-0.05,0.05), y#+Rand(-0.05,0.05), z#+Rand(-0.05,0.05), pitch#+Rand(0,360), yaw#+Rand(0,360), roll#+Rand(0,360), scalefactor#)
 				Case 2: Object_Piece_Create.tObject(Mesh_Balloonpiece2, x#+Rand(-0.05,0.05), y#+Rand(-0.05,0.05), z#+Rand(-0.05,0.05), pitch#+Rand(0,360), yaw#+Rand(0,360), roll#+Rand(0,360), scalefactor#)
@@ -418,7 +450,7 @@
 				End Select
 				Next
 			Case OBJTYPE_ROCK
-				For i=1 to 40
+				For i=1 To 40
 				Select special#
 					Case 1:
 						Select(Rand(1,3))
@@ -435,7 +467,7 @@
 				End Select
 				Next
 			Case OBJTYPE_CRYSTAL
-				For i=1 to 25
+				For i=1 To 25
 				Select special#
 					Case 1:
 						Select(Rand(1,3))
@@ -458,7 +490,7 @@
 				End Select
 				Next
 			Case OBJTYPE_ICICLE,OBJTYPE_ICICLEBIG:
-				For i=1 to 25
+				For i=1 To 25
 					Select(Rand(1,3))
 					Case 1: Object_Piece_Create.tObject(Mesh_IcicleShard1, x#, y#, z#, pitch#+Rand(0,360), yaw#+Rand(0,360), roll#+Rand(0,360), scalefactor#)
 					Case 2: Object_Piece_Create.tObject(Mesh_IcicleShard2, x#, y#, z#, pitch#+Rand(0,360), yaw#+Rand(0,360), roll#+Rand(0,360), scalefactor#)
@@ -468,14 +500,14 @@
 			Case OBJTYPE_ICEDECOR:
 				Select special#
 					Case 1:
-						For i=1 to 25
+						For i=1 To 25
 							Select(Rand(1,2))
 							Case 1: Object_Piece_Create.tObject(Mesh_IceDecorShard1, x#, y#, z#, pitch#+Rand(0,360), yaw#+Rand(0,360), roll#+Rand(0,360), scalefactor#)
 							Case 2: Object_Piece_Create.tObject(Mesh_IceDecorShard2, x#, y#, z#, pitch#+Rand(0,360), yaw#+Rand(0,360), roll#+Rand(0,360), scalefactor#)
 							End Select
 						Next
 					Case 2:
-						For i=1 to 20
+						For i=1 To 20
 							Select(Rand(1,3))
 							Case 1: Object_Piece_Create.tObject(Mesh_IceDecorShard3, x#, y#, z#, pitch#+Rand(0,360), yaw#+Rand(0,360), roll#+Rand(0,360), scalefactor#)
 							Case 2: Object_Piece_Create.tObject(Mesh_IceDecorShard4, x#, y#, z#, pitch#+Rand(0,360), yaw#+Rand(0,360), roll#+Rand(0,360), scalefactor#)
@@ -493,7 +525,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Piece_Create.tObject(mesh, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#=0, shallnotfade=false, texture=0, confetti=false, alphafade=false)
+Function Object_Piece_Create.tObject(mesh, x#, y#, z#, pitch#, yaw#, roll#, scalefactor#, enemygold#=0, shallnotfade=False, texture=0, confetti=False, alphafade=False)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_PIECE :  : o\ID=0
 		o\Piece = New tObject_Piece : o\HasValuesetPiece=True
 		o\AlwaysPresent=True
@@ -505,7 +537,7 @@
 
 		o\Piece\Confetti=confetti
 
-		If confetti=false Then
+		If confetti=False Then
 			Select(Rand(1,2))
 				Case 1: o\Piece\PositionXp=True
 				Case 2: o\Piece\PositionXp=False
@@ -561,8 +593,8 @@
 		End Select
 
 		Select confetti
-		Case false: o\Piece\PieceTimer=0.53*secs#
-		Case true: o\Piece\PieceTimer=(Rand(1,5))*secs#
+		Case False: o\Piece\PieceTimer=0.53*secs#
+		Case True: o\Piece\PieceTimer=(Rand(1,5))*secs#
 		End Select
 
 		o\Piece\ShallNotFade=shallnotfade
@@ -585,7 +617,7 @@
 	
 	; =========================================================================================================
 	
-	Function Object_Piece_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_Piece_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		; Movement
 		If o\Piece\ShallNotFade=False Then
@@ -619,7 +651,7 @@
 		If o\Piece\PieceTimer>0 Then o\Piece\PieceTimer=o\Piece\PieceTimer-timervalue#
 
 		; Delete the object
-		If (Not(o\Piece\PieceTimer>0)) and o\Piece\ShallNotFade=False Then
+		If (Not(o\Piece\PieceTimer>0)) And o\Piece\ShallNotFade=False Then
 			; Delete the object
 			ParticleTemplate_Delete(o\Particle)
 			FreeEntity o\Entity
@@ -631,3 +663,5 @@
 		EndIf
 		
 	End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

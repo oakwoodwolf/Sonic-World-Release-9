@@ -2,38 +2,84 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 
 	;dummy fix for missing jump
 	If p\ForceJumpTimer>0 Then
-		If Game\ControlLock>0 Or (p\No#>1 and (p\Action=ACTION_HOLD Or p\Action=ACTION_HOLD2)) Then
+		If Game\ControlLock>0 Or (p\No#>1 And (p\Action=ACTION_HOLD Or p\Action=ACTION_HOLD2)) Then
 			p\ForceJumpTimer=0
 		Else
 			If (Not(p\Action=ACTION_HOP Or p\Action=ACTION_JUMP Or p\Action=ACTION_CARRYJUMP Or p\Action=ACTION_BOARDJUMP Or p\Action=ACTION_CARFALL)) Then
-				Player_ActuallyJump(p,true,true,true)
+				Player_ActuallyJump(p,True,True,True)
 			Else
 				p\ForceJumpTimer=0
 			EndIf
 		EndIf
 	EndIf
-
+	
+	If (Not(p\JumpPanelTimer>0)) Then p\Flags\OnJumpPanel=0
+	
+	;tails flying swipe
+	If p\FlyingSwipe=1 Then
+		If Player_FrameCheck(p,2) Or Player_FrameCheck(p,10) Then
+			EmitSmartSound(Sound_Swipe,p\Objects\Entity)
+		EndIf
+		Player_CreateRazer.tRazer(p,p\Objects\Mesh,0.45,1)
+	EndIf 
+	
+	If (Not(p\Action=ACTION_FLY)) Then p\FlyingSwipe=0
+	
 	;fix after homing
 	If p\ForceAfterHomDirectionApplicable Then p\Animation\Direction#=p\ForceAfterHomDirection# : p\ForceAfterHomDirectionApplicable=False
-
+	
+	;fix 2d direction
+	If Game\TwoDLock=1 Then 
+		If Input\Hold\Left=True And p\TwoDDirection=1 Then
+			p\Animation\Direction#=p\Animation\Direction#-180
+			p\TwoDDirection=0
+		EndIf 
+		If Input\Hold\Right=True And p\TwoDDirection=0 Then
+			p\Animation\Direction#=p\Animation\Direction#-180
+			p\TwoDDirection=1
+		EndIf 
+	EndIf 
+	
+	;water running
+	If (p\SpeedLength# > 2.35) And ((EntityY(p\Objects\Entity) < Game\Stage\Properties\WaterLevel+1.1) And (EntityY(p\Objects\Entity) > Game\Stage\Properties\WaterLevel-0.21)) And (Not(p\Action=ACTION_BUOY)) Then
+		p\Motion\Ground=True
+		p\Motion\Speed\y#=0
+		p\WaterRunning=1
+		ParticleTemplate_Call(p\WaterParticle, PARTICLE_PLAYER_WATERSPLASH, p\Objects\Mesh)
+	Else
+		p\WaterRunning=0
+	EndIf
+	
+	;cheese shield fix
+	If p\CheeseShieldTimer>0 Then 
+		If Not(ChannelPlaying(p\Channel_Dive)) Then p\Channel_Dive=EmitSmartSound(Sound_Dive,p\Objects\Entity)
+	Else
+		StopChannel(p\Channel_Dive)
+	EndIf 
+	
+	;victory fix
+	If (Not(p\Action=ACTION_VICTORY)) Then
+		p\Animation\VictoryStage=0
+	EndIf 
+	
 	;fall down if slow on slope
-	If abs(p\Rotation#)>80 and p\SpeedLength#<0.5 and (p\Flags\CanClimb=False) and (Not(p\Action=ACTION_GRIND Or p\Action=ACTION_CHARGE)) Then Player_ConvertGroundToAir(p) : p\Motion\Ground=False
+	If Abs(p\Rotation#)>80 And p\SpeedLength#<0.5 And (p\Flags\CanClimb=False) And (Not(p\Action=ACTION_GRIND Or p\Action=ACTION_CHARGE)) Then Player_ConvertGroundToAir(p) : p\Motion\Ground=False
 
 	;deal translators touched
 	If Not(p\TranslatorsTouchedTimer>0) Then p\TranslatorsTouched=0
 
 	;ground tension
-	If (p\Motion\Ground And (Not(p\Action=ACTION_GRIND Or p\Action=ACTION_DEBUG))) and (abs(p\Rotation#)<15 Or p\Flags\CanClimb) Then
+	If (p\Motion\Ground And (Not(p\Action=ACTION_GRIND Or p\Action=ACTION_DEBUG))) And (Abs(p\Rotation#)<15 Or p\Flags\CanClimb) Then
 		MoveEntity(p\Objects\Entity, 0, p\Physics\COMMON_GROUNDTENSION#, 0)
 	EndIf
 
 	;underwater spinning
 	If p\UnderwaterFeet=1 Then
-		If p\Action=ACTION_CHARGE or p\Action=Action_ROLL Then
-			If p\No#=1 and (Not(ChannelPlaying(p\Channel_WaterRunning))) Then p\Channel_WaterRunning=EmitSmartSound(Sound_WaterBoosting,p\Objects\Entity)
+		If p\Action=ACTION_CHARGE Or p\Action=ACTION_ROLL Then
+			If p\No#=1 And (Not(ChannelPlaying(p\Channel_WaterRunning))) Then p\Channel_WaterRunning=EmitSmartSound(Sound_WaterBoosting,p\Objects\Entity)
 			ParticleTemplate_Call(p\WaterParticle, PARTICLE_PLAYER_WATERSPLASH, p\Objects\Mesh, (p\SpeedLength#/2.0))
 		ElseIf p\Action=ACTION_DRIFT
-			If p\No#=1 and (Not(ChannelPlaying(p\Channel_WaterRunning))) Then p\Channel_WaterRunning=EmitSmartSound(Sound_WaterDrifting,p\Objects\Entity)
+			If p\No#=1 And (Not(ChannelPlaying(p\Channel_WaterRunning))) Then p\Channel_WaterRunning=EmitSmartSound(Sound_WaterDrifting,p\Objects\Entity)
 			ParticleTemplate_Call(p\WaterParticle, PARTICLE_PLAYER_WATERSPLASH, p\Objects\Mesh, (p\SpeedLength#/2.0))
 		Else
 			StopChannel(p\Channel_WaterRunning)
@@ -48,11 +94,6 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 			If p\Physics\UP_ANGLE#<0 Then p\Physics\UP_ANGLE#=p\Physics\UP_ANGLE#+1*d\Delta
 			If p\Physics\UP_ANGLE#<p\Physics\UP_ANGLE_TARGET# Then p\Physics\UP_ANGLE#=p\Physics\UP_ANGLE#+3*d\Delta
 			If p\Physics\UP_ANGLE#>p\Physics\UP_ANGLE_TARGET# Then p\Physics\UP_ANGLE#=p\Physics\UP_ANGLE#-3*d\Delta
-		Case ACTION_SKYDIVE:
-			If p\Physics\UP_ANGLE#<90 Then p\Physics\UP_ANGLE#=p\Physics\UP_ANGLE#+3*d\Delta
-		Case ACTION_FLOAT:
-			p\Physics\UP_ANGLE#=p\Physics\UP_ANGLE#-11*d\Delta
-			If p\Physics\UP_ANGLE#<0 Then p\Physics\UP_ANGLE#=360
 		Case ACTION_GLIDER:
 			If Input\Hold\ActionJump Then
 				If p\Physics\UP_ANGLE#>60-30 Then p\Physics\UP_ANGLE#=p\Physics\UP_ANGLE#-3*d\Delta
@@ -84,9 +125,9 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 				If p\Physics\UP_ANGLE#>0 Then p\Physics\UP_ANGLE#=p\Physics\UP_ANGLE#-6*d\Delta
 			EndIf
 		Case ACTION_TORNADO:
-			If (Input\Hold\ActionJump Or p\SpecialSpinTimer>0) and Game\Victory=0 Then
+			If (Input\Hold\ActionJump Or p\SpecialSpinTimer>0) And Game\Victory=0 Then
 				If p\Physics\UP_ANGLE#>-40 Then p\Physics\UP_ANGLE#=p\Physics\UP_ANGLE#-2.5*d\Delta
-			ElseIf (Input\Hold\ActionRoll) and Game\Victory=0 Then
+			ElseIf (Input\Hold\ActionRoll) And Game\Victory=0 Then
 				If p\Physics\UP_ANGLE#<40 Then p\Physics\UP_ANGLE#=p\Physics\UP_ANGLE#+2.5*d\Delta
 			Else
 				If p\Physics\UP_ANGLE#<0 Then p\Physics\UP_ANGLE#=p\Physics\UP_ANGLE#+4*d\Delta
@@ -111,31 +152,49 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 	EndIf
 
 	;deal drift sound
-	If p\No#=1 and (p\Action=ACTION_DRIFT Or p\Action=ACTION_BOARDDRIFT Or p\Action=ACTION_CARDRIFT) Then
+	If p\No#=1 And (p\Action=ACTION_DRIFT Or p\Action=ACTION_BOARDDRIFT Or p\Action=ACTION_CARDRIFT) Then
 		If Not(ChannelPlaying(p\Channel_Drift)) Then p\Channel_Drift=EmitSmartSound(Sound_Drift,p\Objects\Entity)
 	Else
 		StopChannel(p\Channel_Drift)
 		p\DriftDirection=0
 	EndIf
-
+	
+	;deal boost sound
+	If p\No#=1 And p\Action=ACTION_BOOST Or p\Action=ACTION_BOOSTFALL Then
+		If Not(ChannelPlaying(p\CHannel_BoostWind)) Then p\CHannel_BoostWind=EmitSmartSound(Sound_BoostWind,p\Objects\Entity)
+	Else
+		StopChannel(p\CHannel_BoostWind)
+		StopChannel(p\Channel_BoostCharge)
+	EndIf
+	
+	If (Not(p\Action=ACTION_PUNCH)) Then
+		If (Not(p\PunchWindowTimer>0)) Then p\PunchNumber=0
+	EndIf 
+	
 	;if run lock is active
-	If Game\RunLock>0 Then Player_SetSpeed(p,p\RunLockSpeed#,true)
+	If Game\RunLock>0 Then Player_SetSpeed(p,p\RunLockSpeed#,True)
 
 	;after homing, direction too much change fix
-	If p\Flags\HomingWasLockedTimer>0 and ((Not(Game\CamLock>0)) Or Game\MachLock>0) Then
-		If Player_IsPlayable(p) and (Input\Hold\Up Or Game\MachLock>0) Then p\Animation\Direction#=EntityYaw(cam\Entity)-180
+	If p\Flags\HomingWasLockedTimer>0 And ((Not(Game\CamLock>0)) Or Game\MachLock>0) Then
+		If Player_IsPlayable(p) And (Input\Hold\Up Or Game\MachLock>0) Then p\Animation\Direction#=EntityYaw(cam\Entity)-180
 	EndIf
 
 	;let shine
 	If p\Action=ACTION_FREEZE Then
 		EntityTexture p\Objects\Mesh,p\Objects\LevitationGlowIce,0,7
-	ElseIf (p\Character=CHAR_SIL) and (p\Action=ACTION_LEVITATE Or p\Action=ACTION_PUNCH Or p\Action=ACTION_THRUST Or p\Action=ACTION_THROW Or p\Psychokinesis=1) Then
+	ElseIf (p\Character=CHAR_SIL) And (p\Action=ACTION_LEVITATE Or p\Action=ACTION_PUNCH Or p\Action=ACTION_THRUST Or p\Action=ACTION_THROW Or p\Psychokinesis=1) Then
+		EntityTexture p\Objects\Mesh,p\Objects\LevitationGlow,0,7
+	ElseIf (p\Character=CHAR_SON) And (p\Action=ACTION_LIGHTATTACK) Then
+		EntityTexture p\Objects\Mesh,p\Objects\LevitationGlow,0,7
+	ElseIf Game\ChaosControlTimer>0 Then
 		EntityTexture p\Objects\Mesh,p\Objects\LevitationGlow,0,7
 	ElseIf (p\Character=CHAR_MET Or p\Character=CHAR_TDL Or p\Character=CHAR_MT3) And (p\Action=ACTION_PUNCH Or p\Action=ACTION_THRUST Or p\Action=ACTION_THROW Or p\Action=ACTION_LEVITATE) Then
 		EntityTexture p\Objects\Mesh,p\Objects\LevitationGlowMetal,0,7
-	ElseIf (p\Character=CHAR_MPH) and (p\Action=ACTION_LEVITATE Or p\Action=ACTION_PUNCH Or p\Action=ACTION_THRUST) Then
+	ElseIf (p\Character=CHAR_MPH) And (p\Action=ACTION_LEVITATE Or p\Action=ACTION_PUNCH Or p\Action=ACTION_THRUST) Then
 		EntityTexture p\Objects\Mesh,p\Objects\LevitationGlowDark,0,7
-	ElseIf (p\Character=CHAR_INF) and (p\Action=ACTION_LEVITATE Or p\Action=ACTION_THROW Or p\Action=ACTION_JUMPDASH Or p\Action=ACTION_HOMING Or p\Action=ACTION_PSYCHO) Then
+	ElseIf (p\Character=CHAR_INF) And (p\Action=ACTION_LEVITATE Or p\Action=ACTION_THROW Or p\Action=ACTION_JUMPDASH Or p\Action=ACTION_HOMING Or p\Action=ACTION_PSYCHO) Then
+		EntityTexture p\Objects\Mesh,p\Objects\LevitationGlowRuby,0,7
+	ElseIf Game\ChaosSnapTimer>0 Then
 		EntityTexture p\Objects\Mesh,p\Objects\LevitationGlowRuby,0,7
 	Else
 		EntityTexture p\Objects\Mesh,p\Objects\LevitationGlowEmpty,0,7
@@ -155,21 +214,24 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 	EndIf
 
 	;deal trick voice
-	If p\TrickTimer>0 and p\TrickTimer<0.5*secs# Then Player_PlayGoodVoice(p) : p\TrickTimer=0
+	If p\TrickTimer>0 And p\TrickTimer<0.5*secs# Then Player_PlayGoodVoice(p) : p\TrickTimer=0
 
 	;lean while tricking
 	If p\Physics\TRICK_ANGLE#>0 Then p\Physics\TRICK_ANGLE#=p\Physics\TRICK_ANGLE#-15*d\Delta
 
 	;deal stomp sound
 	If (Not(p\Action=ACTION_STOMP)) Then StopChannel(p\Channel_Stomp)
+	
+	;deal spindash charge sound
+	If (Not(p\Action=ACTION_CHARGE)) Then StopChannel(p\Channel_Spindash)
 
 	;shield management
 	If p\No#=1 Then Player_ManageShields()
 
 	;shut up shoes and invinc if not shoes or invinc
 	If p\No#=1 And Game\SuperForm=0 Then
-		If Game\SpeedShoes=0 and ChannelPlaying(Game\Channel_SpeedShoes) Then StopChannel(Game\Channel_SpeedShoes)
-		If Game\Invinc=0 and ChannelPlaying(Game\Channel_Invincible) Then StopChannel(Game\Channel_Invincible)
+		If Game\SpeedShoes=0 And ChannelPlaying(Game\Channel_SpeedShoes) Then StopChannel(Game\Channel_SpeedShoes)
+		If Game\Invinc=0 And ChannelPlaying(Game\Channel_Invincible) Then StopChannel(Game\Channel_Invincible)
 	EndIf
 
 	;deal grind sound
@@ -191,7 +253,7 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 				EndIf
 			EndIf
 		ElseIf p\Action=ACTION_BUMPED Then
-			If p\Motion\Ground and ChannelPlaying(p\Channel_Grind)=False Then p\Channel_Grind=EmitSmartSound(Sound_Pinball,p\Objects\Entity)
+			If p\Motion\Ground And ChannelPlaying(p\Channel_Grind)=False Then p\Channel_Grind=EmitSmartSound(Sound_Pinball,p\Objects\Entity)
 		Else
 			StopChannel(p\Channel_Grind)
 		EndIf
@@ -206,7 +268,7 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 	If Not(p\Action=ACTION_HOP Or p\Action=ACTION_JUMP) Then StopChannel(p\Channel_Spin)
 
 	;be hurt!
-	If (Not(p\Action=ACTION_DIE)) and p\HurtTimer>0 Then
+	If (Not(p\Action=ACTION_DIE)) And p\HurtTimer>0 Then
 		If (Not(p\HurtDisappearTimer>0)) Then
 			p\HurtDisappearTimer=0.4*secs#
 		ElseIf p\HurtDisappearTimer>0.2*secs# Then
@@ -219,7 +281,7 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 	EndIf
 
 	;leaning
-	If Player_IsPlayable(p) and (Input\Hold\Up Or Input\Hold\Down) and (Input\Hold\Left Or Input\Hold\Right) and (Not(Game\ControlLock>0)) Then
+	If Player_IsPlayable(p)  And (Input\Hold\Left Or Input\Hold\Right) And (Not(Game\ControlLock>0 Or p\Action=ACTION_DRIFT Or Game\TwoDLock=1)) Then
 		If Input\Hold\Left Then
 			If p\Physics\LEAN_ANGLE#<p\Physics\LEAN_ANGLE_TARGET# Then p\Physics\LEAN_ANGLE#=p\Physics\LEAN_ANGLE#+p\Physics\LEAN_ANGLE_SPEED#*d\Delta
 			If p\Physics\LEAN_ANGLE#>p\Physics\LEAN_ANGLE_TARGET# Then p\Physics\LEAN_ANGLE#=p\Physics\LEAN_ANGLE#-p\Physics\LEAN_ANGLE_SPEED#*d\Delta
@@ -231,11 +293,11 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 	Else
 		If p\Physics\LEAN_ANGLE#<0 Then p\Physics\LEAN_ANGLE#=p\Physics\LEAN_ANGLE#+0.7*d\Delta
 		If p\Physics\LEAN_ANGLE#>0 Then p\Physics\LEAN_ANGLE#=p\Physics\LEAN_ANGLE#-0.7*d\Delta
-		If p\Physics\LEAN_ANGLE#<0.5 and p\Physics\LEAN_ANGLE#>-0.5 Then p\Physics\LEAN_ANGLE#=0
+		If p\Physics\LEAN_ANGLE#<0.5 And p\Physics\LEAN_ANGLE#>-0.5 Then p\Physics\LEAN_ANGLE#=0
 	EndIf
 
 	;be invincible!
-	If Game\Invinc=1 And Game\SuperForm=0 and Player_IsPlayable(p) Then ParticleTemplate_Call(p\InvisiParticle, PARTICLE_PLAYER_INVINCIBILITY, p\Objects\Entity, p\ScaleFactor#)
+	If Game\Invinc=1 And Game\SuperForm=0 And Player_IsPlayable(p) Then ParticleTemplate_Call(p\InvisiParticle, PARTICLE_PLAYER_INVINCIBILITY, p\Objects\Entity, p\ScaleFactor#)
 
 	;be invisible!
 	If p\Invisibility=1 Then
@@ -244,6 +306,14 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 		;deal invisibility
 		If (Not(p\InvisibilityTimer>0)) Or (p\Character=CHAR_CHO And (Not(p\Action=ACTION_PUDDLE))) Then p\Invisibility=0 : p\InvisibilityRestrictTimer=4*secs#
 	EndIf
+	
+	If Menu\Settings\Debug#=1 Then 
+		Menu\RestartX#=p\Objects\Position\x#
+		Menu\RestartY#=p\Objects\Position\y#
+		Menu\RestartZ#=p\Objects\Position\z#
+	EndIf 
+
+		
 	
 	; deal light meshes
 	Player_DealLightMeshes(p, d)
@@ -263,7 +333,7 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 	End Select
 
 	;drowning
-	If p\Underwater=1 and Game\Interface\DebugPlacerOn=0 and (Menu\ChaoGarden=0 Or Menu\Stage=999) Then
+	If p\Underwater=1 And Game\Interface\DebugPlacerOn=0 And (Menu\ChaoGarden=0 Or Menu\Stage=999) Then
 		If (Not Player_IsARobot(p)) Then
 			Select p\DrownState
 				Case 3: ParticleTemplate_Call(p\BubbleBreatheParticle, PARTICLE_PLAYER_BUBBLEBREATHE, p\Objects\Head, 0, 0, 0, 0, 0, Rand(1,5)/8.0)
@@ -275,7 +345,7 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 		If Game\Victory=0 Then
 		Select p\DrownState
 			Case 0:
-				If p\Underwater=1 and (Not(Game\Shield=OBJTYPE_BSHIELD)) and Menu\ChaoGarden=0 and (Not(Game\Stage\Properties\WaterType=6 Or Game\Stage\Properties\WaterType=7)) Then
+				If p\Underwater=1 And (Not(Game\Shield=OBJTYPE_BSHIELD)) And Menu\ChaoGarden=0 And (Not(Game\Stage\Properties\WaterType=6 Or Game\Stage\Properties\WaterType=7)) Then
 					Select InterfaceChar(p\RealCharacter)
 						Case CHAR_SON: p\DrownValue=30
 						Case CHAR_TAI: p\DrownValue=45
@@ -342,7 +412,8 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 						p\DrownState=3
 					ElseIf p\BreathCountTimer>0 Then
 						Select p\DrownValue
-							Case 4,8,12,16,20,24,28,32,36,40,44,48,52,58,62,66: PlaySmartSound(Sound_BreathCount)
+							Case 8,12,16,20,24,28,32,36,40,44,48,52,58,62,66: PlaySmartSound(Sound_BreathCount)
+							Case 4: PlaySmartSound(Sound_BreathCountLast)
 						End Select
 					EndIf
 				EndIf
@@ -351,7 +422,7 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 					Player_Die(p)
 					If Not Player_IsARobot(p) Then
 						EmitSmartSound(Sound_Drowned,p\Objects\Entity)
-						For i=3 to Rand(3,5)
+						For i=3 To Rand(3,5)
 							p\BubbleBreatheParticle\ParticleTimer=0
 							ParticleTemplate_Call(p\BubbleBreatheParticle, PARTICLE_OBJECT_BUBBLES, p\Objects\Head)
 						Next
@@ -371,9 +442,9 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 	If (Not(p\Action=ACTION_DIE)) And p\DieTimer>0 Then p\Action=ACTION_DIE
 
 	;force victory
-	If Player_IsPlayable(p) and Menu\ChaoGarden=0 Then
+	If Player_IsPlayable(p) And Menu\ChaoGarden=0 Then
 		If Game\Victory<>0 Then
-			If (Not(p\Action=ACTION_VICTORY Or p\Action=ACTION_VICTORYHOLD Or (pp(1)\Action=ACTION_VICTORYHOLD and p\Action=ACTION_HOLD2) Or p\Action=ACTION_DIE)) and Game\Vehicle=0 Then
+			If (Not(p\Action=ACTION_VICTORY Or p\Action=ACTION_VICTORYHOLD Or (pp(1)\Action=ACTION_VICTORYHOLD And p\Action=ACTION_HOLD2) Or p\Action=ACTION_DIE)) And Game\Vehicle=0 Then
 				p\Action=ACTION_VICTORY
 			EndIf
 			Player_SetSpeed(p,0)
@@ -382,23 +453,25 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 	EndIf
 
 	;mission management
-	If Game\Victory=0 and p\No#=1 Then
+	If Game\Victory=0 And p\No#=1 Then
 		Select Menu\Mission
-			Case MISSION_ENEMY#,MISSION_CARNIVAL#:
+			Case MISSION_CARNIVAL#:
 				If Game\Gameplay\Enemies>=Game\Gameplay\TotalEnemies Then Player_Goal(p)
+			Case MISSION_ENEMY#
+				If Game\Gameplay\Enemies>=Game\Stage\Properties\EnemyMissionAmount Then Player_Goal(p)
 			Case MISSION_RING#:
-				If Game\Gameplay\Rings>=200 Then Player_Goal(p)
+				If Game\Gameplay\Rings>=Game\Stage\Properties\RingMissionAmount Then Player_Goal(p)
 			Case MISSION_HUNT#:
-				If Game\Gameplay\RedRings>=3 Then Player_Goal(p)
+				If Game\Gameplay\Shards>=3 Then Player_Goal(p)
 			Case MISSION_GOLD#:
-				If Game\Gameplay\TotalGoldEnemies>0 and Game\Gameplay\GoldEnemies>=Game\Gameplay\TotalGoldEnemies Then Player_Goal(p)
+				If Game\Gameplay\TotalGoldEnemies>0 And Game\Gameplay\GoldEnemies>=Game\Gameplay\TotalGoldEnemies Then Player_Goal(p)
 			Case MISSION_BALLOONS#:
 				If Game\Gameplay\Balloons>=Game\Gameplay\TotalBalloons Then Player_Goal(p)
 			Case MISSION_RIVAL#:
 				Select Game\RivalAmount
 					Case 1: If ppe(1)\Action=ACTION_RIVALDIE Then Player_Goal(p)
-					Case 2: If ppe(1)\Action=ACTION_RIVALDIE and ppe(2)\Action=ACTION_RIVALDIE Then Player_Goal(p)
-					Case 3: If ppe(1)\Action=ACTION_RIVALDIE and ppe(2)\Action=ACTION_RIVALDIE and ppe(3)\Action=ACTION_RIVALDIE Then Player_Goal(p)
+					Case 2: If ppe(1)\Action=ACTION_RIVALDIE And ppe(2)\Action=ACTION_RIVALDIE Then Player_Goal(p)
+					Case 3: If ppe(1)\Action=ACTION_RIVALDIE And ppe(2)\Action=ACTION_RIVALDIE And ppe(3)\Action=ACTION_RIVALDIE Then Player_Goal(p)
 				End Select
 			Case MISSION_BOSS#:
 				If Game\BossNotDefeated=0 Then Player_Goal(p)
@@ -410,18 +483,18 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 				EndIf
 		End Select
 		If Menu\MissionTime=1 Then
-			If (Game\LimitTime-Game\Gameplay\Time)<0 and Menu\ExitedAStage=0 Then Game_Stage_Quit(5)
+			If (Game\LimitTime-Game\Gameplay\Time)<0 And Menu\ExitedAStage=0 Then Game_Stage_Quit(5)
 		EndIf
 		If Menu\MissionMach=1 Or Game\MachLockTriggered=1 Then
 			Game\MachLock=1.5*secs#
 		EndIf
 		If Menu\MissionPerfect=1 Or Menu\Stage<0 Then
-			If p\Action=ACTION_DIE and Menu\ExitedAStage=0 Then Game_Stage_Quit(1)
+			If p\Action=ACTION_DIE And Menu\ExitedAStage=0 Then Game_Stage_Quit(1)
 		EndIf
 	EndIf
 
 	;water splash
-	If (Not(p\Watersplash=p\Underwater)) and (p\No#=1 Or p\Underwater=pp(1)\Underwater) and (Menu\ChaoGarden=0 Or Menu\Stage=999) Then
+	If (Not(p\WaterSplash=p\Underwater)) And (p\No#=1 Or p\Underwater=pp(1)\Underwater) And (Menu\ChaoGarden=0 Or Menu\Stage=999) Then
 		If Not(Game\Stage\Properties\WaterType=6) Then
 			Select p\Underwater
 				Case 1: EmitSmartSound(Sound_WaterIn, p\Objects\Entity)
@@ -457,7 +530,7 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 			EndIf
 		Case 2,3:
 			HideEntity(p\Objects\Scanner)
-			If (Not(p\Action=ACTION_SHOOT Or p\Action=ACTION_SHOOTHOVER Or p\TornadoShoot=1)) and (Not(p\ShootCooldownTimer>0)) and (p\Action=ACTION_COMMON Or p\Action=ACTION_FULLFALL Or p\Action=ACTION_JUMPFALL Or p\Action=ACTION_FALL Or p\Action=ACTION_HOP Or p\Action=ACTION_JUMP Or p\Action=ACTION_HOVER Or p\Action=ACTION_TORNADO) Then
+			If (Not(p\Action=ACTION_SHOOT Or p\Action=ACTION_SHOOTHOVER Or p\TornadoShoot=1)) And (Not(p\ShootCooldownTimer>0)) And (p\Action=ACTION_COMMON Or p\Action=ACTION_FULLFALL Or p\Action=ACTION_JUMPFALL Or p\Action=ACTION_FALL Or p\Action=ACTION_HOP Or p\Action=ACTION_JUMP Or p\Action=ACTION_HOVER Or p\Action=ACTION_TORNADO) Then
 				If p\AimedTargets>0 Then
 					Player_Action_Shoot_Initiate(p,2)
 					p\AimedTargets=p\AimedTargets-1
@@ -475,7 +548,7 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 	If (Not(p\EnemyComboTimer>0)) Then p\EnemyComboCounter=0
 
 	;deal obj carry carrying nothing
-	If (Not(p\ObjPickUpTimer>0)) and p\ObjPickUp=1 Then p\ObjPickUp=0
+	If (Not(p\ObjPickUpTimer>0)) And p\ObjPickUp=1 Then p\ObjPickUp=0
 
 	;deal how many pet attack
 	If Not(p\CheeseRestrictTimer>0) Then p\CheeseAttackedCount=0
@@ -486,12 +559,12 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 	;deal vehicle
 	If p\No#=1 Then
 		If Game\WholeVehicle>0 Then
-			If Game\Victory=0 and (Not(p\Action=ACTION_DIE Or p\Action=ACTION_DEBUG Or p\Action=ACTION_HOLD Or p\Action=ACTION_GRIND Or p\IsHoldingTimer>0 Or p\JustDeformedCharacterTimer>0)) Then
-				If (Not(Game\Vehicle=Game\WholeVehicle Or (Game\WholeVehicle=6 and Game\Vehicle=7))) Then Game\Vehicle=Game\WholeVehicle
+			If Game\Victory=0 And (Not(p\Action=ACTION_DIE Or p\Action=ACTION_DEBUG Or p\Action=ACTION_HOLD Or p\Action=ACTION_GRIND Or p\IsHoldingTimer>0 Or p\JustDeformedCharacterTimer>0)) Then
+				If (Not(Game\Vehicle=Game\WholeVehicle Or (Game\WholeVehicle=6 And Game\Vehicle=7))) Then Game\Vehicle=Game\WholeVehicle
 			EndIf
 		EndIf
 		For ppp.tPlayer = Each tPlayer
-			If (Not(ppp\HasVehicle=Game\Vehicle)) and ppp\No#>0 and (ppp\No#=1 Or (Not(Game\Vehicle=6 Or Game\Vehicle=7))) Then
+			If (Not(ppp\HasVehicle=Game\Vehicle)) And ppp\No#>0 And (ppp\No#=1 Or (Not(Game\Vehicle=6 Or Game\Vehicle=7))) Then
 				If ppp\HasVehicle>0 Then
 					FreeEntity ppp\Objects\Vehicle : ppp\Action=ACTION_FALL
 				EndIf
@@ -575,7 +648,9 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 			EndIf
 		EndIf
 	EndIf
-
+	
+	If p\Action=ACTION_BOARDGRIND Then RotateEntity(p\Objects\Vehicle,0,90,0)
+	
 	;die on death level
 	If Game\Victory=0 And p\Objects\Position\y#<Game\Stage\Properties\DeathLevel And Game\Interface\DebugPlacerOn=0 And (Not(p\Action=ACTION_DIE)) Then Player_Die(p)
 
@@ -606,7 +681,7 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 			p\Motion\Speed\x# = 0 : p\Motion\Speed\y# = 0 : p\Motion\Speed\z# = 0
 		If EntityDistance(p\Objects\Entity,p\Objects\DestinationTarget)<5 Then p\GoDestination=False
 
-		If abs(p\DestinationSaverPreviousDistance#-EntityDistance(p\Objects\Entity,p\Objects\DestinationTarget)) < 1 Then
+		If Abs(p\DestinationSaverPreviousDistance#-EntityDistance(p\Objects\Entity,p\Objects\DestinationTarget)) < 1 Then
 			p\DestinationSaverTimer=p\DestinationSaverTimer+timervalue#
 			If p\DestinationSaverTimer>2*secs# Then
 				p\GoDestination=False
@@ -634,7 +709,7 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 	If p\BombMonitorTimer>0 Then
 		For o.tObject = Each tObject
 			If o\ThisIsAnEnemy Then
-				If EntityDistance(o\Entity,p\Objects\Entity)<250 and o\Enemy\EnemyShallAppear and Object_IsActualEnemy(o\ObjType) and (Not(o\ObjType=OBJTYPE_SPRINKLR Or o\ObjType=OBJTYPE_DOOMSEYE)) and (Not(o\Enemy\WasJustAttacked>0)) Then
+				If EntityDistance(o\Entity,p\Objects\Entity)<250 And o\Enemy\EnemyShallAppear And Object_IsActualEnemy(o\ObjType) And (Not(o\ObjType=OBJTYPE_SPRINKLR Or o\ObjType=OBJTYPE_DOOMSEYE)) And (Not(o\Enemy\WasJustAttacked>0)) Then
 					o\Enemy\WasKilledByBombMonitor=True
 					o\AlwaysPresent=True
 				EndIf
@@ -644,9 +719,9 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 	EndIf
 
 	;chao garden stuff
-	If Menu\ChaoGarden=1 and Player_IsPlayable(p) Then
+	If Menu\ChaoGarden=1 And Player_IsPlayable(p) Then
 		;explode inventory
-		If Game\Interface\ShallExplodeInventory and Menu\Stage=999 Then
+		If Game\Interface\ShallExplodeInventory And Menu\Stage=999 Then
 			Interface_ActivateGardenAction(1, CONTROLTIPS$(TIP_RELEASEINVENTORY))
 			If Input\Pressed\ActionSkill2 Then
 				Game\Interface\ShallExplodeInventory=False
@@ -659,20 +734,20 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 
 		;whistle, pet, cheer
 		If Menu\Stage=999 Then
-			If (Not(p\MayNotWhistleTimer>0)) and p\MayWhistleTimer>0 Then
+			If (Not(p\MayNotWhistleTimer>0)) And p\MayWhistleTimer>0 Then
 				Interface_ActivateGardenAction(1, CONTROLTIPS$(TIP_WHISTLE))
 				If Input\Pressed\ActionSkill2 Then
 					Object_Whistle_Create.tObject(p)
 					EmitSmartSound(Sound_Whistle,p\Objects\Entity)
 				EndIf
-			ElseIf (Not(p\MayNotPetTimer>0)) and p\MayPetTimer>0 Then
+			ElseIf (Not(p\MayNotPetTimer>0)) And p\MayPetTimer>0 Then
 				Interface_ActivateGardenAction(1, CONTROLTIPS$(TIP_PET))
 				If Input\Pressed\ActionSkill2 Then
 					Object_Petter_Create.tObject(p)
 				EndIf
 			EndIf
 		Else
-			If (Not(p\MayNotCheerTimer>0)) and p\MayCheerTimer>0 Then
+			If (Not(p\MayNotCheerTimer>0)) And p\MayCheerTimer>0 Then
 				Interface_ActivateGardenAction(1, CONTROLTIPS$(TIP_CHEER))
 				If Input\Pressed\ActionSkill2 Then
 					p\MayNotCheerTimer=(2+Rand(0,2))*secs#
@@ -685,7 +760,7 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 		EndIf
 
 		; auto saving
-		If (Not(Game\Interface\AutoSaveTimer>0)) and Menu\Stage=999 Then
+		If (Not(Game\Interface\AutoSaveTimer>0)) And Menu\Stage=999 Then
 			SaveGame_AllChaoStuff()
 			Game\Interface\AutoSaveTimer=180*secs#
 			Game\Interface\AutoSaveShowTimer=0.5*secs#
@@ -695,7 +770,7 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 	EndIf
 
 	;be super!
-	If (Game\SuperForm>0 and Player_IsPlayable(p)) Then
+	If (Game\SuperForm>0 And Player_IsPlayable(p)) Then
 		ParticleTemplate_Call(p\InvisiParticle, PARTICLE_PLAYER_SUPER, p\Objects\Entity, p\ScaleFactor#)
 		If Game\SuperForm=1 Then
 			If Player_SuperAuraShouldFire(p\Character) Then
@@ -709,7 +784,7 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 
 		Player_CreateRazer.tRazer(p,p\Objects\Mesh,Rand(5,10)/10.0,8)
 
-		If p\No#=1 and Game\Interface\DebugPlacerOn=0 Then
+		If p\No#=1 And Game\Interface\DebugPlacerOn=0 Then
 			If (Not(Game\RingDropTimer>0)) Then
 				Game\RingDropTimer=1*secs#
 				Gameplay_SubstractRings(1)
@@ -725,7 +800,7 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 	;handle radius
 	Select p\RadiusChange
 		Case 0:
-			If (p\No#>1 and (p\Action=ACTION_HOLD2)) Then
+			If (p\No#>1 And (p\Action=ACTION_HOLD2)) Then
 				EntityRadius(p\Objects\Entity, 12)
 				p\RadiusChange=1
 			ElseIf p\Action=ACTION_TORNADO Then
@@ -751,7 +826,7 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 	End Select
 
 	;fix grabbed collision
-	If p\WasGrabbed=1 and (Not(p\Action=ACTION_GRABBED)) Then
+	If p\WasGrabbed=1 And (Not(p\Action=ACTION_GRABBED)) Then
 		p\WasGrabbed=0
 		EntityType(cam\Entity, COLLISION_CAMERA)
 		EntityType(p\Objects\Entity, COLLISION_PLAYER)
@@ -759,7 +834,7 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 
 	;special stage stuff
 	If Menu\Stage<0 Then
-		If Game\Victory=0 and (Not(p\Action=ACTION_DIE Or p\Action=ACTION_DEBUG)) Then
+		If Game\Victory=0 And (Not(p\Action=ACTION_DIE Or p\Action=ACTION_DEBUG)) Then
 			Game\MachLock=1.5*secs#
 			Game\CamLock=1800*secs#
 			Game\CamLock2=0
@@ -799,3 +874,5 @@ Function Player_IsPowerChar(p.tPlayer)
 			Return False
 	End Select
 End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

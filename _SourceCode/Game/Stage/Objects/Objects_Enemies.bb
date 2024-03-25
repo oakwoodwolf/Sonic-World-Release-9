@@ -1,16 +1,16 @@
 Function Object_CheckEnemyHitBox(o.tObject,p.tPlayer)
-	If o\Enemy\WasJustAttacked>0 and o\Enemy\IsBoss=0 and (Not(o\ObjType=OBJTYPE_SPRINKLR Or o\ObjType=OBJTYPE_DOOMSEYE)) Then
+	If o\Enemy\WasJustAttacked>0 And o\Enemy\IsBoss=0 And (Not(o\ObjType=OBJTYPE_SPRINKLR Or o\ObjType=OBJTYPE_DOOMSEYE)) Then
 		If Input\Pressed\ActionJump Or Input\Pressed\ActionRoll Or Input\Pressed\ActionSkill1 Or Input\Pressed\ActionSkill2 Or Input\Pressed\ActionSkill3 Or Input\Pressed\ActionDrift Then o\Enemy\WasJustAttacked=0
 	EndIf
+	
+	If o\Enemy\WasJustAttacked>0 Or (o\Enemy\MayGetAttacked=False And o\Enemy\IsBoss=1) Then o\AttackDetectRestrict=True Else o\AttackDetectRestrict=False
 
-	If o\Enemy\WasJustAttacked>0 Or (o\Enemy\MayGetAttacked=False and o\Enemy\IsBoss=1) Then o\AttackDetectRestrict=True Else o\AttackDetectRestrict=False
-
-	If ((Abs(p\Objects\Position\x# - o\Position\x#) < o\HitBox\x#*(1+p\ScaleFactor#/4)+2*p\Flags\Stomping+(p\SpeedLength#/3.0)) And (Abs(p\Objects\Position\y# - o\Position\y#) < o\HitBox\y#*(1+p\ScaleFactor#/4)+1*p\Flags\Stomping+(p\SpeedLength#/3.0)) And (p\Objects\Position\y#>(o\Position\y#-1.2-(2+(p\SpeedLength#/3.0))) Or o\Enemy\FlyEnemyType) And (Abs(p\Objects\Position\z# - o\Position\z#) < o\HitBox\z#*(1+p\ScaleFactor#/4)+2*p\Flags\Stomping+(p\SpeedLength#/3.0))) and (Not(o\FrozenStunTimer>0)) Then
+	If ((Abs(p\Objects\Position\x# - o\Position\x#) < o\HitBox\x#*(1+p\ScaleFactor#/4)+2*p\Flags\Stomping+(p\SpeedLength#/3.0)) And (Abs(p\Objects\Position\y# - o\Position\y#) < o\HitBox\y#*(1+p\ScaleFactor#/4)+1*p\Flags\Stomping+(p\SpeedLength#/3.0)) And (p\Objects\Position\y#>(o\Position\y#-1.2-(2+(p\SpeedLength#/3.0))) Or o\Enemy\FlyEnemyType) And (Abs(p\Objects\Position\z# - o\Position\z#) < o\HitBox\z#*(1+p\ScaleFactor#/4)+2*p\Flags\Stomping+(p\SpeedLength#/3.0))) And (Not(o\FrozenStunTimer>0)) Then
 		i=False
 		Select o\ObjType
 			Case OBJTYPE_BEETLESPRING: If (p\Objects\Position\y#-EntityY(o\Entity))>2 Or p\Action=ACTION_STOMP Then i=True
 			Default:
-				If Game\Invinc=0 and p\HasVehicle=0 Then
+				If Game\Invinc=0 And p\HasVehicle=0 Then
 					Select o\ObjType
 						Case OBJTYPE_CRAWL: If o\Anim=3 Or o\Anim=4 Then i=True
 						Case OBJTYPE_MUSHMEANIE,OBJTYPE_SHEEP: If o\Enemy\AttackMode=0 Or o\Enemy\WaitTimer2>0 Then i=True
@@ -21,9 +21,9 @@ Function Object_CheckEnemyHitBox(o.tObject,p.tPlayer)
 		If i Then
 			Object_Enemy_SpecialBehaviour(o,p)
 		Else
-			enemyhit=false
-			If (p\Flags\Attacking and (o\Enemy\MayGetAttacked Or p\HurtTimer>0)) Or Game\Invinc=1 Then enemyhit=true
-			If (o\ObjType=OBJTYPE_GRABBER Or o\ObjType=OBJTYPE_KLAGEN) and (p\Action=ACTION_JUMP Or p\Action=ACTION_HOP) and p\Objects\Position\y#<(o\Position\y#-0.5) Then enemyhit=false
+			enemyhit=False
+			If (p\Flags\Attacking And (o\Enemy\MayGetAttacked Or p\HurtTimer>0)) Or Game\Invinc=1 Then enemyhit=True
+			If (o\ObjType=OBJTYPE_GRABBER Or o\ObjType=OBJTYPE_KLAGEN) And (p\Action=ACTION_JUMP Or p\Action=ACTION_HOP) And p\Objects\Position\y#<(o\Position\y#-0.5) Then enemyhit=False
 
 			If enemyhit Then
 				If o\Enemy\IsBoss=0 Or o\Enemy\BossMode<5 Then
@@ -32,7 +32,7 @@ Function Object_CheckEnemyHitBox(o.tObject,p.tPlayer)
 					If (Not(o\ObjType=OBJTYPE_BOMBIE)) Then p\DontGetHurtTimer=0.25*secs#
 				EndIf
 			ElseIf p\Motion\Ground Or (p\Objects\Position\y#>o\Position\y#) Then
-				If (o\ObjType=OBJTYPE_GRABBER Or o\ObjType=OBJTYPE_KLAGEN Or o\ObjType=OBJTYPE_ACHAOSBLOB Or o\ObjType=OBJTYPE_BOO) and (Not(p\WasGrabbedTimer>0 Or p\DontGetHurtTimer>0)) and o\Psychoed=0 and o\Rubied=0 and Game\Invinc=0 and p\Invisibility=0 and (Not(p\Action=ACTION_GRABBED Or p\Action=ACTION_HURT Or p\Action=ACTION_DIE Or p\Action=ACTION_SKYDIVE)) and (Not(Game\ControlLock>0)) and (Not(Game\RunLock>0)) Then
+				If (o\ObjType=OBJTYPE_GRABBER Or o\ObjType=OBJTYPE_KLAGEN Or o\ObjType=OBJTYPE_ACHAOSBLOB Or o\ObjType=OBJTYPE_BOO) And (Not(p\WasGrabbedTimer>0 Or p\DontGetHurtTimer>0)) And o\Psychoed=0 And o\Rubied=0 And Game\Invinc=0 And p\Invisibility=0 And (Not(p\Action=ACTION_GRABBED Or p\Action=ACTION_HURT Or p\Action=ACTION_DIE Or p\Action=ACTION_SKYDIVE)) And (Not(Game\ControlLock>0)) And (Not(Game\RunLock>0)) Then
 					EntityType(cam\Entity, COLLISION_NONE)
 					EntityType(p\Objects\Entity, COLLISION_NONE)
 					o\Enemy\AttackTimer=3*secs#
@@ -44,23 +44,23 @@ Function Object_CheckEnemyHitBox(o.tObject,p.tPlayer)
 					Player_SetSpeed(p,0)
 					Player_SetSpeedY(p,0)
 				Else
-					If (Not(p\Action=ACTION_GRABBED Or p\WasGrabbedTimer>0)) and o\Psychoed=0 and o\Rubied=0 Then
+					If (Not(p\Action=ACTION_GRABBED Or p\WasGrabbedTimer>0)) And o\Psychoed=0 And o\Rubied=0 Then
 						If (Not(p\HurtTimer>0)) Then
 							Select o\ObjType
 								Case OBJTYPE_RHINOSPIKES:
 									If p\Objects\Position\y#>o\Position\y#+3 Then EmitSmartSound(Sound_Spikes,o\Entity)
 								Case OBJTYPE_SPIKES:
-									If p\Objects\Position\y#>o\Position\y#+3 and o\Enemy\AttackMode=0 Then EmitSmartSound(Sound_Spikes,o\Entity)
+									If p\Objects\Position\y#>o\Position\y#+3 And o\Enemy\AttackMode=0 Then EmitSmartSound(Sound_Spikes,o\Entity)
 								Case OBJTYPE_ASTERON,OBJTYPE_BUBBLSSPIKES:
 									If o\Enemy\AttackMode=0 Then EmitSmartSound(Sound_Spikes,o\Entity)
 								Case OBJTYPE_FLAPPERNEEDLE:
 									If o\Anim=2 Then EmitSmartSound(Sound_Spikes,o\Entity)
 							End Select
 						EndIf
-						If o\PsychoedThrown=False and (Not(o\Enemy\MayNotHurtTimer>0)) Then
+						If o\PsychoedThrown=False And (Not(o\Enemy\MayNotHurtTimer>0)) Then
 							Player_Hit(p)
 							If o\Enemy\IsBoss=1 Then
-								If (Not(Rand(1,1+2)=1)) and (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) and (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Win[Rand(1,2)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
+								If (Not(Rand(1,1+2)=1)) And (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) And (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Win[Rand(1,2)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
 							EndIf
 						EndIf
 					EndIf
@@ -80,7 +80,7 @@ Function BossType(char)
 		Case CHAR_BLA,CHAR_SIL,CHAR_MAR:
 			Return 1
 	End Select
-	For i=1 to 3
+	For i=1 To 3
 		If Menu\Members>=i Then
 		Select Menu\Character[i]
 			Case CHAR_EGG,CHAR_MET,CHAR_TDL,CHAR_MKN,CHAR_BET,CHAR_MT3,CHAR_EGR,CHAR_INF:
@@ -133,8 +133,8 @@ Function Object_PlayRobotDestroySound(o.tObject,defeated=True)
 End Function
 
 Function Object_PlayRobotSteps(o.tObject,firstframe,otherframe)
-	If (Not(firstframe=0 and otherframe=0)) and (Not(ChannelPlaying(o\Enemy\Channel_EnemyStep))) Then
-		If o\Enemy\Frame=firstframe or o\Enemy\Frame=otherframe Then
+	If (Not(firstframe=0 And otherframe=0)) And (Not(ChannelPlaying(o\Enemy\Channel_EnemyStep))) Then
+		If o\Enemy\Frame=firstframe Or o\Enemy\Frame=otherframe Then
 			Select o\ObjType
 				Case OBJTYPE_BITER,OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_OAKSWORD,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_SHEEP:
 					Select(Rand(1,5))
@@ -178,7 +178,7 @@ Function Object_PlayRobotSteps(o.tObject,firstframe,otherframe)
 	Else
 		If o\Enemy\Underwater=1 Then
 			ParticleTemplate_Call(o\Enemy\WaterParticle, PARTICLE_OBJECT_WATERSPLASH, o\Entity)
-			If (Not(ChannelPlaying(o\Enemy\Channel_EnemySwim))) and o\InView Then o\Enemy\Channel_EnemySwim=EmitSmartSound(Sound_EnemySwim,o\Entity)
+			If (Not(ChannelPlaying(o\Enemy\Channel_EnemySwim))) And o\InView Then o\Enemy\Channel_EnemySwim=EmitSmartSound(Sound_EnemySwim,o\Entity)
 		EndIf
 	EndIf
 End Function
@@ -285,8 +285,21 @@ Function Object_AnimateEnemy(o.tObject)
 				Animate o\Entity,1,0.075,o\Anim,10
 			Case OBJTYPE_HAMMERHAMMER:
 				If o\Anim=6 Then Animate o\Entity,1,0.275,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
+			Case OBJTYPE_PAWNGUN
+				If o\EggpawnShootTimer>0 Then 
+					Animate o\Entity,1,0.15,6,10
+				Else
+					Animate o\Entity,1,0.15,o\Anim,10
+				EndIf 
+			Case OBJTYPE_GUNNER
+				Select o\Anim
+					Case 1 : Animate o\Entity,1,0.15,o\Anim,10
+					Case 2 : Animate o\Entity,1,0.25,o\Anim,10
+					Case 3 : Animate o\Entity,1,0.05,o\Anim,10
+				End Select 
 			Default:
 				Animate o\Entity,1,0.15,o\Anim,10
+				
 		End Select
 		o\PreviousAnim=o\Anim
 	EndIf
@@ -302,7 +315,7 @@ Function Object_Enemy_GravityStuff(o.tObject,p.tPlayer,d.tDeltaTime)
 
 	; Gravity stuff
 	Select o\ObjType
-		Case OBJTYPE_PAWN,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSWORD,OBJTYPE_MOTOBUG,OBJTYPE_CRABMEAT,OBJTYPE_KIKI,OBJTYPE_SPINY,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_ACHAOS,OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES,OBJTYPE_FIGHTER,OBJTYPE_CAMERON,OBJTYPE_KLAGEN,OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_ANTON,OBJTYPE_BOMBIE,OBJTYPE_NEWTRON,OBJTYPE_PENGUINATOR,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_SPIKES,OBJTYPE_CRAWL,OBJTYPE_BITER,OBJTYPE_CRAWLER,OBJTYPE_BALLHOG,OBJTYPE_RHINOTANK,OBJTYPE_TECHNOSQU,OBJTYPE_COPRACER,OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_OAKSWORD,OBJTYPE_LEECH,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_CLUCKOID,OBJTYPE_SHEEP,OBJTYPE_SNOWY,OBJTYPE_TOXO,OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER,OBJTYPE_HAMMERSHIELD,OBJTYPE_WITCH1,OBJTYPE_WITCH2,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
+		Case OBJTYPE_GUNNER,OBJTYPE_PAWN,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSWORD,OBJTYPE_MOTOBUG,OBJTYPE_CRABMEAT,OBJTYPE_KIKI,OBJTYPE_SPINY,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_ACHAOS,OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES,OBJTYPE_FIGHTER,OBJTYPE_CAMERON,OBJTYPE_KLAGEN,OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_ANTON,OBJTYPE_BOMBIE,OBJTYPE_NEWTRON,OBJTYPE_PENGUINATOR,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_SPIKES,OBJTYPE_CRAWL,OBJTYPE_BITER,OBJTYPE_CRAWLER,OBJTYPE_BALLHOG,OBJTYPE_RHINOTANK,OBJTYPE_TECHNOSQU,OBJTYPE_COPRACER,OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_OAKSWORD,OBJTYPE_LEECH,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_CLUCKOID,OBJTYPE_SHEEP,OBJTYPE_SNOWY,OBJTYPE_TOXO,OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER,OBJTYPE_HAMMERSHIELD,OBJTYPE_WITCH1,OBJTYPE_WITCH2,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
 			Object_EnforceGravity(o,d)
 		Case OBJTYPE_CHOPPER,OBJTYPE_JAWS,OBJTYPE_STEELION,OBJTYPE_OCTUS,OBJTYPE_MUSHMEANIE,OBJTYPE_BURROBOT,OBJTYPE_E1000,OBJTYPE_MANTIS,OBJTYPE_ROLLER,OBJTYPE_SPLATS:
 			If Not o\Enemy\FlyEnemyType Then Object_EnforceGravity(o,d)
@@ -319,7 +332,7 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
 Function Object_IsStun(o.tObject)
-	If (Not(o\BubbleStunTimer>0)) and (Not(o\CurseStunTimer>0)) and (Not(o\FroggyStunTimer>0)) and (Not(o\FlowerStunTimer>0)) and (Not(o\FrozenStunTimer>0)) and (Not(o\WhirlwindStunTimer>0)) Then
+	If (Not(o\BubbleStunTimer>0)) And (Not(o\CurseStunTimer>0)) And (Not(o\FroggyStunTimer>0)) And (Not(o\FlowerStunTimer>0)) And (Not(o\FrozenStunTimer>0)) And (Not(o\WhirlwindStunTimer>0)) Then
 		Return False
 	Else
 		Return True
@@ -327,7 +340,7 @@ Function Object_IsStun(o.tObject)
 End Function
 
 Function Object_EnemyIsStun(o.tObject)
-	If (pp(1)\Invisibility=0 Or o\ThisIsAnEnemyMissile) and (Not(Object_IsStun(o) Or pp(1)\ChaosControlActiveTimer>0)) and o\Psychoed=0 and o\Rubied=0 Then
+	If (pp(1)\Invisibility=0 Or o\ThisIsAnEnemyMissile) And (Not(Object_IsStun(o) Or Game\ChaosControlTimer>0)) And o\Psychoed=0 And o\Rubied=0 Then
 		Return False
 	Else
 		Return True
@@ -342,24 +355,24 @@ Function Object_ReturnCanAttackShield(p.tPlayer,o.tObject)
 	;EndIf
 End Function
 
-Function Object_CreateEnemyPieces(o.tObject,dontspawnmesh=false)
+Function Object_CreateEnemyPieces(o.tObject,dontspawnmesh=False)
 	situation = o\Psychoed Or o\Rubied
 	Select o\ObjType
 		Case OBJTYPE_PAWNSHIELD,OBJTYPE_HUNTERSHIELD,OBJTYPE_HAMMERSHIELD:
-			Object_Pieces_Create(true,o\ObjType,situation,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold,dontspawnmesh, o\Enemy\Shield)
+			Object_Pieces_Create(True,o\ObjType,situation,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold,dontspawnmesh, o\Enemy\Shield)
 		Case OBJTYPE_ORBINAUT,OBJTYPE_COPRACER:
-			Object_Pieces_Create(true,o\ObjType,situation,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold,dontspawnmesh, o\Entity2)
+			Object_Pieces_Create(True,o\ObjType,situation,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold,dontspawnmesh, o\Entity2)
 		Case OBJTYPE_MUSHMEANIE,OBJTYPE_SHEEP:
-			If o\Enemy\AttackMode=0 Then Object_Pieces_Create(false,-o\ObjType,0,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold)
-			Object_Pieces_Create(true,o\ObjType,situation,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold,dontspawnmesh)
+			If o\Enemy\AttackMode=0 Then Object_Pieces_Create(False,-o\ObjType,0,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold)
+			Object_Pieces_Create(True,o\ObjType,situation,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold,dontspawnmesh)
 		Default:
-			Object_Pieces_Create(true,o\ObjType,situation,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold,dontspawnmesh)
+			Object_Pieces_Create(True,o\ObjType,situation,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold,dontspawnmesh)
 	End Select
 	Select o\ObjType
-		Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD:
-			Object_Pieces_Create(true,o\ObjType,situation,o\Position\x#,o\Position\y#+12,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold,true)
+		Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_GUNNER:
+			Object_Pieces_Create(True,o\ObjType,situation,o\Position\x#,o\Position\y#+12,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold,True)
 		Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA:
-			Object_Pieces_Create(true,o\ObjType,situation,o\Position\x#,o\Position\y#+5,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold,true)
+			Object_Pieces_Create(True,o\ObjType,situation,o\Position\x#,o\Position\y#+5,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold,True)
 	End Select
 End Function
 
@@ -384,7 +397,7 @@ End Function
 
 		Select o\ObjType
 			Case OBJTYPE_PAWN,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSWORD,OBJTYPE_KLAGEN,OBJTYPE_EGGROBO,OBJTYPE_MOTOBUG,OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_ANTON,OBJTYPE_STEELION,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE,OBJTYPE_WITCH1,OBJTYPE_WITCH2: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,13,6.5)
-			Case OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,7.5,7,7.5)
+			Case OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_SEARCHER,OBJTYPE_EGGHUNTER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,7.5,7,7.5)
 			Case OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_SPONA: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,9.5,11.5,9.5)
 			Case OBJTYPE_CATERKILLER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,7.5,13,7.5)
 			Case OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_CHOPPER,OBJTYPE_JAWS,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_AQUIS,OBJTYPE_BOMBIE,OBJTYPE_NEWTRON,OBJTYPE_PENGUINATOR,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_SPIKES,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_BURROBOT,OBJTYPE_CRAWL,OBJTYPE_MADMOLE,OBJTYPE_OCTUS,OBJTYPE_TAKER,OBJTYPE_DRAGONFLY,OBJTYPE_SPLATS: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,8,6.5)
@@ -392,7 +405,7 @@ End Function
 			Case OBJTYPE_SPINY: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,8,11,8)
 			Case OBJTYPE_GRABBER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,11.5,12,11.5)
 			Case OBJTYPE_KIKI,OBJTYPE_ASTERON,OBJTYPE_PATABATA,OBJTYPE_TECHNOSQU,OBJTYPE_LEECH: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,7,6.5)
-			Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,26,6.5)
+			Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_GUNNER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,26,6.5)
 			Case OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,8,8,8)
 			Case OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_BITER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,8.5,16,8.5)
 			Case OBJTYPE_AEROC: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,8.5,9,8.5)
@@ -456,6 +469,7 @@ End Function
 			Case OBJTYPE_COP: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_CopSpeeder)), Game\Stage\Root)
 			Case OBJTYPE_COPRACER: o\Entity2=Rand(1,6) : o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_CopRacer1+o\Entity2-1)), Game\Stage\Root)
 			Case OBJTYPE_HUNTER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Hunter)), Game\Stage\Root)
+			Case OBJTYPE_GUNNER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Gunner)), Game\Stage\Root)	
 			Case OBJTYPE_HUNTERSHIELD: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Hunter)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_HunterShield)
 			Case OBJTYPE_BEETLE: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Beetle)), Game\Stage\Root)
 			Case OBJTYPE_BEETLEMONO: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BeetleMono)), Game\Stage\Root)
@@ -534,6 +548,8 @@ End Function
 			Case OBJTYPE_FCANNON1: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_FCannon1)), Game\Stage\Root)
 			Case OBJTYPE_FCANNON2: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_FCannon2)), Game\Stage\Root)
 			Case OBJTYPE_FCANNON3: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_FCannon3)), Game\Stage\Root)
+			Case OBJTYPE_SEARCHER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Searcher)), Game\Stage\Root)
+			Case OBJTYPE_EGGHUNTER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_EggHunter)), Game\Stage\Root)	
 			Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN:
 				Select BossType(Menu\Character[1])
 					Case 1:
@@ -541,17 +557,17 @@ End Function
 						o\ExtraTexture = LoadTexture("Objects/Shields/EggMobileNegaShield.png",2+256) : o\HasExtraTexture=1
 						o\Entity3 = CopyEntity(MESHES(SmartEntity(Mesh_Boss_EggMobile_Shield)), Game\Stage\Root) : EntityTexture o\Entity3, o\ExtraTexture
 						LoadCharacterMesh(CHAR_EGN,4,0,1)
-						For i=1 to 5 : LoadGoodSound(Voice_EGG_Attack[i],1,"Voices/"+"egn"+"/attack"+i+".ogg",2) : Next
-						For i=1 to 3 : LoadGoodSound(Voice_EGG_Lose[i],1,"Voices/"+"egn"+"/lose"+i+".ogg",2) : Next
-						For i=1 to 2 : LoadGoodSound(Voice_EGG_Win[i],1,"Voices/"+"egn"+"/win"+i+".ogg",2) : Next
+						For i=1 To 5 : LoadGoodSound(Voice_EGG_Attack[i],1,"Voices/"+"egn"+"/attack"+i+".ogg",2) : Next
+						For i=1 To 3 : LoadGoodSound(Voice_EGG_Lose[i],1,"Voices/"+"egn"+"/lose"+i+".ogg",2) : Next
+						For i=1 To 2 : LoadGoodSound(Voice_EGG_Win[i],1,"Voices/"+"egn"+"/win"+i+".ogg",2) : Next
 					Default:
 						o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Boss_EggMobile)), Game\Stage\Root)
 						o\ExtraTexture = LoadTexture("Objects/Shields/EggMobileShield.png",2+256) : o\HasExtraTexture=1
 						o\Entity3 = CopyEntity(MESHES(SmartEntity(Mesh_Boss_EggMobile_Shield)), Game\Stage\Root) : EntityTexture o\Entity3, o\ExtraTexture
 						LoadCharacterMesh(CHAR_EGG,4,0,1)
-						For i=1 to 5 : LoadGoodSound(Voice_EGG_Attack[i],1,"Voices/"+"egg"+"/attack"+i+".ogg",2) : Next
-						For i=1 to 3 : LoadGoodSound(Voice_EGG_Lose[i],1,"Voices/"+"egg"+"/lose"+i+".ogg",2) : Next
-						For i=1 to 2 : LoadGoodSound(Voice_EGG_Win[i],1,"Voices/"+"egg"+"/win"+i+".ogg",2) : Next
+						For i=1 To 5 : LoadGoodSound(Voice_EGG_Attack[i],1,"Voices/"+"egg"+"/attack"+i+".ogg",2) : Next
+						For i=1 To 3 : LoadGoodSound(Voice_EGG_Lose[i],1,"Voices/"+"egg"+"/lose"+i+".ogg",2) : Next
+						For i=1 To 2 : LoadGoodSound(Voice_EGG_Win[i],1,"Voices/"+"egg"+"/win"+i+".ogg",2) : Next
 				End Select
 				o\Entity2=CopyEntity(CharacterMesh, Game\Stage\Root)
 				DeleteCharacterMesh()
@@ -623,6 +639,8 @@ End Function
 			Case OBJTYPE_OAKSWORD:
 				o\Enemy\Jet1=FindChild(o\Entity, "sword1")
 				o\Enemy\Jet2=FindChild(o\Entity, "sword2")
+			Case OBJTYPE_GUNNER
+				o\Enemy\Gun=FindChild(o\Entity, "forearmL")
 			Case OBJTYPE_CATAKILLER:
 				o\Enemy\Jet1=FindChild(o\Entity, "hips")
 				o\Enemy\Jet2=FindChild(o\Entity, "tail3")
@@ -643,7 +661,7 @@ End Function
 		EntityType(o\Entity,COLLISION_OBJECT_GOTHRU)
 
 		Select o\ObjType
-			Case OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_SPONA,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_GRABBER,OBJTYPE_COP,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_ACHAOSBLOB,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_EGGROBO,OBJTYPE_ORBINAUT,OBJTYPE_ASTERON,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_BOO,OBJTYPE_BOOSCARE,OBJTYPE_GHOST,OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_CHOPPER,OBJTYPE_JAWS,OBJTYPE_AQUIS,OBJTYPE_BALKIRY,OBJTYPE_DRAGONFLY,OBJTYPE_MANTA,OBJTYPE_PATABATA,OBJTYPE_ZOOMER,OBJTYPE_TAKER,OBJTYPE_WING,OBJTYPE_NEBULA,OBJTYPE_CATAKILLER,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE:
+			Case OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_SEARCHER,OBJTYPE_EGGHUNTER,OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_SPONA,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_GRABBER,OBJTYPE_COP,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_ACHAOSBLOB,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_EGGROBO,OBJTYPE_ORBINAUT,OBJTYPE_ASTERON,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_BOO,OBJTYPE_BOOSCARE,OBJTYPE_GHOST,OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_CHOPPER,OBJTYPE_JAWS,OBJTYPE_AQUIS,OBJTYPE_BALKIRY,OBJTYPE_DRAGONFLY,OBJTYPE_MANTA,OBJTYPE_PATABATA,OBJTYPE_ZOOMER,OBJTYPE_TAKER,OBJTYPE_WING,OBJTYPE_NEBULA,OBJTYPE_CATAKILLER,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE:
 				o\Enemy\FlyEnemyType=True
 			Default:
 				o\Enemy\FlyEnemyType=False
@@ -746,9 +764,10 @@ End Function
 		; Update timer
 		If o\Enemy\WasJustAttacked>0 Then o\Enemy\WasJustAttacked=o\Enemy\WasJustAttacked-timervalue#
 		If o\Enemy\WillBeHomedTimer>0 Then o\Enemy\WillBeHomedTimer=o\Enemy\WillBeHomedTimer-timervalue#
+		If o\EggpawnShootTimer>0 Then o\EggpawnShootTimer=o\EggpawnShootTimer-timervalue#
 
 		; Move
-		If o\Psychoed=0 and o\Rubied=0 and (Not(p\LightDashRequestTimer>0)) Then Object_EnemyMovements(o,p,d)
+		If (o\Psychoed=0 And o\Rubied=0 And (Not(p\LightDashRequestTimer>0))) Then Object_EnemyMovements(o,p,d)
 
 		; Detect the player
 		Select o\ObjType
@@ -767,7 +786,7 @@ End Function
 					Default:
 						i=0
 				End Select
-				If (Not(Object_EnemyIsStun(o))) and EntityDistance(o\Entity,p\Objects\Entity)<(110+15*i) and (Abs(p\Objects\Position\y# - o\Position\y#) < (40+5*i)) Then
+				If (Not(Object_EnemyIsStun(o))) And EntityDistance(o\Entity,p\Objects\Entity)<(110+15*i) And (Abs(p\Objects\Position\y# - o\Position\y#) < (40+5*i)) Then
 					o\Enemy\InRange=True
 				Else
 					o\Enemy\InRange=False
@@ -824,11 +843,11 @@ End Function
 		Object_Enemy_GravityStuff(o,p,d)
 
 		; Player collided with enemy
-		If Game\Victory>0 and o\Enemy\InRange and o\Enemy\IsBoss=0 Then o\Enemy\SelfDestruct=True
-		If (o\AttackDetectRestrict=False and (o\Hit Or o\CheeseHit Or o\BombHit)) Or o\Enemy\SelfDestruct Or o\Enemy\WasKilledByBombMonitor Then
+		If Game\Victory>0 And o\Enemy\InRange And o\Enemy\IsBoss=0 Then o\Enemy\SelfDestruct=True
+		If (o\AttackDetectRestrict=False And (o\Hit Or o\CheeseHit Or o\BombHit)) Or o\Enemy\SelfDestruct Or o\Enemy\WasKilledByBombMonitor Then
 			If Object_ReturnCanAttackShield(p,o) Then
-			If o\Enemy\IsBoss=0 and o\Enemy\Health>1 and (Game\Victory<>0 Or (Not(o\ObjType=OBJTYPE_SPRINKLR Or o\ObjType=OBJTYPE_DOOMSEYE))) Then
-				If o\Psychoed>0 Or o\Rubied>0 Or Game\Invinc Or Game\MachLock>0 Or o\Enemy\WasKilledByBombMonitor Or (o\BombHit and (o\BombHitType=BOMB_HOOKSHOT Or o\BombHitType=BOMB_BULLET3)) Or p\HasVehicle>0 Or Game\Victory<>0 Then
+			If o\Enemy\IsBoss=0 And o\Enemy\Health>1 And (Game\Victory<>0 Or (Not(o\ObjType=OBJTYPE_SPRINKLR Or o\ObjType=OBJTYPE_DOOMSEYE))) Then
+				If o\Psychoed>0 Or o\Rubied>0 Or Game\Invinc Or Game\MachLock>0 Or o\Enemy\WasKilledByBombMonitor Or (o\BombHit And (o\BombHitType=BOMB_HOOKSHOT Or o\BombHitType=BOMB_BULLET3 Or (o\BombHitType=BOMB_ROCKET And o\Enemy\Health<=5))) Or p\HasVehicle>0 Or Game\Victory<>0 Then
 					o\Enemy\Health=1
 				EndIf
 			EndIf
@@ -839,10 +858,12 @@ End Function
 						If Game\Invinc=0 Then o\Enemy\Health=o\Enemy\Health+1
 				End Select
 			EndIf
+			
+			;not one hit
 			If o\Enemy\Health>1 Then
-				Object_PlayRobotDestroySound(o,False)
+				
 				If o\Enemy\IsBoss=1 Then
-					If o\Hit and o\Enemy\WasKilledByBombMonitor=False Then Game\ControlLock=0.4*secs#
+					If o\Hit And o\Enemy\WasKilledByBombMonitor=False Then Game\ControlLock=0.4*secs#
 					o\Enemy\WasJustAttacked=5.31*secs#
 					Select o\ObjType
 						Case OBJTYPE_BOSSBETA:
@@ -871,26 +892,42 @@ End Function
 							Case OBJTYPE_HAMMERSHIELD: If o\Enemy\Health<=6 Then i=True Else i=False
 						End Select
 						If i Then
-							Object_Pieces_Create(false,-o\ObjType,o\Psychoed,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold)
+							Object_Pieces_Create(False,-o\ObjType,o\Psychoed,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold)
 							o\Enemy\Shield=0
 						EndIf
 					EndIf
 				EndIf
 				o\GotAssignedBomb=False
-				If (Not(o\ObjType=OBJTYPE_SPRINKLR Or o\ObjType=OBJTYPE_DOOMSEYE)) Then o\Enemy\Health=o\Enemy\Health-1
-				If Object_IsEnemyRobot(o\ObjType) Then Object_CreateEnemyPieces(o,true)
+				If (Not(o\ObjType=OBJTYPE_SPRINKLR Or o\ObjType=OBJTYPE_DOOMSEYE)) Then 
+					If Game\ChaosSnapTimer>0 Then
+						o\Enemy\Health=o\Enemy\Health-2
+					Else
+						o\Enemy\Health=o\Enemy\Health-1
+					EndIf 
+				EndIf 
+				
 				If o\Hit Then p\Flags\HomingLocked = False : p\Flags\Targeter=0
+				If o\Enemy\Health=0 Then 
+					Object_PlayRobotDestroySound(o)
+					If Object_IsEnemyRobot(o\ObjType) Then Object_CreateEnemyPieces(o)
+				Else
+					Object_PlayRobotDestroySound(o,False)
+					If Object_IsEnemyRobot(o\ObjType) Then Object_CreateEnemyPieces(o,True)
+				EndIf 
 			Else
 				; Add to counter
 				If o\Enemy\SelfDestruct=False Then
 					Gameplay_AddScore(100+150*o\Enemy\Gold+40*p\EnemyComboCounter) : p\EnemyComboCounter=p\EnemyComboCounter+1 : p\EnemyComboTimer=1.6*secs#
 					If Menu\Mission=MISSION_DECLINE# Then Game\DeclineTime=Game\DeclineTime+(2*p\EnemyComboCounter)*secs#
+					Gameplay_AddGaugeEnergy(o\Enemy\InitialHealth*5)
 				EndIf
 				If Object_IsActualEnemy(o\ObjType) Then
 					Gameplay_AddEnemies(1)
 					If o\Enemy\Gold=1 Then Gameplay_AddGoldEnemies(1)
 				EndIf
-
+				
+				
+				
 				; Boom!
 				If Game\Victory=0 Then Object_PlayRobotDestroySound(o)
 
@@ -928,7 +965,7 @@ End Function
 				If o\Enemy\IsBoss=0 Then
 					;Spawn chaos drive or flicky
 					If Menu\Mission=MISSION_FLICKY# Then
-						If Rand(1,5)=1 and Game\Gameplay\Flickies<5 Then
+						If Rand(1,5)=1 And Game\Gameplay\Flickies<5 Then
 							Object_Flicky_Create(o\Position\x#, o\Position\y#+4, o\Position\z#)
 						Else
 							Object_CreateDriveFromEnemy(o\ObjType, o\Position\x#, o\Position\y#+4, o\Position\z#)
@@ -938,11 +975,11 @@ End Function
 					EndIf
 
 					; Spawn red ring
-					If Object_ReturnCanAttackShield(p,o) and o\HasRedRing Then
+					If Object_ReturnCanAttackShield(p,o) And o\HasShard Then
 						If o\Enemy\FlyEnemyType Then
-							Object_SpewRedRing_Create.tObject(-o\Enemy\EnemyNo, o\Position\x#, o\Position\y#, o\Position\z#, Rnd(-0.4*1.1, 0.4*1.1), Rnd(0.6*1.1, 1.2*1.1), Rnd(-0.4*1.1, 0.4*1.1), 1)
+							Object_SpewShard_Create.tObject(-o\Enemy\EnemyNo, o\Position\x#, o\Position\y#, o\Position\z#, Rnd(-0.4*1.1, 0.4*1.1), Rnd(0.6*1.1, 1.2*1.1), Rnd(-0.4*1.1, 0.4*1.1), 1)
 						Else
-							Object_SpewRedRing_Create.tObject(-o\Enemy\EnemyNo, o\Position\x#, o\Position\y#, o\Position\z#, Rnd(-0.4*1.1, 0.4*1.1), Rnd(0.6*1.1, 1.2*1.1), Rnd(-0.4*1.1, 0.4*1.1))
+							Object_SpewShard_Create.tObject(-o\Enemy\EnemyNo, o\Position\x#, o\Position\y#, o\Position\z#, Rnd(-0.4*1.1, 0.4*1.1), Rnd(0.6*1.1, 1.2*1.1), Rnd(-0.4*1.1, 0.4*1.1))
 						EndIf
 					EndIf
 				Else
@@ -963,7 +1000,7 @@ End Function
 
 			If o\Hit Then
 				; Make Sonic a move
-				If p\HasVehicle=0 and o\Enemy\WasKilledByBombMonitor=False Then
+				If p\HasVehicle=0 And o\Enemy\WasKilledByBombMonitor=False Then
 					If o\Enemy\IsBoss=1 Then
 						p\JumpTimer=0
 						p\Action=ACTION_JUMP : p\JumpMayRiseTimer=1.5*secs#
@@ -973,15 +1010,24 @@ End Function
 							Case OBJTYPE_BOSSRUN,OBJTYPE_BOSSMECHA:
 								p\Animation\Direction#=180
 						End Select
-					ElseIf p\Motion\Ground=False and o\Enemy\SelfDestruct=False and o\CheeseHit=False and o\BombHit=False and o\Psychoed=0 and o\Rubied=0 Then
-						Player_JumpActionInteract(p)
+					ElseIf p\Motion\Ground=False And o\Enemy\SelfDestruct=False And o\CheeseHit=False And o\BombHit=False And o\Psychoed=0 And o\Rubied=0 Then
+						If (p\Flags\Stomping=1 And p\Bouncing=0) Or p\Action=ACTION_BOOSTFALL Or p\Action=ACTION_LIGHTATTACK Then 
+							
+						Else 
+							If (Not(Object_ReturnCanAttackShield(p,o))) Or (o\Enemy\Health+1)>1 Then
+								Player_JumpActionInteract(p,3)
+							Else
+								Player_JumpActionInteract(p)
+							EndIf 
+						EndIf 
+						If p\Action=ACTION_LIGHTATTACK Then p\LightAttackHits=p\LightAttackHits+1 : p\LightAttackTimer=0.75*secs#
 					EndIf
 				EndIf
 				p\Flags\HomingLocked = False
 				p\Flags\Targeter=0 : p\Flags\InTargeterAttack=False : p\Flags\InTargeterAirAttack=False
 
 				; Fix grabber hurt
-				If (o\ObjType=OBJTYPE_GRABBER or o\ObjType=OBJTYPE_KLAGEN or o\ObjType=OBJTYPE_ACHAOSBLOB Or o\ObjType=OBJTYPE_BOO) and p\Action=ACTION_GRABBED Then
+				If (o\ObjType=OBJTYPE_GRABBER Or o\ObjType=OBJTYPE_KLAGEN Or o\ObjType=OBJTYPE_ACHAOSBLOB Or o\ObjType=OBJTYPE_BOO) And p\Action=ACTION_GRABBED Then
 					EntityType(cam\Entity, COLLISION_CAMERA)
 					EntityType(p\Objects\Entity, COLLISION_PLAYER)
 					Player_Hit(p)
@@ -1076,10 +1122,12 @@ End Function
 		End Select
 
 		; Fallen too low
-		If o\Psychoed=0 and o\Rubied=0 and (o\InitialPosition\y#-o\Position\y#)>50 and o\Enemy\FlyEnemyType=False Then o\Enemy\SelfDestruct=True
+		If o\Psychoed=0 And o\Rubied=0 And (o\InitialPosition\y#-o\Position\y#)>50 And o\Enemy\FlyEnemyType=False Then o\Enemy\SelfDestruct=True
 
 		; Aiming and shooting
 		Object_EnforceAimingShooting(o,p)
+		
+		If EntityDistance(o\Entity, p\Objects\Entity)<100 Then p\AroundEnemyTimer=0.1*secs#
 		
 	End Function
 
@@ -1120,7 +1168,8 @@ End Function
 
 		o\Entity = CreatePivot()
 		Select enemyno#
-			Case OBJTYPE_PAWNGUN,OBJTYPE_FLAPPERGUN: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_EnemyMissile_PawnMissile)), o\Entity)
+			Case OBJTYPE_PAWNGUN,OBJTYPE_FLAPPERGUN,OBJTYPE_SEARCHER,OBJTYPE_EGGHUNTER: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_EnemyMissile_PawnMissile)), o\Entity)
+			Case OBJTYPE_GUNNER: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_Bullet)), o\Entity)	
 			Case OBJTYPE_BUZZBOMBER: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_EnemyMissile_BuzzMissile2)), o\Entity)
 			Case OBJTYPE_BUZZER: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_EnemyMissile_BuzzMissile1)), o\Entity)
 			Case OBJTYPE_CRABMEAT,OBJTYPE_BOSS: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_EnemyMissile_CrabMissile)), o\Entity) : o\EnemyMissile\RealMissile=1
@@ -1165,12 +1214,18 @@ End Function
 			Case OBJTYPE_PAWNGUN:
 				o\EnemyMissile\FollowTimer=0
 				o\EnemyMissile\DisappearTimer=2.1*secs#
+				
 				MoveEntity o\Entity,0,3.5,6.5
 				EntityRadius o\Entity, 1.5
 			Case OBJTYPE_FLAPPERGUN:
 				o\EnemyMissile\FollowTimer=0
 				o\EnemyMissile\DisappearTimer=2.1*secs#
 				MoveEntity o\Entity,0,-4.5,3.5
+				EntityRadius o\Entity, 1.5
+			Case OBJTYPE_SEARCHER,OBJTYPE_EGGHUNTER:
+				o\EnemyMissile\FollowTimer=0
+				o\EnemyMissile\DisappearTimer=2.1*secs#
+				MoveEntity o\Entity,0,-2.5,3.5
 				EntityRadius o\Entity, 1.5
 			Case OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER:
 				o\EnemyMissile\FollowTimer=0.57*secs#
@@ -1240,6 +1295,12 @@ End Function
 					Case 2: MoveEntity o\Entity,4.85,10,12.5
 					Case 3,4: MoveEntity o\Entity,-1.78,0.44,13.4
 				End Select
+				EntityRadius o\Entity, 1.25
+			Case OBJTYPE_GUNNER
+				o\EnemyMissile\FollowTimer=0.5*secs#
+				o\EnemyMissile\DisappearTimer=1.35*secs#
+				;PositionEntity o\Entity
+				; MoveEntity o\Entity,8,5,-3
 				EntityRadius o\Entity, 1.25
 			Case OBJTYPE_FLAPPERBOMB:
 				o\EnemyMissile\FollowTimer=0
@@ -1480,17 +1541,19 @@ End Function
 		; Movement
 		If (Not(Object_EnemyIsStun(o))) Then
 		Select o\EnemyMissile\MissileType
-			Case OBJTYPE_PAWNGUN,OBJTYPE_FLAPPERGUN,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_DOOMSEYE:
+			Case OBJTYPE_PAWNGUN,OBJTYPE_FLAPPERGUN,OBJTYPE_SEARCHER,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_DOOMSEYE:
 				MoveEntity(o\Entity,0,0,0.85*d\Delta*0.75)
+			Case OBJTYPE_EGGHUNTER
+				MoveEntity(o\Entity,0,0,0.85*d\Delta*1.1)
 			Case OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER:
 				MoveEntity(o\Entity,0,0,0.85*d\Delta*0.75)
-				If o\EnemyMissile\FollowTimer>0 and o\EnemyMissile\FollowTimer<0.42*secs#*0.5 Then PointEntity(o\Entity,p\Objects\Entity)
+				If o\EnemyMissile\FollowTimer>0 And o\EnemyMissile\FollowTimer<0.42*secs#*0.5 Then PointEntity(o\Entity,p\Objects\Entity)
 			Case OBJTYPE_CRABMEAT:
 				MoveEntity(o\Entity,0,0,0.45*d\Delta*0.75)
-				If o\EnemyMissile\FollowTimer>0 and o\EnemyMissile\FollowTimer<0.44*secs#*0.5 Then PointEntity(o\Entity,p\Objects\Entity)
+				If o\EnemyMissile\FollowTimer>0 And o\EnemyMissile\FollowTimer<0.44*secs#*0.5 Then PointEntity(o\Entity,p\Objects\Entity)
 			Case OBJTYPE_BOSS:
 				MoveEntity(o\Entity,0,0,(0.6+0.3*o\Mode)*d\Delta*0.75)
-				If o\EnemyMissile\FollowTimer>0 and o\EnemyMissile\FollowTimer<0.44*secs#*0.5 Then PointEntity(o\Entity,p\Objects\Entity)
+				If o\EnemyMissile\FollowTimer>0 And o\EnemyMissile\FollowTimer<0.44*secs#*0.5 Then PointEntity(o\Entity,p\Objects\Entity)
 			Case OBJTYPE_SPINY: MoveEntity(o\Entity,0,0.8*d\Delta*0.75,0)
 			Case OBJTYPE_KIKI,OBJTYPE_SPRINKLR,OBJTYPE_BOMBER2:
 				If o\EnemyMissile\FollowTimer>1.250*secs# Then
@@ -1511,12 +1574,16 @@ End Function
 			Case -OBJTYPE_BOSSRUN:
 				MoveEntity(o\Entity,0,-1.85*d\Delta*0.75,1.85*d\Delta*0.75)
 			Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE:
-				If o\EnemyMissile\FollowTimer>0 and o\EnemyMissile\FollowTimer<0.64*secs#*0.5 Then
+				If o\EnemyMissile\FollowTimer>0 And o\EnemyMissile\FollowTimer<0.64*secs#*0.5 Then
 					PointEntity(o\Entity,p\Objects\Entity)
 					MoveEntity(o\Entity,0,0,0.85*d\Delta*0.75)
 				Else
 					MoveEntity(o\Entity,0,0,0.348*d\Delta*0.75)
 				EndIf
+			Case OBJTYPE_GUNNER
+				PointEntity(o\Entity,p\Objects\Entity)
+				MoveEntity(o\Entity,0,0,0.85*d\Delta*2)
+				EntityColor(o\EntityX,50,0,0)
 			Case OBJTYPE_FLAPPERBOMB:
 				MoveEntity(o\Entity,0,-2*d\Delta*0.75,0)
 			Case OBJTYPE_AEROC:
@@ -1524,7 +1591,7 @@ End Function
 				If o\EnemyMissile\FollowTimer>0 Then PointEntity(o\Entity,p\Objects\Entity)
 			Case OBJTYPE_HORNET3,OBJTYPE_HORNET6:
 				MoveEntity(o\Entity,0,0,0.535*d\Delta*0.75)
-				If o\EnemyMissile\FollowTimer>0 and o\EnemyMissile\FollowTimer<0.44*secs#*0.5 Then PointEntity(o\Entity,p\Objects\Entity)
+				If o\EnemyMissile\FollowTimer>0 And o\EnemyMissile\FollowTimer<0.44*secs#*0.5 Then PointEntity(o\Entity,p\Objects\Entity)
 			Case OBJTYPE_EGGROBO:
 				MoveEntity o\Entity,0,0,1.4*d\Delta
 				If o\EnemyMissile\DisappearTimer>(2.8-0.52484)*secs# Then MoveEntity o\Entity,0.82*o\Mode*d\Delta,0,0
@@ -1556,7 +1623,7 @@ End Function
 					MoveEntity(o\Entity,0,0,1.65*d\Delta)
 				EndIf
 			Case -OBJTYPE_BOSS2*10,-OBJTYPE_BOSSBETA*10:
-				If o\EnemyMissile\MissileType=-OBJTYPE_BOSSBETA*10 and o\EnemyMissile\FollowTimer>0 Then
+				If o\EnemyMissile\MissileType=-OBJTYPE_BOSSBETA*10 And o\EnemyMissile\FollowTimer>0 Then
 					ScaleEntity o\EntityX,1.4*(1-o\EnemyMissile\FollowTimer/secs#),1.4*(1-o\EnemyMissile\FollowTimer/secs#),1.4*(1-o\EnemyMissile\FollowTimer/secs#)
 				EndIf
 				If o\EnemyMissile\FollowTimer>0 Then
@@ -1622,7 +1689,7 @@ End Function
 				If o\EnemyMissile\FollowTimer>0 Then PointEntity(o\Entity,p\Objects\Entity)
 				MoveEntity o\Entity,0,0,0.425*1.46*d\Delta
 			Case OBJTYPE_BALLHOG:
-				bounce=false
+				bounce=False
 				If o\EnemyMissile\DisappearTimer>1.5*secs# Then
 					MoveEntity o\Entity,0,-0.4*d\Delta,0.35*d\Delta
 				ElseIf o\EnemyMissile\DisappearTimer>1.0*secs# Then
@@ -1634,16 +1701,16 @@ End Function
 				Else
 					MoveEntity o\Entity,0,-0.4*d\Delta,0
 				EndIf
-				If o\EnemyMissile\DisappearTimer>1.5*secs# and o\EnemyMissile\DisappearTimer<1.51*secs# Then
-					bounce=true
-				ElseIf o\EnemyMissile\DisappearTimer>1.0*secs# and o\EnemyMissile\DisappearTimer<1.01*secs# Then
-					bounce=true
-				ElseIf o\EnemyMissile\DisappearTimer>0.5*secs# and o\EnemyMissile\DisappearTimer<0.51*secs# Then
-					bounce=true
-				ElseIf o\EnemyMissile\DisappearTimer>0.0*secs# and o\EnemyMissile\DisappearTimer<0.01*secs# Then
-					bounce=true
+				If o\EnemyMissile\DisappearTimer>1.5*secs# And o\EnemyMissile\DisappearTimer<1.51*secs# Then
+					bounce=True
+				ElseIf o\EnemyMissile\DisappearTimer>1.0*secs# And o\EnemyMissile\DisappearTimer<1.01*secs# Then
+					bounce=True
+				ElseIf o\EnemyMissile\DisappearTimer>0.5*secs# And o\EnemyMissile\DisappearTimer<0.51*secs# Then
+					bounce=True
+				ElseIf o\EnemyMissile\DisappearTimer>0.0*secs# And o\EnemyMissile\DisappearTimer<0.01*secs# Then
+					bounce=True
 				EndIf
-				If bounce and (Not(ChannelPlaying(o\EnemyMissile\Channel_State))) Then o\EnemyMissile\Channel_State=EmitSmartSound(Sound_Crusher,o\Entity)
+				If bounce And (Not(ChannelPlaying(o\EnemyMissile\Channel_State))) Then o\EnemyMissile\Channel_State=EmitSmartSound(Sound_Crusher,o\Entity)
 			Case -OBJTYPE_CATAKILLER,OBJTYPE_BOSSBETA:
 				PositionEntity o\Entity, EntityX(o\EnemyMissile\Sender\Enemy\Center,1), EntityY(o\EnemyMissile\Sender\Enemy\Center,1), EntityZ(o\EnemyMissile\Sender\Enemy\Center,1), 1
 				If Not(ChannelPlaying(o\EnemyMissile\Channel_State)) Then o\EnemyMissile\Channel_State=EmitSmartSound(Sound_EnemyElectric,o\Entity)
@@ -1693,9 +1760,9 @@ End Function
 
 		; Bullet particle
 		Select o\EnemyMissile\MissileType
-			Case OBJTYPE_PAWNGUN,OBJTYPE_FLAPPERGUN,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_ACHAOS:
+			Case OBJTYPE_PAWNGUN,OBJTYPE_FLAPPERGUN,OBJTYPE_SEARCHER,OBJTYPE_EGGHUNTER,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_ACHAOS:
 				ParticleTemplate_Call(o\Particle, PARTICLE_PLAYER_BULLETHEAT, o\Entity, 1, 1, 1, 0, 0, 0.025)
-			Case OBJTYPE_CRABMEAT,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_BOSS,-OBJTYPE_BOSSBETA,OBJTYPE_EXPLOSION2,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
+			Case OBJTYPE_CRABMEAT,OBJTYPE_HUNTER,OBJTYPE_GUNNER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_BOSS,-OBJTYPE_BOSSBETA,OBJTYPE_EXPLOSION2,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
 				ParticleTemplate_Call(o\Particle, PARTICLE_PLAYER_SMOKE, o\Entity, 0.2, 0.099, 1, 0, 3, 0.1)
 			Case OBJTYPE_STEELION:
 				ParticleTemplate_Call(o\Particle, PARTICLE_PLAYER_ICE, o\Entity)
@@ -1717,8 +1784,8 @@ End Function
 	 	If o\Hit Or (Not(o\EnemyMissile\DisappearTimer>0)) Or o\EnemyMissile\DeleteDestroy Then
 	 		If (Not(o\EnemyMissile\DeleteDestroy)) Then
 	 			; If hurt player
-				If o\Hit and o\PsychoedThrown=False and o\EnemyMissile\MayNotHurt=0 Then
-					If Game\Invinc=0 and (Not(p\DontGetHurtTimer>0)) Then
+				If o\Hit And o\PsychoedThrown=False And o\EnemyMissile\MayNotHurt=0 Then
+					If Game\Invinc=0 And (Not(p\DontGetHurtTimer>0)) Then
 						Select o\EnemyMissile\MissileType
 							Case OBJTYPE_ORBINAUT,OBJTYPE_SPONA,OBJTYPE_SPIKES,OBJTYPE_ASTERON,OBJTYPE_MANTA,OBJTYPE_NEBULA,OBJTYPE_SPRINKLR: EmitSmartSound(Sound_Spikes,o\Entity)
 							Case OBJTYPE_MADMOLE: EmitSmartSound(Sound_Ninja,o\Entity)
@@ -1751,6 +1818,9 @@ End Function
 							If (Not(Game\Shield=OBJTYPE_FSHIELD Or p\Character=CHAR_BLA)) Then Player_Hit(p)
 						Case OBJTYPE_TAKER,OBJTYPE_CRAWLER:
 							If (Not(Game\Shield=OBJTYPE_FSHIELD)) Then Player_Hit(p)
+						Case OBJTYPE_GUNNER
+							Object_Enemy_SpecialBehaviour_GunnerRingDrain(p)
+							ParticleTemplate_Call(o\Particle, PARTICLE_PLAYER_SMOKE, p\Objects\Entity, 0.2, 0.099, 1, 0, 3, 0.1)
 						Default: Player_Hit(p)
 					End Select
 				EndIf
@@ -1815,19 +1885,19 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
 Function Object_EnemyLookAtPlayer(o.tObject, p.tPlayer)
-	If (Not(p\Action=ACTION_HOMING)) and (Abs(p\Objects\Position\x# - o\Position\x#) > 2.5) And (Abs(p\Objects\Position\z# - o\Position\z#) > 2.5) Then
+	If (Not(p\Action=ACTION_HOMING)) And (Abs(p\Objects\Position\x# - o\Position\x#) > 2.5) And (Abs(p\Objects\Position\z# - o\Position\z#) > 2.5) Then
 		RotateEntity o\Entity,EntityPitch(o\Entity),(DeltaYaw#(p\Objects\Entity,o\Entity) - 180),EntityRoll(o\Entity)
 	EndIf
 End Function
 
 Function Object_EnemyPointAtPlayer(o.tObject, p.tPlayer)
-	If (Not(p\Action=ACTION_HOMING)) and (Abs(p\Objects\Position\x# - o\Position\x#) > 2.5) and (Abs(p\Objects\Position\z# - o\Position\z#) > 2.5) Then
+	If (Not(p\Action=ACTION_HOMING)) And (Abs(p\Objects\Position\x# - o\Position\x#) > 2.5) And (Abs(p\Objects\Position\z# - o\Position\z#) > 2.5) Then
 		PointEntity(o\Entity,p\Objects\Entity)
 	EndIf
 End Function
 
 Function Object_EnemyMoveToPlayer(o.tObject, p.tPlayer, d.tDeltaTime, speed#)
-	If (Not(p\Action=ACTION_GRABBED Or p\Action=ACTION_FREEZE)) and (((Abs(p\Objects\Position\x# - o\Position\x#) > 1.3) and (Abs(p\Objects\Position\z# - o\Position\z#) > 1.3)) Or (Abs(p\Objects\Position\y# - o\Position\y#) > 1.3)) Then
+	If (Not(p\Action=ACTION_GRABBED Or p\Action=ACTION_FREEZE)) And (((Abs(p\Objects\Position\x# - o\Position\x#) > 1.3) And (Abs(p\Objects\Position\z# - o\Position\z#) > 1.3)) Or (Abs(p\Objects\Position\y# - o\Position\y#) > 1.3)) Then
 		MoveEntity(o\Entity,0,0,speed#*d\Delta)
 	EndIf
 End Function
@@ -1847,30 +1917,33 @@ Function Object_EnemyMovements_SpawnMissile(o.tObject, p.tPlayer)
 	If o\Enemy\ShouldSpawnMissile Then
 		Select o\ObjType
 			Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD:
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 2)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 2)
+			Case OBJTYPE_GUNNER
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, EntityX(o\Enemy\Gun,1), EntityY(o\Enemy\Gun,1), EntityZ(o\Enemy\Gun,1), 0, EntityYaw(o\Entity), 0, 2)
+				
 			Case OBJTYPE_BEETLE:
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 1)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 1)
 			Case OBJTYPE_CRABMEAT,OBJTYPE_CHASER,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_WARRIORGUN2:
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 1)
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 2)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 1)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 2)
 			Case OBJTYPE_HORNET3:
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 1)
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 4)
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 6)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 1)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 4)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 6)
 			Case OBJTYPE_HORNET6:
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 1)
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 4)
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 6)
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 2)
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 3)
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 5)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 1)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 4)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 6)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 2)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 3)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 5)
 			Case OBJTYPE_EGGROBO:
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, -1)
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0)
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 1)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, -1)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 1)
 			Case OBJTYPE_ACHAOS:
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, -1)
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 1)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, -1)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 1)
 			Case OBJTYPE_ORBINAUT,OBJTYPE_SPONA:
 				i=False
 				Select o\Mode
@@ -1879,26 +1952,26 @@ Function Object_EnemyMovements_SpawnMissile(o.tObject, p.tPlayer)
 					Case 2: If o\Enemy\HasBossObj2 Then i=True
 					Case 1: If o\Enemy\HasBossObj1 Then i=True
 				End Select
-				If i Then obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, EntityPitch(o\Entity), EntityYaw(o\Entity), 0)
+				If i Then obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, EntityPitch(o\Entity), EntityYaw(o\Entity), 0)
 				Select o\Mode
 					Case 5:
 						If o\Enemy\HasBossObj1=False Then
-							o\Enemy\BossObj1.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 1)
+							o\Enemy\BossObj1.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 1)
 							Objects_Reset_HasMesh(o\Enemy\BossObj1) : Objects_Reset_Repose(o\Enemy\BossObj1) : Objects_Reset_Object(o\Enemy\BossObj1)
 							o\Enemy\HasBossObj1=True
 						EndIf
 						If o\Enemy\HasBossObj2=False Then
-							o\Enemy\BossObj2.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 2)
+							o\Enemy\BossObj2.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 2)
 							Objects_Reset_HasMesh(o\Enemy\BossObj2) : Objects_Reset_Repose(o\Enemy\BossObj2) : Objects_Reset_Object(o\Enemy\BossObj2)
 							o\Enemy\HasBossObj2=True
 						EndIf
 						If o\Enemy\HasBossObj3=False Then
-							o\Enemy\BossObj3.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 3)
+							o\Enemy\BossObj3.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 3)
 							Objects_Reset_HasMesh(o\Enemy\BossObj3) : Objects_Reset_Repose(o\Enemy\BossObj3) : Objects_Reset_Object(o\Enemy\BossObj3)
 							o\Enemy\HasBossObj3=True
 						EndIf
 						If o\Enemy\HasBossObj4=False Then
-							o\Enemy\BossObj4.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 4)
+							o\Enemy\BossObj4.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 4)
 							Objects_Reset_HasMesh(o\Enemy\BossObj4) : Objects_Reset_Repose(o\Enemy\BossObj4) : Objects_Reset_Object(o\Enemy\BossObj4)
 							o\Enemy\HasBossObj4=True
 						EndIf
@@ -1921,18 +1994,18 @@ Function Object_EnemyMovements_SpawnMissile(o.tObject, p.tPlayer)
 					Case 1:
 						obj.tObject = Object_Spike_Create(o\Position\x#, o\Position\y#-8.46, o\Position\z#, 0, EntityYaw(o\Entity), 0, 0, OBJTYPE_SPEWSPIKEBOMB)
 					Case 2,4:
-						obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 1)
+						obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 1)
 				End Select
 			Case OBJTYPE_BOSS2:
 				Select o\Enemy\BossMode
 					Case 1:
-						obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 1)
+						obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 1)
 					Case 2,4:
-						For i=0 to 40
-						obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType, o\position\x#, o\position\y#-9.6, o\position\z#, 0, EntityYaw(o\Entity)+(360/40)*i, 0, 1)
+						For i=0 To 40
+						obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType, o\Position\x#, o\Position\y#-9.6, o\Position\z#, 0, EntityYaw(o\Entity)+(360/40)*i, 0, 1)
 						Next
 					Case 3:
-						obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType*10, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 1)
+						obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType*10, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 1)
 				End Select
 			Case OBJTYPE_BOSSRUN:
 				Select o\Enemy\BossMode
@@ -1941,30 +2014,30 @@ Function Object_EnemyMovements_SpawnMissile(o.tObject, p.tPlayer)
 					Case 2,3:
 						If Not(o\Enemy\AttackTimer2>0) Then o\Enemy\AttackTimer2=2*secs#
 						If o\Enemy\AttackTimer2>1*secs# Then
-							obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, -90+180*(o\Enemy\AttackTimer2/secs#-1)/1.0, EntityYaw(o\Entity), 0, 1)
+							obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, -90+180*(o\Enemy\AttackTimer2/secs#-1)/1.0, EntityYaw(o\Entity), 0, 1)
 						Else
-							obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 90-180*(o\Enemy\AttackTimer2/secs#)/1.0, EntityYaw(o\Entity), 0, 1)
+							obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 90-180*(o\Enemy\AttackTimer2/secs#)/1.0, EntityYaw(o\Entity), 0, 1)
 						EndIf
 					Case 4:
 						If Not(o\Enemy\AttackTimer2>0) Then o\Enemy\AttackTimer2=4*secs#
 						If o\Enemy\AttackTimer2>1*secs# Then
-							obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity)-90+180*(o\Enemy\AttackTimer2/secs#-2)/2.0, 0, 1)
+							obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity)-90+180*(o\Enemy\AttackTimer2/secs#-2)/2.0, 0, 1)
 						Else
-							obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity)+90-180*(o\Enemy\AttackTimer2/secs#)/2.0, 0, 1)
+							obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity)+90-180*(o\Enemy\AttackTimer2/secs#)/2.0, 0, 1)
 						EndIf
 				End Select
 			Case OBJTYPE_SPIKES:
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 1)
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 2)
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 3)
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 4)
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 5)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 1)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 2)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 3)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 4)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 5)
 			Case OBJTYPE_ASTERON:
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0*72, 1)
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 1*72, 2)
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 2*72, 3)
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 3*72, 4)
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 4*72, 5)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0*72, 1)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 1*72, 2)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 2*72, 3)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 3*72, 4)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 4*72, 5)
 			Case OBJTYPE_STEELION,OBJTYPE_HAMMERHAMMER:
 				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, EntityX(o\Enemy\Jet1,1), EntityY(o\Enemy\Jet1,1), EntityZ(o\Enemy\Jet1,1), 0, EntityYaw(o\Entity), 0)
 			Case OBJTYPE_DRAGONFLY,OBJTYPE_OAKSWORD,OBJTYPE_CATAKILLER:
@@ -1972,44 +2045,44 @@ Function Object_EnemyMovements_SpawnMissile(o.tObject, p.tPlayer)
 				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, EntityX(o\Enemy\Jet2,1), EntityY(o\Enemy\Jet2,1), EntityZ(o\Enemy\Jet2,1), 0, EntityYaw(o\Entity), 0, 2)
 			Case OBJTYPE_E1000:
 				If o\Anim=3 Then
-					obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 3)
-					obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 4)
+					obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 3)
+					obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 4)
 				Else
-					obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 1)
-					obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 2)
+					obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 1)
+					obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 2)
 				EndIf
 			Case OBJTYPE_SOLDIER:
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 1)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 1)
 			Case OBJTYPE_SOLDIERCAMO:
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 2)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 2)
 			Case OBJTYPE_SNOWY:
 				If o\Anim=3 Then obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, EntityX(o\Enemy\Jet1,1), EntityY(o\Enemy\Jet1,1), EntityZ(o\Enemy\Jet1,1), 0, EntityYaw(o\Entity), 0, 1)
 				If o\Anim=4 Then obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, EntityX(o\Enemy\Jet2,1), EntityY(o\Enemy\Jet2,1), EntityZ(o\Enemy\Jet2,1), 0, EntityYaw(o\Entity), 0, 2)
 			Case OBJTYPE_BOSSBETA:
 				If o\Enemy\AttackMode<10 Then
-					obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0)
+					obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0)
 				Else
 					Select o\Enemy\BossMode
 						Case 2:
-							obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 3)
+							obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 3)
 						Case 3:
-							obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType*10, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0)
+							obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType*10, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0)
 						Case 4:
 							If o\Enemy\AttackMode<100 Then
-								obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 4)
-								obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity)+35, 0, 4)
-								obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity)-35, 0, 4)
+								obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 4)
+								obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity)+35, 0, 4)
+								obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity)-35, 0, 4)
 							Else
-								obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType*10, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0)
+								obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType*10, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0)
 							EndIf
 					End Select
 				EndIf
 			Case OBJTYPE_BOSSMECHA:
 				Select o\Enemy\BossMode
 					Case 3:
-						obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0)
+						obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0)
 					Case 4:
-						obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0)
+						obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0)
 				End Select
 			Case OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
 				o\Enemy\AttackMode=Rand(0,1)
@@ -2018,7 +2091,8 @@ Function Object_EnemyMovements_SpawnMissile(o.tObject, p.tPlayer)
 					obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, EntityX(o\Enemy\Jet2,1), EntityY(o\Enemy\Jet2,1), EntityZ(o\Enemy\Jet2,1), EntityPitch(o\Enemy\Jet2,1), EntityYaw(o\Entity), 0)
 				EndIf
 			Default:
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0)
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0)
+				If o\ObjType=OBJTYPE_PAWNGUN Then o\EggpawnShootTimer=0.25*secs#
 		End Select
 		o\Enemy\ShouldSpawnMissile=False
 	EndIf
@@ -2029,6 +2103,7 @@ Function Object_EnemyMovements(o.tObject, p.tPlayer, d.tDeltaTime)
 	Object_EnemyMovements_SpawnMissile(o,p)
 
 	If o\Enemy\WaitTimer>0 Then o\Enemy\WaitTimer=o\Enemy\WaitTimer-timervalue#
+	
 	If o\Enemy\WaitTimer2>0 Then o\Enemy\WaitTimer2=o\Enemy\WaitTimer2-timervalue#
 	If o\Enemy\AttackTimer>0 Then o\Enemy\AttackTimer=o\Enemy\AttackTimer-timervalue#
 
@@ -2039,8 +2114,10 @@ Function Object_EnemyMovements(o.tObject, p.tPlayer, d.tDeltaTime)
 			Object_Enemy_Behaviour(o,p,d,8,1)
 		Case OBJTYPE_PAWNSHIELD,OBJTYPE_HAMMERSHIELD:
 			Object_Enemy_Behaviour(o,p,d,5,1)
-		Case OBJTYPE_PAWNGUN,OBJTYPE_FLAPPERGUN:
+		Case OBJTYPE_FLAPPERGUN,OBJTYPE_SEARCHER:
 			Object_Enemy_Behaviour(o,p,d,5.25,3.5,0.5)
+		Case OBJTYPE_EGGHUNTER
+			Object_Enemy_Behaviour(o,p,d,5.25,3.5,0.3)
 		Case OBJTYPE_HAMMERHAMMER:
 			Object_Enemy_Behaviour(o,p,d,7.0,5.5,0.1)
 		Case OBJTYPE_PAWNSWORD:
@@ -2069,7 +2146,7 @@ Function Object_EnemyMovements(o.tObject, p.tPlayer, d.tDeltaTime)
 			Object_Enemy_Behaviour(o,p,d,5.75,3.5,0.7)
 		Case OBJTYPE_GRABBER,OBJTYPE_KLAGEN,OBJTYPE_ACHAOSBLOB,OBJTYPE_BOO:
 			If p\Action=ACTION_GRABBED Then
-				If o\Enemy\InRange and EntityDistance(o\Entity,p\Objects\Entity)<20 Then
+				If o\Enemy\InRange And EntityDistance(o\Entity,p\Objects\Entity)<20 Then
 					Object_Enemy_SpecialBehaviour(o,p)
 				Else
 					Select o\ObjType
@@ -2091,6 +2168,8 @@ Function Object_EnemyMovements(o.tObject, p.tPlayer, d.tDeltaTime)
 			Object_Enemy_Behaviour(o,p,d,6.5,1)
 		Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD:
 			Object_Enemy_Behaviour(o,p,d,7.5,5.5,2.65)
+		Case OBJTYPE_GUNNER
+			Object_Enemy_Behaviour(o,p,d,7.5,5.5,0.25)
 		Case OBJTYPE_BEETLE:
 			Object_Enemy_Behaviour(o,p,d,5,3.5,1.5)
 		Case OBJTYPE_BEETLESPARK,OBJTYPE_FLAPPERNEEDLE:
@@ -2202,7 +2281,7 @@ Function Object_EnemyMovements(o.tObject, p.tPlayer, d.tDeltaTime)
 End Function
 
 	Function Object_Enemy_Behaviour(o.tObject, p.tPlayer, d.tDeltaTime, waitload#, wait#=0, attackwaitload#=0, attackwait#=0)
-		If (o\Enemy\InRange Or o\Enemy\InRangeForced) and (Not(p\Action=ACTION_FREEZE)) Then
+		If (o\Enemy\InRange Or o\Enemy\InRangeForced) And (Not(p\Action=ACTION_FREEZE)) Then
 			Object_Enemy_DefaultBehaviour(o,p,d)
 			If Not(o\Enemy\WaitTimer)>0 Then
 				Select o\ObjType
@@ -2246,7 +2325,7 @@ End Function
 
 	Function Object_Enemy_MoveBehaviour(o.tObject, p.tPlayer, d.tDeltaTime)
 		Select o\ObjType
-			Case OBJTYPE_PAWN,OBJTYPE_MOTOBUG,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES,OBJTYPE_CAMERON,OBJTYPE_ANTON,OBJTYPE_BOMBIE,OBJTYPE_BALKIRY,OBJTYPE_CRAWL,OBJTYPE_BITER,OBJTYPE_TAKER,OBJTYPE_RHINOTANK,OBJTYPE_TECHNOSQU,OBJTYPE_WARRIOR,OBJTYPE_WING,OBJTYPE_SNOWY,OBJTYPE_SPLATS,OBJTYPE_HAMMER: o\Anim=2
+			Case OBJTYPE_PAWN,OBJTYPE_GUNNER,OBJTYPE_MOTOBUG,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES,OBJTYPE_CAMERON,OBJTYPE_ANTON,OBJTYPE_BOMBIE,OBJTYPE_BALKIRY,OBJTYPE_CRAWL,OBJTYPE_BITER,OBJTYPE_TAKER,OBJTYPE_RHINOTANK,OBJTYPE_TECHNOSQU,OBJTYPE_WARRIOR,OBJTYPE_WING,OBJTYPE_SNOWY,OBJTYPE_SPLATS,OBJTYPE_HAMMER: o\Anim=2
 			Case OBJTYPE_PAWNSHIELD,OBJTYPE_HAMMERSHIELD: If o\Enemy\Shield Then o\Anim=4 Else o\Anim=2
 			Case OBJTYPE_PAWNGUN,OBJTYPE_HAMMERHAMMER: o\Anim=7
 			Case OBJTYPE_PAWNSWORD: o\Anim=10
@@ -2288,11 +2367,15 @@ End Function
 		Select o\ObjType
 			Case OBJTYPE_PAWN,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSWORD,OBJTYPE_HAMMER,OBJTYPE_HAMMERSHIELD,OBJTYPE_HAMMERHAMMER:
 				Object_EnemyLookAtPlayer(o,p)
-				Object_EnemyMovetoPlayer(o,p,d,0.35)
+				Object_EnemyMoveToPlayer(o,p,d,0.35)
 				Object_PlayRobotSteps(o,3,7)
-			Case OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_WITCH1,OBJTYPE_WITCH2:
+			Case OBJTYPE_GUNNER
+				Object_PlayRobotSteps(o,6,13)
 				Object_EnemyLookAtPlayer(o,p)
-				Object_EnemyMovetoPlayer(o,p,d,0.025)
+				Object_EnemyMoveToPlayer(o,p,d,0.35)
+			Case OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_SEARCHER,OBJTYPE_EGGHUNTER,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_WITCH1,OBJTYPE_WITCH2:
+				Object_EnemyLookAtPlayer(o,p)
+				Object_EnemyMoveToPlayer(o,p,d,0.025)
 				Select o\ObjType
 					Case OBJTYPE_FLAPPERNEEDLE:
 						Object_Enemy_BlockBehaviour(o,p,3.5,7.5)
@@ -2339,8 +2422,8 @@ End Function
 						Object_PlayRobotSteps(o,0,0)
 				End Select
 				Select o\ObjType
-					Case OBJTYPE_ANTON: Object_EnemyMovetoPlayer(o,p,d,0.58)
-					Case OBJTYPE_BOMBIE: Object_EnemyMovetoPlayer(o,p,d,0.38) : Object_PlayRobotSteps(o,3,11)
+					Case OBJTYPE_ANTON: Object_EnemyMoveToPlayer(o,p,d,0.58)
+					Case OBJTYPE_BOMBIE: Object_EnemyMoveToPlayer(o,p,d,0.38) : Object_PlayRobotSteps(o,3,11)
 					Case OBJTYPE_PENGUINATOR:
 						If (Not(Game\PenguinatorMovingTimer>0)) Then
 							Game\PenguinatorMovingTimer=1*secs#
@@ -2349,17 +2432,17 @@ End Function
 						If Game\PenguinatorToMove=o Then
 							Game\PenguinatorMovingTimer=1*secs#
 							If o\Enemy\WaitTimer>6*secs# Then
-								Object_EnemyMovetoPlayer(o,p,d,0.28)
+								Object_EnemyMoveToPlayer(o,p,d,0.28)
 							Else
-								Object_EnemyMovetoPlayer(o,p,d,0.68)
+								Object_EnemyMoveToPlayer(o,p,d,0.68)
 							EndIf
 						EndIf
-					Case OBJTYPE_BURROBOT: If o\Enemy\AttackMode=2 Then Object_EnemyMovetoPlayer(o,p,d,0.58)
-					Case OBJTYPE_RHINOTANK: Object_EnemyMovetoPlayer(o,p,d,0.38)
-					Case OBJTYPE_TECHNOSQU: Object_EnemyMovetoPlayer(o,p,d,0.71)
-					Case OBJTYPE_LEECH: Object_EnemyMovetoPlayer(o,p,d,0.15)
+					Case OBJTYPE_BURROBOT: If o\Enemy\AttackMode=2 Then Object_EnemyMoveToPlayer(o,p,d,0.58)
+					Case OBJTYPE_RHINOTANK: Object_EnemyMoveToPlayer(o,p,d,0.38)
+					Case OBJTYPE_TECHNOSQU: Object_EnemyMoveToPlayer(o,p,d,0.71)
+					Case OBJTYPE_LEECH: Object_EnemyMoveToPlayer(o,p,d,0.15)
 					Case OBJTYPE_CRAWLER:
-					Default: Object_EnemyMovetoPlayer(o,p,d,0.48)
+					Default: Object_EnemyMoveToPlayer(o,p,d,0.48)
 				End Select
 			Case OBJTYPE_CATERKILLER,OBJTYPE_CAMERON,OBJTYPE_MADMOLE:
 				Object_EnemyLookAtPlayer(o,p)
@@ -2375,13 +2458,13 @@ End Function
 					Default: Object_EnemyPointAtPlayer(o,p)
 				End Select
 				Select o\ObjType
-					Case OBJTYPE_BUZZBOMBER: Object_EnemyMovetoPlayer(o,p,d,0.46)
-					Case OBJTYPE_COP,OBJTYPE_COPRACER: Object_EnemyMovetoPlayer(o,p,d,1.28)
-					Default: Object_EnemyMovetoPlayer(o,p,d,0.76)
+					Case OBJTYPE_BUZZBOMBER: Object_EnemyMoveToPlayer(o,p,d,0.46)
+					Case OBJTYPE_COP,OBJTYPE_COPRACER: Object_EnemyMoveToPlayer(o,p,d,1.28)
+					Default: Object_EnemyMoveToPlayer(o,p,d,0.76)
 				End Select
 			Case OBJTYPE_CHOPPER:
 				If o\Enemy\FlyEnemyType Then
-					Object_EnemyMovetoPlayer(o,p,d,0.4)
+					Object_EnemyMoveToPlayer(o,p,d,0.4)
 					Object_PlayRobotSteps(o,0,0)
 				EndIf
 			Case OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING:
@@ -2393,7 +2476,7 @@ End Function
 			Case OBJTYPE_JAWS:
 				If o\Enemy\FlyEnemyType Then
 					Object_EnemyPointAtPlayer(o,p)
-					Object_EnemyMovetoPlayer(o,p,d,0.81)
+					Object_EnemyMoveToPlayer(o,p,d,0.81)
 					Object_PlayRobotSteps(o,0,0)
 				EndIf
 			Case OBJTYPE_GRABBER,OBJTYPE_KLAGEN,OBJTYPE_ACHAOSBLOB,OBJTYPE_BOO,OBJTYPE_GHOST:
@@ -2403,18 +2486,18 @@ End Function
 						Object_EnemyMoveUp(o,p,d,0.11)
 					Case OBJTYPE_KLAGEN:
 						Object_EnemyLookAtPlayer(o,p)
-						Object_EnemyMovetoPlayer(o,p,d,0.31)
+						Object_EnemyMoveToPlayer(o,p,d,0.31)
 					Case OBJTYPE_ACHAOSBLOB:
 						Object_EnemyPointAtPlayer(o,p)
-						Object_EnemyMovetoPlayer(o,p,d,0.43)
+						Object_EnemyMoveToPlayer(o,p,d,0.43)
 					Case OBJTYPE_BOO:
 						Object_EnemyLookAtPlayer(o,p)
 						Object_EnemyMoveUpAndDown(o,p,d,2,2,0.35)
-						Object_EnemyMovetoPlayer(o,p,d,0.55)
+						Object_EnemyMoveToPlayer(o,p,d,0.55)
 					Case OBJTYPE_GHOST:
 						Object_EnemyLookAtPlayer(o,p)
 						Object_EnemyMoveUpAndDown(o,p,d,1,1,0.15)
-						Object_EnemyMovetoPlayer(o,p,d,0.3)
+						Object_EnemyMoveToPlayer(o,p,d,0.3)
 				End Select
 				o\Enemy\MayNotBeTargeted=False
 			Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD:
@@ -2422,7 +2505,7 @@ End Function
 				Object_EnemyMoveToPlayer(o,p,d,0.23)
 			Case OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES:
 				Object_EnemyLookAtPlayer(o,p)
-				Object_EnemyMovetoPlayer(o,p,d,0.48)
+				Object_EnemyMoveToPlayer(o,p,d,0.48)
 				If Not(ChannelPlaying(o\Enemy\Channel_EnemyStep)) Then o\Enemy\Channel_EnemyStep=EmitSmartSound(Sound_EnemyMotor2,o\Entity)
 				Object_PlayRobotSteps(o,0,0)
 			Case OBJTYPE_CHASER:
@@ -2435,18 +2518,18 @@ End Function
 				If ChannelPlaying(o\Enemy\Channel_EnemyState) Then StopChannel(o\Enemy\Channel_EnemyState)
 			Case OBJTYPE_SPONA:
 				Object_EnemyLookAtPlayer(o,p)
-				Object_EnemyMovetoPlayer(o,p,d,0.12)
+				Object_EnemyMoveToPlayer(o,p,d,0.12)
 			Case OBJTYPE_BATBOT:
 				Object_EnemyLookAtPlayer(o,p)
-				Object_EnemyMovetoPlayer(o,p,d,0.32)
+				Object_EnemyMoveToPlayer(o,p,d,0.32)
 				Object_EnemyMoveUpAndDown(o,p,d,2,2,0.42)
 			Case OBJTYPE_STEELION:
 				If o\Enemy\Underwater=1 Then
 					Object_EnemyPointAtPlayer(o,p)
-					Object_EnemyMovetoPlayer(o,p,d,1.02)
+					Object_EnemyMoveToPlayer(o,p,d,1.02)
 				Else
 					Object_EnemyLookAtPlayer(o,p)
-					Object_EnemyMovetoPlayer(o,p,d,0.52)
+					Object_EnemyMoveToPlayer(o,p,d,0.52)
 					Object_PlayRobotSteps(o,3,11)
 				EndIf
 			Case OBJTYPE_BALKIRY:
@@ -2456,10 +2539,10 @@ End Function
 				ElseIf o\Position\y#<p\Objects\Position\y# Then
 					Object_EnemyMoveUp(o,p,d,0.25)
 				EndIf
-				Object_EnemyMovetoPlayer(o,p,d,0.72)
+				Object_EnemyMoveToPlayer(o,p,d,0.72)
 			Case OBJTYPE_CRAWL:
 				Object_EnemyLookAtPlayer(o,p)
-				Object_EnemyMovetoPlayer(o,p,d,0.48)
+				Object_EnemyMoveToPlayer(o,p,d,0.48)
 				Object_PlayRobotSteps(o,5,13)
 			Case OBJTYPE_DRAGONFLY:
 				o\Enemy\InRangeForced=True
@@ -2472,7 +2555,7 @@ End Function
 				If o\InView Then o\Enemy\ShouldSpawnMissile=True
 			Case OBJTYPE_MANTA:
 				Object_EnemyLookAtPlayer(o,p)
-				Object_EnemyMovetoPlayer(o,p,d,0.58)
+				Object_EnemyMoveToPlayer(o,p,d,0.58)
 			Case OBJTYPE_MUSHMEANIE:
 				If o\Position\y#<o\InitialPosition\y#+30 Then
 					If (Not(o\Enemy\AttackTimer>0)) Then
@@ -2491,14 +2574,14 @@ End Function
 					o\Enemy\AttackTimer=1*secs#
 				EndIf
 				Object_EnemyLookAtPlayer(o,p)
-				Object_EnemyMovetoPlayer(o,p,d,0.48)
+				Object_EnemyMoveToPlayer(o,p,d,0.48)
 			Case OBJTYPE_OCTUS:
 				Object_EnemyLookAtPlayer(o,p)
 				o\Enemy\FlyEnemyType=True
 				If o\Position\y#<o\InitialPosition\y#+20 Then Object_EnemyMoveUp(o,p,d,0.37)
 			Case OBJTYPE_PATABATA:
 				TurnEntity o\Entity, 0, 0.75*d\Delta, 0
-				Object_EnemyMovetoPlayer(o,p,d,0.32)
+				Object_EnemyMoveToPlayer(o,p,d,0.32)
 			Case OBJTYPE_ZOOMER:
 				Object_EnemyLookAtPlayer(o,p)
 				If o\Enemy\AttackMode>0 Then
@@ -2508,38 +2591,38 @@ End Function
 						o\Enemy\AttackMode=0
 					EndIf
 				EndIf
-				Object_EnemyMovetoPlayer(o,p,d,0.42)
+				Object_EnemyMoveToPlayer(o,p,d,0.42)
 			Case OBJTYPE_BITER:
 				Object_EnemyLookAtPlayer(o,p)
-				Object_EnemyMovetoPlayer(o,p,d,0.4)
+				Object_EnemyMoveToPlayer(o,p,d,0.4)
 				Object_PlayRobotSteps(o,3,11)
 			Case OBJTYPE_TAKER,OBJTYPE_WING:
 				Object_EnemyLookAtPlayer(o,p)
 				Select o\ObjType
 					Case OBJTYPE_WING:
-						Object_EnemyMovetoPlayer(o,p,d,0.1)
+						Object_EnemyMoveToPlayer(o,p,d,0.1)
 						Object_EnemyMoveUpAndDown(o,p,d,18,-16,0.15)
 					Default:
-						Object_EnemyMovetoPlayer(o,p,d,0.3)
+						Object_EnemyMoveToPlayer(o,p,d,0.3)
 						Object_EnemyMoveUpAndDown(o,p,d,18,-16,0.3)
 				End Select
 			Case OBJTYPE_E1000:
 				Object_EnemyLookAtPlayer(o,p)
-				Object_EnemyMovetoPlayer(o,p,d,0.68)
+				Object_EnemyMoveToPlayer(o,p,d,0.68)
 				Object_PlayRobotSteps(o,3,11)
 				If o\Enemy\FlyEnemyType Then Object_EnemyMoveUpAndDown(o,p,d,10,-8,0.7)
 			Case OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_OAKSWORD,OBJTYPE_SNOWY:
 				Object_EnemyLookAtPlayer(o,p)
 				Select o\ObjType
-					Case OBJTYPE_OAKSWORD: Object_EnemyMovetoPlayer(o,p,d,0.25)
-					Case OBJTYPE_SNOWY: Object_EnemyMovetoPlayer(o,p,d,0.15)
-					Default: Object_EnemyMovetoPlayer(o,p,d,0.45)
+					Case OBJTYPE_OAKSWORD: Object_EnemyMoveToPlayer(o,p,d,0.25)
+					Case OBJTYPE_SNOWY: Object_EnemyMoveToPlayer(o,p,d,0.15)
+					Default: Object_EnemyMoveToPlayer(o,p,d,0.45)
 				End Select
 				Object_PlayRobotSteps(o,3,11)
 			Case OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO:
 				If o\Enemy\SeenSonic Then
 					Object_EnemyLookAtPlayer(o,p)
-					Object_EnemyMovetoPlayer(o,p,d,0.79)
+					Object_EnemyMoveToPlayer(o,p,d,0.79)
 					Object_PlayRobotSteps(o,3,11)
 				EndIf
 			Case OBJTYPE_CATAKILLER:
@@ -2550,7 +2633,7 @@ End Function
 					o\Enemy\ShouldSpawnMissile=True
 					If Not(o\Enemy\AttackTimer>0) Then
 						o\Enemy\AttackTimer=1*secs#
-						obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0)
+						obj.tObject = Object_EnemyMissile_Create(o, -o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0)
 					EndIf
 				EndIf
 			Case OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_CLUCKOID,OBJTYPE_ROLLER:
@@ -2563,7 +2646,7 @@ End Function
 				Select o\Enemy\AttackMode
 					Case 0:
 						o\Enemy\FlyEnemyType=False
-						If (Not(o\Enemy\WaitTimer2>0)) and abs(o\Position\x#-p\Objects\Position\x#)<40 and abs(o\Position\z#-p\Objects\Position\z#)<40 Then
+						If (Not(o\Enemy\WaitTimer2>0)) And Abs(o\Position\x#-p\Objects\Position\x#)<40 And Abs(o\Position\z#-p\Objects\Position\z#)<40 Then
 							o\Enemy\AttackMode=1
 							EmitSmartSound(Sound_Ninja,o\Entity)
 							o\Enemy\WaitTimer2=0.2375*secs#
@@ -2586,11 +2669,11 @@ End Function
 				End Select
 			Case OBJTYPE_SHEEP:
 				Object_EnemyLookAtPlayer(o,p)
-				Object_EnemyMovetoPlayer(o,p,d,0.32)
+				Object_EnemyMoveToPlayer(o,p,d,0.32)
 				Object_PlayRobotSteps(o,3,11)
 			Case OBJTYPE_SPLATS:
 				Object_EnemyLookAtPlayer(o,p)
-				If o\Enemy\Frame>5 Then Object_EnemyMovetoPlayer(o,p,d,0.38)
+				If o\Enemy\Frame>5 Then Object_EnemyMoveToPlayer(o,p,d,0.38)
 			Case OBJTYPE_CRABMEAT,OBJTYPE_SPINY,OBJTYPE_KIKI,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_EGGROBO,OBJTYPE_ACHAOS,OBJTYPE_BOOSCARE,OBJTYPE_NEWTRON,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_ASTERON,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_BALLHOG,OBJTYPE_NEBULA,OBJTYPE_TOXO,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2:
 				Object_EnemyLookAtPlayer(o,p)
 			Case OBJTYPE_ORBINAUT:
@@ -2637,7 +2720,7 @@ End Function
 					Object_PlayRobotSteps(o,0,0)
 				EndIf
 			Case OBJTYPE_HORNET3,OBJTYPE_HORNET6:
-				If o\Enemy\AttackMode=0 and (Not(o\Enemy\AttackTimer)>0) Then
+				If o\Enemy\AttackMode=0 And (Not(o\Enemy\AttackTimer)>0) Then
 					o\Enemy\AttackTimer=0.2*secs#
 					Object_Enemy_AttackBehaviour_Initiate(o,p)
 					o\Enemy\AttackMode=1
@@ -2656,8 +2739,9 @@ End Function
 
 	Function Object_Enemy_AttackBehaviour_Initiate(o.tObject, p.tPlayer)
 		Select o\ObjType
-			Case OBJTYPE_PAWNGUN,OBJTYPE_WARRIORGUN1,OBJTYPE_HAMMERHAMMER: o\Anim=6
+			Case OBJTYPE_WARRIORGUN1,OBJTYPE_HAMMERHAMMER: o\Anim=6
 			Case OBJTYPE_PAWNSWORD,OBJTYPE_WARRIORGUN2: o\Anim=9
+			Case  OBJTYPE_GUNNER: o\Anim=3
 			Case OBJTYPE_CRABMEAT,OBJTYPE_SPINY,OBJTYPE_KIKI,OBJTYPE_HUNTER,OBJTYPE_CHASER,OBJTYPE_EGGROBO,OBJTYPE_NEWTRON,OBJTYPE_BALLHOG,OBJTYPE_WITCH1,OBJTYPE_WITCH2: o\Anim=2
 			Case OBJTYPE_HUNTERSHIELD: If o\Enemy\Shield Then o\Anim=5 Else o\Anim=2
 			Case OBJTYPE_AQUIS: If o\Enemy\FlyEnemyType Then o\Anim=3 Else o\Anim=2
@@ -2680,14 +2764,14 @@ End Function
 			Default: o\Anim=1
 		End Select
 		Select o\ObjType
-			Case OBJTYPE_PAWNGUN,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_CRABMEAT,OBJTYPE_SPINY,OBJTYPE_KIKI,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_CHASER,OBJTYPE_EGGROBO,OBJTYPE_CAMERON,OBJTYPE_ACHAOS,OBJTYPE_ORBINAUT,OBJTYPE_SPONA,OBJTYPE_NEWTRON,OBJTYPE_SNAILB,OBJTYPE_STEELION,OBJTYPE_MANTA,OBJTYPE_OCTUS,OBJTYPE_E1000,OBJTYPE_BALLHOG,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_NEBULA,OBJTYPE_TOXO,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE,OBJTYPE_HAMMERHAMMER,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
+			Case OBJTYPE_PAWNGUN,OBJTYPE_GUNNER,OBJTYPE_FLAPPERGUN,OBJTYPE_SEARCHER,OBJTYPE_EGGHUNTER,OBJTYPE_FLAPPERBOMB,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_CRABMEAT,OBJTYPE_SPINY,OBJTYPE_KIKI,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_CHASER,OBJTYPE_EGGROBO,OBJTYPE_CAMERON,OBJTYPE_ACHAOS,OBJTYPE_ORBINAUT,OBJTYPE_SPONA,OBJTYPE_NEWTRON,OBJTYPE_SNAILB,OBJTYPE_STEELION,OBJTYPE_MANTA,OBJTYPE_OCTUS,OBJTYPE_E1000,OBJTYPE_BALLHOG,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_NEBULA,OBJTYPE_TOXO,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE,OBJTYPE_HAMMERHAMMER,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
 				o\Enemy\ShouldSpawnMissile=True
 				Select o\ObjType
 					Case OBJTYPE_ORBINAUT,OBJTYPE_SPONA,OBJTYPE_STEELION,OBJTYPE_TOXO,OBJTYPE_HAMMERHAMMER:
 					Case OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_SPINY,OBJTYPE_CAMERON: EmitSmartSound(Sound_EnemyShot2,o\Entity)
 					Case OBJTYPE_FLAPPERBOMB,OBJTYPE_CRABMEAT,OBJTYPE_MANTA,OBJTYPE_BALLHOG,OBJTYPE_NEBULA,OBJTYPE_SPRINKLR,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3: EmitSmartSound(Sound_EnemyCannon,o\Entity)
 					Case OBJTYPE_KIKI: EmitSmartSound(Sound_EnemyThrow,o\Entity)
-					Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_HORNET3,OBJTYPE_HORNET6: EmitSmartSound(Sound_EnemyShot3,o\Entity)
+					Case OBJTYPE_HUNTER,OBJTYPE_GUNNER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_HORNET3,OBJTYPE_HORNET6: EmitSmartSound(Sound_EnemyShot3,o\Entity)
 					Case OBJTYPE_AEROC: EmitSmartSound(Sound_EnemyShot4,o\Entity)
 					Case OBJTYPE_NEWTRON,OBJTYPE_SNAILB: EmitSmartSound(Sound_EnemyShotPoof,o\Entity)
 					Case OBJTYPE_OCTUS: EmitSmartSound(Sound_Gum,o\Entity)
@@ -2739,7 +2823,7 @@ End Function
 				EndIf
 			Case OBJTYPE_CRAWLER:
 				If o\Enemy\AttackMode>1 Then
-					If (Not(o\Enemy\WaitTimer2>0)) and o\Enemy\Frame>=5 Then
+					If (Not(o\Enemy\WaitTimer2>0)) And o\Enemy\Frame>=5 Then
 						o\Enemy\WaitTimer2=2.5*secs#
 						o\Enemy\ShouldSpawnMissile=True
 						If Not(ChannelPlaying(o\Enemy\Channel_EnemyState)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Sound_MonsterRoar2,o\Entity)
@@ -2768,6 +2852,7 @@ End Function
 		Select o\ObjType
 			Case OBJTYPE_CRABMEAT,OBJTYPE_SPINY,OBJTYPE_KIKI,OBJTYPE_NEWTRON,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_ASTERON:
 				Object_EnemyLookAtPlayer(o,p)
+				
 			Case OBJTYPE_CHASER:
 				Object_EnemyMoveUp(o,p,d,0.54)
 				o\Enemy\FlyEnemyType=True
@@ -2800,6 +2885,7 @@ End Function
 			Case OBJTYPE_STEELION,OBJTYPE_OCTUS: If o\Enemy\Underwater=1 Then o\Anim=6 Else o\Anim=3
 			Case OBJTYPE_CRAWL: If o\Enemy\AttackMode=0 Then o\Anim=3 Else o\Anim=4
 			Case OBJTYPE_MADMOLE: If o\Enemy\AttackMode=2 Then o\Anim=2 Else o\Anim=3
+				
 			Case OBJTYPE_ZOOMER:
 				Select o\Enemy\AttackMode
 					Case 0: o\Anim=1
@@ -2824,17 +2910,17 @@ End Function
 			Case OBJTYPE_FIGHTER:
 				If Not(ChannelPlaying(o\Enemy\Channel_EnemyState)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Sound_EnemyBite,o\Entity)
 				Object_EnemyLookAtPlayer(o,p)
-				Object_EnemyMovetoPlayer(o,p,d,0.88)
+				Object_EnemyMoveToPlayer(o,p,d,0.88)
 			Case OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_CLUCKOID:
 				If Not(ChannelPlaying(o\Enemy\Channel_EnemyState)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Sound_WindBlow,o\Entity)
 				Object_EnemyLookAtPlayer(o,p)
-				If EntityDistance(o\Entity,p\Objects\Entity)<20 and (Not(p\WasGrabbedTimer>0)) and Game\Invinc=0 Then
+				If EntityDistance(o\Entity,p\Objects\Entity)<20 And (Not(p\WasGrabbedTimer>0)) And Game\Invinc=0 Then
 					Player_ConvertGroundToAir(p) : p\Motion\Ground = False
 					p\Flags\HomingLocked = False : p\Flags\Targeter=0
 					p\Animation\Direction#=o\Rotation\y#
 					Player_SetSpeed(p,-2)
 					Player_SetSpeedY(p,1)
-					If o\ObjType=OBJTYPE_TYPHOONF and (Not(p\Character=CHAR_BAR)) Then
+					If o\ObjType=OBJTYPE_TYPHOONF And (Not(p\Character=CHAR_BAR)) Then
 						p\WasGrabbedTimer=3*secs#
 						Player_Action_Freeze_Initiate(p)
 					Else
@@ -2847,14 +2933,14 @@ End Function
 				Object_EnemyPointAtPlayer(o,p)
 			Case OBJTYPE_SPONA:
 				Object_EnemyLookAtPlayer(o,p)
-				Object_EnemyMovetoPlayer(o,p,d,0.12)
+				Object_EnemyMoveToPlayer(o,p,d,0.12)
 			Case OBJTYPE_COP,OBJTYPE_COPRACER:
 				Object_EnemyPointAtPlayer(o,p)
-				Object_EnemyMovetoPlayer(o,p,d,1.28)
+				Object_EnemyMoveToPlayer(o,p,d,1.28)
 			Case OBJTYPE_BOO:
 				Object_EnemyLookAtPlayer(o,p)
 				Object_EnemyMoveUpAndDown(o,p,d,2,2,0.35)
-				Object_EnemyMovetoPlayer(o,p,d,0.55)
+				Object_EnemyMoveToPlayer(o,p,d,0.55)
 			Case OBJTYPE_BOMBIE:
 				If EntityDistance(p\Objects\Entity,o\Entity)<40 Then o\Enemy\SelfDestruct=True
 			Case OBJTYPE_STEELION:
@@ -2870,7 +2956,7 @@ End Function
 				ElseIf o\Position\y#<p\Objects\Position\y# Then
 					Object_EnemyMoveUp(o,p,d,0.45)
 				EndIf
-				Object_EnemyMovetoPlayer(o,p,d,1.32)
+				Object_EnemyMoveToPlayer(o,p,d,1.32)
 			Case OBJTYPE_MADMOLE:
 				Object_EnemyLookAtPlayer(o,p)
 				If o\Enemy\AttackMode=0 Then
@@ -2885,7 +2971,7 @@ End Function
 				EndIf
 			Case OBJTYPE_MANTA:
 				Object_EnemyLookAtPlayer(o,p)
-				Object_EnemyMovetoPlayer(o,p,d,0.58)
+				Object_EnemyMoveToPlayer(o,p,d,0.58)
 			Case OBJTYPE_OCTUS:
 				Object_EnemyLookAtPlayer(o,p)
 				o\Enemy\FlyEnemyType=True
@@ -2893,7 +2979,7 @@ End Function
 			Case OBJTYPE_ZOOMER:
 				Object_EnemyLookAtPlayer(o,p)
 				If o\Enemy\AttackMode=0 Then
-					If ((Abs(p\Objects\Position\x# - o\Position\x#) < 10) and (Abs(p\Objects\Position\z# - o\Position\z#) < 10)) Then
+					If ((Abs(p\Objects\Position\x# - o\Position\x#) < 10) And (Abs(p\Objects\Position\z# - o\Position\z#) < 10)) Then
 						o\Enemy\AttackMode=1
 					EndIf
 				ElseIf o\Enemy\AttackMode=1 Then
@@ -2906,12 +2992,12 @@ End Function
 				EndIf
 			Case OBJTYPE_TAKER:
 				Object_EnemyLookAtPlayer(o,p)
-				Object_EnemyMovetoPlayer(o,p,d,0.3)
+				Object_EnemyMoveToPlayer(o,p,d,0.3)
 				Object_EnemyMoveUpAndDown(o,p,d,18,-16,0.3)
 			Case OBJTYPE_E1000:
 				Object_EnemyLookAtPlayer(o,p)
 				If o\Enemy\FlyEnemyType Then
-					Object_EnemyMovetoPlayer(o,p,d,0.7)
+					Object_EnemyMoveToPlayer(o,p,d,0.7)
 					Object_EnemyMoveUpAndDown(o,p,d,10,-8,0.7)
 				EndIf
 			Case OBJTYPE_ROLLER:
@@ -2922,11 +3008,11 @@ End Function
 						If Not(o\Enemy\WaitTimer2>0) Then o\Enemy\AttackMode=Rand(1,2)
 					Case 1:
 						o\Enemy\FlyEnemyType=False
-						Object_EnemyMovetoPlayer(o,p,d,0.8)
+						Object_EnemyMoveToPlayer(o,p,d,0.8)
 						If Not(ChannelPlaying(o\Enemy\Channel_EnemyState)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Sound_Pinball,o\Entity)
 					Case 2:
 						If Not(ChannelPlaying(o\Enemy\Channel_EnemyState)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Sound_Pinball,o\Entity)
-						Object_EnemyMovetoPlayer(o,p,d,0.65)
+						Object_EnemyMoveToPlayer(o,p,d,0.65)
 						If o\Enemy\WaitTimer>2*secs# Then
 							o\Enemy\FlyEnemyType=True
 							Object_EnemyMoveUp(o,p,d,0.2)
@@ -2958,21 +3044,21 @@ End Function
 
 	Function Object_Enemy_DefaultBehaviour(o.tObject, p.tPlayer, d.tDeltaTime)
 		Select o\ObjType
-			Case OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_GRABBER,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_CHASER,OBJTYPE_KLAGEN,OBJTYPE_EGGROBO,OBJTYPE_COP,OBJTYPE_COPRACER,OBJTYPE_SPONA,OBJTYPE_ORBINAUT,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_BALKIRY,OBJTYPE_DRAGONFLY,OBJTYPE_MANTA,OBJTYPE_OCTUS,OBJTYPE_PATABATA,OBJTYPE_E1000,OBJTYPE_NEBULA:
-				If (Not(ChannelPlaying(o\Enemy\Channel_EnemyStep))) and o\Inview Then
+			Case OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_SEARCHER,OBJTYPE_EGGHUNTER,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_GRABBER,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_CHASER,OBJTYPE_KLAGEN,OBJTYPE_EGGROBO,OBJTYPE_COP,OBJTYPE_COPRACER,OBJTYPE_SPONA,OBJTYPE_ORBINAUT,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_BALKIRY,OBJTYPE_DRAGONFLY,OBJTYPE_MANTA,OBJTYPE_OCTUS,OBJTYPE_PATABATA,OBJTYPE_E1000,OBJTYPE_NEBULA:
+				If (Not(ChannelPlaying(o\Enemy\Channel_EnemyStep))) And o\InView Then
 					Select o\ObjType
 						Case OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_SPONA,OBJTYPE_GRABBER,OBJTYPE_MANTA,OBJTYPE_NEBULA:
 							o\Enemy\Channel_EnemyStep=EmitSmartSound(Sound_EnemyFly,o\Entity)
 						Case OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_DRAGONFLY,OBJTYPE_PATABATA:
 							o\Enemy\Channel_EnemyStep=EmitSmartSound(Sound_EnemyBuzz,o\Entity)
 						Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_E1000:
-							If o\Anim=3 or o\Anim=6 Then o\Enemy\Channel_EnemyStep=EmitSmartSound(Sound_EnemyHover,o\Entity)
+							If o\Anim=3 Or o\Anim=6 Then o\Enemy\Channel_EnemyStep=EmitSmartSound(Sound_EnemyHover,o\Entity)
 						Case OBJTYPE_COP:
 							o\Enemy\Channel_EnemyStep=EmitSmartSound(Sound_EnemyTraffic,o\Entity)
 						Case OBJTYPE_COPRACER:
 							o\Enemy\Channel_EnemyStep=EmitSmartSound(Sound_EnemyMotor2,o\Entity)
 						Case OBJTYPE_BATBOT:
-							If o\Anim=1 and (o\Enemy\Frame=1 Or o\Enemy\Frame=11) Then o\Enemy\Channel_EnemyStep=EmitSmartSound(Sound_FlyWings,o\Entity)
+							If o\Anim=1 And (o\Enemy\Frame=1 Or o\Enemy\Frame=11) Then o\Enemy\Channel_EnemyStep=EmitSmartSound(Sound_FlyWings,o\Entity)
 						Case OBJTYPE_OCTUS:
 							If Not(o\Anim=1 Or o\Anim=4) Then o\Enemy\Channel_EnemyStep=EmitSmartSound(Sound_EnemyFly,o\Entity)
 						Default:
@@ -3005,7 +3091,7 @@ End Function
 							o\Enemy\AttackMode=1
 							o\Enemy\WaitTimer2=0.54*secs#
 							EmitSmartSound(Sound_KnuxStomp,o\Entity)
-							Object_Pieces_Create(false,OBJTYPE_ROCK,0,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,0.65,0,false,1)
+							Object_Pieces_Create(False,OBJTYPE_ROCK,0,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,0.65,0,False,1)
 						EndIf
 					Case 1:
 						o\Enemy\MayNotBeTargeted=False
@@ -3025,8 +3111,8 @@ End Function
 				PositionTexture(o\ExtraTexture, 0, 0.0004*Game\Gameplay\Time)
 				Select o\ObjType
 					Case OBJTYPE_TAKER:
-						If o\Inview Then
-							If ((o\Anim=1 Or o\Anim=3) and (o\Enemy\Frame=5)) Or (o\Anim=2 and (o\Enemy\Frame=3 Or o\Enemy\Frame=7)) Then
+						If o\InView Then
+							If ((o\Anim=1 Or o\Anim=3) And (o\Enemy\Frame=5)) Or (o\Anim=2 And (o\Enemy\Frame=3 Or o\Enemy\Frame=7)) Then
 								If (Not(ChannelPlaying(o\Enemy\Channel_EnemyStep))) Then o\Enemy\Channel_EnemyStep=EmitSmartSound(Sound_MonsterFlap,o\Entity)
 							EndIf
 						EndIf
@@ -3038,7 +3124,7 @@ End Function
 									o\Enemy\AttackMode=1
 									o\Enemy\WaitTimer2=0.54*secs#
 									EmitSmartSound(Sound_KnuxStomp,o\Entity)
-									Object_Pieces_Create(false,OBJTYPE_ROCK,0,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,0.65,0,false,1)
+									Object_Pieces_Create(False,OBJTYPE_ROCK,0,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,0.65,0,False,1)
 								EndIf
 							Case 1:
 								o\Enemy\MayNotBeTargeted=False
@@ -3064,8 +3150,8 @@ End Function
 			Case OBJTYPE_RHINOTANK:
 				If o\Anim=2 Then PositionTexture(o\ExtraTexture, 0, 0.005*Game\Gameplay\Time)
 			Case OBJTYPE_WING:			
-				If o\Inview Then
-					If (o\Anim=1 and o\Enemy\Frame=1) Or (o\Anim=2 and o\Enemy\Frame=5) Then
+				If o\InView Then
+					If (o\Anim=1 And o\Enemy\Frame=1) Or (o\Anim=2 And o\Enemy\Frame=5) Then
 						If (Not(ChannelPlaying(o\Enemy\Channel_EnemyStep))) Then o\Enemy\Channel_EnemyStep=EmitSmartSound(Sound_MonsterFlap,o\Entity)
 					EndIf
 				EndIf
@@ -3093,17 +3179,17 @@ End Function
 				dist#=EntityDistance(o\Entity,p\Objects\Entity)
 				If o\Enemy\WasJustAttacked>0 Then
 					o\Enemy\MayNotBeTargeted=True
-					If dist#<50 Then Object_EnemyMovetoPlayer(o,p,d,-0.74)
+					If dist#<50 Then Object_EnemyMoveToPlayer(o,p,d,-0.74)
 				Else
 					o\Enemy\MayNotBeTargeted=False
 					Object_EnemyLookAtPlayer(o,p)
 				EndIf
-				If (Not(Object_EnemyIsStun(o))) and (Not(Game\ControlLock>0)) and (Not(p\HurtTimer>0)) and (Not(o\Enemy\WasJustAttacked>0)) and (Not(p\TeleportTimer>0)) and Game\Victory=0 and (Not(p\Action=ACTION_TRANSFORM)) Then
+				If (Not(Object_EnemyIsStun(o))) And (Not(Game\ControlLock>0)) And (Not(p\HurtTimer>0)) And (Not(o\Enemy\WasJustAttacked>0)) And (Not(p\TeleportTimer>0)) And Game\Victory=0 And (Not(p\Action=ACTION_TRANSFORM)) Then
 					If dist#<50 Then
-						Object_EnemyMovetoPlayer(o,p,d,0.5+p\SpeedLength#*0.25)
+						Object_EnemyMoveToPlayer(o,p,d,0.5+p\SpeedLength#*0.25)
 						Object_EnemyMoveUpAndDown(o,p,d,5,-3,0.5+p\SpeedLength#*0.25)
 					Else
-						Object_EnemyMovetoPlayer(o,p,d,0.5+p\SpeedLength#*0.75)
+						Object_EnemyMoveToPlayer(o,p,d,0.5+p\SpeedLength#*0.75)
 						Object_EnemyMoveUpAndDown(o,p,d,5,-3,0.5+p\SpeedLength#*0.75)
 					EndIf
 				EndIf
@@ -3131,7 +3217,7 @@ End Function
 			Case OBJTYPE_RHINOSPIKES:
 				If (Not(p\Objects\Position\y#<o\Position\y#+3)) Then o\Enemy\MayGetAttacked=False
 			Case OBJTYPE_SPIKES:
-				If (Not(p\Objects\Position\y#<o\Position\y#+3)) and o\Enemy\AttackMode=0 Then o\Enemy\MayGetAttacked=False
+				If (Not(p\Objects\Position\y#<o\Position\y#+3)) And o\Enemy\AttackMode=0 Then o\Enemy\MayGetAttacked=False
 			Case OBJTYPE_BUBBLSSPIKES:
 				If Not o\InView Then o\Enemy\AttackMode=1
 				If o\Enemy\AttackMode=0 Then o\Enemy\MayGetAttacked=False
@@ -3142,7 +3228,7 @@ End Function
 	End Function
 
 	Function Object_Enemy_BlockBehaviour(o.tObject, p.tPlayer, firsttime#, secondtime#)
-			If o\Enemy\WaitTimer>firsttime#*secs# and o\Enemy\WaitTimer<secondtime#*secs# Then
+			If o\Enemy\WaitTimer>firsttime#*secs# And o\Enemy\WaitTimer<secondtime#*secs# Then
 				Select o\ObjType
 					Case OBJTYPE_BEETLESPARK,OBJTYPE_FLAPPERNEEDLE: o\Anim=2
 				End Select
@@ -3235,13 +3321,20 @@ End Function
 	End Function
 
 	Function Object_Enemy_SpecialBehaviour_RingDrain(p.tPlayer)
-		If (Not(Game\Interface\RingStolenTimer>0)) and Game\Gameplay\Rings>0 Then
+		If (Not(Game\Interface\RingStolenTimer>0)) And Game\Gameplay\Rings>0 Then
 			Game\Interface\RingStolenTimer=0.25*secs#
 			EmitSmartSound(Sound_Ring,p\Objects\Entity)
 			Gameplay_SubstractRings(1)
 		EndIf
 	End Function
-
+Function Object_Enemy_SpecialBehaviour_GunnerRingDrain(p.tPlayer)
+	If (Not(Game\Interface\RingStolenTimer>0)) And Game\Gameplay\Rings>0 Then
+		Game\Interface\RingStolenTimer=0.25*secs#
+		EmitSmartSound(Sound_Ring,p\Objects\Entity)
+		Gameplay_SubstractRings(1)
+	EndIf
+	If Game\Gameplay\Rings=0 Then Player_Hit(p)
+End Function
 	Function Object_Enemy_SpecialBehaviour(o.tObject, p.tPlayer)
 		Select o\ObjType
 			Case OBJTYPE_GRABBER,OBJTYPE_KLAGEN,OBJTYPE_ACHAOSBLOB,OBJTYPE_BOO:
@@ -3335,7 +3428,7 @@ End Function
 					EmitSmartSound(Sound_SpikeDrill2,o\Entity)
 					o\Enemy\AttackMode=0
 				Else
-					If o\Enemy\AttackTimer<2*secs# and o\Enemy\AttackMode=0 Then
+					If o\Enemy\AttackTimer<2*secs# And o\Enemy\AttackMode=0 Then
 						o\Enemy\AttackMode=1
 						EmitSmartSound(Sound_SpikeDrill1,o\Entity)
 						EmitSmartSound(Sound_EnemyShotPoof,o\Entity)
@@ -3343,7 +3436,7 @@ End Function
 					EndIf
 				EndIf
 			Case OBJTYPE_SLICER,OBJTYPE_ASTERON,OBJTYPE_MADMOLE:
-				If (Not(o\Enemy\WaitTimer2>0)) and o\Enemy\AttackMode>0 Then o\Enemy\AttackMode=0
+				If (Not(o\Enemy\WaitTimer2>0)) And o\Enemy\AttackMode>0 Then o\Enemy\AttackMode=0
 			Case OBJTYPE_BOMBIE:
 				If EntityDistance(p\Objects\Entity,o\Entity)<60 Then
 					If (Not(o\Enemy\WaitTimer2>0)) Then o\Enemy\WaitTimer2=1*secs# : EmitSmartSound(Sound_Tnt,o\Entity)
@@ -3354,7 +3447,7 @@ End Function
 					EmitSmartSound(Sound_SpikeDrill2,o\Entity)
 					o\Enemy\AttackMode=0
 				Else
-					If o\Enemy\AttackTimer<2*secs# and o\Enemy\AttackMode=0 Then
+					If o\Enemy\AttackTimer<2*secs# And o\Enemy\AttackMode=0 Then
 						o\Enemy\AttackMode=1
 						EmitSmartSound(Sound_SpikeDrill1,o\Entity)
 					EndIf
@@ -3367,7 +3460,7 @@ End Function
 						Player_Action_Bumped_Initiate(p)
 						p\BumpedCloudTimer=p\BumpedTimer
 					Else
-						If abs(o\Position\y#-p\Objects\Position\y#)<2 Then p\Animation\Direction#=p\Animation\Direction#+180
+						If Abs(o\Position\y#-p\Objects\Position\y#)<2 Then p\Animation\Direction#=p\Animation\Direction#+180
 						p\BumpedTimer=0.5*secs#
 					EndIf
 					If Game\ControlLock<0.125*secs# Then Game\ControlLock=0.125*secs#
@@ -3385,7 +3478,7 @@ End Function
 								Default: EmitSmartSound(Sound_Ninja,o\Entity)
 							End Select
 							o\Enemy\AttackMode=1
-							Object_Pieces_Create(false,-o\ObjType,0,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold)
+							Object_Pieces_Create(False,-o\ObjType,0,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold)
 							o\Enemy\WaitTimer2=0.5*secs#
 						Default:
 							EmitSmartSound(Sound_Bumper1,o\Entity)
@@ -3442,7 +3535,7 @@ Function Object_Enemy_BossBehaviour(o.tObject,p.tPlayer,d.tDeltaTime)
 						Case OBJTYPE_BOSSMECHA:
 							Object_Enemy_BossBehaviour_MechaSonic(o,p)
 					End Select
-					If (Not(Rand(3,3+5)>3)) and (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) and (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Attack[Rand(1,5)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
+					If (Not(Rand(3,3+5)>3)) And (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) And (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Attack[Rand(1,5)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
 				EndIf
 				If o\Enemy\Health<=7 Then
 					o\Enemy\BossMode=2 : o\Enemy\AttackTimer=2*secs#
@@ -3472,7 +3565,7 @@ Function Object_Enemy_BossBehaviour(o.tObject,p.tPlayer,d.tDeltaTime)
 						Case OBJTYPE_BOSSMECHA:
 							Object_Enemy_BossBehaviour_MechaSonic(o,p)
 					End Select
-					If (Not(Rand(3,3+5)>3)) and (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) and (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Attack[Rand(1,5)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
+					If (Not(Rand(3,3+5)>3)) And (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) And (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Attack[Rand(1,5)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
 				EndIf
 				Select o\ObjType
 					Case OBJTYPE_BOSS,OBJTYPE_BOSSRUN:
@@ -3530,14 +3623,14 @@ Function Object_Enemy_BossBehaviour(o.tObject,p.tPlayer,d.tDeltaTime)
 								Case OBJTYPE_BOSSMECHA:
 									Object_Enemy_BossBehaviour_MechaSonic(o,p)
 							End Select
-							If (Not(Rand(3,3+5)>3)) and (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) and (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Attack[Rand(1,5)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
+							If (Not(Rand(3,3+5)>3)) And (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) And (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Attack[Rand(1,5)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
 						EndIf
 				End Select
 				Select o\ObjType
 					Case OBJTYPE_BOSS2:
 						If o\Enemy\Health<=2 Then
 							o\Enemy\BossMode=4 : o\Enemy\AttackTimer=2*secs#
-							If (Not(Rand(1,1+3)=1)) and (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) and (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Lose[Rand(1,3)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
+							If (Not(Rand(1,1+3)=1)) And (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) And (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Lose[Rand(1,3)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
 							If o\Enemy\HasBossObj1=False Then
 								o\Enemy\BossObj1.tObject = Object_Spike_Create(o\Position\x#, o\Position\y#-8, o\Position\z#, 0, (1-1)*(360/3), 0, 0, OBJTYPE_SPIKESWING)
 								Objects_Reset_HasMesh(o\Enemy\BossObj1) : Objects_Reset_Repose(o\Enemy\BossObj1) : Objects_Reset_Object(o\Enemy\BossObj1)
@@ -3558,7 +3651,7 @@ Function Object_Enemy_BossBehaviour(o.tObject,p.tPlayer,d.tDeltaTime)
 						If o\Enemy\Health<=2 Then
 							o\Enemy\BossMode=4 : o\Enemy\AttackTimer=0
 							If (o\ObjType=OBJTYPE_BOSSBETA Or o\ObjType=OBJTYPE_BOSSMECHA) Then o\Enemy\AttackMode=0 : o\Enemy\AttackMode2=0
-							If (Not(Rand(1,1+3)=1)) and (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) and (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Lose[Rand(1,3)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
+							If (Not(Rand(1,1+3)=1)) And (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) And (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Lose[Rand(1,3)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
 							Select o\ObjType
 								Case OBJTYPE_BOSSRUN:
 									If o\Enemy\HasBossObj1 Then o\Enemy\BossObj1\ExplodeHit=True : o\Enemy\HasBossObj1=False
@@ -3598,12 +3691,12 @@ Function Object_Enemy_BossBehaviour(o.tObject,p.tPlayer,d.tDeltaTime)
 						Case OBJTYPE_BOSSMECHA:
 							Object_Enemy_BossBehaviour_MechaSonic(o,p)
 					End Select
-					If (Not(Rand(3,3+5)>3)) and (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) and (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Attack[Rand(1,5)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
+					If (Not(Rand(3,3+5)>3)) And (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) And (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Attack[Rand(1,5)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
 				EndIf
 				If o\Enemy\Health<=0 Then
 					o\Enemy\BossMode=5 : o\Enemy\AttackTimer=5*secs# : o\Enemy\WaitTimer=0
 					If (o\ObjType=OBJTYPE_BOSSBETA Or o\ObjType=OBJTYPE_BOSSMECHA) Then o\Enemy\AttackMode=0 : o\Enemy\AttackMode2=0
-					If (Not(Rand(1,1+3)=1)) and (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) and (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Lose[Rand(1,3)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
+					If (Not(Rand(1,1+3)=1)) And (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) And (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Lose[Rand(1,3)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
 					Select o\ObjType
 						Case OBJTYPE_BOSS,OBJTYPE_BOSS2:
 							If o\Enemy\HasBossObj1 Then o\Enemy\BossObj1\ExplodeHit=True : o\Enemy\HasBossObj1=False
@@ -3623,7 +3716,7 @@ Function Object_Enemy_BossBehaviour_Beta(o.tObject, p.tPlayer, second=0)
 			If second=0 Then
 				o\Anim=1
 				o\Enemy\AttackMode=1
-			ElseIf second=1 or second=2 Then
+			ElseIf second=1 Or second=2 Then
 				If Rand(1,3)=1 Then
 					o\Anim=1
 					o\Enemy\AttackMode=1
@@ -3663,7 +3756,7 @@ Function Object_Enemy_BossBehaviour_Beta(o.tObject, p.tPlayer, second=0)
 				o\Enemy\AttackTimer=1.05*secs#
 			EndIf
 		Case 3:
-			If (Rand(1,4)=1 and o\Enemy\AttackMode2>=4) Or (o\Enemy\AttackMode2>=7) Then
+			If (Rand(1,4)=1 And o\Enemy\AttackMode2>=4) Or (o\Enemy\AttackMode2>=7) Then
 				o\Anim=9
 				o\Enemy\AttackMode=4
 				o\Enemy\AttackTimer=2.5*secs#
@@ -3681,7 +3774,7 @@ Function Object_Enemy_BossBehaviour_Beta(o.tObject, p.tPlayer, second=0)
 			If Not(Animating(o\Entity)) Then
 				o\Anim=5
 				If o\Enemy\AttackMode=20 Then
-					If (Rand(1,4)=1 and o\Enemy\AttackMode2>=4) Or (o\Enemy\AttackMode2>=7) Then
+					If (Rand(1,4)=1 And o\Enemy\AttackMode2>=4) Or (o\Enemy\AttackMode2>=7) Then
 						o\Enemy\AttackMode=21
 						o\Enemy\AttackTimer=0.5*secs#
 					Else
@@ -3708,7 +3801,7 @@ Function Object_Enemy_BossBehaviour_Beta(o.tObject, p.tPlayer, second=0)
 				o\Enemy\AttackTimer=0.5*secs#
 			EndIf
 		Case 103:
-			If (Rand(1,4)=1 and o\Enemy\AttackMode2>=4) Or (o\Enemy\AttackMode2>=7) Then
+			If (Rand(1,4)=1 And o\Enemy\AttackMode2>=4) Or (o\Enemy\AttackMode2>=7) Then
 				o\Anim=9
 				o\Enemy\AttackMode=4
 				o\Enemy\AttackTimer=2.5*secs#
@@ -3765,7 +3858,7 @@ Function Object_Enemy_BossBehaviour_MechaSonic(o.tObject, p.tPlayer)
 					o\Enemy\AttackMode2=3
 					o\Enemy\AttackMode3=0
 				Case 3:
-					If (o\Enemy\AttackMode3>=5 and Rand(1,2)=1) Or (o\Enemy\AttackMode3>=10) Then
+					If (o\Enemy\AttackMode3>=5 And Rand(1,2)=1) Or (o\Enemy\AttackMode3>=10) Then
 						If Rand(1,3)=1 Then
 							o\Anim=2
 							o\Enemy\AttackMode2=4
@@ -3803,7 +3896,7 @@ Function Object_Enemy_BossGeneral(o.tObject, p.tPlayer, d.tDeltaTime)
 				HideEntity(o\Entity2)
 		End Select
 	Else
-		If o\Enemy\BossMode<5 and o\Enemy\WasJustAttacked<3.8*secs# and o\Enemy\WasJustAttacked>1*secs# Then
+		If o\Enemy\BossMode<5 And o\Enemy\WasJustAttacked<3.8*secs# And o\Enemy\WasJustAttacked>1*secs# Then
 			o\Enemy\WaitTimer2=(5+Rand(1,4)/4.0)*secs# : EmitSmartSound(Sound_EggmanShield,o\Entity)
 			o\Enemy\WasJustAttacked=0
 		EndIf
@@ -3818,7 +3911,7 @@ Function Object_Enemy_BossGeneral(o.tObject, p.tPlayer, d.tDeltaTime)
 					HideEntity(o\Entity2)
 				EndIf
 			Case OBJTYPE_BOSSMECHA:
-				If (Not(o\Anim=3)) and o\Enemy\Shield=0 Then o\Enemy\MayGetAttacked=True Else o\Enemy\MayGetAttacked=False
+				If (Not(o\Anim=3)) And o\Enemy\Shield=0 Then o\Enemy\MayGetAttacked=True Else o\Enemy\MayGetAttacked=False
 			Default: o\Enemy\MayGetAttacked=True
 		End Select
 	EndIf
@@ -3844,7 +3937,7 @@ Function Object_Enemy_BossGeneral(o.tObject, p.tPlayer, d.tDeltaTime)
 					If o\Enemy\AttackMode>=-1 Then
 						If Not(o\Anim=9) Then
 							If o\Anim=4 Then
-								If o\Enemy\AttackTimer>0.875*secs# and EntityDistance(o\Entity,p\Objects\Entity)>10 Then Object_EnemyLookAtPlayer(o,p)
+								If o\Enemy\AttackTimer>0.875*secs# And EntityDistance(o\Entity,p\Objects\Entity)>10 Then Object_EnemyLookAtPlayer(o,p)
 								Object_EnemyMoveToPlayer(o,p,d,2.38)
 							Else
 								Object_EnemyLookAtPlayer(o,p)
@@ -3857,7 +3950,7 @@ Function Object_Enemy_BossGeneral(o.tObject, p.tPlayer, d.tDeltaTime)
 						EndIf
 					EndIf
 				Case OBJTYPE_BOSSMECHA:
-					If o\Position\z#<p\Objects\Position\z#-100 Or o\Position\z#>p\Objects\Position\z#+700 Or abs(o\Position\y#-p\Objects\Position\y#)>700 Then
+					If o\Position\z#<p\Objects\Position\z#-100 Or o\Position\z#>p\Objects\Position\z#+700 Or Abs(o\Position\y#-p\Objects\Position\y#)>700 Then
 						Object_Enemy_BossGeneral_BossRun(o,p,d)
 						o\Enemy\AttackMode2=0
 						o\Enemy\AttackTimer=0
@@ -3872,10 +3965,10 @@ Function Object_Enemy_BossGeneral(o.tObject, p.tPlayer, d.tDeltaTime)
 													Object_EnemyMoveToPlayer(o,p,d,0.8-p\SpeedLength#*0.5)
 													If o\Enemy\AttackMode2=2 Then
 														Object_EnemyMoveUp(o,p,d,-1.8)
-														If abs(o\Position\y#-p\Objects\Position\y#)<5 Then o\Enemy\AttackMode2=3 : EmitSmartSound(Sound_Crusher,o\Entity)
+														If Abs(o\Position\y#-p\Objects\Position\y#)<5 Then o\Enemy\AttackMode2=3 : EmitSmartSound(Sound_Crusher,o\Entity)
 													Else
 														Object_EnemyMoveUp(o,p,d,1.8)
-														If abs(o\Position\y#-p\Objects\Position\y#)>20 Then o\Enemy\AttackMode2=2 : EmitSmartSound(Sound_Crusher,o\Entity)
+														If Abs(o\Position\y#-p\Objects\Position\y#)>20 Then o\Enemy\AttackMode2=2 : EmitSmartSound(Sound_Crusher,o\Entity)
 													EndIf
 												Case 2:
 													Object_EnemyMoveToPlayer(o,p,d,0.95-p\SpeedLength#*0.5)
@@ -3910,15 +4003,15 @@ Function Object_Enemy_BossGeneral(o.tObject, p.tPlayer, d.tDeltaTime)
 					If (Not(o\Anim=9)) Then
 						If Not(o\Enemy\WaitTimer)>0 Then
 							o\Enemy\WaitTimer=2*secs#
-							If (Not(o\Enemy\WaitTimer2>0)) and Rand(1,20)=1 Then o\Enemy\WaitTimer2=(5+Rand(1,4)/4.0)*secs# : EmitSmartSound(Sound_DashElectro,o\Entity)
+							If (Not(o\Enemy\WaitTimer2>0)) And Rand(1,20)=1 Then o\Enemy\WaitTimer2=(5+Rand(1,4)/4.0)*secs# : EmitSmartSound(Sound_DashElectro,o\Entity)
 						EndIf
-						If o\Enemy\BossMode=3 and o\Enemy\AttackMode>10 Then
+						If o\Enemy\BossMode=3 And o\Enemy\AttackMode>10 Then
 							Object_EnemyMoveUpAndDown(o,p,d,30,-28,0.3)
 						Else
 							Object_EnemyMoveUpAndDown(o,p,d,15,-13,0.3)
 						EndIf
 
-						If (Not(o\Enemy\WasJustAttacked>0)) and (p\JustThrewBombTimer>0 Or (EntityDistance(o\Entity,p\Objects\Entity)<20 and p\Flags\Attacking)) and (Not(o\Enemy\AttackMode<0)) and (Not(o\Enemy\WaitTimer2>0)) Then
+						If (Not(o\Enemy\WasJustAttacked>0)) And (p\JustThrewBombTimer>0 Or (EntityDistance(o\Entity,p\Objects\Entity)<20 And p\Flags\Attacking)) And (Not(o\Enemy\AttackMode<0)) And (Not(o\Enemy\WaitTimer2>0)) Then
 							If p\Flags\Attacking Then o\Enemy\AttackMode=-Rand(2,3) Else o\Enemy\AttackMode=-1
 							o\Enemy\WaitTimer2=2*secs# : EmitSmartSound(Sound_DashElectro,o\Entity)
 							o\Anim=2
@@ -3950,7 +4043,7 @@ Function Object_Enemy_BossGeneral_UpDownAround(o.tObject, p.tPlayer, d.tDeltaTim
 	If Not(o\Enemy\WaitTimer)>0 Then
 		o\Enemy\WaitTimer=2*secs#
 		Repeat : o\Enemy\AttackMode=Rand(-2,2) : Until o\Enemy\AttackMode<>0
-		If (Not(o\Enemy\WaitTimer2>0)) and Rand(1,20)=1 Then o\Enemy\WaitTimer2=(5+Rand(1,4)/4.0)*secs# : EmitSmartSound(Sound_DashElectro,o\Entity)
+		If (Not(o\Enemy\WaitTimer2>0)) And Rand(1,20)=1 Then o\Enemy\WaitTimer2=(5+Rand(1,4)/4.0)*secs# : EmitSmartSound(Sound_DashElectro,o\Entity)
 	Else
 		If o\Position\y#>p\Objects\Position\y#+20 Then
 			If o\Position\y#<p\Objects\Position\y#+top# Or o\Enemy\AttackMode<0 Then
@@ -3965,7 +4058,7 @@ Function Object_Enemy_BossGeneral_UpDownAround(o.tObject, p.tPlayer, d.tDeltaTim
 End Function
 
 Function Object_Enemy_BossGeneral_BossRun(o.tObject, p.tPlayer, d.tDeltaTime)
-	If o\Position\z#<p\Objects\Position\z#-100 Or o\Position\z#>p\Objects\Position\z#+700 Or abs(o\Position\y#-p\Objects\Position\y#)>700 Then
+	If o\Position\z#<p\Objects\Position\z#-100 Or o\Position\z#>p\Objects\Position\z#+700 Or Abs(o\Position\y#-p\Objects\Position\y#)>700 Then
 		PositionEntity o\Entity, 0, o\InitialPosition\y#, pp(1)\Objects\Position\z#+250, 1
 		EmitSmartSound(Sound_Teleport,o\Entity)
 	Else
@@ -3996,3 +4089,5 @@ Function Object_Enemy_BossGeneral_BossRun(o.tObject, p.tPlayer, d.tDeltaTime)
 		If o\Position\x#>9*o\Mode Then MoveEntity o\Entity, 0.2*d\Delta, 0, 0
 	EndIf
 End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

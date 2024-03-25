@@ -21,6 +21,14 @@ Dim EMBLEMS1(5,StageAmountPossible)
 Dim EMBLEMS2(5,StageAmountPossible)
 Global EMBLEMS
 
+Dim REDRING1(StageAmountPossible)
+Dim REDRING2(StageAmountPossible)
+Dim REDRING3(StageAmountPossible)
+Dim REDRING4(StageAmountPossible)
+Dim REDRING5(StageAmountPossible)
+Dim ALLREDRING(StageAmountPossible)
+Global REDRINGS
+
 Global RECORDS_CURRENT
 Dim RECORDS_NAME$(1)
 Dim RECORDS_RINGS(5,4)
@@ -50,7 +58,7 @@ Function LoadStageList()
 	LoadStageList_Individual("StagesOfficial")
 	LoadStageList_Individual("Stages")
 
-	For i=1 to StageAmount
+	For i=1 To StageAmount
 	LoadGame_Emblems(i)
 	Next
 End Function
@@ -92,9 +100,8 @@ End Function
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;; Saves the whole game as an encrypted save file.
-;;param saveemblems - Whether to save stage emblems.
-Function SaveGame(saveemblems=true)
+
+Function SaveGame(saveemblems=True)
 
 	WriteFileWithEncryption("SETTINGS")
 
@@ -125,29 +132,29 @@ Function SaveGame(saveemblems=true)
 	WriteLine(CurrentOpenFile,"<vsync setting="+Chr$(34)+Menu\Settings\VSync#+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<viewrange setting="+Chr$(34)+Menu\Settings\ViewRange#+Chr$(34)+"/>")
 
-	For i=0 to 17
+	For i=0 To 17
 	WriteLine(CurrentOpenFile,"<control no="+Chr$(34)+i+Chr$(34)+" control1="+Chr$(34)+CONTROLS(1,i)+Chr$(34)+" control2="+Chr$(34)+CONTROLS(2,i)+Chr$(34)+" gamepad="+Chr$(34)+CONTROLS_GAMEPAD(i)+Chr$(34)+"/>")
 	Next
 
-	For c=1 to CHAR_NORMALCOUNT
+	For c=1 To CHAR_NORMALCOUNT
 	WriteLine(CurrentOpenFile,"<char no="+Chr$(34)+(c)+Chr$(34)+" unlocked="+Chr$(34)+UNLOCKEDCHAR[c]+Chr$(34)+"/>")
 	Next
-	For c=1 to TEAM_TEAMCOUNT
+	For c=1 To TEAM_TEAMCOUNT
 	WriteLine(CurrentOpenFile,"<team no="+Chr$(34)+(c)+Chr$(34)+" unlocked="+Chr$(34)+UNLOCKEDTEAM[c]+Chr$(34)+"/>")
 	Next
 	WriteLine(CurrentOpenFile,"<specialstages unlocked="+Chr$(34)+UNLOCKEDSPECIALSTAGES[0]+Chr$(34)+"/>")
-	For c=1 to 7
+	For c=1 To 7
 	WriteLine(CurrentOpenFile,"<emerald no="+Chr$(34)+(c)+Chr$(34)+" unlocked="+Chr$(34)+UNLOCKEDEMERALDS[c]+Chr$(34)+"/>")
 	Next
 
-	For c=1 to CHAR_PLAYABLECOUNT
+	For c=1 To CHAR_PLAYABLECOUNT
 	WriteLine(CurrentOpenFile,"<jumpamode no="+Chr$(34)+(c)+Chr$(34)+" is="+Chr$(34)+JUMPAMODE[c]+Chr$(34)+"/>")
 	Next
 
 	CloseWrittenFileWithEncryption()
 
 	If saveemblems Then
-		For i=1 to StageAmount
+		For i=1 To StageAmount
 		SaveGame_Emblems(i)
 		Next
 	EndIf
@@ -158,7 +165,7 @@ End Function
 
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Function LoadGame(loademblems=true)
+Function LoadGame(loademblems=True)
 
 	LoadFileWithEncryption("SETTINGS") : xmlin = xmlLoad(SaveDataTmp$)
 
@@ -210,7 +217,7 @@ Function LoadGame(loademblems=true)
 	xmlNodeDelete(xmlin) : CloseLoadedFileWithEncryption()
 
 	If loademblems Then
-		For i=1 to StageAmount
+		For i=1 To StageAmount
 		LoadGame_Emblems(i)
 		Next
 	EndIf
@@ -223,7 +230,7 @@ End Function
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Function SaveGame_Emblems(i,reset=false)
+Function SaveGame_Emblems(i,reset=False)
 
 	If i<0 Then Return
 
@@ -231,9 +238,12 @@ Function SaveGame_Emblems(i,reset=false)
 
 	WriteFileWithEncryption("EMBLEMS"+i)
 
-	For h=1 to 5
+	For h=1 To 5
 	WriteLine(CurrentOpenFile,"<emblems"+(h)+" 1="+Chr$(34)+EMBLEMS1(h,i)+Chr$(34)+" 2="+Chr$(34)+EMBLEMS2(h,i)+Chr$(34)+"/>")
-	Next
+Next
+
+WriteLine(CurrentOpenFile,"<redrings 1="+Chr$(34)+REDRING1(i)+Chr$(34)+" 2="+Chr$(34)+REDRING2(i)+Chr$(34)+" 3="+Chr$(34)+REDRING3(i)+Chr$(34)+" 4="+Chr$(34)+REDRING4(i)+Chr$(34)+" 5="+Chr$(34)+REDRING5(i)+Chr$(34)+" all="+Chr$(34)+ALLREDRING(i)+Chr$(34)+"/>")
+
 
 	CloseWrittenFileWithEncryption()
 
@@ -245,7 +255,7 @@ Function LoadGame_Emblems(i)
 
 	If Not(FileType(SaveDataPath$+"EMBLEMS"+i+SaveDataFormat$)=1) Then ;!
 
-		SaveGame_Emblems(i,true)
+		SaveGame_Emblems(i,True)
 
 	Else ;!
 
@@ -267,7 +277,10 @@ Function LoadGame_Emblems(i)
 		Case "emblems4": LoadGame_Emblems_individual(child,4,i)
 		;mission5-------------------------------------------------------------------------------
 		Case "emblems5": LoadGame_Emblems_individual(child,5,i)
-
+			
+		;redrings------------------------------------------------------------------
+		Case "redrings": LoadGame_RedRings_individual(child,i)
+			
 	End Select
 
 	Next
@@ -283,18 +296,35 @@ Function LoadGame_Emblems_individual(child,h,i)
 	EMBLEMS2(h,i)=xmlNodeAttributeValueGet(child, "2")
 End Function
 
+Function LoadGame_RedRings_individual(child,i)
+	REDRING1(i)=xmlNodeAttributeValueGet(child, "1")
+	REDRING2(i)=xmlNodeAttributeValueGet(child, "2")
+	REDRING3(i)=xmlNodeAttributeValueGet(child, "3")
+	REDRING4(i)=xmlNodeAttributeValueGet(child, "4")
+	REDRING5(i)=xmlNodeAttributeValueGet(child, "5")
+	ALLREDRING(i)=xmlNodeAttributeValueGet(child, "all")
+	
+End Function
+
 Function SaveGame_Emblems_Reset(i)
-	For h=1 to 5
+	For h=1 To 5
 	EMBLEMS1(h,i)=0
 	EMBLEMS2(h,i)=0
-	Next
+Next
+
+REDRING1(i)=0
+REDRING2(i)=0
+REDRING3(i)=0
+REDRING4(i)=0
+REDRING5(i)=0
+ALLREDRING(i)=0
 End Function
 
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Function SaveGame_Records(i,reset=false)
+Function SaveGame_Records(i,reset=False)
 
 	If reset Then SaveGame_Records_Reset(i)
 
@@ -303,8 +333,8 @@ Function SaveGame_Records(i,reset=false)
 	RECORDS_NAME(1)=SaveGame_Records_GetStageName(i)
 	WriteLine(CurrentOpenFile,"<stage name="+Chr$(34)+RECORDS_NAME(1)+Chr$(34)+"/>")
 
-	For r=0 to 4
-	For h=1 to 5
+	For r=0 To 4
+	For h=1 To 5
 	WriteLine(CurrentOpenFile,"<records"+(h)+"-"+(r)+" rings="+Chr$(34)+RECORDS_RINGS(h,r)+Chr$(34)+" enemies="+Chr$(34)+RECORDS_ENEMIES(h,r)+Chr$(34)+" time="+Chr$(34)+RECORDS_TIME(h,r)+Chr$(34)+" score="+Chr$(34)+RECORDS_SCORE(h,r)+Chr$(34)+" rank="+Chr$(34)+RECORDS_RANK(h,r)+Chr$(34)+"/>")
 	Next
 	Next
@@ -319,7 +349,7 @@ Function LoadGame_Records(i)
 
 	If Not(FileType(SaveDataPath$+"RECORDS"+i+SaveDataFormat$)=1) Then ;!
 
-		SaveGame_Records(i,true)
+		SaveGame_Records(i,True)
 
 	Else ;!
 
@@ -380,11 +410,11 @@ Function LoadGame_Records_individual(child,h,r)
 End Function
 
 Function SaveGame_Records_GetStageName$(i)
-	If i<=StageAmount and i>0 Then
+	If i<=StageAmount And i>0 Then
 		Return StageName$(i)
 	Else
 		If i<0 Then
-			Return "Special Stage "+Int(abs(i))
+			Return "Special Stage "+Int(Abs(i))
 		Else
 			Return ""
 		EndIf
@@ -393,15 +423,15 @@ End Function
 
 Function SaveGame_Records_Reset(i)
 	RECORDS_NAME(1)=SaveGame_Records_GetStageName$(i)
-	For h=1 to 5
+	For h=1 To 5
 	RECORDS_RINGS(h,0)=0
 	RECORDS_ENEMIES(h,0)=0
 	RECORDS_TIME(h,0)=5999999
 	RECORDS_SCORE(h,0)=0
 	RECORDS_RANK(h,0)=7
 	Next
-	For r=1 to 4
-	For h=1 to 5
+	For r=1 To 4
+	For h=1 To 5
 	RECORDS_RINGS(h,r)=0
 	RECORDS_ENEMIES(h,r)=0
 	RECORDS_TIME(h,r)=0
@@ -417,15 +447,15 @@ End Function
 
 Function SaveGame_ResetAndSaveStageRecordsAndEmblems(i)
 	If i<=StageAmount Then
-		SaveGame_Emblems(i,true)
-		SaveGame_Records(i,true)
+		SaveGame_Emblems(i,True)
+		SaveGame_Records(i,True)
 	EndIf
 End Function
 
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;; Deletes your save directory.
+
 Function CleanUpSaveDirectory()
 	SaveDir = ReadDir(SaveDataPath$)
 	Repeat
@@ -434,7 +464,7 @@ Function CleanUpSaveDirectory()
 	Until (SaveFile$ = "")
 	CloseDir(SaveDir)
 End Function
-;; Resets your entire Save Directory
+
 Function ResetAll()
 	CleanUpSaveDirectory()
 	ResetOptions()
@@ -442,41 +472,40 @@ Function ResetAll()
 	ResetRecords()
 	ResetGarden()
 End Function
-;; sets the values for all options to the default. Also infers screen resolution from your monitor display.
-;;author ozcrashsonic
+
 Function ResetOptions_Values()
 	width#=GetSystemMetrics(0) : height#=GetSystemMetrics(1)
-	If width#=1066 and height#=568 Then
+	If width#=1066 And height#=568 Then
 		Menu\Settings\Resolution#=1
-	ElseIf width#=1280 and height#=720 Then
+	ElseIf width#=1280 And height#=720 Then
 		Menu\Settings\Resolution#=2
-	ElseIf width#=1280 and height#=768 Then
+	ElseIf width#=1280 And height#=768 Then
 		Menu\Settings\Resolution#=3
-	ElseIf width#=1280 and height#=800 Then
+	ElseIf width#=1280 And height#=800 Then
 		Menu\Settings\Resolution#=4
-	ElseIf width#=1360 and height#=768 Then
+	ElseIf width#=1360 And height#=768 Then
 		Menu\Settings\Resolution#=5
-	ElseIf width#=1366 and height#=768 Then
+	ElseIf width#=1366 And height#=768 Then
 		Menu\Settings\Resolution#=6
-	ElseIf width#=1440 and height#=900 Then
+	ElseIf width#=1440 And height#=900 Then
 		Menu\Settings\Resolution#=7
-	ElseIf width#=1440 and height#=960 Then
+	ElseIf width#=1440 And height#=960 Then
 		Menu\Settings\Resolution#=8
-	ElseIf width#=1600 and height#=900 Then
+	ElseIf width#=1600 And height#=900 Then
 		Menu\Settings\Resolution#=9
-	ElseIf width#=1680 and height#=1050 Then
+	ElseIf width#=1680 And height#=1050 Then
 		Menu\Settings\Resolution#=10
-	ElseIf width#=1920 and height#=1080 Then
+	ElseIf width#=1920 And height#=1080 Then
 		Menu\Settings\Resolution#=11
-	ElseIf width#=1920 and height#=1200 Then
+	ElseIf width#=1920 And height#=1200 Then
 		Menu\Settings\Resolution#=12
-	ElseIf width#=1536 and height#=864 Then
+	ElseIf width#=1536 And height#=864 Then
 		Menu\Settings\Resolution#=6
-	ElseIf width#=1280 and height#=1024 Then
+	ElseIf width#=1280 And height#=1024 Then
 		Menu\Settings\Resolution#=4
-	ElseIf width#=1024 and height#=768 Then
+	ElseIf width#=1024 And height#=768 Then
 		Menu\Settings\Resolution#=1
-	ElseIf width#=800 and height#=600 Then
+	ElseIf width#=800 And height#=600 Then
 		Menu\Settings\Resolution#=1
 	ElseIf width#<1366 Then
 		Menu\Settings\Resolution#=1
@@ -517,7 +546,7 @@ Function ResetOptions()
 
 	ResetOptions_Values()
 
-	SaveGame(false)
+	SaveGame(False)
 
 End Function
 
@@ -620,7 +649,7 @@ Function ResetGame()
 	Menu\SavedLives=5
 	Menu\Wallet=0
 
-	For c=1 to CHAR_NORMALCOUNT
+	For c=1 To CHAR_NORMALCOUNT
 	Select c
 		Case CHAR_MIG,CHAR_RAY,CHAR_CHO,CHAR_NAC,CHAR_BEA,CHAR_BAR,CHAR_JET,CHAR_WAV,CHAR_STO,CHAR_TIA,CHAR_MPH,CHAR_MET,CHAR_TDL,CHAR_MKN,CHAR_TIK,CHAR_HBO,CHAR_HON,CHAR_SHD,CHAR_GAM,CHAR_EME,CHAR_EGG,CHAR_BET,CHAR_MT3,CHAR_GME,CHAR_PRS,CHAR_COM,CHAR_CHW,CHAR_EGR,CHAR_INF:
 			UNLOCKEDCHAR[c]=0
@@ -628,7 +657,7 @@ Function ResetGame()
 			UNLOCKEDCHAR[c]=1
 	End Select
 	Next
-	For c=1 to TEAM_TEAMCOUNT
+	For c=1 To TEAM_TEAMCOUNT
 	Select c
 		Case TEAM_TEAMCOUNT,TEAM_OLDIES,TEAM_HOOLIGAN,TEAM_BABYLON,TEAM_RELIC,TEAM_ROBOTNIK:
 			UNLOCKEDTEAM[c]=0
@@ -637,11 +666,11 @@ Function ResetGame()
 	End Select
 	Next
 	UNLOCKEDSPECIALSTAGES[0]=0
-	For c=1 to 7
+	For c=1 To 7
 		UNLOCKEDEMERALDS[c]=0
 	Next
 
-	SaveGame(false)
+	SaveGame(False)
 
 	DeleteMarathonList()
 
@@ -649,7 +678,7 @@ End Function
 
 Function ResetRecords()
 
-	For i=1 to StageAmount
+	For i=1 To StageAmount
 		SaveGame_ResetAndSaveStageRecordsAndEmblems(i)
 	Next
 
@@ -663,7 +692,7 @@ Global TOUNLOCKCHAR[CHAR_NORMALCOUNT]
 Global TOUNLOCKTEAM[TEAM_TEAMCOUNT]
 Global TOUNLOCKSPECIALSTAGES[0]
 
-	For c=1 to CHAR_NORMALCOUNT
+	For c=1 To CHAR_NORMALCOUNT
 	Select c
 		Case CHAR_MET,CHAR_TDL,CHAR_MKN:			TOUNLOCKCHAR[c]=15
 		Case CHAR_MIG,CHAR_RAY,CHAR_HBO:			TOUNLOCKCHAR[c]=20
@@ -681,7 +710,7 @@ Global TOUNLOCKSPECIALSTAGES[0]
 	End Select
 	Next
 
-	For c=1 to TEAM_TEAMCOUNT
+	For c=1 To TEAM_TEAMCOUNT
 	Select c
 		Case TEAM_TEAMCOUNT: TOUNLOCKTEAM[c]=5
 		Case TEAM_ROBOTNIK: TOUNLOCKTEAM[c]=15
@@ -697,12 +726,22 @@ Global TOUNLOCKSPECIALSTAGES[0]
 
 Function CountEmblems()
 	EMBLEMS=0
-	For h=1 to 5
-	For i=1 to StageAmount
+	REDRINGS=0
+	For h=1 To 5
+	For i=1 To StageAmount
 		If EMBLEMS1(h,i)=1 Then EMBLEMS=EMBLEMS+1
 		If EMBLEMS2(h,i)=1 Then EMBLEMS=EMBLEMS+1
 	Next
-	Next
+Next
+
+For i=1 To StageAmount
+	If REDRING1(i)=1 Then REDRINGS=REDRINGS+1
+	If REDRING2(i)=1 Then REDRINGS=REDRINGS+1
+	If REDRING3(i)=1 Then REDRINGS=REDRINGS+1
+	If REDRING4(i)=1 Then REDRINGS=REDRINGS+1
+	If REDRING5(i)=1 Then REDRINGS=REDRINGS+1
+Next
+
 End Function
 
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -823,7 +862,7 @@ Function LoadGame_ResetMenuChao()
 	Menu\HeldChaoColor = 0
 	Menu\HeldChaoShape = 0
 	Menu\HeldChaoSide = 0
-	For i=1 to 7
+	For i=1 To 7
 		Menu\HeldChaoSkills[i] = 0 : Menu\HeldChaoCurrentSkills[i] = 0
 	Next
 	Menu\HeldChaoEternal = 0
@@ -879,7 +918,7 @@ Function SaveGame_ChaoSlots()
 
 	WriteLine(CurrentOpenFile,"<first timer="+Chr$(34)+CHAOFIRSTTIMER(1)+Chr$(34)+"/>")
 
-	For i=1 to CHAOCOUNT
+	For i=1 To CHAOCOUNT
 	WriteLine(CurrentOpenFile,"<slot chao="+Chr$(34)+i+Chr$(34)+" is="+Chr$(34)+CHAOSLOTS(1,i)+Chr$(34)+"/>")
 	Next
 
@@ -949,7 +988,7 @@ Function SaveGame_ChaoGarden()
 		WriteLine(CurrentOpenFile,"<toy type="+Chr$(34)+o\ChaoObj\ToyType+Chr$(34)+" x="+Chr$(34)+o\Position\x#+Chr$(34)+" y="+Chr$(34)+o\Position\y#+Chr$(34)+" z="+Chr$(34)+o\Position\z#+Chr$(34)+"/>")
 
 		Case OBJTYPE_TROPICAL:
-		If o\ChaoObj\IsFromSeed=false Then WriteLine(CurrentOpenFile,"<tree id="+Chr$(34)+o\ID+Chr$(34)+" growth1="+Chr$(34)+o\ChaoObj\FruitGrowth[1]+Chr$(34)+" growth2="+Chr$(34)+o\ChaoObj\FruitGrowth[2]+Chr$(34)+" growth3="+Chr$(34)+o\ChaoObj\FruitGrowth[3]+Chr$(34)+" growth4="+Chr$(34)+o\ChaoObj\FruitGrowth[4]+Chr$(34)+"/>")
+		If o\ChaoObj\IsFromSeed=False Then WriteLine(CurrentOpenFile,"<tree id="+Chr$(34)+o\ID+Chr$(34)+" growth1="+Chr$(34)+o\ChaoObj\FruitGrowth[1]+Chr$(34)+" growth2="+Chr$(34)+o\ChaoObj\FruitGrowth[2]+Chr$(34)+" growth3="+Chr$(34)+o\ChaoObj\FruitGrowth[3]+Chr$(34)+" growth4="+Chr$(34)+o\ChaoObj\FruitGrowth[4]+Chr$(34)+"/>")
 
 		Case OBJTYPE_DRIVE:
 		WriteLine(CurrentOpenFile,"<drive type="+Chr$(34)+o\ChaoObj\DriveType+Chr$(34)+" x="+Chr$(34)+o\Position\x#+Chr$(34)+" y="+Chr$(34)+o\Position\y#+Chr$(34)+" z="+Chr$(34)+o\Position\z#+Chr$(34)+"/>")
@@ -1022,7 +1061,7 @@ Function LoadGame_ChaoGarden()
 		Case "tree":
 		For o.tObject = Each tObject
 			treeid=xmlNodeAttributeValueGet(child, "id")
-			If o\ObjType=OBJTYPE_TROPICAL and o\ID=treeid Then
+			If o\ObjType=OBJTYPE_TROPICAL And o\ID=treeid Then
 				o\ChaoObj\FruitGrowth[1]=xmlNodeAttributeValueGet(child, "growth1")
 				o\ChaoObj\FruitGrowth[2]=xmlNodeAttributeValueGet(child, "growth2")
 				o\ChaoObj\FruitGrowth[3]=xmlNodeAttributeValueGet(child, "growth3")
@@ -1034,7 +1073,7 @@ Function LoadGame_ChaoGarden()
 		obj.tObject = Object_Drive_Create(xmlNodeAttributeValueGet(child, "type"), xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y"), xmlNodeAttributeValueGet(child, "z"))
 
 		Case "seed":
-		obj.tObject = Object_Seed_Create(xmlNodeAttributeValueGet(child, "type"), xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y"), xmlNodeAttributeValueGet(child, "z"), false, xmlNodeAttributeValueGet(child, "mode"), xmlNodeAttributeValueGet(child, "growth1"), xmlNodeAttributeValueGet(child, "growth2"), xmlNodeAttributeValueGet(child, "growth3"), xmlNodeAttributeValueGet(child, "growth4"), xmlNodeAttributeValueGet(child, "treegrowth"))
+		obj.tObject = Object_Seed_Create(xmlNodeAttributeValueGet(child, "type"), xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y"), xmlNodeAttributeValueGet(child, "z"), False, xmlNodeAttributeValueGet(child, "mode"), xmlNodeAttributeValueGet(child, "growth1"), xmlNodeAttributeValueGet(child, "growth2"), xmlNodeAttributeValueGet(child, "growth3"), xmlNodeAttributeValueGet(child, "growth4"), xmlNodeAttributeValueGet(child, "treegrowth"))
 
 	End Select
 
@@ -1067,13 +1106,13 @@ Function SaveGame_Inventory()
 	WriteLine(CurrentOpenFile,"<wallet saved="+Chr$(34)+Menu\Wallet+Chr$(34)+"/>")
 
 	For ii.tItem=Each tItem
-		For n=1 to TOTALITEMS
+		For n=1 To TOTALITEMS
 		If ii\ID=n Then WriteLine(CurrentOpenFile,"<item id="+Chr$(34)+ii\ID+Chr$(34)+" type1="+Chr$(34)+ii\Type1+Chr$(34)+" type2="+Chr$(34)+ii\Type2+Chr$(34)+" type3="+Chr$(34)+ii\Type3+Chr$(34)+"/>")
 		Next
 	Next
 
 	For cii.tCarriedItem=Each tCarriedItem
-		For n=1 to TOTALCARRIEDITEMS
+		For n=1 To TOTALCARRIEDITEMS
 		If cii\ID=n Then WriteLine(CurrentOpenFile,"<citem id="+Chr$(34)+cii\ID+Chr$(34)+" type1="+Chr$(34)+cii\Type1+Chr$(34)+" type2="+Chr$(34)+cii\Type2+Chr$(34)+"/>")
 		Next
 	Next
@@ -1125,19 +1164,19 @@ Function SaveGame_BlackMarket()
 
 	WriteLine(CurrentOpenFile,"<market timer="+Chr$(34)+Menu\BlackMarketRandomizerTimer+Chr$(34)+"/>")
 
-	For i=1 to ITEM_MAX(1)
+	For i=1 To ITEM_MAX(1)
 		WriteLine(CurrentOpenFile,"<item type1="+Chr$(34)+1+Chr$(34)+" type2="+Chr$(34)+i+Chr$(34)+" type3="+Chr$(34)+ITEM_AVAILABLE_FRUITS(i)+Chr$(34)+"/>")
 	Next
 
-	For i=1 to ITEM_MAX(2)
+	For i=1 To ITEM_MAX(2)
 		WriteLine(CurrentOpenFile,"<item type1="+Chr$(34)+2+Chr$(34)+" type2="+Chr$(34)+i+Chr$(34)+" type3="+Chr$(34)+ITEM_AVAILABLE_HATS(i)+Chr$(34)+"/>")
 	Next
 
-	For i=1 to ITEM_MAX(3)
+	For i=1 To ITEM_MAX(3)
 		WriteLine(CurrentOpenFile,"<item type1="+Chr$(34)+3+Chr$(34)+" type2="+Chr$(34)+i+Chr$(34)+" type3="+Chr$(34)+ITEM_AVAILABLE_EGGS(i)+Chr$(34)+"/>")
 	Next
 
-	For i=1 to ITEM_MAX(5)
+	For i=1 To ITEM_MAX(5)
 		WriteLine(CurrentOpenFile,"<item type1="+Chr$(34)+5+Chr$(34)+" type2="+Chr$(34)+i+Chr$(34)+" type3="+Chr$(34)+ITEM_AVAILABLE_TOYS(i)+Chr$(34)+"/>")
 	Next
 
@@ -1182,7 +1221,7 @@ Function ResetGarden()
 
 	DeleteFile(SaveDataPath$+"CHAOGARDEN"+SaveDataFormat$)
 
-	For i=1 to CHAOCOUNT
+	For i=1 To CHAOCOUNT
 		If FileType(SaveDataPath$+"CHAO"+i+SaveDataFormat$)=1 Then Menu_Transporter_Goodbye_DeleteAChao(i) : i=i-1
 	Next
 
@@ -1214,7 +1253,7 @@ Function SaveMarathonList()
 
 	WriteLine(CurrentOpenFile,"<length is="+Chr$(34)+StageAmount+Chr$(34)+"/>")
 
-	For i=1 to StageAmount-1
+	For i=1 To StageAmount-1
 	WriteLine(CurrentOpenFile,"<stage no="+Chr$(34)+(i)+Chr$(34)+" stageno="+Chr$(34)+MarathonStage(i)+Chr$(34)+"/>")
 	Next
 
@@ -1270,3 +1309,5 @@ End Function
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+;~IDEal Editor Parameters:
+;~C#Blitz3D

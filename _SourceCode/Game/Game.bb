@@ -44,160 +44,8 @@
 	CHARSIDES(CHAR_CHW) = 3
 	CHARSIDES(CHAR_EGR) = 2
 	CHARSIDES(CHAR_INF) = 2
-
-;-----------------------------------------------------------------------------------------------------------
-;-----------------------------------------------------------------------------------------------------------
-
-Function ReturnFPSDifferenceFactor()
-	If Game\Others\FPS>=50 Then
-		Return 15
-	ElseIf Game\Others\FPS>40 Then
-		Return 20
-	ElseIf Game\Others\FPS>30 Then
-		Return 25
-	Else
-		Return 30
-	EndIf
-End Function
-
-;-----------------------------------------
-
-Function Gameplay_AddRings(value#)
-	If Game\Gameplay\Rings+value#<999 Then
-		Game\Gameplay\Rings=Game\Gameplay\Rings+value#
-	Else
-		Game\Gameplay\Rings=999
-	EndIf
-End Function
-
-Function Gameplay_AddLives(value#)
-	PlaySmartSound(Sound_1Up)
-	If Game\Gameplay\Lives+value#<99 Then
-		Game\Gameplay\Lives=Game\Gameplay\Lives+value#
-	Else
-		Game\Gameplay\Lives=99
-	EndIf
-End Function
-
-Function Gameplay_AddScore(value#)
-	If Game\Gameplay\Score+value#<999999 Then
-		Game\Gameplay\Score=Game\Gameplay\Score+value#
-	Else
-		Game\Gameplay\Score=999999
-	EndIf
-
-	If value#>10 Then
-		Game\Interface\Points=value# : Game\Interface\PointsCommentGiven=0
-		Game\Interface\PointsChain=Game\Interface\PointsChain+1
-		Game\Interface\PointsTimer=6.2*secs#
-	EndIf
-End Function
-
-Function Gameplay_AddIdealScore(o.tObject,value#)
-	o\AddedToIdealScore=1
-	Game\IdealScore=Game\IdealScore+value#
-End Function
-
-Function Gameplay_AddEnemies(value#)
-	Game\Gameplay\Enemies=Game\Gameplay\Enemies+value#
-End Function
-
-Function Gameplay_AddGoldEnemies(value#)
-	Game\Gameplay\GoldEnemies=Game\Gameplay\GoldEnemies+value#
-End Function
-
-Function Gameplay_AddTotalEnemies(value#)
-	Game\Gameplay\TotalEnemies=Game\Gameplay\TotalEnemies+value#
-End Function
-
-Function Gameplay_AddTotalGoldEnemies(value#)
-	Game\Gameplay\TotalGoldEnemies=Game\Gameplay\TotalGoldEnemies+value#
-End Function
-
-Function Gameplay_AddPerfectBonus(value#)
-	Game\Gameplay\PerfectBonus=Game\Gameplay\PerfectBonus+value#
-End Function
-
-Function Gameplay_AddRedRings(value#)
-	Game\Gameplay\RedRings=Game\Gameplay\RedRings+value#
-End Function
-
-Function Gameplay_AddBalloons(value#)
-	Game\Gameplay\Balloons=Game\Gameplay\Balloons+value#
-End Function
-
-Function Gameplay_AddTotalBalloons(value#)
-	Game\Gameplay\TotalBalloons=Game\Gameplay\TotalBalloons+value#
-End Function
-
-Function Gameplay_AddFlickies(value#)
-	Game\Gameplay\Flickies=Game\Gameplay\Flickies+value#
-End Function
-
-;---------------------------------------------------------------------------------
-
-Function Gameplay_SubstractRings(value#)
-	If Game\Gameplay\Rings-value#>0 Then
-		Game\Gameplay\Rings=Game\Gameplay\Rings-value#
-	Else
-		Game\Gameplay\Rings=0
-	EndIf
-End Function
-
-Function Gameplay_SubstractLives(value#)
-	If Game\Gameplay\Lives-value#>0 Then
-		Game\Gameplay\Lives=Game\Gameplay\Lives-value#
-	Else
-		Game\Gameplay\Lives=0
-	EndIf
-End Function
-
-Function Gameplay_SubstractScore(value#)
-	If Game\Gameplay\Score-value#>0 Then
-		Game\Gameplay\Score=Game\Gameplay\Score-value#
-	Else
-		Game\Gameplay\Score=0
-	EndIf
-End Function
-
-;---------------------------------------------------------------------------------
-
-Function Gameplay_SetRings(value#)
-	Game\Gameplay\Rings=value#
-End Function
-
-Function Gameplay_SetLives(value#)
-	Game\Gameplay\Lives=value#
-End Function
-
-Function Gameplay_SetScore(value#)
-	Game\Gameplay\Score=value#
-End Function
-
-Function Gameplay_SetEnemies(value#)
-	Game\Gameplay\Enemies=value#
-End Function
-
-Function Gameplay_SetGoldEnemies(value#)
-	Game\Gameplay\GoldEnemies=value#
-End Function
-
-Function Gameplay_SetBalloons(value#)
-	Game\Gameplay\Balloons=value#
-End Function
-
-Function Gameplay_SetFlickies(value#)
-	Game\Gameplay\Flickies=value#
-End Function
-
-;---------------------------------------------------------------------------------
-
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
-
-	; ---------------------------------------------------------------------------------------------------------
-	; ---------------------------------------------------------------------------------------------------------
-
 	Dim pp.tPlayer(3)
 	Dim ppe.tPlayer(3)
 
@@ -221,18 +69,22 @@ End Function
 		Field	BossNotDefeated
 		Field	InsideBoxCheckerTimer
 		Field	SmartCameraRangeDontAffectTimer
-
+		
+		Field	CheeseAttacked
+		
+		Field	ChaosControlTimer
 		; Players
 		Field	Leader
 		Field	NewLeader
 		Field	CharacterMesh[3]
 		Field	SuperCharacterMesh[3]
-		Field	HyperCharacterMesh[3]
 
 		; Resetting condition values
 		Field	ResetCamera
 		Field	ResetChecks
 		Field	ResetObjects
+		
+		Field CheckSpeed
 
 		; Power-up related values
 		Field	SpeedShoes
@@ -250,10 +102,14 @@ End Function
 
 		Field	CounterChance
 		Field	CounterChanceTimer
+		
+		Field HasCheckSounded
+		Field HasStartedStageTeleport
 
 		; Timers
 		Field	CheeseTimer
 		Field	FroggyTimer
+		Field ChaosSnapTimer
 
 		; Channels
 		Field	Channel_Invincible
@@ -264,10 +120,14 @@ End Function
 		Field	Channel_Result
 		Field	Channel_1Up
 		Field	Channel_ChaoEffect
+		Field	Channel_Ring
+		Field	Channel_Counter
+		Field	Channel_AmbientWater
 
 		; Locking values
 		Field	StartoutLock
 		Field	ControlLock
+		Field	TwoDLock
 		Field	CamLock
 		Field	CamLock2
 		Field	RunLock
@@ -314,9 +174,10 @@ End Function
 		Field 	Rings
 		Field	Enemies
 		Field	GoldEnemies
-		Field	RedRings
+		Field	Shards
 		Field	Balloons
 		Field	Flickies
+		Field	GaugeEnergy
 
 		Field 	GainedLives
 
@@ -338,11 +199,11 @@ End Function
 		Field	TotalGoldEnemies
 		Field	TotalBalloons
 
-		Field	TotalRedRings
-		Field	RedRing[3]
-		Field	RedRingTimer[3]
-		Field	RedRingBeepTimer[3]
-		Field	RedRingDistance[3]
+		Field	TotalShards
+		Field	Shard[3]
+		Field	ShardTimer[3]
+		Field	ShardBeepTimer[3]
+		Field	ShardDistance[3]
 
 		Field	PsychoBombCount
 		Field	TotalBoxes
@@ -380,6 +241,9 @@ End Function
 		Field	GeneralLightPivot
 		Field	GeneralLight
 		Field	SunRays
+		
+		Field	RingMissionAmount
+		Field	EnemyMissionAmount
 
 		Field	Skydome
 
@@ -407,6 +271,21 @@ End Function
 		Field   WaterType
 
 		Field   DeathLevel
+		
+		Field	Fog
+		Field	FogR
+		Field	FogG
+		Field	FogB
+		
+		Field	FilterOn
+		Field	FilterIntesity#
+		Field	FilterR
+		Field	FilterG
+		Field	FilterB
+		
+		Field	FogNearDist
+		Field	FogFarDist
+
 
 		Field	AmbientAlarm
 		Field	AmbientBeach
@@ -470,7 +349,7 @@ End Function
 
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
-	Function Game_Startup()
+Function Game_Startup()
 		; Set game title
 		AppTitle(GAME_TITLE$)
 		InitDraw() : SetBuffer(BackBuffer())
@@ -516,13 +395,13 @@ End Function
 		EndIf
 
 		; Load always objects
-		For x=0 to MESHES_ALWAYSTOTAL : LoadSmartEntity(x) : Next
+		For x=0 To MESHES_ALWAYSTOTAL : LoadSmartEntity(x) : Next
 
 		; Load always interface
-		For x=1 to INTERFACE_ALWAYSTOTAL : LoadSmartImage(x) : Next
+		For x=1 To INTERFACE_ALWAYSTOTAL : LoadSmartImage(x) : Next
 
 		; Load always sounds
-		For x=1 to SOUNDS_ALWAYSTOTAL : LoadSmartSound(x) : Next
+		For x=1 To SOUNDS_ALWAYSTOTAL : LoadSmartSound(x) : Next
 
 		; Ready to initiate
 		Game\State	= GAME_STATE_START
@@ -532,7 +411,7 @@ End Function
 
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
-	Function Game_Update()
+Function Game_Update()
 		; Acquire keyboard and controls status and update delta time
 		DeltaTime_Update(Game\DeltaTime)
 		Input_Update()
@@ -542,18 +421,18 @@ End Function
 
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
-	Function Game_Stage_Update()
+Function Game_Stage_Update()
 		Select Game\State
 			Case GAME_STATE_START : Game_Stage_Start()
 			Case GAME_STATE_STEP  : Game_Stage_Step(Game\DeltaTime)
 		End Select
 
-		If Game\MustQuitStage>0 and ( Menu\Stage=0 Or (Menu\Stage<>0 and CARD_PLACE#<=(-150+5)) ) Then Game_Stage_ReallyQuit(Game\MustQuitStage) : Game\MustQuitStage=0
+		If Game\MustQuitStage>0 And ( Menu\Stage=0 Or (Menu\Stage<>0 And CARD_PLACE#<=(-150+5)) ) Then Game_Stage_ReallyQuit(Game\MustQuitStage) : Game\MustQuitStage=0
 	End Function
 
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
-	Function Game_End()
+Function Game_End()
 		FreeEntity Menu\RingRotator
 		DeInitExt()
 		DeInitDraw()
@@ -565,7 +444,7 @@ End Function
 
 	; =========================================================================================================
 	; =========================================================================================================
-	Function FxManager_RenderingPassInterruption(Pass, Method)
+Function FxManager_RenderingPassInterruption(Pass, Method)
 		; Put this on your game. Before rendering anything, this function will be called by the
 		; Render World method, so you can disable certain entities.
 		If (Method = 0) Then
@@ -613,3 +492,5 @@ End Function
 Global PostProcess_AlphaTexture = LoadTexture("Textures\Fade.png",1+2)
 Global Texture_Empty = LoadTexture("Textures\Empty.png",1+2)
 Global Texture_Trail = LoadTexture("Textures\trail.png",1+2+256)
+;~IDEal Editor Parameters:
+;~C#Blitz3D

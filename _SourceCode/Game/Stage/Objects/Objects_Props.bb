@@ -2,7 +2,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Plant_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, size#)
+Function Object_Plant_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, size#)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\ThisIsAPlant=True
 
@@ -219,7 +219,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Omochao_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#)
+Function Object_Omochao_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#,omovoiceon=0,omovoicepath$)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\g = Object_Gravity_Create.tGravity() : o\HasGravity=True
 		o\Omochao = New tObject_Omochao : o\HasValuesetOmochao=True
@@ -227,6 +227,7 @@
 		Object_CreateHitBox(HITBOXTYPE_BOX,o,4,4,4)
 
 		o\Omochao\Mode=0
+		o\Omochao\CustomVoiceOn=omovoiceon
 
 		Object_Acquire_Position(o,x#,y#,z#)
 		Object_Acquire_Rotation(o,0,yaw#,0)
@@ -234,12 +235,16 @@
 		o\Pivot=CreatePivot()
 		o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Omochao)), Game\Stage\Root)
 		EntityType(o\Pivot,COLLISION_OBJECT2)
-
-		If SOUNDS_EXISTS(Voice_OMO_Fact[1])=false Then
-			For i=1 to 16 : LoadGoodSound(Voice_OMO_Fact[i],1,"Voices/"+"omo"+"/fact"+i+".ogg",2) : Next
-			For i=1 to 5 : LoadGoodSound(Voice_OMO_Hurt[i],1,"Voices/"+"omo"+"/hurt"+i+".ogg",2) : Next
-			For i=1 to 15 : LoadGoodSound(Voice_OMO_Sad[i],1,"Voices/"+"omo"+"/sad"+i+".ogg",2) : Next
-		EndIf
+		
+		If o\Omochao\CustomVoiceOn=1 Then
+			o\Omochao\Voice=LoadSound(Game\Stage\Properties\Path$+omovoicepath$)
+		Else
+			If SOUNDS_EXISTS(Voice_OMO_Fact[1])=False Then
+				For i=1 To 16 : LoadGoodSound(Voice_OMO_Fact[i],1,"Voices/"+"omo"+"/fact"+i+".ogg",2) : Next
+				For i=1 To 5 : LoadGoodSound(Voice_OMO_Hurt[i],1,"Voices/"+"omo"+"/hurt"+i+".ogg",2) : Next
+				For i=1 To 15 : LoadGoodSound(Voice_OMO_Sad[i],1,"Voices/"+"omo"+"/sad"+i+".ogg",2) : Next
+			EndIf
+		EndIf 
 
 		SmartSound(Sound_OmochaoFly)
 
@@ -248,79 +253,86 @@
 	
 	; =========================================================================================================
 	
-	Function Object_Omochao_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_Omochao_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		; Position mesh
-		PositionEntity o\Entity, o\Position\x#, o\Position\y#, o\Position\z#
-		RotateEntity o\Entity, o\Rotation\x#, o\Rotation\y#, o\Rotation\z#
-
+	PositionEntity o\Entity, o\Position\x#, o\Position\y#, o\Position\z#
+	RotateEntity o\Entity, o\Rotation\x#, o\Rotation\y#, o\Rotation\z#
+	
 		; Animation
-		If o\Psychoed>0 Or o\ObjPickedUp>0 Then
-			o\Anim=5
-		Else
-			Select o\Omochao\Mode
-				Case 0: o\Anim=2
-				Case 1: o\Anim=3
-			End Select
-		EndIf
-		If o\Anim<>o\PreviousAnim Then
-			Select o\Anim
-				Case 1,2,3: Animate (o\Entity,1,0.255,o\Anim,10)
-				Case 4: Animate (o\Entity,1,0.3188,o\Anim,10)
-				Default: Animate (o\Entity,1,0.1275,o\Anim,10)
-			End Select
-			o\PreviousAnim=o\Anim
-		EndIf
-
+	If o\Psychoed>0 Or o\ObjPickedUp>0 Then
+		o\Anim=5
+	Else
+		Select o\Omochao\Mode
+			Case 0: o\Anim=2
+			Case 1: o\Anim=3
+		End Select
+	EndIf
+	If o\Anim<>o\PreviousAnim Then
+		Select o\Anim
+			Case 1,2,3: Animate (o\Entity,1,0.255,o\Anim,10)
+			Case 4: Animate (o\Entity,1,0.3188,o\Anim,10)
+			Default: Animate (o\Entity,1,0.1275,o\Anim,10)
+		End Select
+		o\PreviousAnim=o\Anim
+	EndIf
+	
 		; Update collision
-		If o\Omochao\Mode=1 Or p\Flags\Attacking Or o\Psychoed>0 Or o\ObjPickedUp>0 Or p\ObjPickUpTimer>0 Then
-			EntityType(o\Pivot,COLLISION_OBJECT2_GOTHRU)
-		Else
-			EntityType(o\Pivot,COLLISION_OBJECT2)
-		EndIf
-
+	If o\Omochao\Mode=1 Or p\Flags\Attacking Or o\Psychoed>0 Or o\ObjPickedUp>0 Or p\ObjPickUpTimer>0 Then
+		EntityType(o\Pivot,COLLISION_OBJECT2_GOTHRU)
+	Else
+		EntityType(o\Pivot,COLLISION_OBJECT2)
+	EndIf
+	
 		; Gravity
-		If o\Omochao\Mode=0 Then Object_EnforceGravity(o,d)
-
+	If o\Omochao\Mode=0 Then Object_EnforceGravity(o,d)
+	
 		; Stun
-		Object_EnforceStun(o,p,d,false)
-
+	Object_EnforceStun(o,p,d,False)
+	
 		; Psychokinesis
-		Object_EnforcePsychokinesis(o,p,d)
-
+	Object_EnforcePsychokinesis(o,p,d)
+	
 		; Obj pick up
-		Object_EnforceObjPickUp(o,p)
-
+	Object_EnforceObjPickUp(o,p)
+	
 		; Update timer
-		If o\Psychoed>0 Or o\ObjPickedUp>0 Then
-			If o\Omochao\FactTimer>0 Then
-				o\Omochao\FactTimer=o\Omochao\FactTimer-timervalue#
-			Else
-				o\Omochao\FactTimer=6.35*secs#
-				If Not(ChannelPlaying(o\Omochao\Channel_Omochao)) Then o\Omochao\Channel_Omochao=PlaySmartSound(Voice_OMO_Fact[Rand(1,16)])
-			EndIf
-		EndIf
-		If o\Omochao\AttackedTimer>0 Then o\Omochao\AttackedTimer=o\Omochao\AttackedTimer-timervalue#
-		If o\Omochao\OverTimer>0 Then
-			o\Omochao\OverTimer=o\Omochao\OverTimer-timervalue#
+	If o\Psychoed>0 Or o\ObjPickedUp>0 Then
+		If o\Omochao\FactTimer>0 Then
+			o\Omochao\FactTimer=o\Omochao\FactTimer-timervalue#
 		Else
-			If o\Omochao\Mode=1 Then o\Omochao\Mode=0
+			o\Omochao\FactTimer=6.35*secs#
+			If Not(ChannelPlaying(o\Omochao\Channel_Omochao)) Then o\Omochao\Channel_Omochao=PlaySmartSound(Voice_OMO_Fact[Rand(1,16)])
 		EndIf
-
+	EndIf
+	If o\Omochao\AttackedTimer>0 Then o\Omochao\AttackedTimer=o\Omochao\AttackedTimer-timervalue#
+	If o\Omochao\OverTimer>0 Then
+		o\Omochao\OverTimer=o\Omochao\OverTimer-timervalue#
+	Else
+		If o\Omochao\Mode=1 Then o\Omochao\Mode=0
+	EndIf
+	
 		; Movement
-		If o\Omochao\Mode=1 and (Not(o\Psychoed>0 Or o\ObjPickedUp>0)) Then
-			If Not(ChannelPlaying(o\Omochao\Channel_OmochaoFly)) Then o\Omochao\Channel_OmochaoFly=EmitSmartSound(Sound_OmochaoFly,o\Entity)
-			TurnEntity o\Pivot, 0, 2*o\Omochao\Direction*d\Delta, 0
-			MoveEntity o\Pivot, 0, 0, 0.1*d\Delta
-			If o\Omochao\AttackedTimer>1*secs# Then MoveEntity o\Pivot, 0, 0.125*d\Delta, 0
-		Else
-			StopChannel(o\Omochao\Channel_OmochaoFly)
-			If o\Omochao\AttackedTimer>0 Then MoveEntity o\Pivot, 0, 0, -0.075*d\Delta
-		EndIf
-		
+	If o\Omochao\Mode=1 And (Not(o\Psychoed>0 Or o\ObjPickedUp>0)) Then
+		If Not(ChannelPlaying(o\Omochao\Channel_OmochaoFly)) Then o\Omochao\Channel_OmochaoFly=EmitSmartSound(Sound_OmochaoFly,o\Entity)
+		TurnEntity o\Pivot, 0, 2*o\Omochao\Direction*d\Delta, 0
+		MoveEntity o\Pivot, 0, 0, 0.1*d\Delta
+		If o\Omochao\AttackedTimer>1*secs# Then MoveEntity o\Pivot, 0, 0.125*d\Delta, 0
+	Else
+		StopChannel(o\Omochao\Channel_OmochaoFly)
+		If o\Omochao\AttackedTimer>0 Then MoveEntity o\Pivot, 0, 0, -0.075*d\Delta
+	EndIf
+	
 		; Player collided with object
-		If (Not(p\ObjPickUpTimer>0)) and o\ObjPickedUp=0 Then
+	If (Not(p\ObjPickUpTimer>0)) And o\ObjPickedUp=0 Then
+		
 		If o\Hit Then
+			
+			If o\Omochao\CustomVoiceOn=1 Then
+				If o\Omochao\Mode=0 Then o\Omochao\Channel_Omochao=PlaySound(o\Omochao\Voice)
+			Else
+				o\Omochao\Channel_Omochao=PlaySmartSound(Voice_OMO_Sad[Rand(1,15)])
+			EndIf 
 			If p\Flags\Attacking Then
 				RotateEntity o\Pivot,0,(DeltaYaw#(p\Objects\Entity,o\Pivot) - 180),0
 				o\Omochao\AttackedTimer=0.45*secs#
@@ -335,9 +347,12 @@
 				Case 1: o\Omochao\Direction=1
 				Case 2: o\Omochao\Direction=-1
 			End Select
-			StopChannel(o\Omochao\Channel_Omochao)
-			o\Omochao\Channel_Omochao=PlaySmartSound(Voice_OMO_Sad[Rand(1,15)])
+			
+			
+				
 		EndIf
+		
+		
 		If o\BombHit Then
 			o\Omochao\Mode=0
 			StopChannel(o\Omochao\Channel_Omochao)
@@ -345,14 +360,14 @@
 			o\BombHit=False
 			o\ObjPickedUp=-1
 		EndIf
-		EndIf
-		
-	End Function
+	EndIf
+	
+End Function
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Sprinkler_Create.tObject(x#, y#, z#, yaw#, mode)
+Function Object_Sprinkler_Create.tObject(x#, y#, z#, yaw#, mode)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\Visual = New tObject_Visual : o\HasValuesetVisual=True
 
@@ -369,7 +384,7 @@
 
 		o\Mode=mode
 
-		If (Menu\Settings\Debug#=1 and Menu\Settings\DebugNodes#=1) Then
+		If (Menu\Settings\Debug#=1 And Menu\Settings\DebugNodes#=1) Then
 			o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Point)), Game\Stage\Root)
 		Else
 			o\Entity = CreatePivot()
@@ -380,14 +395,14 @@
 	
 	; =========================================================================================================
 	
-	Function Object_Sprinkler_Update(o.tObject, p.tPlayer)
+Function Object_Sprinkler_Update(o.tObject, p.tPlayer)
 
 		Select o\Mode
 			Case 2:
-				If o\InView and (Not(ChannelPlaying(o\Visual\Channel_Visual))) Then o\Visual\Channel_Visual=EmitSmartSound(Sound_Waterfall,o\Entity)
+				If o\InView And (Not(ChannelPlaying(o\Visual\Channel_Visual))) Then o\Visual\Channel_Visual=EmitSmartSound(Sound_Waterfall,o\Entity)
 		End Select
 
-		If o\State>0 then
+		If o\State>0 Then
 			o\State=o\State-timervalue#
 		Else
 			Select o\Mode
@@ -397,7 +412,7 @@
 			End Select
 			Select o\Mode
 				Case 1,5:
-					If o\Hit and (Not(p\HurtTimer>0)) And (Not(Game\Shield=OBJTYPE_FSHIELD Or p\Character=CHAR_BLA)) Then Player_Hit(p)
+					If o\Hit And (Not(p\HurtTimer>0)) And (Not(Game\Shield=OBJTYPE_FSHIELD Or p\Character=CHAR_BLA)) Then Player_Hit(p)
 					If o\Mode=1 Then i=0 Else i=1
 					If EntityDistance(o\Entity,p\Objects\Entity)>30 Then
 						ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_FIRESPRINKLER, o\Entity, 0, 0, 0, 0, i, 0.2)
@@ -411,14 +426,14 @@
 						ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_WATERSPRINKLER, o\Entity, 0, 0, 0, 0, 0, 0.8)
 					EndIf
 				Case 3:
-					If Menu\ChaoGarden=1 and (Not(Menu\Stage=999)) and Game\Interface\RaceEnded Then
-						For i=1 to 3
+					If Menu\ChaoGarden=1 And (Not(Menu\Stage=999)) And Game\Interface\RaceEnded Then
+						For i=1 To 3
 						Select(Rand(1,5))
-						Case 1: Object_Piece_Create.tObject(Mesh_Balloonpiece1, o\Position\x#+Rand(-5,5)/50.0, o\Position\y#+Rand(0,5)/50.0, o\Position\z#+Rand(-5,5)/50.0, o\Rotation\x#, o\Rotation\y#, o\Rotation\z#, 0.26, 0, false, 0, true)
-						Case 2: Object_Piece_Create.tObject(Mesh_Balloonpiece2, o\Position\x#+Rand(-5,5)/50.0, o\Position\y#+Rand(0,5)/50.0, o\Position\z#+Rand(-5,5)/50.0, o\Rotation\x#, o\Rotation\y#, o\Rotation\z#, 0.26, 0, false, 0, true)
-						Case 3: Object_Piece_Create.tObject(Mesh_Balloonpiece3, o\Position\x#+Rand(-5,5)/50.0, o\Position\y#+Rand(0,5)/50.0, o\Position\z#+Rand(-5,5)/50.0, o\Rotation\x#, o\Rotation\y#, o\Rotation\z#, 0.26, 0, false, 0, true)
-						Case 4: Object_Piece_Create.tObject(Mesh_Balloonpiece4, o\Position\x#+Rand(-5,5)/50.0, o\Position\y#+Rand(0,5)/50.0, o\Position\z#+Rand(-5,5)/50.0, o\Rotation\x#, o\Rotation\y#, o\Rotation\z#, 0.26, 0, false, 0, true)
-						Case 5: Object_Piece_Create.tObject(Mesh_Balloonpiece5, o\Position\x#+Rand(-5,5)/50.0, o\Position\y#+Rand(0,5)/50.0, o\Position\z#+Rand(-5,5)/50.0, o\Rotation\x#, o\Rotation\y#, o\Rotation\z#, 0.26, 0, false, 0, true)
+						Case 1: Object_Piece_Create.tObject(Mesh_Balloonpiece1, o\Position\x#+Rand(-5,5)/50.0, o\Position\y#+Rand(0,5)/50.0, o\Position\z#+Rand(-5,5)/50.0, o\Rotation\x#, o\Rotation\y#, o\Rotation\z#, 0.26, 0, False, 0, True)
+						Case 2: Object_Piece_Create.tObject(Mesh_Balloonpiece2, o\Position\x#+Rand(-5,5)/50.0, o\Position\y#+Rand(0,5)/50.0, o\Position\z#+Rand(-5,5)/50.0, o\Rotation\x#, o\Rotation\y#, o\Rotation\z#, 0.26, 0, False, 0, True)
+						Case 3: Object_Piece_Create.tObject(Mesh_Balloonpiece3, o\Position\x#+Rand(-5,5)/50.0, o\Position\y#+Rand(0,5)/50.0, o\Position\z#+Rand(-5,5)/50.0, o\Rotation\x#, o\Rotation\y#, o\Rotation\z#, 0.26, 0, False, 0, True)
+						Case 4: Object_Piece_Create.tObject(Mesh_Balloonpiece4, o\Position\x#+Rand(-5,5)/50.0, o\Position\y#+Rand(0,5)/50.0, o\Position\z#+Rand(-5,5)/50.0, o\Rotation\x#, o\Rotation\y#, o\Rotation\z#, 0.26, 0, False, 0, True)
+						Case 5: Object_Piece_Create.tObject(Mesh_Balloonpiece5, o\Position\x#+Rand(-5,5)/50.0, o\Position\y#+Rand(0,5)/50.0, o\Position\z#+Rand(-5,5)/50.0, o\Rotation\x#, o\Rotation\y#, o\Rotation\z#, 0.26, 0, False, 0, True)
 						End Select
 						Next
 					EndIf
@@ -433,7 +448,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Visual_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, size#=1, special#=0)
+Function Object_Visual_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, size#=1, special#=0)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\Visual = New tObject_Visual : o\HasValuesetVisual=True
 
@@ -447,10 +462,29 @@
 			Case OBJTYPE_CHAIR,OBJTYPE_PARASOL,OBJTYPE_HELICOPTER,OBJTYPE_RAINBOW: Object_Acquire_Rotation(o,pitch#,yaw#,roll#)
 			Case OBJTYPE_ORCA: Object_Acquire_Rotation(o,0,yaw#,0)
 			Case OBJTYPE_AIRBALLOON: Object_Acquire_Rotation(o,0,Rand(0,360),0)
-			Default: Object_Acquire_Rotation(o,0,0,0)
+			Case OBJTYPE_STAGEVISUAL1, OBJTYPE_STAGEVISUAL2, OBJTYPE_STAGEVISUAL3, OBJTYPE_STAGEVISUAL4, OBJTYPE_STAGEVISUAL5:
+				Object_Acquire_Rotation(o,pitch#,yaw#,roll#)	
+			Default
+				Object_Acquire_Rotation(o,0,0,0)
 		End Select
 
 		Select o\ObjType
+			Case OBJTYPE_STAGEVISUAL1:
+				o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_StageVisual1)), Game\Stage\Root)
+				Animate(o\Entity,1,0.25,1,10)
+			Case OBJTYPE_STAGEVISUAL2:
+				o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_StageVisual2)), Game\Stage\Root)
+				Animate(o\Entity,1,0.25,1,10)
+			Case OBJTYPE_STAGEVISUAL3:
+				o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_StageVisual3)), Game\Stage\Root)
+				Animate(o\Entity,1,0.25,1,10)
+			Case OBJTYPE_STAGEVISUAL4:
+				o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_StageVisual4)), Game\Stage\Root)
+				Animate(o\Entity,1,0.25,1,10)
+			Case OBJTYPE_STAGEVISUAL5:
+				o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_StageVisual5)), Game\Stage\Root)
+				Animate(o\Entity,1,0.25,1,10)
+				
 			Case OBJTYPE_BUTTERFLY:
 				o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Butterfly1+Rand(1,3)-1)), Game\Stage\Root)
 				Animate o\Entity,1,0.25,1,10
@@ -497,22 +531,32 @@
 			Case OBJTYPE_RAINBOW:
 				o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Rainbow)), Game\Stage\Root)
 		End Select
+		
+		Select o\ObjType
+			Case OBJTYPE_STAGEVISUAL1,OBJTYPE_STAGEVISUAL2,OBJTYPE_STAGEVISUAL3,OBJTYPE_STAGEVISUAL4,OBJTYPE_STAGEVISUAL5:
+				If special#=1 Then 
+					EntityType(o\Entity,COLLISION_NONE)
+				Else
+					EntityType(o\Entity,COLLISION_OBJECT)
+				EndIf 
+				ScaleEntity o\Entity, size#, size#, size#
+		End Select
 
 		Return o
 	End Function
 	
 	; =========================================================================================================
 	
-	Function Object_Visual_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_Visual_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		Select o\ObjType
 			Case OBJTYPE_SEAGULL:
-				If o\InView and (Not(ChannelPlaying(o\Visual\Channel_Visual))) Then o\Visual\Channel_Visual=EmitSmartSound(Sound_Seagull,o\Entity)
+				If o\InView And (Not(ChannelPlaying(o\Visual\Channel_Visual))) Then o\Visual\Channel_Visual=EmitSmartSound(Sound_Seagull,o\Entity)
 			Case OBJTYPE_CHAIR,OBJTYPE_PARASOL:
 				Object_EnforceGravity(o,d)
 				Object_EnforcePsychokinesis(o,p,d)
 			Case OBJTYPE_HELICOPTER:
-				If o\InView and (Not(ChannelPlaying(o\Visual\Channel_Visual))) Then o\Visual\Channel_Visual=EmitSmartSound(Sound_Helicopter,o\Entity)
+				If o\InView And (Not(ChannelPlaying(o\Visual\Channel_Visual))) Then o\Visual\Channel_Visual=EmitSmartSound(Sound_Helicopter,o\Entity)
 		End Select
 
 		Select o\ObjType
@@ -566,7 +610,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Jumper_Create.tObject(x#, y#, z#, yaw#, power#)
+Function Object_Jumper_Create.tObject(x#, y#, z#, yaw#, power#)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 
 		Select o\ObjType
@@ -594,11 +638,11 @@
 	
 	; =========================================================================================================
 	
-	Function Object_Jumper_Update(o.tObject, p.tPlayer)
+Function Object_Jumper_Update(o.tObject, p.tPlayer)
 
 		If o\State>0 Then
 			o\State=o\State-timervalue#
-			If p\Motion\Ground=False and Input\Pressed\ActionRoll Then o\State=0
+			If p\Motion\Ground=False And Input\Pressed\ActionRoll Then o\State=0
 		Else
 			Select o\ObjType
 				Case OBJTYPE_POLE: Animate o\Entity,1,0,1,10
@@ -606,7 +650,7 @@
 		EndIf
 
 		; Player collided with object
-		If o\Hit and (Not(o\State>0)) Then
+		If o\Hit And (Not(o\State>0)) Then
 			o\State=0.25*secs#
 			Select o\ObjType
 				Case OBJTYPE_CLOUD: EmitSmartSound(Sound_Cloud,o\Entity)
@@ -625,7 +669,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Explosion_Create.tObject(x#, y#, z#)
+Function Object_Explosion_Create.tObject(x#, y#, z#)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 
 		Object_CreateHitBox(HITBOXTYPE_NORMAL,o,0,0,0)
@@ -641,7 +685,7 @@
 	
 	; =========================================================================================================
 	
-	Function Object_Explosion_Update(o.tObject, p.tPlayer)
+Function Object_Explosion_Update(o.tObject, p.tPlayer)
 
 		Select o\State
 			Case 0:
@@ -667,7 +711,7 @@
 
 				If o\ObjType=OBJTYPE_EXPLOSION Then
 					o\PreviousAnim=Int(AnimTime(o\Entity))
-					If o\PreviousAnim>=3 and o\PreviousAnim<=5 Then
+					If o\PreviousAnim>=3 And o\PreviousAnim<=5 Then
 						If Not(ChannelPlaying(o\ExtraTexture)) Then o\ExtraTexture=EmitSmartSound(Sound_Bombed,o\Entity)
 					EndIf
 				EndIf
@@ -689,7 +733,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Wisp_Create.tObject(x#, y#, z#, yaw#, move#=0)
+Function Object_Wisp_Create.tObject(x#, y#, z#, yaw#, move#=0)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_WISP : o\ID=TempAttribute\ObjectID
 		o\Visual = New tObject_Visual : o\HasValuesetVisual=True
 
@@ -712,7 +756,7 @@
 	
 	; =========================================================================================================
 	
-	Function Object_Wisp_Update(o.tObject, d.tDeltaTime)
+Function Object_Wisp_Update(o.tObject, d.tDeltaTime)
 
 		If Game\Victory<>0 Then
 			o\AlwaysPresent=True
@@ -737,7 +781,7 @@
 						o\Visual\Speed#=Rand(1,2)/8.0
 						o\Visual\SpeedPitch#=Rand(-10,10)/4.0 : o\Visual\SpeedYaw#=Rand(-10,10)/4.0
 					EndIf
-					If EntityPitch(o\EntityX)<=0 and EntityPitch(o\EntityX)>-50 Then TurnEntity o\EntityX, o\Visual\SpeedPitch#*d\Delta, 0, 0
+					If EntityPitch(o\EntityX)<=0 And EntityPitch(o\EntityX)>-50 Then TurnEntity o\EntityX, o\Visual\SpeedPitch#*d\Delta, 0, 0
 					TurnEntity o\EntityX, 0, o\Visual\SpeedYaw#*d\Delta, 0
 					MoveEntity o\EntityX, 0, 0, o\Visual\Speed#*d\Delta
 			End Select
@@ -750,3 +794,5 @@
 		RotateEntity o\Entity, EntityPitch(o\EntityX), EntityYaw(o\EntityX), 0, 1
 
 	End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

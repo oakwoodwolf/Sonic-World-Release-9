@@ -3,14 +3,20 @@ Global timervalue#=0
 Global secs#=1000
 
 Function Player_HandleTimers(p.tPlayer)
-
-If p\UsedFrameTimer>0 Then p\UsedFrameTimer=p\UsedFrameTimer-timervalue#
+	If p\JumpPanelTimer>0 Then p\JumpPanelTimer=p\JumpPanelTimer-timervalue#
+	If p\PanelStayTimer>0 Then p\PanelStayTimer=p\PanelStayTimer-timervalue#
+	If p\UsedFrameTimer>0 Then p\UsedFrameTimer=p\UsedFrameTimer-timervalue#
+	If p\PunchWindowTimer>0 Then p\PunchWindowTimer=p\PunchWindowTimer-timervalue#
+	If p\BoostingTimer>0 Then p\BoostingTimer=p\BoostingTimer-timervalue#
+	If p\CheeseShieldTimer>0 Then p\CheeseShieldTimer=p\CheeseShieldTimer-timervalue#
+	If p\LightAttackTimer>0 Then p\LightAttackTimer=p\LightAttackTimer-timervalue#
+If p\DebugSpamTimer>0 Then p\DebugSpamTimer=p\DebugSpamTimer-timervalue#
 If p\TranslatorsTouchedTimer>0 Then p\TranslatorsTouchedTimer=p\TranslatorsTouchedTimer-timervalue#
 If p\Action=ACTION_HOP Or p\Action=ACTION_JUMP Then p\JumpHopTimer=p\JumpHopTimer+timervalue# : p\JumpTimer=p\JumpTimer+timervalue#
-If p\Action=ACTION_CHARGE Or p\Action=ACTION_ROLL Or (p\Action=ACTION_DRIFT and p\ChargeTimer<0.1*secs#) Then p\ChargeTimer=p\ChargeTimer+timervalue# : p\JustChargedTimer=p\JustChargedTimer+timervalue#
+If p\Action=ACTION_CHARGE Or p\Action=ACTION_ROLL Or (p\Action=ACTION_DRIFT And p\ChargeTimer<0.1*secs#) Then p\ChargeTimer=p\ChargeTimer+timervalue# : p\JustChargedTimer=p\JustChargedTimer+timervalue#
 If p\Action=ACTION_HOMING Then p\HomingTimer=p\HomingTimer-timervalue#
 If p\JumpDashTimer>0 Then p\JumpDashTimer=p\JumpDashTimer-timervalue#
-If p\Action=ACTION_FLY and p\FlyTimer>0 Then p\FlyTimer=p\FlyTimer-timervalue#
+If p\Action=ACTION_FLY And p\FlyTimer>0 Then p\FlyTimer=p\FlyTimer-timervalue#
 If p\GlideRestartTimer>0 Then p\GlideRestartTimer=p\GlideRestartTimer-timervalue#
 If p\JumpActionRestrictTimer>0 Then p\JumpActionRestrictTimer=p\JumpActionRestrictTimer-timervalue#
 If p\Action=ACTION_LEVITATE Then p\LevitationTimer=p\LevitationTimer-timervalue#
@@ -103,7 +109,7 @@ EndIf
 
 If p\No#<0 Then
 	If p\Rival\MoveTimer>0 Then p\Rival\MoveTimer=p\Rival\MoveTimer-timervalue#
-	If (Not(p\Rival\MoveTimer>0)) and p\Rival\DontMoveTimer>0 Then p\Rival\DontMoveTimer=p\Rival\DontMoveTimer-timervalue#
+	If (Not(p\Rival\MoveTimer>0)) And p\Rival\DontMoveTimer>0 Then p\Rival\DontMoveTimer=p\Rival\DontMoveTimer-timervalue#
 	If p\Rival\MakeJumpTimer>0 Then p\Rival\MakeJumpTimer=p\Rival\MakeJumpTimer-timervalue#
 	If p\Rival\MakeJumpActionTimer>0 Then p\Rival\MakeJumpActionTimer=p\Rival\MakeJumpActionTimer-timervalue#
 	If p\Rival\MakeAttackTimer>0 Then p\Rival\MakeAttackTimer=p\Rival\MakeAttackTimer-timervalue#
@@ -230,9 +236,9 @@ Game\FroggyTimer=0
 Game\Interface\ShowCaution1Timer=0
 Game\Interface\ShowCaution2Timer=0
 Game\Interface\ShowCaution3Timer=0
-For i=1 to 3
-	Game\Gameplay\RedRingTimer[i]=0
-	Game\Gameplay\RedRingBeepTimer[i]=0
+For i=1 To 3
+	Game\Gameplay\ShardTimer[i]=0
+	Game\Gameplay\ShardBeepTimer[i]=0
 Next
 Game\ControlLock=0
 Game\CamLock=0
@@ -244,3 +250,5 @@ cam\Lock\Timer=0
 cam\MouseCameraTimer=0
 
 End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

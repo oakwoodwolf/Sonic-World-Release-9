@@ -1,7 +1,7 @@
 Menu\Settings\PrimaryController#=1
 
-Function DrawSmartButton(buttonno, text$, x#, y#, secondary=false, small=false, inactive=false)
-	If secondary=false Then
+Function DrawSmartButton(buttonno, text$, x#, y#, secondary=False, small=False, inactive=False)
+	If secondary=False Then
 		option=Menu\Option
 		If option=buttonno Then
 			If Menu\ButtonState1=0 Then Menu\ButtonSize1#=Menu\ButtonSize1#-BUTTON_SCALESPEED#*Game\DeltaTime\Delta# : If Menu\ButtonSize1#<0 Then Menu\ButtonState1=1 : Menu\ButtonSize1#=0
@@ -18,24 +18,24 @@ Function DrawSmartButton(buttonno, text$, x#, y#, secondary=false, small=false, 
 	EndIf
 
 	Select small
-		Case false: buttontype=Interface_Buttons_1 : buttontypesize=1 : buttontypetext1=Interface_TextButtons2_1 : buttontypetext2=Interface_TextButtons_1
-		Case true: buttontype=Interface_Buttons_2 : buttontypesize=1.5 : buttontypetext1=Interface_TextButtons2_2 : buttontypetext2=Interface_TextButtons_2
+		Case False: buttontype=Interface_Buttons_1 : buttontypesize=1 : buttontypetext1=Interface_TextButtons2_1 : buttontypetext2=Interface_TextButtons_1
+		Case True: buttontype=Interface_Buttons_2 : buttontypesize=1.5 : buttontypetext1=Interface_TextButtons2_2 : buttontypetext2=Interface_TextButtons_2
 	End Select
 
 	If inactive Then
 		SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
 		DrawImageEx(INTERFACE(buttontype), x#, y#, 2)
-		DrawRealText(text$, x#, y#+2.5*buttontypesize, (buttontypetext2), 1)
+		DrawRealText(Text$, x#, y#+2.5*buttontypesize, (buttontypetext2), 1)
 	Else
 		If option=buttonno Then
 			SetScale(GAME_WINDOW_SCALE#+Menu\ButtonSize#, GAME_WINDOW_SCALE#+Menu\ButtonSize#)
 			DrawImageEx(INTERFACE(buttontype), x#, y#, 1)
 			SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
-			DrawRealText(text$, x#, y#+2.5*buttontypesize, (buttontypetext1), 1)
+			DrawRealText(Text$, x#, y#+2.5*buttontypesize, (buttontypetext1), 1)
 		Else
 			SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
 			DrawImageEx(INTERFACE(buttontype), x#, y#, 0)
-			DrawRealText(text$, x#, y#+2.5*buttontypesize, (buttontypetext2), 1)
+			DrawRealText(Text$, x#, y#+2.5*buttontypesize, (buttontypetext2), 1)
 		EndIf
 	EndIf
 End Function
@@ -55,7 +55,7 @@ Function Menu_Loading_Update()
 	Menu\ShowCards=False
 	Menu\ControlsToShow=Menu\Menu
 
-	If (Not(Menu\NewMenu=MENU_GAMEOVER# Or Menu\NewMenu=MENU_EMBLEM#)) and (Not(Menu\ExitedAStage=1)) Then
+	If (Not(Menu\NewMenu=MENU_GAMEOVER# Or Menu\NewMenu=MENU_EMBLEM#)) And (Not(Menu\ExitedAStage=1)) Then
 		If Menu\TitleCardTimer>0 Then Menu\TitleCardTimer=Menu\TitleCardTimer-timervalue#
 		If Not(Menu\TitleCardTimer>0) Then
 			If Menu\MustLoadStage=0 Then
@@ -69,7 +69,7 @@ Function Menu_Loading_Update()
 				Menu\MustLoadStage=0
 			EndIf
 		Else
-			DrawTitleCardStuff(true)
+			DrawTitleCardStuff(True)
 		EndIf
 	EndIf
 
@@ -157,13 +157,7 @@ Function Menu_Start_Update(d.tDeltaTime)
 		EndIf
 	EndIf
 
-	If Menu\Settings\Theme#=7 Then
-		If Menu\TitleState<4 Then
-			DrawImageEx(INTERFACE(Interface_Logoxmas), GAME_WINDOW_W/2.0, GAME_WINDOW_H/2.0-30*GAME_WINDOW_SCALE#-Menu\TitleStateValues#[4]*GAME_WINDOW_SCALE#)
-		Else
-			DrawImageEx(INTERFACE(Interface_Logoxmas), GAME_WINDOW_W/2.0, GAME_WINDOW_H/2.0-30*GAME_WINDOW_SCALE#)
-		EndIf
-	EndIf
+	
 
 	If Menu\TitleState=2 Then
 		SetScale(GAME_WINDOW_SCALE#*Menu\TitleStateValues#[2], GAME_WINDOW_SCALE#*Menu\TitleStateValues#[2])
@@ -176,13 +170,14 @@ Function Menu_Start_Update(d.tDeltaTime)
 	If Menu\TitleState>=3 Then
 		If Menu\PressStartTimer>0 Then Menu\PressStartTimer=Menu\PressStartTimer-timervalue#
 		If Not(Menu\PressStartTimer>0) Then
-			Menu\PressStartTimer=2.0*secs#
-		ElseIf Menu\PressStartTimer>1.0*secs# Then
+			Menu\PressStartTimer=4.0*secs#
+		ElseIf Menu\PressStartTimer>2.0*secs# Then
 			SetAlpha((Menu\PressStartTimer/secs#-1))
 		ElseIf Menu\PressStartTimer>0.0*secs# Then
-			SetAlpha(abs(1-Menu\PressStartTimer/secs#))
+			SetAlpha(Abs(1-Menu\PressStartTimer/secs#))
 		EndIf
-		DrawRealText("PRESS START", GAME_WINDOW_W/2, GAME_WINDOW_H/2+120*GAME_WINDOW_SCALE#, (Interface_TextControls_1), 1)
+		DrawRealText("Press Start to Begin", GAME_WINDOW_W/2, GAME_WINDOW_H/2+120*GAME_WINDOW_SCALE#, (Interface_TextControls_1), 1)
+		DrawRealText("SAGE 2020 Demo", GAME_WINDOW_W/2, GAME_WINDOW_H/2+100*GAME_WINDOW_SCALE#, (Interface_TextControls_1), 1)
 		SetAlpha(1.00)
 
 		If Input\Pressed\Start Or Input\Pressed\ActionJump Then
@@ -220,7 +215,7 @@ Function Menu_Welcome_Update()
 		Case 1:
 
 			DrawRealText("Hello there!", GAME_WINDOW_W/2, GAME_WINDOW_H/2-100*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
-			DrawRealText("It looks like this is your first time playing Sonic World.", GAME_WINDOW_W/2, GAME_WINDOW_H/2-80*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
+			DrawRealText("It looks like this is your first time playing Sonic World DX.", GAME_WINDOW_W/2, GAME_WINDOW_H/2-80*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
 			DrawRealText("Please choose your computer's graphical capabilities:", GAME_WINDOW_W/2, GAME_WINDOW_H/2-60*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
 
 			DrawSmartButton(1, "Weak", GAME_WINDOW_W/2, GAME_WINDOW_H/2-20*GAME_WINDOW_SCALE#)
@@ -271,8 +266,8 @@ Function Menu_Welcome_Update()
 
 			DrawRealText("Graphical settings have been set up.", GAME_WINDOW_W/2, GAME_WINDOW_H/2-85*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
 			DrawRealText("For further customization, such as controls setup with gamepad,", GAME_WINDOW_W/2, GAME_WINDOW_H/2-45*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
-			DrawRealText("or menu themes, be sure to see the options.", GAME_WINDOW_W/2, GAME_WINDOW_H/2-5*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
-			DrawRealText("Be sure to check out all unique skills at individual character selection.", GAME_WINDOW_W/2, GAME_WINDOW_H/2+35*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
+			DrawRealText("or game themes, be sure to see the options.", GAME_WINDOW_W/2, GAME_WINDOW_H/2-5*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
+			DrawRealText("Please remember this is a work in progress demo.", GAME_WINDOW_W/2, GAME_WINDOW_H/2+35*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
 			SetColor(0,255,255):DrawRealText("Enjoy!", GAME_WINDOW_W/2, GAME_WINDOW_H/2+75*GAME_WINDOW_SCALE#, (Interface_Text_3), 1):SetColor(255,255,255)
 
 			If Input\Pressed\ActionJump Or Input\Pressed\Start Then
@@ -316,7 +311,7 @@ Function Menu_Main_Update()
 	Menu\ControlsToShow=Menu\Menu
 
 	DrawSmartButton(1, "Play", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-100*GAME_WINDOW_SCALE#)
-	DrawSmartButton(2, "Gallery", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-50*GAME_WINDOW_SCALE#)
+	DrawSmartButton(2, "Gallery", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-50*GAME_WINDOW_SCALE#,False,False,True)
 	DrawSmartButton(3, "Options", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#)
 	DrawSmartButton(4, "Credits", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+50*GAME_WINDOW_SCALE#)
 	DrawSmartButton(5, "Exit", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+100*GAME_WINDOW_SCALE#)
@@ -324,12 +319,17 @@ Function Menu_Main_Update()
 	If Input\Pressed\Down Then
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option+1
+		If Menu\Option=2 Then Menu\Option=3
 		If Menu\Option>5 Then Menu\Option=1
 	EndIf
-
+	If KeyHit(KEY_F) Then
+		GetStageAmount()
+		LoadStageList()
+	EndIf 
 	If Input\Pressed\Up Then
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option-1
+		If Menu\Option=2 Then Menu\Option=1
 		If Menu\Option<1 Then Menu\Option=5
 	EndIf
 
@@ -342,19 +342,19 @@ Function Menu_Main_Update()
 				CountEmblems()
 				Menu\NewOption=1 : Menu\NewMenu=MENU_PLAY#
 			Case 2:
-				For i = 1 to 3 : Menu\Character[i]=InterfaceChar(Menu\Character[i]) : Next
+				For i = 1 To 3 : Menu\Character[i]=InterfaceChar(Menu\Character[i]) : Next
 				Menu\NewOption=Menu\Character[1] : Menu\NewMenu=MENU_BIOS# : ChannelVolume(Menu\Channel_Menu,0) : Menu\CharacterMeshAnimation=1
 				Menu\NewOption2=1
 			Case 3:
 				Menu\NewOption=1 : Menu\NewMenu=MENU_OPTIONS# : Menu\NewMenu2=0 : Menu\OptionOrder=0
 				Menu\Settings\NewResolution#=Menu\Settings\Resolution#
-				For i=1 to 2
+				For i=1 To 2
 				Menu\OptionsForceKeyJump[i]=CONTROLS(i,INPUT_BUTTON_ACTIONJUMP)
 				Menu\OptionsForceKeyRoll[i]=CONTROLS(i,INPUT_BUTTON_ACTIONROLL)
 				Menu\OptionsForceKeySkill2[i]=CONTROLS(i,INPUT_BUTTON_ACTIONSKILL2)
 				Menu\OptionsForceKeyAct[i]=CONTROLS(i,INPUT_BUTTON_ACTIONACT)
 				Next
-				For i=0 to 17 : CONTROLS_NEWGAMEPAD(i) = CONTROLS_GAMEPAD(i) : Next
+				For i=0 To 17 : CONTROLS_NEWGAMEPAD(i) = CONTROLS_GAMEPAD(i) : Next
 			Case 4:
 				Menu\NewOption=0 : Menu\NewMenu=MENU_CREDITS# : Menu\CreditsTimer=0
 			Case 5:
@@ -475,16 +475,16 @@ Function Menu_Emblem_Update()
 			ElseIf Menu\EmblemsGot<0 Then
 				If Not(ChannelPlaying(Menu\Channel_Emblem)) Then Menu\Channel_Emblem=PlaySmartSound(Sound_Emerald)
 				DrawRealText("You got a Chaos Emerald and a Sol Emerald!", GAME_WINDOW_W/2, GAME_WINDOW_H/2+50*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
-				If abs(Menu\EmblemsGot)<7 Then DrawRealText("Complete all Special Stages to unlock super forms.", GAME_WINDOW_W/2, GAME_WINDOW_H/2+80*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
+				If Abs(Menu\EmblemsGot)<7 Then DrawRealText("Complete all Special Stages to unlock super forms.", GAME_WINDOW_W/2, GAME_WINDOW_H/2+80*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
 			EndIf
 
 			If Input\Pressed\ActionRoll Or Input\Pressed\Back Or Input\Pressed\ActionSkill1 Or Input\Pressed\ActionJump Or Input\Pressed\Start Then
 				If Menu\EmblemsGot>0 Then
 					CountEmblems()
 					Menu\UnlockedWho$=""
-					For c=1 to TEAM_TEAMCOUNT
-						If EMBLEMS>=TOUNLOCKTEAM[c] and TOUNLOCKTEAM[c]>0 and UNLOCKEDTEAM[c]=0 Then
-							If len(Menu\UnlockedWho$)>0 Then Menu\UnlockedWho$=Menu\UnlockedWho$+","
+					For c=1 To TEAM_TEAMCOUNT
+						If EMBLEMS>=TOUNLOCKTEAM[c] And TOUNLOCKTEAM[c]>0 And UNLOCKEDTEAM[c]=0 Then
+							If Len(Menu\UnlockedWho$)>0 Then Menu\UnlockedWho$=Menu\UnlockedWho$+","
 							UNLOCKEDTEAM[c]=1 : Menu\OptionOrder=2
 							Select c
 								Case TEAM_SONIC:
@@ -531,21 +531,21 @@ Function Menu_Emblem_Update()
 							Menu\UnlockedWho$=Menu\UnlockedWho$+" "+SingleTeamNames$(c)
 						EndIf
 					Next
-					For c=1 to CHAR_NORMALCOUNT
-						If EMBLEMS>=TOUNLOCKCHAR[c] and TOUNLOCKCHAR[c]>0 and UNLOCKEDCHAR[c]=0 Then
-							If len(Menu\UnlockedWho$)>0 Then Menu\UnlockedWho$=Menu\UnlockedWho$+","
+					For c=1 To CHAR_NORMALCOUNT
+						If EMBLEMS>=TOUNLOCKCHAR[c] And TOUNLOCKCHAR[c]>0 And UNLOCKEDCHAR[c]=0 Then
+							If Len(Menu\UnlockedWho$)>0 Then Menu\UnlockedWho$=Menu\UnlockedWho$+","
 							UNLOCKEDCHAR[c]=1 : Menu\OptionOrder=2
 							Menu\UnlockedWho$=Menu\UnlockedWho$+" "+SingleCharNames$(c)
 						EndIf
 					Next
-					If EMBLEMS>=TOUNLOCKSPECIALSTAGES[0] and TOUNLOCKSPECIALSTAGES[0]>0 and UNLOCKEDSPECIALSTAGES[0]=0 Then
-						If len(Menu\UnlockedWho$)>0 Then Menu\UnlockedWho$=Menu\UnlockedWho$+","
+					If EMBLEMS>=TOUNLOCKSPECIALSTAGES[0] And TOUNLOCKSPECIALSTAGES[0]>0 And UNLOCKEDSPECIALSTAGES[0]=0 Then
+						If Len(Menu\UnlockedWho$)>0 Then Menu\UnlockedWho$=Menu\UnlockedWho$+","
 						UNLOCKEDSPECIALSTAGES[0]=1 : Menu\OptionOrder=2
 						Menu\UnlockedWho$=Menu\UnlockedWho$+" Special Stages"
 					EndIf
 				ElseIf Menu\EmblemsGot<0 Then
-					UNLOCKEDEMERALDS[abs(Menu\EmblemsGot)]=1
-					If abs(Menu\EmblemsGot)=7 Then Menu\OptionOrder=2 : Menu\UnlockedWho$=" super forms"
+					UNLOCKEDEMERALDS[Abs(Menu\EmblemsGot)]=1
+					If Abs(Menu\EmblemsGot)=7 Then Menu\OptionOrder=2 : Menu\UnlockedWho$=" super forms"
 				EndIf
 
 				If Menu\OptionOrder=1 Then
@@ -629,36 +629,60 @@ Function Menu_Pause_Update()
 	SetAlpha(1.0)
 	SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
 	SetColor(255, 255, 255)
-
+	
+	Interface_RedRingCounter(True)
+	
 	DrawSmartButton(1, "Continue", GAME_WINDOW_W/2, GAME_WINDOW_H/2-50*GAME_WINDOW_SCALE#)
 	Select Menu\ChaoGarden
 		Case 0:
-			DrawSmartButton(2, "Restart", GAME_WINDOW_W/2, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#)
+			Select Menu\RestartMode
+				Case 0: DrawSmartButton(2, "Reload Stage", GAME_WINDOW_W/2, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#)
+				Case 1: DrawSmartButton(2, "Reload Stage & Keep Position", GAME_WINDOW_W/2, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#)
+			End Select 
 		Case 1:
-			DrawSmartButton(2, "Restart", GAME_WINDOW_W/2, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#,false,false,true)
+			DrawSmartButton(2, "Restart", GAME_WINDOW_W/2, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#,False,False,True)
 	End Select
 	DrawSmartButton(3, "Quit", GAME_WINDOW_W/2, GAME_WINDOW_H/2+50*GAME_WINDOW_SCALE#)
 
 	DrawRealText("PAUSE", GAME_WINDOW_W/2, GAME_WINDOW_H/2-92.5*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 1, 0, 63, 63, 63)
 
-	If Input\Pressed\Down and Menu\Transition=0 Then
+	If Input\Pressed\Down And Menu\Transition=0 Then
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option+1
-		If Menu\ChaoGarden=1 and Menu\Option=2 Then Menu\Option=Menu\Option+1
+		If Menu\ChaoGarden=1 And Menu\Option=2 Then Menu\Option=Menu\Option+1
 		If Menu\Option>3 Then Menu\Option=1
 	EndIf
 
-	If Input\Pressed\Up and Menu\Transition=0 Then
+	If Input\Pressed\Up And Menu\Transition=0 Then
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option-1
-		If Menu\ChaoGarden=1 and Menu\Option=2 Then Menu\Option=Menu\Option-1
+		If Menu\ChaoGarden=1 And Menu\Option=2 Then Menu\Option=Menu\Option-1
 		If Menu\Option<1 Then Menu\Option=3
 	EndIf
+	
+	If Input\Pressed\Left And Menu\Transition=0 And (Menu\Option=2 And Menu\ChaoGarden=0) Then 
+		PlaySmartSound(Sound_MenuMove)
+		Menu\RestartMode=Menu\RestartMode-1
+		If Menu\RestartMode<0 Then Menu\RestartMode=1
+	EndIf 
+	
+	If Input\Pressed\Right And Menu\Transition=0 And (Menu\Option=2 And Menu\ChaoGarden=0) Then 
+		PlaySmartSound(Sound_MenuMove)
+		Menu\RestartMode=Menu\RestartMode+1
+		If Menu\RestartMode>1 Then Menu\RestartMode=0
+	EndIf 
+		
+		
 
-	If (Input\Pressed\ActionJump Or Input\Pressed\Start) and Menu\Transition=0 Then
+	
+	
+
+
+	If (Input\Pressed\ActionJump Or Input\Pressed\Start) And Menu\Transition=0 Then
 		PlaySmartSound(Sound_MenuAccept)
-		If Menu\Option=3 Or (Menu\Option=2 and Menu\ChaoGarden=0) Then Game_Stage_Quit(Menu\Option)
+		If Menu\Option=3 Or (Menu\Option=2 And Menu\ChaoGarden=0) Then Game_Stage_Quit(Menu\Option)
 		Menu\Transition=1
+		If Menu\Option=3 Then Menu\RestartMode=0
 	EndIf
 
 	EndDraw()
@@ -704,3 +728,5 @@ End Function
 ;===============================================================================================================================================================
 ;===============================================================================================================================================================
 ;===============================================================================================================================================================
+;~IDEal Editor Parameters:
+;~C#Blitz3D

@@ -143,7 +143,7 @@ SingleTeamNames$(TEAM_TEAMCOUNT)= "custom teams"
 
 ; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Function Menu_UpdateBios(found=true)
+Function Menu_UpdateBios(found=True)
 
 If Len(Menu\Bio$)=0 Then
 	If found Then
@@ -180,12 +180,12 @@ Select optionorder
 	Case 11: Menu\OptionButton$="Bump Maps"
 	Case 12: Menu\OptionButton$="3D Sounds"
 	Case 13: Menu\OptionButton$="Plants"
-	Case 14: Menu\OptionButton$="View Range"
+	Case 14: Menu\OptionButton$="Render Distance"
 	Case 15: Menu\OptionButton$="Auto Camera"
 	Case 16: Menu\OptionButton$="V-Sync"
 	Case 17: Menu\OptionButton$="Mods"
 	Case 18: Menu\OptionButton$="Control Tips"
-	Case 19: Menu\OptionButton$="Menu Theme"
+	Case 19: Menu\OptionButton$="Game Theme"
 	Case 20: Menu\OptionButton$="Reset SaveData"
 End Select
 
@@ -210,7 +210,7 @@ If UNLOCKEDTEAM[teamorder]=1 Then
 		Case 8: Menu\TeamButton$="Team Babylon"
 		Case 9: Menu\TeamButton$="Team Relic"
 		Case 10: Menu\TeamButton$="Team Robotnik"
-		Case 11: Menu\TeamButton$="Custom"
+		Case 11: Menu\TeamButton$="Custom Team"
 	End Select
 Else
 	Select teamorder
@@ -271,11 +271,11 @@ Function Menu_UpdateStageNames(option)
 
 	Select Menu\ChaoGarden
 		Case 0:
-			If option<=StageAmount and option>0 Then
+			If option<=StageAmount And option>0 Then
 				Menu\StageName$=StageName$(option)
 			Else
 				If option<0 Then
-					Menu\StageName$="Special Stage "+Int(abs(Menu\SelectedStage))
+					Menu\StageName$="Special Stage "+Int(Abs(Menu\SelectedStage))
 				Else
 					Menu\StageName$="???"
 				EndIf
@@ -306,22 +306,22 @@ Select Menu\Mission
 		EndIf
 	Case MISSION_ENEMY#:
 		Menu\MissionName$ = "Destructor"
-		Menu\MissionInfo$ = "Destroy as many as all enemies"
+		Menu\MissionInfo$ = "Destroy the required amount of enemies"
 	Case MISSION_RING#:
 		Menu\MissionName$ = "Ring Collector"
-		Menu\MissionInfo$ = "Collect 200 rings"
+		Menu\MissionInfo$ = "Collect the required amount of rings"
 	Case MISSION_HUNT#:
 		Menu\MissionName$ = "Treasure Hunter"
-		Menu\MissionInfo$ = "Collect 3 red star rings"
+		Menu\MissionInfo$ = "Collect 3 emerald shards"
 	Case MISSION_GOLD#:
-		Menu\MissionName$ = "Gold Pursue"
-		Menu\MissionInfo$ = "Destroy as many as all golden enemies"
+		Menu\MissionName$ = "Gold Rush"
+		Menu\MissionInfo$ = "Destroy all golden enemies"
 	Case MISSION_STEALTH#:
 		Menu\MissionName$ = "Stealth"
 		Menu\MissionInfo$ = "Reach the goal without being detected by enemies"
 	Case MISSION_BALLOONS#:
 		Menu\MissionName$ = "Confetti Parade"
-		Menu\MissionInfo$ = "Pop as many as all balloons"
+		Menu\MissionInfo$ = "Pop all balloons"
 	Case MISSION_FREEROAM#:
 		Select Menu\ChaoGarden
 			Case 0:
@@ -334,7 +334,7 @@ Select Menu\Mission
 						Menu\MissionInfo$ = "Take care of your chao"
 					Case 998,997:
 						Menu\MissionName$ = "Chao Stadium"
-						Menu\MissionInfo$ = "Good luck"
+						Menu\MissionInfo$ = "May the odds be in your favor"
 				End Select
 		End Select
 	Case MISSION_RIVAL#:
@@ -350,14 +350,14 @@ Select Menu\Mission
 		Menu\MissionName$ = "Flicky Rescue"
 		Menu\MissionInfo$ = "Rescue 5 flickies and bring them to the goal"
 	Case MISSION_DECLINE#:
-		Menu\MissionName$ = "Time Decline"
+		Menu\MissionName$ = "Countdown"
 		Menu\MissionInfo$ = "Reach the goal before time runs out"
 	Case MISSION_ESCAPE#:
 		Menu\MissionName$ = "Escape"
 		Menu\MissionInfo$ = "Escape from the chaser"
-	Case MISSION_CAPSULE#:
-		Menu\MissionName$ = "Wisp Rescue"
-		Menu\MissionInfo$ = "Find the capsule and rescue the wisps"
+	Case MISSION_ENCORE#:
+		Menu\MissionName$ = "Encore Mode"
+		Menu\MissionInfo$ = "A tougher challenge awaits"
 End Select
 
 If Menu\MissionTime=1 Then Menu\MissionName$ = Menu\MissionName$ + " & Time Attack"
@@ -367,37 +367,37 @@ Menu\MissionName$ = Menu\MissionName$ + ":"
 
 Menu\MissionInfo2$ = ""
 
-If len(Menu\MissionInfo$) < 30 Then
+If Len(Menu\MissionInfo$) < 30 Then
 	If Menu\MissionTime=1 Then Menu\MissionInfo$ = Menu\MissionInfo$ + ", under a certain time"
 Else
-	If len(Menu\MissionInfo2$) <= 0 Then
+	If Len(Menu\MissionInfo2$) <= 0 Then
 		If Menu\MissionTime=1 Then Menu\MissionInfo$ = Menu\MissionInfo$ + ","
 		If Menu\MissionTime=1 Then Menu\MissionInfo2$ = Menu\MissionInfo2$ + "under a certain time"
 	Else
 		If Menu\MissionTime=1 Then Menu\MissionInfo2$ = Menu\MissionInfo2$ + ", under a certain time"
 	EndIf
 EndIf
-If len(Menu\MissionInfo$) < 30 Then
+If Len(Menu\MissionInfo$) < 30 Then
 	If Menu\MissionMach=1 Then Menu\MissionInfo$ = Menu\MissionInfo$ + ", in mach speed"
 Else
-	If len(Menu\MissionInfo2$) <= 0 Then
+	If Len(Menu\MissionInfo2$) <= 0 Then
 		If Menu\MissionMach=1 Then Menu\MissionInfo$ = Menu\MissionInfo$ + ","
 		If Menu\MissionMach=1 Then Menu\MissionInfo2$ = Menu\MissionInfo2$ + "in mach speed"
 	Else
 		If Menu\MissionMach=1 Then Menu\MissionInfo2$ = Menu\MissionInfo2$ + ", in mach speed"
 	EndIf
 EndIf
-If len(Menu\MissionInfo$) < 30 Then
+If Len(Menu\MissionInfo$) < 30 Then
 	If Menu\MissionPerfect=1 Then Menu\MissionInfo$ = Menu\MissionInfo$ + ", without dying"
 Else
-	If len(Menu\MissionInfo2$) <= 0 Then
+	If Len(Menu\MissionInfo2$) <= 0 Then
 		If Menu\MissionPerfect=1 Then Menu\MissionInfo$ = Menu\MissionInfo$ + ","
 		If Menu\MissionPerfect=1 Then Menu\MissionInfo2$ = Menu\MissionInfo2$ + "without dying"
 	Else
 		If Menu\MissionPerfect=1 Then Menu\MissionInfo2$ = Menu\MissionInfo2$ + ", without dying"
 	EndIf
 EndIf
-If len(Menu\MissionInfo2$) <= 0 Then
+If Len(Menu\MissionInfo2$) <= 0 Then
 	Menu\MissionInfo$ = Menu\MissionInfo$ + "!"
 Else
 	Menu\MissionInfo2$ = Menu\MissionInfo2$ + "!"
@@ -417,7 +417,7 @@ Function Menu_PrintLocked(mode,value,x,y,showiconmode=0)
 		Case 3: amount=TOUNLOCKTEAM[value]
 	End Select
 
-	If IsCharMod(value) and mode<=2 Then mode=4
+	If IsCharMod(value) And mode<=2 Then mode=4
 
 	SetColor 100, 100, 100
 		Select mode
@@ -445,7 +445,7 @@ Function Menu_PrintLocked(mode,value,x,y,showiconmode=0)
 		End Select
 	SetColor 255,255,255
 
-	If mode<>4 and mode<>5 Then
+	If mode<>4 And mode<>5 Then
 	Select showiconmode
 		Case 0:
 			DrawImageEx(INTERFACE(Interface_Icons), x+65*GAME_WINDOW_SCALE#, y+(CONTROLINFO_START#+CONTROLINFO_SPACE#*-1)*GAME_WINDOW_SCALE#, 4)
@@ -460,11 +460,11 @@ End Function
 
 ;________________________________________________________________
 
-Function Menu_DrawCharacterNames(option, x#, y#, showstats=false, shownonplayable=false, showarrows=false, found=true)
+Function Menu_DrawCharacterNames(option, x#, y#, showstats=False, shownonplayable=False, showarrows=False, found=True)
 
 	If found Then
 		If showstats Then
-			If option=CHAR_TAI and Menu\CharacterMode[Menu\MemberToSelect]=1 Then
+			If option=CHAR_TAI And Menu\CharacterMode[Menu\MemberToSelect]=1 Then
 				speed$ = Str(GetCharSpeed#(CHAR_TMH)) : jump$ = Str(GetCharJumpStrength#(CHAR_TMH))
 			Else
 				speed$ = Str(GetCharSpeed#(option)) : jump$ = Str(GetCharJumpStrength#(option))
@@ -550,380 +550,52 @@ Function Menu_DrawCredits(x#, y#)
 	i=0
 
 	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Ozcrash (Ozan)", x#,		y#, i, 049, 175, 255) : i=i+1
- 	Menu_DrawCreditsText("Main Programming", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Character Modeling", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Character Animation", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Character Rigging", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Stage Modeling", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Object Modeling", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Object Animation", x#,	y#, i) : i=i+1
-	Menu_DrawCreditsText("Object Placement", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Plant Modeling", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Enemy Modeling", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Enemy Rigging", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Enemy Animation", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Menu and Interface Art", x#,	y#, i) : i=i+1
-
+	
+	Menu_DrawCreditsText("Sonic World DX SAGE 2020 Demo", x#,		y#, i, 049, 175, 255) : i=i+1
+	
 	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("WizGenesis (Rodrick)", x#,	y#, i, 255, 242, 028) : i=i+1
- 	Menu_DrawCreditsText("Programming", x#,			y#, i) : i=i+1
-	Menu_DrawCreditsText("Character Rigging", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Stage Modeling", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Object Placement", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Object Modeling", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Enemy Modeling", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Enemy Rigging", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Enemy Animation", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Menu Art", x#,			y#, i) : i=i+1
-	Menu_DrawCreditsText("Website Design", x#,		y#, i) : i=i+1
-
 	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Nibroc.Rock", x#,			y#, i, 132, 255, 000) : i=i+1
-	Menu_DrawCreditsText("Character Modeling", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Object Modeling", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Plant Modeling", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Stage Modeling", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Object Placement", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Textures", x#,			y#, i) : i=i+1
- 	Menu_DrawCreditsText("Menu and Interface Art", x#,	y#, i) : i=i+1
-	Menu_DrawCreditsText("Logo Art", x#,			y#, i) : i=i+1
-
 	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
- 	Menu_DrawCreditsText("Syphyous (Johann)", x#,		y#, i, 173, 058, 216) : i=i+1
-	Menu_DrawCreditsText("Website Design", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Object Placement", x#,		y#, i) : i=i+1
-
+	
+ 	Menu_DrawCreditsText("Programming", x#,		y#,  i, 049, 175, 255) : i=i+1
+	Menu_DrawCreditsText("Mark", x#,		y#, i) : i=i+1
+ 	Menu_DrawCreditsText("Samy/SonicDBZFan07", x#,		y#, i) : i=i+1
+	
 	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("SonicFanNr1 (Nico)", x#,		y#, i, 000, 251, 047) : i=i+1
- 	Menu_DrawCreditsText("Stage Modeling", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Object Placement", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Enemy Modeling", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Enemy Rigging", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Enemy Animation", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Plant Modeling", x#,		y#, i) : i=i+1
-
 	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Shahars71 (Shahar)", x#,		y#, i, 009, 247, 149) : i=i+1
-	Menu_DrawCreditsText("Object Placement", x#,		y#, i) : i=i+1
-
 	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("AquaStarMarine", x#,		y#, i, 255, 173, 016) : i=i+1
-	Menu_DrawCreditsText("Voice Acting", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Chao Lessons", x#,		y#, i) : i=i+1
-
+	
+	Menu_DrawCreditsText("Character Animation", x#,		y#, i, 049, 175, 255) : i=i+1
+	Menu_DrawCreditsText("Deefor", x#,		y#, i) : i=i+1
+	Menu_DrawCreditsText("Strike", x#,		y#, i) : i=i+1
+	Menu_DrawCreditsText("Kamau", x#,	y#, i) : i=i+1
+	
 	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Glitch Kitten (Lexie)", x#,	y#, i, 255, 000, 240) : i=i+1
-	Menu_DrawCreditsText("Voice Acting", x#,		y#, i) : i=i+1
-
 	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("EmuEmi (Emily)", x#,		y#, i, 246, 119, 200) : i=i+1
-	Menu_DrawCreditsText("Voice Acting", x#,		y#, i) : i=i+1
-
 	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Jalex777 (Jovin)", x#,		y#, i, 043, 224, 120) : i=i+1
-	Menu_DrawCreditsText("Object Placement", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Stage Modeling", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
- 	Menu_DrawCreditsText("Menu Art", x#,			y#, i) : i=i+1
- 	Menu_DrawCreditsText("Website Design", x#,		y#, i) : i=i+1
-
+	
+	Menu_DrawCreditsText("Stage Design", x#,		y#, i, 049, 175, 255) : i=i+1
+	Menu_DrawCreditsText("Sergeant Gerbil", x#,		y#, i) : i=i+1
+ 	Menu_DrawCreditsText("Mark", x#,		y#, i) : i=i+1
+ 	Menu_DrawCreditsText("MirrorOfDespair", x#,		y#, i) : i=i+1
+	
 	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Gerbil (Isaac)", x#,		y#, i, 180, 058, 058) : i=i+1
-	Menu_DrawCreditsText("Object Placement", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Stage Modeling", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Menu Art", x#,			y#, i) : i=i+1
-
 	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Chaos", x#,		y#, i, 030, 238, 206) : i=i+1
- 	Menu_DrawCreditsText("Stage Modeling", x#,		y#, i) : i=i+1
-
 	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Zonex", x#,		y#, i, 044, 215, 080) : i=i+1
-	Menu_DrawCreditsText("Object Placement", x#,		y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Waisechef", x#,			y#, i, 177, 245, 030) : i=i+1
-	Menu_DrawCreditsText("Stage Modeling", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Object Placement", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Music", x#,					y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("CII", x#,				y#, i, 250, 237, 023) : i=i+1
-	Menu_DrawCreditsText("Stage Modeling", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Object Placement", x#,		y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Drflash55", x#,			y#, i, 074, 074, 172) : i=i+1
- 	Menu_DrawCreditsText("Menu Art", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("TheJojoNetwork", x#,		y#, i, 145, 225, 042) : i=i+1
- 	Menu_DrawCreditsText("Enemy Animation", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Stage Modeling", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Menu Art", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Wishdream (Lucyn)", x#,		y#, i, 213, 143, 217) : i=i+1
- 	Menu_DrawCreditsText("Stage Modeling", x#,		y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Mykle Hunter", x#,		y#, i, 000, 120, 255) : i=i+1
-	Menu_DrawCreditsText("Voice Acting", x#,		y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Demon Alchemist", x#,		y#, i, 133, 213, 038) : i=i+1
-	Menu_DrawCreditsText("Voice Acting", x#,		y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("UltaGuide", x#,			y#, i, 245, 161, 240) : i=i+1
-	Menu_DrawCreditsText("Voice Acting", x#,		y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("ShadowOne333", x#,		y#, i, 154, 084, 199) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Nekkosu", x#,			y#, i, 028, 234, 168) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Siyren", x#,			y#, i, 117, 049, 170) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Natalie", x#,			y#, i, 209, 121, 208) : i=i+1
-	Menu_DrawCreditsText("Voice Acting", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Logo Art", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Game84cube", x#,			y#, i, 101, 206, 007) : i=i+1
-	Menu_DrawCreditsText("Voice Acting", x#,		y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("SuperChaosControl", x#,		y#, i, 017, 141, 228) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Aloix12", x#,			y#, i, 057, 174, 185) : i=i+1
-	Menu_DrawCreditsText("Stage Modeling", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Object Placement", x#,		y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Amphobius", x#,			y#, i, 092, 137, 172) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Tudd", x#,			y#, i, 076, 116, 169) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("General Offensive", x#,		y#, i, 033, 226, 187) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("crisdebo0723", x#,		y#, i, 234, 044, 232) : i=i+1
-	Menu_DrawCreditsText("Menu Art", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("OriginalityAce", x#,		y#, i, 032, 218, 150) : i=i+1
-	Menu_DrawCreditsText("Menu Art", x#,			y#, i) : i=i+1
-	Menu_DrawCreditsText("Stage Modeling", x#,		y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Zol", x#,				y#, i, 108, 140, 129) : i=i+1
-	Menu_DrawCreditsText("Menu Art", x#,			y#, i) : i=i+1
-	Menu_DrawCreditsText("Logo Art", x#,			y#, i) : i=i+1
-	Menu_DrawCreditsText("Character Rigging", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Object Placement", x#,		y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Chishado", x#,			y#, i, 037, 160, 031) : i=i+1
-	Menu_DrawCreditsText("Stage Modeling", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Plant Modeling", x#,		y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("NicoCW", x#,			y#, i, 115, 022, 150) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Deefor", x#,			y#, i, 255, 190, 013) : i=i+1
-	Menu_DrawCreditsText("Stage Banners Art", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Website Design", x#,		y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Marvin Valentin", x#,		y#, i, 110, 110, 109) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Landy", x#,			y#, i, 075, 181, 225) : i=i+1
-	Menu_DrawCreditsText("Enemy Animation", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Voice Acting", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("DJ EAR", x#,			y#, i, 039, 084, 130) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Sean Evans", x#,			y#, i, 044, 196, 090) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Faseeh & Freen in Green", x#,	y#, i, 109, 244, 011) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("dante", x#,			y#, i, 235, 036, 228) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("LoGi", x#,			y#, i, 036, 235, 073) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Box Robot Studios", x#, y#, i, 247, 188, 073) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("SonicGenJSR", x#,			y#, i, 036, 219, 235) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("TheWhiteSnowOne", x#,		y#, i, 229, 229, 229) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Yarcaz", x#,			y#, i, 251, 243, 013) : i=i+1
-	Menu_DrawCreditsText("Enemy Modeling", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Enemy Rigging", x#,		y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Firelis", x#,			y#, i, 055, 093, 157) : i=i+1
-	Menu_DrawCreditsText("Enemy Rigging", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Enemy Animation", x#,		y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Redlerred7", x#,			y#, i, 208, 025, 025) : i=i+1
-	Menu_DrawCreditsText("Enemy Animation", x#,		y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Falk", x#,			y#, i, 033, 224, 073) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Bouncy Glow", x#,			y#, i, 034, 136, 231) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Anti-Miles Prower", x#,		y#, i, 249, 203, 020) : i=i+1
-	Menu_DrawCreditsText("Stage Modeling", x#,		y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("XTheMasterX", x#,			y#, i, 165, 024, 231) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("sui tune", x#,			y#, i, 054, 233, 231) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Dr. Mack Foxx & EspioKaos (John Weeks)", x#, y#, i, 248, 227, 089) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("jparecki95", x#,			y#, i, 226, 165, 033) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Hapi-San", x#,			y#, i, 163, 052, 233) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("darksupersonic741", x#,		y#, i, 057, 108, 137) : i=i+1
-	Menu_DrawCreditsText("Stage Modeling", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Object Placement", x#,		y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("DemondraBG", x#,		y#, i, 058, 208, 042) : i=i+1
-	Menu_DrawCreditsText("Object Placement", x#,		y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Turret 3471", x#,			y#, i, 016, 157, 129) : i=i+1
-	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Kamau2335", x#,			y#, i, 018, 054, 144) : i=i+1
-	Menu_DrawCreditsText("Character Rigging", x#,		y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Razor the Shark", x#,		y#, i, 113, 143, 169) : i=i+1
-	Menu_DrawCreditsText("Object Modeling", x#,		y#, i) : i=i+1
-	Menu_DrawCreditsText("Object Placement", x#,		y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("IPPY", x#,			y#, i, 036, 205, 116) : i=i+1
-	Menu_DrawCreditsText("Logo Art", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("DaKoopa", x#,			y#, i, 130, 098, 069) : i=i+1
-	Menu_DrawCreditsText("Logo Art", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("JaysonJean", x#,			y#, i, 041, 201, 225) : i=i+1
-	Menu_DrawCreditsText("Logo Art", x#,			y#, i) : i=i+1
-	Menu_DrawCreditsText("Object Animation", x#,	y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText(". .", x#,				y#, (i-0.7), 255, 137, 254)
-	Menu_DrawCreditsText(".  .", x#,			y#, (i-0.7), 255, 137, 254)
-	Menu_DrawCreditsText("Kopuk", x#,			y#, i, 255, 137, 254) : i=i+1
-	Menu_DrawCreditsText("Love", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
- 	Menu_DrawCreditsText("also thanks to...", x#,		y#, i, 150, 150, 150) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Damizean", x#,			y#, i, 172, 118, 065) : i=i+1
- 	Menu_DrawCreditsText("Base Engine", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("SEGA", x#,			y#, i, 000, 012, 254) : i=i+1
- 	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-	Menu_DrawCreditsText("Sounds", x#,			y#, i) : i=i+1
-	Menu_DrawCreditsText("Voices", x#,			y#, i) : i=i+1
- 	Menu_DrawCreditsText("Textures", x#,			y#, i) : i=i+1
- 	Menu_DrawCreditsText("Character Models", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Enemy Models", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Object Models", x#,		y#, i) : i=i+1
- 	Menu_DrawCreditsText("Stage Models", x#,		y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Dev Large & Zeebra Twigy", x#,	y#, i, 039, 124, 145) : i=i+1
- 	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Tee Lopes", x#,	y#, i, 045, 191, 172) : i=i+1
- 	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Krome Studios", x#,		y#, i, 227, 177, 024) : i=i+1
- 	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Capcom", x#,			y#, i, 030, 140, 118) : i=i+1
- 	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("Spiralmouth", x#,			y#, i, 218, 218, 025) : i=i+1
- 	Menu_DrawCreditsText("Music", x#,			y#, i) : i=i+1
-
-	Menu_DrawCreditsText("", x#,				y#, i) : i=i+1
-	Menu_DrawCreditsText("@ 2013-2018", x#,			y#, i, 150, 150, 150) : i=i+1
+	
+ 	Menu_DrawCreditsText("Interface Design", x#,		y#, i, 049, 175, 255) : i=i+1
+ 	Menu_DrawCreditsText("Deefor", x#,	y#, i) : i=i+1
+	Menu_DrawCreditsText("Brandon", x#,	y#, i) : i=i+1
+	Menu_DrawCreditsText("MirrorOfDespair", x#,	y#, i) : i=i+1
+	
+	
+	Menu_DrawCreditsText("2018-2020", x#,			y#, i, 150, 150, 150) : i=i+1
 
 End Function
 
 Function Menu_DrawCreditsText(text$, x#, y#, i#, r=255, g=255, b=255)
 	y#=y#+(4.2*5)*i#
-	If y#>0 and y#<GAME_WINDOW_H Then DrawRealText(text$, x#, y#, (Interface_TextCredits_1), 1, 0, r, g, b)
+	If y#>0 And y#<GAME_WINDOW_H Then DrawRealText(Text$, x#, y#, (Interface_TextCredits_1), 1, 0, r, g, b)
 End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

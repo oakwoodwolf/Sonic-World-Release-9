@@ -8,7 +8,7 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Check_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, mode=1)
+Function Object_Check_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, mode=1)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 
 		Object_CreateHitBox(HITBOXTYPE_SPEEDY_CHECKPOINT,o,8.5,34.0,8.5)
@@ -23,20 +23,25 @@ End Function
 			Case 1:
 			o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Checkpoint)), Game\Stage\Root)
 			o\Entity2 = CopyEntity(MESHES(SmartEntity(Mesh_CheckpointX)), Game\Stage\Root)
+			o\Entity3 = CopyEntity(MESHES(SmartEntity(Mesh_CheckpointB)), Game\Stage\Root)
 			Case 2:
 			o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Checkpoint2)), Game\Stage\Root)
 			o\Entity2 = CopyEntity(MESHES(SmartEntity(Mesh_Checkpoint2X)), Game\Stage\Root)
+			o\Entity3 = CopyEntity(MESHES(SmartEntity(Mesh_Checkpoint2B)), Game\Stage\Root)
 			Case 3:
 			o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Checkpoint3)), Game\Stage\Root)
 			o\Entity2 = CopyEntity(MESHES(SmartEntity(Mesh_Checkpoint3X)), Game\Stage\Root)
+			o\Entity3 = CopyEntity(MESHES(SmartEntity(Mesh_Checkpoint3B)), Game\Stage\Root)
 		End Select
-
+		
+		EntityType(o\Entity3,COLLISION_NONE)
+		
 		Return o
 	End Function
 	
 	; =========================================================================================================
 	
-	Function Object_Check_Update(o.tObject, p.tPlayer)
+Function Object_Check_Update(o.tObject, p.tPlayer)
 
 		If p\SpeedLength#<=1.5 Then
 			EntityType(o\Entity,COLLISION_OBJECT)
@@ -46,7 +51,7 @@ End Function
 			EntityType(o\Entity2,COLLISION_NONE)
 		EndIf
 		
- 		If o\Hit and o\State=0 and p\Objects\Position\y#>o\Position\y#-6 Then
+ 		If o\Hit And o\State=0 And p\Objects\Position\y#>o\Position\y#-6 Then
 			; Add to counter
 			If Game\Gameplay\DiedOnce=0 Then Gameplay_AddPerfectBonus(100)
 
@@ -56,6 +61,8 @@ End Function
 
 			; Sound effect!
 			EmitSmartSound(Sound_Check,o\Entity)
+			
+			Game\CheckSpeed=Int(p\SpeedLength*10)
 
 			; Delete the object
 			o\State=1
@@ -64,11 +71,13 @@ End Function
 		Select o\State
 			Case 0:
 				ShowEntity(o\Entity)
+				ShowEntity(o\Entity3)
 				HideEntity(o\Entity2)
 				Animate o\Entity,1,0.5,1,0
 			Case 1:
 				ShowEntity(o\Entity)
 				HideEntity(o\Entity2)
+				ShowEntity(o\Entity3)
 				If p\SpeedLength#>= 0 Then Animate o\Entity,3,0.2,2,0
 				If p\SpeedLength#>= 2 Then Animate o\Entity,3,0.4,2,0
 				If p\SpeedLength#>= 4 Then Animate o\Entity,3,0.5,2,0
@@ -77,10 +86,12 @@ End Function
 			Case 2:
 				ShowEntity(o\Entity)
 				HideEntity(o\Entity2)
+				HideEntity(o\Entity3)
 				If Not(Animating(o\Entity)) Then o\State=3
 			Case 3:
 				ShowEntity(o\Entity2)
 				HideEntity(o\Entity)
+				HideEntity(o\Entity3)
 				Animate o\Entity2,1,0.5,1,0
 		End Select
 		
@@ -89,7 +100,7 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Balloon_Create.tObject(x#, y#, z#)
+Function Object_Balloon_Create.tObject(x#, y#, z#)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		Gameplay_AddTotalBalloons(1)
 
@@ -119,7 +130,7 @@ End Function
 	
 	; =========================================================================================================
 	
-	Function Object_Balloon_Update_Timer(o.tObject)
+Function Object_Balloon_Update_Timer(o.tObject)
 		If o\State>0 Then
 			o\State=o\State-timervalue#
 			HideEntity(o\Entity)
@@ -131,7 +142,7 @@ End Function
 		EndIf
 	End Function
 
-	Function Object_Balloon_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_Balloon_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		Object_Balloon_Update_Timer(o)
 
@@ -148,19 +159,19 @@ End Function
 					Gameplay_AddBalloons(1)
 					o\Mode=1
 				EndIf
-
+				
+				
+				
 				; Bling!
 				EmitSmartSound(Sound_Balloon,o\Entity)
 
 				;Release effect
-				Object_Pieces_Create(false,o\ObjType,o\Psychoed,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1)
+				Object_Pieces_Create(False,o\ObjType,o\Psychoed,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1)
 
-				; Make Sonic a move
-				If o\BombHit=False and o\Psychoed=0 Then
-					If p\Action=ACTION_HOMING Then Player_SetSpeed(p,0.1)
-					If p\HasVehicle=0 and (Not(p\Action=ACTION_SKYDIVE)) Then p\JumpTimer=0 : p\Action=ACTION_JUMP
-					p\Motion\Speed\y#=1.3
-					Player_ResetJumpActionStuff(p)
+					; Make Sonic a move
+				If o\BombHit=False And o\Psychoed=0 Then
+					If p\Action=ACTION_HOMING Then Player_SetSpeed(p,2.3)
+					Player_JumpActionInteract(p)
 				EndIf
 			
 				; Delete the object
@@ -175,7 +186,7 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Spike_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, spikebarsize=0, forcespiketype=0)
+Function Object_Spike_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, spikebarsize=0, forcespiketype=0)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		If forcespiketype>0 Then o\ObjType=forcespiketype
 		o\ThisIsASpike=True : o\Spike = New tObject_Spike : o\HasValuesetSpike=True
@@ -250,7 +261,7 @@ End Function
 	
 	; =========================================================================================================
 	
-	Function Object_Spike_CollisionReset(o.tObject)
+Function Object_Spike_CollisionReset(o.tObject)
 		EntityType(o\Entity,COLLISION_OBJECT_GOTHRU)
 		If o\HasEntity2 Then EntityType(o\Entity2,COLLISION_OBJECT_GOTHRU)
 		If o\HasEntityCube Then EntityType(o\EntityCube,COLLISION_OBJECT_GOTHRU)
@@ -258,7 +269,7 @@ End Function
 		o\ForceCollisionReset=1
 	End Function
 
-	Function Object_Spike_Collision(o.tObject)
+Function Object_Spike_Collision(o.tObject)
 		If pp(1)\Action=ACTION_TORNADO Then
 			Object_Spike_CollisionReset(o)
 		ElseIf o\ForceCollisionReset=1 Or o\Psychoed>0 Then
@@ -289,7 +300,7 @@ End Function
 		EndIf
 	End Function
 
-	Function Object_Spike_Movement(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_Spike_Movement(o.tObject, p.tPlayer, d.tDeltaTime)
 		If o\Spike\SpikeTimer>0 Then o\Spike\SpikeTimer=o\Spike\SpikeTimer-timervalue#
 
 		Select o\ObjType
@@ -298,31 +309,31 @@ End Function
 				EntityType(o\EntityCube,COLLISION_OBJECT)
 			Case OBJTYPE_SPIKECRUSHER:
 				If EntityDistance(o\Entity,p\Objects\Entity)<86 Then
-					If p\Objects\Position\y#<o\Position\y# and abs(p\Objects\Position\x#-o\Position\x#)<10 and abs(p\Objects\Position\z#-o\Position\z#)<10 Then MoveEntity o\Entity, 0, -2.45*d\Delta, 0
+					If p\Objects\Position\y#<o\Position\y# And Abs(p\Objects\Position\x#-o\Position\x#)<10 And Abs(p\Objects\Position\z#-o\Position\z#)<10 Then MoveEntity o\Entity, 0, -2.45*d\Delta, 0
 				EndIf
 			Case OBJTYPE_SPIKETIMED:
 				If (Not(o\Spike\SpikeTimer>0)) Then
 					o\Spike\SpikeTimer=5*secs#
-				ElseIf o\Spike\SpikeTimer>0*secs# and o\Spike\SpikeTimer<0.03*secs# Then
-					If o\InView and (Not(ChannelPlaying(o\Spike\Channel_Spike))) Then o\Spike\Channel_Spike=EmitSmartSound(Sound_SpikeDrill2,o\Entity)
-				ElseIf o\Spike\SpikeTimer>0.03*secs# and o\Spike\SpikeTimer<2.5*secs# Then
+				ElseIf o\Spike\SpikeTimer>0*secs# And o\Spike\SpikeTimer<0.03*secs# Then
+					If o\InView And (Not(ChannelPlaying(o\Spike\Channel_Spike))) Then o\Spike\Channel_Spike=EmitSmartSound(Sound_SpikeDrill2,o\Entity)
+				ElseIf o\Spike\SpikeTimer>0.03*secs# And o\Spike\SpikeTimer<2.5*secs# Then
 					Animate(o\Entity,3,1,1,5)
 					EntityType(o\EntityCube,COLLISION_NONE)
-				ElseIf o\Spike\SpikeTimer>2.5*secs# and o\Spike\SpikeTimer<2.53*secs# Then
-					If o\InView and (Not(ChannelPlaying(o\Spike\Channel_Spike))) Then o\Spike\Channel_Spike=EmitSmartSound(Sound_SpikeDrill1,o\Entity)
-				ElseIf o\Spike\SpikeTimer>2.53*secs# and o\Spike\SpikeTimer<5*secs# Then
+				ElseIf o\Spike\SpikeTimer>2.5*secs# And o\Spike\SpikeTimer<2.53*secs# Then
+					If o\InView And (Not(ChannelPlaying(o\Spike\Channel_Spike))) Then o\Spike\Channel_Spike=EmitSmartSound(Sound_SpikeDrill1,o\Entity)
+				ElseIf o\Spike\SpikeTimer>2.53*secs# And o\Spike\SpikeTimer<5*secs# Then
 					Animate(o\Entity,3,1,2,5)
 					EntityType(o\EntityCube,COLLISION_OBJECT)
 				EndIf
 			Case OBJTYPE_SPIKETRAP:
-				If o\Spike\SpikeTimer>0*secs# and o\Spike\SpikeTimer<0.03*secs# Then
-					If o\InView and (Not(ChannelPlaying(o\Spike\Channel_Spike))) Then o\Spike\Channel_Spike=EmitSmartSound(Sound_SpikeDrill2,o\Entity)
-				ElseIf o\Spike\SpikeTimer>0.03*secs# and o\Spike\SpikeTimer<0.5*secs# Then
+				If o\Spike\SpikeTimer>0*secs# And o\Spike\SpikeTimer<0.03*secs# Then
+					If o\InView And (Not(ChannelPlaying(o\Spike\Channel_Spike))) Then o\Spike\Channel_Spike=EmitSmartSound(Sound_SpikeDrill2,o\Entity)
+				ElseIf o\Spike\SpikeTimer>0.03*secs# And o\Spike\SpikeTimer<0.5*secs# Then
 					Animate(o\Entity,3,1,1,5)
 					EntityType(o\EntityCube,COLLISION_NONE)
-				ElseIf o\Spike\SpikeTimer>0.5*secs# and o\Spike\SpikeTimer<0.53*secs# Then
-					If o\InView and (Not(ChannelPlaying(o\Spike\Channel_Spike))) Then o\Spike\Channel_Spike=EmitSmartSound(Sound_SpikeDrill1,o\Entity)
-				ElseIf o\Spike\SpikeTimer>0.53*secs# and o\Spike\SpikeTimer<3*secs# Then
+				ElseIf o\Spike\SpikeTimer>0.5*secs# And o\Spike\SpikeTimer<0.53*secs# Then
+					If o\InView And (Not(ChannelPlaying(o\Spike\Channel_Spike))) Then o\Spike\Channel_Spike=EmitSmartSound(Sound_SpikeDrill1,o\Entity)
+				ElseIf o\Spike\SpikeTimer>0.53*secs# And o\Spike\SpikeTimer<3*secs# Then
 					Animate(o\Entity,3,1,2,5)
 					EntityType(o\EntityCube,COLLISION_OBJECT)
 				EndIf
@@ -333,7 +344,7 @@ End Function
 						o\Spike\SpikeTimer=1.6*secs#
 						Animate(o\Entity,1,0.1,1)
 					Case 1:
-						If (Not(abs(o\Position\y#-(o\InitialPosition\y#-17.5))<2)) and o\Spike\SpikeTimer>0 Then
+						If (Not(Abs(o\Position\y#-(o\InitialPosition\y#-17.5))<2)) And o\Spike\SpikeTimer>0 Then
 							MoveEntity o\Entity, 0, -0.35*d\Delta, 0
 						Else
 							o\Spike\BarMover=2
@@ -341,7 +352,7 @@ End Function
 							Animate(o\Entity,1,0.1,1)
 						EndIf
 					Case 2:
-						If (Not(abs(o\Position\y#-(o\InitialPosition\y#+17.5))<2)) and o\Spike\SpikeTimer>0 Then
+						If (Not(Abs(o\Position\y#-(o\InitialPosition\y#+17.5))<2)) And o\Spike\SpikeTimer>0 Then
 							MoveEntity o\Entity, 0, 0.35*d\Delta, 0
 						Else
 							o\Spike\BarMover=1
@@ -353,7 +364,7 @@ End Function
 				TurnEntity o\Entity, 0, 2.5*d\Delta, 0
 				TurnEntity o\Entity2, 0, 2.5*d\Delta, 0
 				If (Not(o\Spike\SpikeTimer>0)) Then
-					If o\InView and (Not(ChannelPlaying(o\Spike\Channel_Spike))) Then o\Spike\Channel_Spike=EmitSmartSound(Sound_Swinger,o\Entity)
+					If o\InView And (Not(ChannelPlaying(o\Spike\Channel_Spike))) Then o\Spike\Channel_Spike=EmitSmartSound(Sound_Swinger,o\Entity)
 					o\Spike\SpikeTimer=1.02*secs#
 				EndIf
 			Case OBJTYPE_SPEWSPIKEBOMB:
@@ -362,14 +373,14 @@ End Function
 			Case OBJTYPE_SPIKESWINGBALL:
 				Select o\State
 					Case 0:
-						If o\Position\y#>o\InitialPosition\y#-20 and o\Spike\SpikeTimer>0 Then
+						If o\Position\y#>o\InitialPosition\y#-20 And o\Spike\SpikeTimer>0 Then
 							MoveEntity o\Entity, 0, -2.33*d\Delta, 0
 						Else
 							If o\InView Then EmitSmartSound(Sound_Swinger,o\Entity)
 							o\Spike\SpikeTimer=1*secs# : o\State=2
 						EndIf
 					Case 1:
-						If o\Position\y#<o\InitialPosition\y# and o\Spike\SpikeTimer>0 Then
+						If o\Position\y#<o\InitialPosition\y# And o\Spike\SpikeTimer>0 Then
 							MoveEntity o\Entity, 0, 2.33*d\Delta, 0
 						Else
 							If o\InView Then EmitSmartSound(Sound_Swinger,o\Entity)
@@ -383,7 +394,7 @@ End Function
 		End Select
 	End Function
 
-	Function Object_Spike_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_Spike_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		; Update collision
 		Object_Spike_Collision(o)
@@ -408,18 +419,18 @@ End Function
 		
 		; Player collided with object
 		If o\ExplodeHit Or o\Hit Or (o\BombHit And (o\ObjType=OBJTYPE_SPIKEBOMB Or o\ObjType=OBJTYPE_SPEWSPIKEBOMB Or o\ObjType=OBJTYPE_SPIKECRUSHER)) Then
-		If (Not(o\ObjType=OBJTYPE_SPIKETRAP Or o\ObjType=OBJTYPE_SPIKETIMED)) Or (o\ObjType=OBJTYPE_SPIKETIMED and o\Spike\SpikeTimer>2.5*secs# and o\Spike\SpikeTimer<5*secs#) Or (o\ObjType=OBJTYPE_SPIKETRAP and o\Spike\SpikeTimer>0.5*secs# and o\Spike\SpikeTimer<3*secs#) Then
+		If (Not(o\ObjType=OBJTYPE_SPIKETRAP Or o\ObjType=OBJTYPE_SPIKETIMED)) Or (o\ObjType=OBJTYPE_SPIKETIMED And o\Spike\SpikeTimer>2.5*secs# And o\Spike\SpikeTimer<5*secs#) Or (o\ObjType=OBJTYPE_SPIKETRAP And o\Spike\SpikeTimer>0.5*secs# And o\Spike\SpikeTimer<3*secs#) Then
 
 			; Hurt Sonic
-			If (o\ExplodeHit=False Or o\Hit) and (Not(p\HurtTimer>0)) and o\BombHit=False and o\Psychoed=0 Then
-				If Game\Invinc=0 and Game\Victory=0 and (Not(p\DontGetHurtTimer>0)) Then EmitSmartSound(Sound_Spikes,o\Entity)
+			If (o\ExplodeHit=False Or o\Hit) And (Not(p\HurtTimer>0)) And o\BombHit=False And o\Psychoed=0 Then
+				If Game\Invinc=0 And Game\Victory=0 And (Not(p\DontGetHurtTimer>0)) Then EmitSmartSound(Sound_Spikes,o\Entity)
 				Player_Hit(p)
 			EndIf
 
 			;Release effect
 			Select o\ObjType
 				Case OBJTYPE_SPIKEBOMB,OBJTYPE_SPEWSPIKEBOMB,OBJTYPE_SPIKECRUSHER:
-					Object_Pieces_Create(false,o\ObjType,o\Psychoed,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#)
+					Object_Pieces_Create(False,o\ObjType,o\Psychoed,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#)
 			End Select
 
 			; Delete the object
@@ -460,7 +471,7 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Spout_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#)
+Function Object_Spout_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\Trap = New tObject_Trap : o\HasValuesetTrap=True
 
@@ -481,7 +492,7 @@ End Function
 	
 	; =========================================================================================================
 	
-	Function Object_Spout_Particles(o.tObject, p.tPlayer, far=false)
+Function Object_Spout_Particles(o.tObject, p.tPlayer, far=False)
 		If Not(o\Trap\SpoutTimer>0) Then
 			o\Trap\SpoutTimer=9*secs#
 		ElseIf o\Trap\SpoutTimer>4*secs# Then
@@ -489,21 +500,21 @@ End Function
 				Case OBJTYPE_FLAMESPOUT:
 				  If (EntityY(o\Entity) > Game\Stage\Properties\WaterLevel) Then
 					ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_FIRE, o\Entity, 0, 0, 0, 0, 0, 0.05)
-					If (Not far) and ChannelPlaying(o\Trap\Channel_Spout)=False Then o\Trap\Channel_Spout=EmitSmartSound(Sound_Fire,o\Entity)
+					If (Not far) And ChannelPlaying(o\Trap\Channel_Spout)=False Then o\Trap\Channel_Spout=EmitSmartSound(Sound_Fire,o\Entity)
 				  EndIf
 				Case OBJTYPE_ICESPOUT:
 					ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_ICE, o\Entity, 0, 0, 0, 0, 0, 0.05)
-					If (Not far) and ChannelPlaying(o\Trap\Channel_Spout)=False Then o\Trap\Channel_Spout=EmitSmartSound(Sound_WindBlow,o\Entity)
+					If (Not far) And ChannelPlaying(o\Trap\Channel_Spout)=False Then o\Trap\Channel_Spout=EmitSmartSound(Sound_WindBlow,o\Entity)
 				Case OBJTYPE_SHOCKSPOUT:
 					ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_SHOCK, o\Entity, 0, 0, 0, 0, 0, 0.05)
-					If (Not far) and ChannelPlaying(o\Trap\Channel_Spout)=False Then o\Trap\Channel_Spout=EmitSmartSound(Sound_EnemyElectric,o\Entity)
+					If (Not far) And ChannelPlaying(o\Trap\Channel_Spout)=False Then o\Trap\Channel_Spout=EmitSmartSound(Sound_EnemyElectric,o\Entity)
 			End Select
 		Else
 			StopChannel(o\Trap\Channel_Spout)
 		EndIf
 	End Function
 
-	Function Object_Spout_Update(o.tObject, p.tPlayer)
+Function Object_Spout_Update(o.tObject, p.tPlayer)
 
 		; Update timer
 		If o\Trap\SpoutTimer>0 Then o\Trap\SpoutTimer=o\Trap\SpoutTimer-timervalue#
@@ -512,7 +523,7 @@ End Function
 		Object_Spout_Particles(o,p)
 		
 		; Player collided with object
-		If o\Hit and (Not(p\HurtTimer>0)) and p\Objects\Position\y#>o\Position\y# Then
+		If o\Hit And (Not(p\HurtTimer>0)) And p\Objects\Position\y#>o\Position\y# Then
 		If o\Trap\SpoutTimer>4*secs# Then
 
 			; Hurt Sonic
@@ -533,7 +544,7 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Switch_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, switchno, switchstatus, power#=0, invisi=0)
+Function Object_Switch_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, switchno, switchstatus, power#=0, invisi=0)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\Switch = New tObject_Switch : o\HasValuesetSwitch=True
 
@@ -582,10 +593,10 @@ End Function
 	
 	; =========================================================================================================
 	
-	Function Object_Switch_Appear(o.tObject)
+Function Object_Switch_Appear(o.tObject)
 		Select o\ObjType
 			Case OBJTYPE_SWITCHWATER:
-				If abs(Game\Stage\Properties\WaterLevelTarget-o\Power#)<2 Then
+				If Abs(Game\Stage\Properties\WaterLevelTarget-o\Power#)<2 Then
 					HideEntity(o\Entity) : ShowEntity(o\EntityX)
 					ShowEntity(o\Entity2)
 					If (Not(Animating(o\EntityX))) Then Animate(o\EntityX,1,0.02,1)
@@ -630,7 +641,7 @@ End Function
 		End Select
 	End Function
 
-	Function Object_Switch_Update(o.tObject, p.tPlayer)
+Function Object_Switch_Update(o.tObject, p.tPlayer)
 
 		; Hide/show according to active
 		Object_Switch_Appear(o)
@@ -639,13 +650,13 @@ End Function
 			If o\Switch\SwitchTimer>0 Then o\Switch\SwitchTimer=o\Switch\SwitchTimer-timervalue#
 			
 			; Player collided
-	 		If (o\Switch\SwitchNo[0]>0 Or o\ObjType=OBJTYPE_SWITCHWATER) and (o\Hit Or o\BombHit) Then
+	 		If (o\Switch\SwitchNo[0]>0 Or o\ObjType=OBJTYPE_SWITCHWATER) And (o\Hit Or o\BombHit) Then
 				If (Not(o\Switch\SwitchTimer>0)) Then
 					Select o\ObjType
 						Case OBJTYPE_SWITCHWATER:
 							Game\Stage\Properties\WaterLevelChanged=1
 							Game\Stage\Properties\WaterLevelTarget=o\Power#
-						Default: o\Switch\s1\Active=abs(o\Switch\s1\Active-1)
+						Default: o\Switch\s1\Active=Abs(o\Switch\s1\Active-1)
 					End Select
 					o\Switch\SwitchTimer=1.05*secs#
 					Select o\ObjType
@@ -653,7 +664,13 @@ End Function
 							EmitSmartSound(Sound_SwitchAir,o\Entity)
 							Animate(o\Entity,3,0.36,2)
 						Default:
-							If o\State=0 Then EmitSmartSound(Sound_Switch,o\Entity)
+							If o\State=0 Then 
+								Select o\Switch\s1\Active
+									Case 0 : EmitSmartSound(Sound_SwitchOff,o\Entity)
+									Case 1 : EmitSmartSound(Sound_SwitchOn,o\Entity)
+								End Select
+							EndIf 
+										
 							RotateEntity(o\Entity,0,p\Animation\Direction#,0)
 							RotateEntity(o\EntityX,0,p\Animation\Direction#,0)
 							Animate(o\Entity,3,0.2,2) : Animate(o\EntityX,3,0.2,2)
@@ -677,7 +694,7 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_SwitchTop_Create.tObject(x#, y#, z#, yaw#, switchno#)
+Function Object_SwitchTop_Create.tObject(x#, y#, z#, yaw#, switchno#)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\g = Object_Gravity_Create.tGravity() : o\HasGravity=True
 		o\Switch = New tObject_Switch : o\HasValuesetSwitch=True
@@ -699,7 +716,7 @@ End Function
 	
 	; =========================================================================================================
 	
-	Function Object_SwitchTop_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_SwitchTop_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		; Position mesh
 		PositionEntity o\Entity, o\Position\x#, o\Position\y#, o\Position\z#
@@ -716,7 +733,7 @@ End Function
 		Object_EnforceGravity(o,d)
 
 		; Stun
-		Object_EnforceStun(o,p,d,false)
+		Object_EnforceStun(o,p,d,False)
 
 		; Psychokinesis
 		Object_EnforcePsychokinesis(o,p,d)
@@ -725,7 +742,7 @@ End Function
 		Object_EnforceObjPickUp(o,p)
 		
 		; Player collided with object
-		If (Not(p\ObjPickUpTimer>0)) and o\ObjPickedUp=0 Then
+		If (Not(p\ObjPickUpTimer>0)) And o\ObjPickedUp=0 Then
 			If o\BombHit Then o\BombHit=False : o\ObjPickedUp=-1
 		EndIf
 		
@@ -734,7 +751,7 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Laser_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, switchno1=0, switchno2=0, switchno3=0, requirement#=0)
+Function Object_Laser_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, switchno1=0, switchno2=0, switchno3=0, requirement#=0)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\Switch = New tObject_Switch : o\HasValuesetSwitch=True
 
@@ -772,7 +789,7 @@ End Function
 	
 	; =========================================================================================================
 
-	Function Object_Laser_Update_SwitchControl(o.tObject, p.tPlayer)
+Function Object_Laser_Update_SwitchControl(o.tObject, p.tPlayer)
 		; Hide/show according to active
 		If Object_WhetherHasSwitches(o) Or (Not(o\ObjType=OBJTYPE_LASERV Or o\ObjType=OBJTYPE_LASERH)) Then
 			Select o\ObjType
@@ -793,19 +810,19 @@ End Function
 		EndIf
 	End Function
 	
-	Function Object_Laser_Update(o.tObject, p.tPlayer)
+Function Object_Laser_Update(o.tObject, p.tPlayer)
 
 		Object_Laser_Update_SwitchControl(o,p)
 
 		; Manage collision
-		If p\InvisibilityTimer>0 and (o\ObjType=OBJTYPE_LASERH Or o\ObjType=OBJTYPE_LASERV) Then
+		If p\InvisibilityTimer>0 And (o\ObjType=OBJTYPE_LASERH Or o\ObjType=OBJTYPE_LASERV) Then
 			EntityType(o\EntityX,COLLISION_NONE)
 		Else
 			EntityType(o\EntityX,COLLISION_OBJECT)
 		EndIf
 		
 		; Player collided with object
-		If o\Switch\SwitchOn=1 and o\Hit and (Not(p\HurtTimer>0)) and p\Invisibility=0 Then
+		If o\Switch\SwitchOn=1 And o\Hit And (Not(p\HurtTimer>0)) And p\Invisibility=0 Then
 			If Menu\Stage>0 Then
 				Player_Hit(p)
 			Else
@@ -818,7 +835,7 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Teleporter_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, teleporterno, teleportername$=0)
+Function Object_Teleporter_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, teleporterno, teleportername$=0)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\Teleporter = New tObject_Teleporter : o\HasValuesetTeleporter=True
 
@@ -831,8 +848,8 @@ End Function
 
 		If o\ObjType=OBJTYPE_TELEPORTER2 Then
 			j=0
-			For i=0 to StageAmount
-				If StageName$(i)=teleportername$ and j=0 Then j=i
+			For i=0 To StageAmount
+				If StageName$(i)=teleportername$ And j=0 Then j=i
 			Next
 			o\Teleporter\TeleporterNo=j
 		EndIf
@@ -851,7 +868,7 @@ End Function
 		If o\ObjType=OBJTYPE_TELEPORTER Or o\ObjType=OBJTYPE_TELEPORTEREND Then
 			For o2.tObject = Each tObject
 				If o2\ObjType=OBJTYPE_TELEPORTER Or o2\ObjType=OBJTYPE_TELEPORTEREND Then
-					If o2\Teleporter\TeleporterNo=o\Teleporter\TeleporterNo and o2\Teleporter\TeleporterFound=False and (Not(o2=o)) Then
+					If o2\Teleporter\TeleporterNo=o\Teleporter\TeleporterNo And o2\Teleporter\TeleporterFound=False And (Not(o2=o)) Then
 						o\Teleporter\OtherTeleporter=o2 : o\Teleporter\TeleporterFound=True
 						o2\Teleporter\OtherTeleporter=o : o2\Teleporter\TeleporterFound=True
 					EndIf
@@ -864,37 +881,39 @@ End Function
 	
 	; =========================================================================================================
 	
-	Function Object_Teleporter_Update(o.tObject, p.tPlayer)
-
-		If o\Teleporter\RestrictTeleportTimer>0 Then o\Teleporter\RestrictTeleportTimer=o\Teleporter\RestrictTeleportTimer-timervalue#
-		
-		If Not(o\ObjType=OBJTYPE_TELEPORTEREND) Then
- 		If (o\Teleporter\TeleporterNo>0 Or (Not(o\ObjType=OBJTYPE_TELEPORTER Or o\ObjType=OBJTYPE_TELEPORTER2))) and o\Hit and (Not(o\Teleporter\RestrictTeleportTimer>0)) Then
+Function Object_Teleporter_Update(o.tObject, p.tPlayer)
+	
+	If o\Teleporter\RestrictTeleportTimer>0 Then o\Teleporter\RestrictTeleportTimer=o\Teleporter\RestrictTeleportTimer-timervalue#
+	
+	If Not(o\ObjType=OBJTYPE_TELEPORTEREND) Then
+ 		If (o\Teleporter\TeleporterNo>0 Or (Not(o\ObjType=OBJTYPE_TELEPORTER Or o\ObjType=OBJTYPE_TELEPORTER2))) And o\Hit And (Not(o\Teleporter\RestrictTeleportTimer>0)) Then
 			If Not(p\TeleportTimer>0) Then
 				p\TeleportTimer=2*secs#
+				PostEffect_Create_FadeOut(0.010, 255, 255, 255)
 			ElseIf p\TeleportTimer<0.5*secs# Then
 				p\TeleportTimer=0
 				Game\ControlLock=0.25*secs#
 				PlaySmartSound(Sound_Teleport)
+				PostEffect_Create_FadeIn(0.018, 255, 255, 255)
 				o\Teleporter\RestrictTeleportTimer=2.5*secs#
 				Select o\ObjType
 					Case OBJTYPE_TELEPORTER:
-						If o\Teleporter\TeleporterFound Then Player_Spawn(o\Teleporter\OtherTeleporter\Position\x#,o\Teleporter\OtherTeleporter\Position\y#+2.25,o\Teleporter\OtherTeleporter\Position\z#,o\Teleporter\OtherTeleporter\Rotation\y#)
+						If o\Teleporter\TeleporterFound Then Player_Spawn(o\Teleporter\OtherTeleporter\Position\x#,o\Teleporter\OtherTeleporter\Position\y#+2.25,o\Teleporter\OtherTeleporter\Position\z#,o\Teleporter\OtherTeleporter\Rotation\y#) 
 						o\Teleporter\OtherTeleporter\Teleporter\RestrictTeleportTimer=2.5*secs#
 					Case OBJTYPE_TELEPORTER2:
 						Menu\SelectedStage=o\Teleporter\TeleporterNo
 						Menu\HubStage=Menu\Stage
 						Game_Stage_Quit(2)
 					Case OBJTYPE_TELEPORTER3:
-						Object_Teleporter_ChaoItem(p,p\ObjPickUpTarget,true)
+						Object_Teleporter_ChaoItem(p,p\ObjPickUpTarget,True)
 						SaveGame_Inventory()
 						Game_Stage_Quit(6)
 					Case OBJTYPE_TELEPORTER4:
-						Object_Teleporter_ChaoItem(p,p\ObjPickUpTarget,false)
+						Object_Teleporter_ChaoItem(p,p\ObjPickUpTarget,False)
 						SaveGame_Inventory()
 						Game_Stage_Quit(7)
 					Case OBJTYPE_TELEPORTER5:
-						Object_Teleporter_ChaoItem(p,p\ObjPickUpTarget,false,true)
+						Object_Teleporter_ChaoItem(p,p\ObjPickUpTarget,False,True)
 						SaveGame_Inventory()
 						Game_Stage_Quit(8)
 					Case OBJTYPE_TELEPORTER6:
@@ -905,21 +924,22 @@ End Function
 			EndIf
 			Game\ControlLock=0.1*secs#
 		EndIf
-		EndIf
+	EndIf
+	
 
 		; Particle effect
 		ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_GOAL, o\Entity, 0.65, 0, 0, 0, 1, 0.15)
 		
 	End Function
 
-	Function Object_Teleporter_ChaoItem(p.tPlayer, o.tObject, isheld, racechao=false)
+Function Object_Teleporter_ChaoItem(p.tPlayer, o.tObject, isheld, racechao=False)
 		LoadGame_ResetMenuChao()
 		If p\ObjPickUp>0 Then
-			If (racechao=false Or o\ObjType=OBJTYPE_CHAO) Then
-				If Not(p\ObjPickUpTarget\ObjType=OBJTYPE_TRASHCAN Or p\ObjPickUpTarget\ObjType=OBJTYPE_SACK) Then stophold=true Else stophold=false
+			If (racechao=False Or o\ObjType=OBJTYPE_CHAO) Then
+				If Not(p\ObjPickUpTarget\ObjType=OBJTYPE_TRASHCAN Or p\ObjPickUpTarget\ObjType=OBJTYPE_SACK) Then stophold=True Else stophold=False
 				Select o\ObjType
 				Case OBJTYPE_CHAO:
-					If (isheld=False Or o\ChaoObj\targetcc\Stats\Age=0) and (racechao=false Or ChaoManager_ChaoAlive(o\ChaoObj\targetcc)) Then
+					If (isheld=False Or o\ChaoObj\targetcc\Stats\Age=0) And (racechao=False Or ChaoManager_ChaoAlive(o\ChaoObj\targetcc)) Then
 						o\ObjPickedUp=0
 						HideEntity o\ChaoObj\targetcc\Mesh
 						Object_ChaoManager_RandomBeginPos(o\ChaoObj\targetcc)
@@ -957,7 +977,7 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Breakable_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, special#=0)
+Function Object_Breakable_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, special#=0)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\Trap = New tObject_Trap : o\HasValuesetTrap=True
 
@@ -987,7 +1007,7 @@ End Function
 			Case OBJTYPE_ICEDECOR:
 				Object_Acquire_Rotation(o,0,yaw#,0)
 			Default:
-				If (Not(pitch#>0)) and (Not(o\ObjType=OBJTYPE_ICICLE and special#=2)) Then
+				If (Not(pitch#>0)) And (Not(o\ObjType=OBJTYPE_ICICLE And special#=2)) Then
 					Object_Acquire_Rotation(o,0,Rand(1,360),0)
 				Else
 					Object_Acquire_Rotation(o,pitch#,yaw#,roll#)
@@ -1042,7 +1062,7 @@ End Function
 	
 	; =========================================================================================================
 	
-	Function Object_Breakable_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_Breakable_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		Select o\ObjType
 			Case OBJTYPE_AUTO:
@@ -1053,7 +1073,7 @@ End Function
 		; Player collided with object
 		If o\Hit Or o\BombHit Then
 			i=False
-			If o\BombHit Or p\Flags\StronglyAttacking Or (o\Hit and o\ObjType=OBJTYPE_CRYSTAL) Then
+			If o\BombHit Or p\Flags\StronglyAttacking Or (o\Hit And o\ObjType=OBJTYPE_CRYSTAL) Then
 				Select o\ObjType
 					Case OBJTYPE_AUTO,OBJTYPE_ICICLEBIG:
 						If o\BombHit Then
@@ -1072,7 +1092,7 @@ End Function
 				End Select
 			EndIf
 			If i Then
-				If o\ObjType=OBJTYPE_CRYSTAL and (Not(p\HurtTimer>0)) and o\Hit Then Player_Hit(p)
+				If o\ObjType=OBJTYPE_CRYSTAL And (Not(p\HurtTimer>0)) And o\Hit Then Player_Hit(p)
 				Select o\ObjType
 					Case OBJTYPE_AUTO:
 						EmitSmartSound(Sound_Car1+Rand(1,4)-1,o\Entity)
@@ -1092,7 +1112,7 @@ End Function
 					Case OBJTYPE_ICEDECOR: h#=4
 					Default: h#=1.1
 				End Select
-				Object_Pieces_Create(false,o\ObjType,o\Psychoed,o\Position\x#,o\Position\y#+j#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,h#,0,false,o\Trap\CrystalColor)
+				Object_Pieces_Create(False,o\ObjType,o\Psychoed,o\Position\x#,o\Position\y#+j#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,h#,0,False,o\Trap\CrystalColor)
 				o\Done=1
 				Return
 			EndIf
@@ -1103,7 +1123,7 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Sign_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, special#=0)
+Function Object_Sign_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, special#=0)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\Hint = New tObject_Hint : o\HasValuesetHint=True
 
@@ -1121,7 +1141,7 @@ End Function
 	
 	; =========================================================================================================
 	
-	Function Object_Sign_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_Sign_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		If o\Hit Then
 			If o\Hint\SignAlpha#>0 Then o\Hint\SignAlpha#=o\Hint\SignAlpha#-0.2*d\Delta
@@ -1136,7 +1156,7 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Hommer_Create.tObject(p.tPlayer, hommabletype#=-1)
+Function Object_Hommer_Create.tObject(p.tPlayer, hommabletype#=-1)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_HOMMER : o\ID=0
 		o\AlwaysPresent=True
 
@@ -1155,7 +1175,7 @@ End Function
 	
 	; =========================================================================================================
 	
-	Function Object_Hommer_Update(o.tObject, p.tPlayer)
+Function Object_Hommer_Update(o.tObject, p.tPlayer)
 
 		o\GotAssignedBomb=False
 
@@ -1167,7 +1187,7 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Repeater_Create.tObject(objtype$, x#, y#, z#, pitch#, yaw#, roll#, power#, space#, dx#, dy#, dz#)
+Function Object_Repeater_Create.tObject(objtype$, x#, y#, z#, pitch#, yaw#, roll#, power#, space#, dx#, dy#, dz#)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_REPEATER : o\ID=TempAttribute\ObjectID
 		o\Translator = New tObject_Translator : o\HasValuesetTranslator=True
 
@@ -1220,9 +1240,9 @@ End Function
 	
 	; =========================================================================================================
 	
-	Function Object_Repeater_Update(o.tObject, p.tPlayer)
+Function Object_Repeater_Update(o.tObject, p.tPlayer)
 
-		For h=1-2 to 1
+		For h=1-2 To 1
 		If (p\Objects\Position\z#+o\FValues#[0])>(o\Translator\HasDestination+h)*o\FValues#[0] Then
 			o\Translator\HasDestination=o\Translator\HasDestination+1
 			x#=Rand(o\InitialPosition\x#-o\Translator\Destination\x#,o\InitialPosition\x#+o\Translator\Destination\x#)
@@ -1238,9 +1258,9 @@ End Function
 			z#=Rand(o\InitialPosition\z#-o\Translator\Destination\z#,o\InitialPosition\z#+o\Translator\Destination\z#)+(o\Translator\HasDestination)*o\FValues#[0]
 			Select o\Mode
 				Case OBJTYPE_RING:
-					For i=1 to Rand(4,6)
-					o2.tObject = Object_Ring_Create(x#-3, y#, z#-(i-1)*8) : Objects_Reset_HasMesh(o2) : Objects_Reset_Object(o2, 1) : Objects_Reset_Repose(o2) : o2\Repeated=1
-					o2.tObject = Object_Ring_Create(x#+3, y#, z#-+(i-1)*8) : Objects_Reset_HasMesh(o2) : Objects_Reset_Object(o2, 1) : Objects_Reset_Repose(o2) : o2\Repeated=1
+					For i=1 To Rand(4,6)
+					o2.tObject = Object_Ring_Create(x#-3, y#, z#-(i-1)*8,1) : Objects_Reset_HasMesh(o2) : Objects_Reset_Object(o2, 1) : Objects_Reset_Repose(o2) : o2\Repeated=1
+					o2.tObject = Object_Ring_Create(x#+3, y#, z#-+(i-1)*8,1) : Objects_Reset_HasMesh(o2) : Objects_Reset_Object(o2, 1) : Objects_Reset_Repose(o2) : o2\Repeated=1
 					Next
 				Case OBJTYPE_SPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL:
 					TempAttribute\ObjectNo=o\Mode
@@ -1295,7 +1315,7 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Capsule_Create.tObject(x#, y#, z#, yaw#)
+Function Object_Capsule_Create.tObject(x#, y#, z#, yaw#)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 
 		Object_CreateHitBox(HITBOXTYPE_SPEEDY,o,4,5,4)
@@ -1307,8 +1327,8 @@ End Function
 		EntityType(o\Entity,COLLISION_OBJECT)
 		o\Entity2 = CreatePivot()
 
-		For i=1 to 15
-		For j=1 to 3
+		For i=1 To 15
+		For j=1 To 3
 			Object_Wisp_Create.tObject(x#, y#-10.59+(j-1)*2.5, z#, yaw#+(360/15.0)*i, 5)
 		Next
 		Next
@@ -1318,7 +1338,7 @@ End Function
 	
 	; =========================================================================================================
 	
-	Function Object_Capsule_Update(o.tObject, p.tPlayer)
+Function Object_Capsule_Update(o.tObject, p.tPlayer)
 
 		If Game\Victory=0 Then
 			Animate o\Entity,1,0,1
@@ -1331,7 +1351,7 @@ End Function
  		If o\Hit Then
 			If Game\Victory=0 Then
 				PositionEntity p\Objects\Entity, o\Position\x#, o\Position\y#+5, o\Position\z#, 1
-				Player_Goal(p,0,0,true)
+				Player_Goal(p,0,0,True)
 
 				EmitSmartSound(Sound_RobotPoof,o\Entity2)
 				ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_BOMB, o\Entity2)
@@ -1344,7 +1364,7 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Bomber_Create.tObject(x#, y#, z#, yaw#)
+Function Object_Bomber_Create.tObject(x#, y#, z#, yaw#)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 
 		Select o\ObjType
@@ -1370,7 +1390,7 @@ End Function
 	
 	; =========================================================================================================
 	
-	Function Object_Bomber_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_Bomber_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		Select o\ObjType
 			Case OBJTYPE_BOMBER1:
@@ -1405,10 +1425,10 @@ End Function
 						If Not(o\Anim>0) Then o\State=0
 				End Select
 			Case OBJTYPE_BOMBER2:
-				If EntityDistance(o\Entity,p\Objects\Entity)<40 and o\IsInBox=0 Then
+				If EntityDistance(o\Entity,p\Objects\Entity)<40 And o\IsInBox=0 Then
 					EmitSmartSound(Sound_RobotPoof,o\Entity)
 					j=Rand(1,360)
-					For i=0 to 3
+					For i=0 To 3
 						obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity)+j+90*i, 0)
 					Next
 					o\Done=1
@@ -1416,3 +1436,5 @@ End Function
 		End Select
 
 	End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

@@ -1,5 +1,5 @@
-Function DrawSmartKey(key, x#, y#, nocolor=false, forcekey=0, primary=0, gettruekey=false)
-	If primary=0 then primary=Menu\Settings\PrimaryController#
+Function DrawSmartKey(key, x#, y#, nocolor=False, forcekey=0, primary=0, gettruekey=False)
+	If primary=0 Then primary=Menu\Settings\PrimaryController#
 
 	If nocolor Then
 		DrawImageEx(INTERFACE(Interface_Keys), x#, y#, 60)
@@ -14,7 +14,7 @@ Function DrawSmartKey(key, x#, y#, nocolor=false, forcekey=0, primary=0, gettrue
 	If forcekey=0 Then
 		If Not(CONTROLS(primary,key)=0) Then
 		If CONTROLS(primary,key)>=900 Then
-			If Menu\Settings\ControllerLayout#<3 and gettruekey=false and CONTROLS_GAMEPAD(key)>0 Then
+			If Menu\Settings\ControllerLayout#<3 And gettruekey=False And CONTROLS_GAMEPAD(key)>0 Then
 				DrawImageEx(INTERFACE(Interface_Keys), x#, y#, 111+CONTROLS_GAMEPAD(key)+27*(Menu\Settings\ControllerLayout#-1))
 			Else
 				DrawImageEx(INTERFACE(Interface_Keys), x#, y#, RETURN_BUTTON_FROM_KEY(CONTROLS(primary,key))-57+83)
@@ -26,7 +26,7 @@ Function DrawSmartKey(key, x#, y#, nocolor=false, forcekey=0, primary=0, gettrue
 	Else
 		If Not(forcekey=0) Then
 		If forcekey>=900 Then
-			If Menu\Settings\ControllerLayout#<3 and gettruekey=false and CONTROLS_GAMEPAD(key)>0 Then
+			If Menu\Settings\ControllerLayout#<3 And gettruekey=False And CONTROLS_GAMEPAD(key)>0 Then
 				DrawImageEx(INTERFACE(Interface_Keys), x#, y#, 111+CONTROLS_GAMEPAD(key)+27*(Menu\Settings\ControllerLayout#-1))
 			Else
 				DrawImageEx(INTERFACE(Interface_Keys), x#, y#, RETURN_BUTTON_FROM_KEY(forcekey)-57+83)
@@ -39,8 +39,8 @@ Function DrawSmartKey(key, x#, y#, nocolor=false, forcekey=0, primary=0, gettrue
 
 End Function
 
-Function DrawSmartKey_Small(key, x#, y#, nocolor=false, forcekey=0, primary=0, gettruekey=false)
-	If primary=0 then primary=Menu\Settings\PrimaryController#
+Function DrawSmartKey_Small(key, x#, y#, nocolor=False, forcekey=0, primary=0, gettruekey=False)
+	If primary=0 Then primary=Menu\Settings\PrimaryController#
 
 	If nocolor Then
 		DrawImageEx(INTERFACE(Interface_Keys_Small), x#, y#, 60)
@@ -55,7 +55,7 @@ Function DrawSmartKey_Small(key, x#, y#, nocolor=false, forcekey=0, primary=0, g
 	If forcekey=0 Then
 		If Not(CONTROLS(primary,key)=0) Then
 		If CONTROLS(primary,key)>=900 Then
-			If Menu\Settings\ControllerLayout#<3 and gettruekey=false and CONTROLS_GAMEPAD(key)>0 Then
+			If Menu\Settings\ControllerLayout#<3 And gettruekey=False And CONTROLS_GAMEPAD(key)>0 Then
 				DrawImageEx(INTERFACE(Interface_Keys_Small), x#, y#, 111+CONTROLS_GAMEPAD(key)+27*(Menu\Settings\ControllerLayout#-1))
 			Else
 				DrawImageEx(INTERFACE(Interface_Keys_Small), x#, y#, RETURN_BUTTON_FROM_KEY(CONTROLS(primary,key))-57+83)
@@ -67,7 +67,7 @@ Function DrawSmartKey_Small(key, x#, y#, nocolor=false, forcekey=0, primary=0, g
 	Else
 		If Not(forcekey=0) Then
 		If forcekey>=900 Then
-			If Menu\Settings\ControllerLayout#<3 and gettruekey=false and CONTROLS_GAMEPAD(key)>0 Then
+			If Menu\Settings\ControllerLayout#<3 And gettruekey=False And CONTROLS_GAMEPAD(key)>0 Then
 				DrawImageEx(INTERFACE(Interface_Keys_Small), x#, y#, 111+CONTROLS_GAMEPAD(key)+27*(Menu\Settings\ControllerLayout#-1))
 			Else
 				DrawImageEx(INTERFACE(Interface_Keys_Small), x#, y#, RETURN_BUTTON_FROM_KEY(forcekey)-57+83)
@@ -80,8 +80,8 @@ Function DrawSmartKey_Small(key, x#, y#, nocolor=false, forcekey=0, primary=0, g
 
 End Function
 
-Function DrawSmartKey_WithNewGamepad(key, x#, y#, nocolor=false, forcekey=0, primary=0, gettruekey=false)
-	If primary=0 then primary=Menu\Settings\PrimaryController#
+Function DrawSmartKey_WithNewGamepad(key, x#, y#, nocolor=False, forcekey=0, primary=0, gettruekey=False)
+	If primary=0 Then primary=Menu\Settings\PrimaryController#
 
 	If nocolor Then
 		DrawImageEx(INTERFACE(Interface_Keys), x#, y#, 60)
@@ -96,7 +96,7 @@ Function DrawSmartKey_WithNewGamepad(key, x#, y#, nocolor=false, forcekey=0, pri
 	If forcekey=0 Then
 		If Not(CONTROLS(primary,key)=0) Then
 		If CONTROLS(primary,key)>=900 Then
-			If Menu\Settings\ControllerLayout#<3 and gettruekey=false and CONTROLS_NEWGAMEPAD(key)>0 Then
+			If Menu\Settings\ControllerLayout#<3 And gettruekey=False And CONTROLS_NEWGAMEPAD(key)>0 Then
 				DrawImageEx(INTERFACE(Interface_Keys), x#, y#, 111+CONTROLS_NEWGAMEPAD(key)+27*(Menu\Settings\ControllerLayout#-1))
 			Else
 				DrawImageEx(INTERFACE(Interface_Keys), x#, y#, RETURN_BUTTON_FROM_KEY(CONTROLS(primary,key))-57+83)
@@ -108,7 +108,7 @@ Function DrawSmartKey_WithNewGamepad(key, x#, y#, nocolor=false, forcekey=0, pri
 	Else
 		If Not(forcekey=0) Then
 		If forcekey>=900 Then
-			If Menu\Settings\ControllerLayout#<3 and gettruekey=false and CONTROLS_NEWGAMEPAD(key)>0 Then
+			If Menu\Settings\ControllerLayout#<3 And gettruekey=False And CONTROLS_NEWGAMEPAD(key)>0 Then
 				DrawImageEx(INTERFACE(Interface_Keys), x#, y#, 111+CONTROLS_NEWGAMEPAD(key)+27*(Menu\Settings\ControllerLayout#-1))
 			Else
 				DrawImageEx(INTERFACE(Interface_Keys), x#, y#, RETURN_BUTTON_FROM_KEY(forcekey)-57+83)
@@ -121,23 +121,23 @@ Function DrawSmartKey_WithNewGamepad(key, x#, y#, nocolor=false, forcekey=0, pri
 
 End Function
 
-Function DrawSmartKey_MovementGeneral(x#, y#, small=false)
-	If small=false Then
+Function DrawSmartKey_MovementGeneral(x#, y#, small=False)
+	If small=False Then
 		DrawSmartKey_MovementGeneral_Actual(Interface_Keys, x#, y#, small)
 	Else
 		DrawSmartKey_MovementGeneral_Actual(Interface_Keys_Small, x#, y#, small)
 	EndIf
 End Function
 
-Function DrawSmartKey_MovementGeneral_Actual(keys, x#, y#, small=false)
-	If Menu\Settings\PrimaryController#=2 and Menu\Settings\ControllerLayout#<3 Then
-		If CONTROLS_GAMEPAD(INPUT_BUTTON_UP)=11 and CONTROLS_GAMEPAD(INPUT_BUTTON_DOWN)=12 and CONTROLS_GAMEPAD(INPUT_BUTTON_LEFT)=13 and CONTROLS_GAMEPAD(INPUT_BUTTON_RIGHT)=14 Then
+Function DrawSmartKey_MovementGeneral_Actual(keys, x#, y#, small=False)
+	If Menu\Settings\PrimaryController#=2 And Menu\Settings\ControllerLayout#<3 Then
+		If CONTROLS_GAMEPAD(INPUT_BUTTON_UP)=11 And CONTROLS_GAMEPAD(INPUT_BUTTON_DOWN)=12 And CONTROLS_GAMEPAD(INPUT_BUTTON_LEFT)=13 And CONTROLS_GAMEPAD(INPUT_BUTTON_RIGHT)=14 Then
 			DrawImageEx(INTERFACE(keys), x#, y#, 61)
 			DrawImageEx(INTERFACE(keys), x#, y#, 111+10+27*(Menu\Settings\ControllerLayout#-1))
-		ElseIf CONTROLS_GAMEPAD(INPUT_BUTTON_UP)=16 and CONTROLS_GAMEPAD(INPUT_BUTTON_DOWN)=17 and CONTROLS_GAMEPAD(INPUT_BUTTON_LEFT)=18 and CONTROLS_GAMEPAD(INPUT_BUTTON_RIGHT)=19 Then
+		ElseIf CONTROLS_GAMEPAD(INPUT_BUTTON_UP)=16 And CONTROLS_GAMEPAD(INPUT_BUTTON_DOWN)=17 And CONTROLS_GAMEPAD(INPUT_BUTTON_LEFT)=18 And CONTROLS_GAMEPAD(INPUT_BUTTON_RIGHT)=19 Then
 			DrawImageEx(INTERFACE(keys), x#, y#, 61)
 			DrawImageEx(INTERFACE(keys), x#, y#, 111+15+27*(Menu\Settings\ControllerLayout#-1))
-		ElseIf CONTROLS_GAMEPAD(INPUT_BUTTON_UP)=6 and CONTROLS_GAMEPAD(INPUT_BUTTON_DOWN)=7 and CONTROLS_GAMEPAD(INPUT_BUTTON_LEFT)=8 and CONTROLS_GAMEPAD(INPUT_BUTTON_RIGHT)=9 Then
+		ElseIf CONTROLS_GAMEPAD(INPUT_BUTTON_UP)=6 And CONTROLS_GAMEPAD(INPUT_BUTTON_DOWN)=7 And CONTROLS_GAMEPAD(INPUT_BUTTON_LEFT)=8 And CONTROLS_GAMEPAD(INPUT_BUTTON_RIGHT)=9 Then
 			DrawImageEx(INTERFACE(keys), x#, y#, 61)
 			DrawImageEx(INTERFACE(keys), x#, y#, 111+5+27*(Menu\Settings\ControllerLayout#-1))
 		Else
@@ -158,7 +158,7 @@ Function Menu_Options_Update()
 	Menu\Background=1
 	Menu\ShowCards=True
 
-	For i=1 to 5
+	For i=1 To 5
 		Menu_UpdateOptionButtons(i+Menu\OptionOrder) : DrawSmartButton(i, Menu\OptionButton$, GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*50*GAME_WINDOW_SCALE#)
 		Select (i+Menu\OptionOrder)
 			Case MENU_CONTROLS#:
@@ -246,7 +246,7 @@ Function Menu_Options_Main_Update()
 					Menu\OptionOrder2=(Ceil#(Menu\Settings\Theme#/7.0)-1)*7
 					If Menu\OptionOrder2>MENU_THEME_AMOUNT#-7 Then
 						Menu\OptionOrder2=MENU_THEME_AMOUNT#-7
-						Menu\NewOption2=abs(MENU_THEME_AMOUNT#-Menu\Settings\Theme#-7)
+						Menu\NewOption2=Abs(MENU_THEME_AMOUNT#-Menu\Settings\Theme#-7)
 					EndIf
 					Menu_Options_Theme_LoadThumbnail()
 			Case 20: Menu\NewOption2=1 : Menu\NewMenu2=MENU_RESET#
@@ -266,25 +266,24 @@ End Function
 
 Function Menu_Options_Save()
 	If Menu\ControlsAfterOptions Then
-		For i=0 to 17 : CONTROLS_GAMEPAD(i) = CONTROLS_NEWGAMEPAD(i) : Next
+		For i=0 To 17 : CONTROLS_GAMEPAD(i) = CONTROLS_NEWGAMEPAD(i) : Next
 		Game_MainControlConfig() : Menu\ControlsAfterOptions=False
 	EndIf
 
 	If Menu\Settings\NewTheme#>0 Then Menu\Settings\Theme#=Menu\Settings\NewTheme#
 
 	If Menu\CloseAfterOptions Then
-		If Menu\Settings\Mods#=0 and Menu\Settings\Theme#>MENU_THEME_NONMODAMOUNT# Then Menu\Settings\Theme#=1
+		If Menu\Settings\Mods#=0 And Menu\Settings\Theme#>MENU_THEME_NONMODAMOUNT# Then Menu\Settings\Theme#=1
 		Menu\NewMenu=MENU_CLOSE#
 		Menu\Settings\Resolution#=Menu\Settings\NewResolution#
 	Else
 		If Menu\LoadThemeAfterOptions Then
-			For x = INTERFACE_ALWAYSTOTAL+1 to INTERFACE_TOTAL : FreeSmartImage(x) : Next
-			FreeSmartImage(Interface_Card1) : FreeSmartImage(Interface_Buttons_1) : FreeSmartImage(Interface_Buttons_2)
-			For x = SOUNDS_ALWAYSTOTAL+1 to SOUNDS_TOTAL : FreeSmartSound(x) : Next
-			For x=INTERFACE_ALWAYSTOTAL+1 to INTERFACE_MENUTOTAL : LoadSmartImage(x) : Next
-			LoadSmartImage(Interface_Card1) : LoadSmartImage(Interface_Buttons_1) : LoadSmartImage(Interface_Buttons_2)
+			For x = 0 To INTERFACE_TOTAL : FreeSmartImage(x) : Next
+			For x = 0 To SOUNDS_TOTAL : FreeSmartSound(x) : Next
+			For x=0 To INTERFACE_TOTAL : LoadSmartImage(x) : Next
+			For x = 0 To SOUNDS_TOTAL : LoadSmartSound(x) : Next
 			LoadMenuMusic()
-			Delay(75)
+			Delay(150)
 			Menu\LoadThemeAfterOptions=False
 			Menu\NewOption=1 : Menu\Menu=MENU_START# : Menu\NewMenu=MENU_START#
 		EndIf
@@ -294,7 +293,7 @@ Function Menu_Options_Save()
 		EndIf
 	EndIf
 
-	SaveGame(false)
+	SaveGame(False)
 
 	If Menu\ResetOptionsAfterOptions Then ResetOptions() : Menu\ResetOptionsAfterOptions=False
 	If Menu\ResetGameAfterOptions Then ResetGame() : Menu\ResetGameAfterOptions=False
@@ -313,30 +312,30 @@ Function Menu_Options_OnOff_Update()
 
 	Select Menu\Menu2
 		Case MENU_SOUNDS#,MENU_TIPS#:
-			DrawSmartButton(1, "On", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#, true)
-			DrawSmartButton(0, "Off", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+55*GAME_WINDOW_SCALE#, true)
+			DrawSmartButton(1, "On", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#, True)
+			DrawSmartButton(0, "Off", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+55*GAME_WINDOW_SCALE#, True)
 		Case MENU_DEBUG#:
-			DrawSmartButton(1, "On", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+40*GAME_WINDOW_SCALE#, true)
-			DrawSmartButton(0, "Off", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+90*GAME_WINDOW_SCALE#, true)
+			DrawSmartButton(1, "On", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+40*GAME_WINDOW_SCALE#, True)
+			DrawSmartButton(0, "Off", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+90*GAME_WINDOW_SCALE#, True)
 		Case MENU_PLANTS#:
-			DrawSmartButton(0, "All", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-10*GAME_WINDOW_SCALE#, true)
-			DrawSmartButton(1, "Stage Only", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+40*GAME_WINDOW_SCALE#, true)
-			DrawSmartButton(2, "None", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+90*GAME_WINDOW_SCALE#, true)
+			DrawSmartButton(0, "All", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-10*GAME_WINDOW_SCALE#, True)
+			DrawSmartButton(1, "Stage Only", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+40*GAME_WINDOW_SCALE#, True)
+			DrawSmartButton(2, "None", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+90*GAME_WINDOW_SCALE#, True)
 		Case MENU_VIEW#:
-			DrawSmartButton(0, "Automatic", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-5*GAME_WINDOW_SCALE#, true, true)
-			DrawSmartButton(1, "Small", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+25*GAME_WINDOW_SCALE#, true, true)
-			DrawSmartButton(2, "Normal", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+55*GAME_WINDOW_SCALE#, true, true)
-			DrawSmartButton(3, "Big", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+85*GAME_WINDOW_SCALE#, true, true)
-			DrawSmartButton(4, "Huge", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+115*GAME_WINDOW_SCALE#, true, true)
+			DrawSmartButton(0, "Automatic", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-5*GAME_WINDOW_SCALE#, True, True)
+			DrawSmartButton(1, "Small", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+25*GAME_WINDOW_SCALE#, True, True)
+			DrawSmartButton(2, "Normal", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+55*GAME_WINDOW_SCALE#, True, True)
+			DrawSmartButton(3, "Big", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+85*GAME_WINDOW_SCALE#, True, True)
+			DrawSmartButton(4, "Huge", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+115*GAME_WINDOW_SCALE#, True, True)
 		Case MENU_MODS#:
-			DrawSmartButton(1, "On", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+45*GAME_WINDOW_SCALE#, true)
-			DrawSmartButton(0, "Off", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+95*GAME_WINDOW_SCALE#, true)
+			DrawSmartButton(1, "On", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+45*GAME_WINDOW_SCALE#, True)
+			DrawSmartButton(0, "Off", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+95*GAME_WINDOW_SCALE#, True)
 		Case MENU_AUTOCAM#:
-			DrawSmartButton(0, "On", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#, true)
-			DrawSmartButton(1, "Off", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+55*GAME_WINDOW_SCALE#, true)
+			DrawSmartButton(0, "On", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#, True)
+			DrawSmartButton(1, "Off", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+55*GAME_WINDOW_SCALE#, True)
 		Default:
-			DrawSmartButton(1, "On", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+25*GAME_WINDOW_SCALE#, true)
-			DrawSmartButton(0, "Off", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+75*GAME_WINDOW_SCALE#, true)
+			DrawSmartButton(1, "On", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+25*GAME_WINDOW_SCALE#, True)
+			DrawSmartButton(0, "Off", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+75*GAME_WINDOW_SCALE#, True)
 	End Select
 	Select Menu\Menu2
 		Case MENU_SOUNDS#:
@@ -411,47 +410,27 @@ End Function
 ;===============================================================================================================================================================
 ;===============================================================================================================================================================
 
-Global MENU_THEME_NONMODAMOUNT# = 32
-Global MENU_THEME_AMOUNT# = MENU_THEME_NONMODAMOUNT#+8
+Global MENU_THEME_NONMODAMOUNT# = 9
+Global MENU_THEME_AMOUNT# = MENU_THEME_NONMODAMOUNT#+16
 
 Function Menu_Options_Theme_Update()
 
 	Menu\ControlsToShow=Menu\Menu2*100
 
-	For i=1 to 7
+	For i=1 To 7
 		Select(i+Menu\OptionOrder2)
-			Case 1: j$ = "Sky"
-			Case 2: j$ = "Space"
-			Case 3: j$ = "Island"
-			Case 4: j$ = "Underwater"
-			Case 5: j$ = "City"
-			Case 6: j$ = "Expo"
-			Case 7: j$ = "Winter"
-			Case 8: j$ = "Heroes"
-			Case 9: j$ = "Forest"
-			Case 10: j$ = "Rainy"
-			Case 11: j$ = "Adventure"
-			Case 12: j$ = "Sunny"
-			Case 13: j$ = "Volcano"
-			Case 14: j$ = "Amusement"
-			Case 15: j$ = "Windy"
-			Case 16: j$ = "Retro"
-			Case 17: j$ = "Night"
-			Case 18: j$ = "Kingdom"
-			Case 19: j$ = "Rush"
-			Case 20: j$ = "Advance"
-			Case 21: j$ = "Dream"
-			Case 22: j$ = "Special"
-			Case 23: j$ = "Buddy"
-			Case 24: j$ = "Chao"
-			Case 25: j$ = "Summer"
-			Case 26: j$ = "Classic"
-			Case 27: j$ = "Sacred"
-			Case 28: j$ = "Resistance"
-			Case 29: j$ = "Edgy"
-			Case 30: j$ = "World"
-			Case 31: j$ = "Hex"
-			Case 32: j$ = "Rival"
+			Case 1: j$ = "DX Default"
+			Case 2: j$ = "SW Classic"
+			Case 3: j$ = "Adventure"
+			Case 4: j$ = "Adventure 2"
+			Case 5: j$ = "Heroes"
+			Case 6: j$ = "Shadow"
+			Case 7: j$ = "Sonic 06"
+			Case 8: j$ = "Colours"
+			Case 9: j$ = "Lost World"
+				
+				
+				
 			Default:
 				If (i+Menu\OptionOrder2)>MENU_THEME_NONMODAMOUNT# Then
 					j$ = "Custom "+Int((i+Menu\OptionOrder2)-MENU_THEME_NONMODAMOUNT#)
@@ -459,12 +438,13 @@ Function Menu_Options_Theme_Update()
 					j$ = "???"
 				EndIf
 		End Select
-		DrawSmartButton(i, j$, GAME_WINDOW_W/2+(BUTTON_PLACE2#-135*1)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-75*GAME_WINDOW_SCALE#+(i-1)*30*GAME_WINDOW_SCALE#, true, true)
-		If i=1 and Menu\Option2=1 Then DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W/2+(BUTTON_PLACE2#-135*1)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-75*GAME_WINDOW_SCALE#+(i-1)*30*GAME_WINDOW_SCALE#-30*GAME_WINDOW_SCALE#,20)
-		If i=7 and Menu\Option2=7 Then DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W/2+(BUTTON_PLACE2#-135*1)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-75*GAME_WINDOW_SCALE#+(i-1)*30*GAME_WINDOW_SCALE#+30*GAME_WINDOW_SCALE#,21)
+		DrawSmartButton(i, j$, GAME_WINDOW_W/2+(BUTTON_PLACE2#-135*1)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-75*GAME_WINDOW_SCALE#+(i-1)*30*GAME_WINDOW_SCALE#, True, True)
+		If i=1 And Menu\Option2=1 Then DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W/2+(BUTTON_PLACE2#-135*1)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-75*GAME_WINDOW_SCALE#+(i-1)*30*GAME_WINDOW_SCALE#-30*GAME_WINDOW_SCALE#,20)
+		If i=7 And Menu\Option2=7 Then DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W/2+(BUTTON_PLACE2#-135*1)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-75*GAME_WINDOW_SCALE#+(i-1)*30*GAME_WINDOW_SCALE#+30*GAME_WINDOW_SCALE#,21)
 	Next
 
 	SetScale(GAME_WINDOW_SCALE#*0.3375, GAME_WINDOW_SCALE#*0.3375)
+	
 	DrawImageEx(INTERFACE(Interface_StageSelectThumbnails[1]), GAME_WINDOW_W/2+(BUTTON_PLACE2#-135*1)*GAME_WINDOW_SCALE#+202.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+8.75*GAME_WINDOW_SCALE#)
 	SetScale(GAME_WINDOW_SCALE#*1.025, GAME_WINDOW_SCALE#*0.825)
 	DrawImageEx(INTERFACE(Interface_Square), GAME_WINDOW_W/2+(BUTTON_PLACE2#-135*1)*GAME_WINDOW_SCALE#+202.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+8.75*GAME_WINDOW_SCALE#)
@@ -515,43 +495,28 @@ Function Menu_Options_Theme_Update()
 End Function
 
 Function Menu_Options_Theme_LoadThumbnail()
-For i=1 to 1
-	If INTERFACE_EXISTS(Interface_StageSelectThumbnails[i]) Then FreeSmartImage(Interface_StageSelectThumbnails[i])
-	If Menu\Transition=1 Then
-		themeno = Menu\NewOption2+Menu\OptionOrder2
-	Else
-		themeno = Menu\Option2+Menu\OptionOrder2
-	EndIf
-	If i=2 Then
+	For i=1 To 1
+		If INTERFACE_EXISTS(Interface_StageSelectThumbnails[i]) Then FreeSmartImage(Interface_StageSelectThumbnails[i])
+		If Menu\Transition=1 Then
+			themeno = Menu\NewOption2+Menu\OptionOrder2
+		Else
+			themeno = Menu\Option2+Menu\OptionOrder2
+		EndIf
 		If themeno<=MENU_THEME_NONMODAMOUNT# Then
-			If Not(FileType("Interface/Background"+Int(themeno)+".png")=1) Then
-				LoadSmartFastImage("Interface/Background"+Int(themeno)+"a.png", Interface_StageSelectThumbnails[i], 1440, 900, 0, 1, 2.3, 2.3, false, false, true)
+			If Not(FileType("Interface/Theme"+Int(themeno)+"/Thumbnail.png")=1) Then
+				LoadSmartFastImage("Interface/Theme"+Int(themeno)+"/Sky.png", Interface_StageSelectThumbnails[i], 1440, 900, 0, 1, 2.3, 2.3, False, False, True)
 			Else
-				LoadSmartFastImage("Interface/Background"+Int(themeno)+".png", Interface_StageSelectThumbnails[i], 1440, 900, 0, 1, 2.3, 2.3, false, false, true)
+				LoadSmartFastImage("Interface/Theme"+Int(themeno)+"/Thumbnail.png", Interface_StageSelectThumbnails[i], 1440, 900, 0, 1, 2.3, 2.3, False, False, True)
 			EndIf
 		Else
-			If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(themeno-MENU_THEME_NONMODAMOUNT#)+"/Background.png")=1) Then
-				LoadSmartFastImage("Interface/Background"+Int(1)+".png", Interface_StageSelectThumbnails[i], 1440, 900, 0, 1, 2.3, 2.3, false, false, true)
+			If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(themeno-MENU_THEME_NONMODAMOUNT#)+"/Interface/Thumbnail.png")=1) Then
+				LoadSmartFastImage("Interface/Theme1/Sky.png", Interface_StageSelectThumbnails[i], 1440, 900, 0, 1, 2.3, 2.3, False, False, True)
 			Else
-				LoadSmartFastImage("Mods/MenuThemes/CustomTheme"+Int(themeno-MENU_THEME_NONMODAMOUNT#)+"/Background.png", Interface_StageSelectThumbnails[i], 1440, 900, 0, 1, 2.3, 2.3, false, false, true)
+				LoadSmartFastImage("Mods/MenuThemes/CustomTheme"+Int(themeno-MENU_THEME_NONMODAMOUNT#)+"/Interface/Thumbnail.png", Interface_StageSelectThumbnails[i], 1440, 900, 0, 1, 2.3, 2.3, False, False, True)
 			EndIf
 		EndIf
-	Else
-		If themeno<=MENU_THEME_NONMODAMOUNT# Then
-			If Not(FileType("Interface/Sky"+Int(themeno)+".png")=1) Then
-				LoadSmartFastImage("Interface/Sky"+Int(themeno)+"a.png", Interface_StageSelectThumbnails[i], 1440, 900, 0, 1, 2.3, 2.3, false, false, true)
-			Else
-				LoadSmartFastImage("Interface/Sky"+Int(themeno)+".png", Interface_StageSelectThumbnails[i], 1440, 900, 0, 1, 2.3, 2.3, false, false, true)
-			EndIf
-		Else
-			If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(themeno-MENU_THEME_NONMODAMOUNT#)+"/Sky.png")=1) Then
-				LoadSmartFastImage("Interface/Sky"+Int(1)+".png", Interface_StageSelectThumbnails[i], 1440, 900, 0, 1, 2.3, 2.3, false, false, true)
-			Else
-				LoadSmartFastImage("Mods/MenuThemes/CustomTheme"+Int(themeno-MENU_THEME_NONMODAMOUNT#)+"/Sky.png", Interface_StageSelectThumbnails[i], 1440, 900, 0, 1, 2.3, 2.3, false, false, true)
-			EndIf
-		EndIf
-	EndIf
-Next
+	Next 
+	
 End Function
 
 ;===============================================================================================================================================================
@@ -560,8 +525,8 @@ Function Menu_Options_Screen_Update()
 
 	Menu\ControlsToShow=Menu\Menu2*100
 
-	DrawSmartButton(1, "Fullscreen", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+25*GAME_WINDOW_SCALE#, true)
-	DrawSmartButton(0, "Windowed", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+75*GAME_WINDOW_SCALE#, true)
+	DrawSmartButton(1, "Fullscreen", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+25*GAME_WINDOW_SCALE#, True)
+	DrawSmartButton(0, "Windowed", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+75*GAME_WINDOW_SCALE#, True)
 
 	DrawRealText(Menu\Warning$, GAME_WINDOW_W/2+(BUTTON_PLACE2#-110)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-90*GAME_WINDOW_SCALE#, (Interface_Text_3), 0, GAME_WINDOW_W/2+(BUTTON_PLACE2#+90)*GAME_WINDOW_SCALE#)
 
@@ -599,20 +564,20 @@ Function Menu_Options_Resolution_Update()
 
 	Menu\ControlsToShow=Menu\Menu2*100
 
-	DrawSmartButton(1 , "1066x568", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#-1*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+0*30*GAME_WINDOW_SCALE#, true, true)
-	DrawSmartButton(2 , "1280x720", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#-1*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+1*30*GAME_WINDOW_SCALE#, true, true)
-	DrawSmartButton(3 , "1280x768", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#-1*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+2*30*GAME_WINDOW_SCALE#, true, true)
-	DrawSmartButton(4 , "1280x800", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#-1*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+3*30*GAME_WINDOW_SCALE#, true, true)
+	DrawSmartButton(1 , "1066x568", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#-1*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+0*30*GAME_WINDOW_SCALE#, True, True)
+	DrawSmartButton(2 , "1280x720", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#-1*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+1*30*GAME_WINDOW_SCALE#, True, True)
+	DrawSmartButton(3 , "1280x768", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#-1*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+2*30*GAME_WINDOW_SCALE#, True, True)
+	DrawSmartButton(4 , "1280x800", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#-1*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+3*30*GAME_WINDOW_SCALE#, True, True)
 
-	DrawSmartButton(5 , "1360x768", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#+0*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+0*30*GAME_WINDOW_SCALE#, true, true)
-	DrawSmartButton(6 , "1366x768", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#+0*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+1*30*GAME_WINDOW_SCALE#, true, true)
-	DrawSmartButton(7 , "1440x900", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#+0*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+2*30*GAME_WINDOW_SCALE#, true, true)
-	DrawSmartButton(8 , "1440x960", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#+0*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+3*30*GAME_WINDOW_SCALE#, true, true)
+	DrawSmartButton(5 , "1360x768", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#+0*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+0*30*GAME_WINDOW_SCALE#, True, True)
+	DrawSmartButton(6 , "1366x768", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#+0*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+1*30*GAME_WINDOW_SCALE#, True, True)
+	DrawSmartButton(7 , "1440x900", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#+0*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+2*30*GAME_WINDOW_SCALE#, True, True)
+	DrawSmartButton(8 , "1440x960", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#+0*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+3*30*GAME_WINDOW_SCALE#, True, True)
 
-	DrawSmartButton(9 , "1600x900", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#+1*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+0*30*GAME_WINDOW_SCALE#, true, true)
-	DrawSmartButton(10, "1680x1050", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#+1*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+1*30*GAME_WINDOW_SCALE#, true, true)
-	DrawSmartButton(11, "1920x1080", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#+1*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+2*30*GAME_WINDOW_SCALE#, true, true)
-	DrawSmartButton(12, "1920x1200", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#+1*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+3*30*GAME_WINDOW_SCALE#, true, true)
+	DrawSmartButton(9 , "1600x900", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#+1*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+0*30*GAME_WINDOW_SCALE#, True, True)
+	DrawSmartButton(10, "1680x1050", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#+1*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+1*30*GAME_WINDOW_SCALE#, True, True)
+	DrawSmartButton(11, "1920x1080", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#+1*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+2*30*GAME_WINDOW_SCALE#, True, True)
+	DrawSmartButton(12, "1920x1200", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#+1*135*GAME_WINDOW_SCALE#+10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+5*GAME_WINDOW_SCALE#+3*30*GAME_WINDOW_SCALE#, True, True)
 
 	DrawRealText(Menu\Warning$, GAME_WINDOW_W/2+(BUTTON_PLACE2#-165)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-105*GAME_WINDOW_SCALE#, (Interface_Text_3), 0, GAME_WINDOW_W/2+(BUTTON_PLACE2#+150)*GAME_WINDOW_SCALE#)
 
@@ -737,43 +702,43 @@ Function Menu_Options_Controls_Update()
 	;***************************************************************************************************************************
 	DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+(BUTTON_PLACE2#-150)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*0)*GAME_WINDOW_SCALE#, 64)
 	If Menu\OptionOrder2=1 Then DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+30)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*0)*GAME_WINDOW_SCALE#)
-	DrawSmartKey(INPUT_BUTTON_UP, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*0)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource, true)
-	If Menu\ControlAssignmentSource=2 and Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_UP, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*0)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource)
+	DrawSmartKey(INPUT_BUTTON_UP, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*0)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource, True)
+	If Menu\ControlAssignmentSource=2 And Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_UP, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*0)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource)
 	;;;
 	DrawRealText("Up: ", GAME_WINDOW_W/2+(BUTTON_PLACE2#-160)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*0)*GAME_WINDOW_SCALE#-15*GAME_WINDOW_SCALE#, (Interface_Text_1))
 	;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+(BUTTON_PLACE2#-150)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*1)*GAME_WINDOW_SCALE#, 65)
 	If Menu\OptionOrder2=2 Then DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+30)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*1)*GAME_WINDOW_SCALE#)
-	DrawSmartKey(INPUT_BUTTON_DOWN, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*1)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource, true)
-	If Menu\ControlAssignmentSource=2 and Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_DOWN, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*1)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource)
+	DrawSmartKey(INPUT_BUTTON_DOWN, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*1)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource, True)
+	If Menu\ControlAssignmentSource=2 And Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_DOWN, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*1)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource)
 	;;;
 	DrawRealText("Down: ", GAME_WINDOW_W/2+(BUTTON_PLACE2#-160)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*1)*GAME_WINDOW_SCALE#-15*GAME_WINDOW_SCALE#, (Interface_Text_1))
 	;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+(BUTTON_PLACE2#-150)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*2)*GAME_WINDOW_SCALE#, 66)
 	If Menu\OptionOrder2=3 Then DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+30)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*2)*GAME_WINDOW_SCALE#)
-	DrawSmartKey(INPUT_BUTTON_LEFT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*2)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource, true)
-	If Menu\ControlAssignmentSource=2 and Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_LEFT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*2)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource)
+	DrawSmartKey(INPUT_BUTTON_LEFT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*2)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource, True)
+	If Menu\ControlAssignmentSource=2 And Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_LEFT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*2)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource)
 	;;;
 	DrawRealText("Left: ", GAME_WINDOW_W/2+(BUTTON_PLACE2#-160)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*2)*GAME_WINDOW_SCALE#-15*GAME_WINDOW_SCALE#, (Interface_Text_1))
 	;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+(BUTTON_PLACE2#-150)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*3)*GAME_WINDOW_SCALE#, 67)
 	If Menu\OptionOrder2=4 Then DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+30)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*3)*GAME_WINDOW_SCALE#)
-	DrawSmartKey(INPUT_BUTTON_RIGHT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*3)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource, true)
-	If Menu\ControlAssignmentSource=2 and Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_RIGHT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*3)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource)
+	DrawSmartKey(INPUT_BUTTON_RIGHT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*3)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource, True)
+	If Menu\ControlAssignmentSource=2 And Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_RIGHT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*3)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource)
 	;;;
 	DrawRealText("Right: ", GAME_WINDOW_W/2+(BUTTON_PLACE2#-160)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*3)*GAME_WINDOW_SCALE#-15*GAME_WINDOW_SCALE#, (Interface_Text_1))
 	;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+(BUTTON_PLACE2#-150)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*4)*GAME_WINDOW_SCALE#, 80)
 	If Menu\OptionOrder2=5 Then DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+30)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*4)*GAME_WINDOW_SCALE#)
-	DrawSmartKey(INPUT_BUTTON_CHANGE, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*4)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource, true)
-	If Menu\ControlAssignmentSource=2 and Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_CHANGE, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*4)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource)
+	DrawSmartKey(INPUT_BUTTON_CHANGE, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*4)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource, True)
+	If Menu\ControlAssignmentSource=2 And Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_CHANGE, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*4)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource)
 	;;;
 	DrawRealText("Change leader: ", GAME_WINDOW_W/2+(BUTTON_PLACE2#-160)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*4)*GAME_WINDOW_SCALE#-15*GAME_WINDOW_SCALE#, (Interface_Text_1))
 	;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+(BUTTON_PLACE2#-150)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*5)*GAME_WINDOW_SCALE#, 81)
 	If Menu\OptionOrder2=6 Then DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+30)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*5)*GAME_WINDOW_SCALE#)
-	DrawSmartKey(INPUT_BUTTON_ACTIONACT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*5)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource, true)
-	If Menu\ControlAssignmentSource=2 and Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_ACTIONACT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*5)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource)
+	DrawSmartKey(INPUT_BUTTON_ACTIONACT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*5)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource, True)
+	If Menu\ControlAssignmentSource=2 And Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_ACTIONACT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*5)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource)
 	;;;
 	DrawRealText("Interact: ", GAME_WINDOW_W/2+(BUTTON_PLACE2#-160)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*5)*GAME_WINDOW_SCALE#-15*GAME_WINDOW_SCALE#, (Interface_Text_1))
 	;***************************************************************************************************************************
@@ -787,86 +752,86 @@ Function Menu_Options_Controls_Update()
 	;***************************************************************************************************************************
 	DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*0)*GAME_WINDOW_SCALE#, 68)
 	If Menu\OptionOrder2=11 Then DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+30+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*0)*GAME_WINDOW_SCALE#)
-	DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*0)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource, true)
-	If Menu\ControlAssignmentSource=2 and Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*0)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource)
+	DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*0)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource, True)
+	If Menu\ControlAssignmentSource=2 And Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*0)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource)
 	;;;
 	DrawRealText("Jump: ", GAME_WINDOW_W/2+(BUTTON_PLACE2#-160+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*0)*GAME_WINDOW_SCALE#-15*GAME_WINDOW_SCALE#, (Interface_Text_1))
 	;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*1)*GAME_WINDOW_SCALE#, 69)
 	If Menu\OptionOrder2=12 Then DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+30+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*1)*GAME_WINDOW_SCALE#)
-	DrawSmartKey(INPUT_BUTTON_ACTIONROLL, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*1)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource, true)
-	If Menu\ControlAssignmentSource=2 and Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_ACTIONROLL, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*1)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource)
+	DrawSmartKey(INPUT_BUTTON_ACTIONROLL, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*1)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource, True)
+	If Menu\ControlAssignmentSource=2 And Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_ACTIONROLL, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*1)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource)
 	;;;
 	DrawRealText("Roll: ", GAME_WINDOW_W/2+(BUTTON_PLACE2#-160+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*1)*GAME_WINDOW_SCALE#-15*GAME_WINDOW_SCALE#, (Interface_Text_1))
 	;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*2)*GAME_WINDOW_SCALE#, 70)
 	If Menu\OptionOrder2=13 Then DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+30+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*2)*GAME_WINDOW_SCALE#)
-	DrawSmartKey(INPUT_BUTTON_ACTIONDRIFT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*2)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource, true)
-	If Menu\ControlAssignmentSource=2 and Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_ACTIONDRIFT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*2)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource)
+	DrawSmartKey(INPUT_BUTTON_ACTIONDRIFT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*2)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource, True)
+	If Menu\ControlAssignmentSource=2 And Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_ACTIONDRIFT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*2)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource)
 	;;;
 	DrawRealText("Drift: ", GAME_WINDOW_W/2+(BUTTON_PLACE2#-160+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*2)*GAME_WINDOW_SCALE#-15*GAME_WINDOW_SCALE#, (Interface_Text_1))
 	;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*3)*GAME_WINDOW_SCALE#, 71)
 	If Menu\OptionOrder2=14 Then DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+30+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*3)*GAME_WINDOW_SCALE#)
-	DrawSmartKey(INPUT_BUTTON_ACTIONSKILL1, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*3)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource, true)
-	If Menu\ControlAssignmentSource=2 and Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_ACTIONSKILL1, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*3)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource)
+	DrawSmartKey(INPUT_BUTTON_ACTIONSKILL1, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*3)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource, True)
+	If Menu\ControlAssignmentSource=2 And Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_ACTIONSKILL1, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*3)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource)
 	;;;
 	DrawRealText("Skill 1: ", GAME_WINDOW_W/2+(BUTTON_PLACE2#-160+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*3)*GAME_WINDOW_SCALE#-15*GAME_WINDOW_SCALE#, (Interface_Text_1))
 	;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*4)*GAME_WINDOW_SCALE#, 72)
 	If Menu\OptionOrder2=15 Then DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+30+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*4)*GAME_WINDOW_SCALE#)
-	DrawSmartKey(INPUT_BUTTON_ACTIONSKILL2, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*4)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource, true)
-	If Menu\ControlAssignmentSource=2 and Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_ACTIONSKILL2, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*4)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource)
+	DrawSmartKey(INPUT_BUTTON_ACTIONSKILL2, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*4)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource, True)
+	If Menu\ControlAssignmentSource=2 And Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_ACTIONSKILL2, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*4)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource)
 	;;;
 	DrawRealText("Skill 2: ", GAME_WINDOW_W/2+(BUTTON_PLACE2#-160+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*4)*GAME_WINDOW_SCALE#-15*GAME_WINDOW_SCALE#, (Interface_Text_1))
 	;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*5)*GAME_WINDOW_SCALE#, 73)
 	If Menu\OptionOrder2=16 Then DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+30+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*5)*GAME_WINDOW_SCALE#)
-	DrawSmartKey(INPUT_BUTTON_ACTIONSKILL3, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*5)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource, true)
-	If Menu\ControlAssignmentSource=2 and Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_ACTIONSKILL3, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*5)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource)
+	DrawSmartKey(INPUT_BUTTON_ACTIONSKILL3, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*5)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource, True)
+	If Menu\ControlAssignmentSource=2 And Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_ACTIONSKILL3, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*5)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource)
 	;;;
 	DrawRealText("Skill 3: ", GAME_WINDOW_W/2+(BUTTON_PLACE2#-160+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*5)*GAME_WINDOW_SCALE#-15*GAME_WINDOW_SCALE#, (Interface_Text_1))
 	;***************************************************************************************************************************
 	;***************************************************************************************************************************
 	DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*0)*GAME_WINDOW_SCALE#, 74)
 	If Menu\OptionOrder2=21 Then DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+30+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*0)*GAME_WINDOW_SCALE#)
-	DrawSmartKey(INPUT_BUTTON_START, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*0)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource, true)
-	If Menu\ControlAssignmentSource=2 and Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_START, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*0)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource)
+	DrawSmartKey(INPUT_BUTTON_START, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*0)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource, True)
+	If Menu\ControlAssignmentSource=2 And Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_START, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*0)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource)
 	;;;
 	DrawRealText("Start, pause, accept: ", GAME_WINDOW_W/2+(BUTTON_PLACE2#-160+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*0)*GAME_WINDOW_SCALE#-15*GAME_WINDOW_SCALE#, (Interface_Text_1))
 	;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*1)*GAME_WINDOW_SCALE#, 75)
 	If Menu\OptionOrder2=22 Then DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+30+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*1)*GAME_WINDOW_SCALE#)
-	DrawSmartKey(INPUT_BUTTON_BACK, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*1)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource, true)
-	If Menu\ControlAssignmentSource=2 and Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_BACK, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*1)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource)
+	DrawSmartKey(INPUT_BUTTON_BACK, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*1)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource, True)
+	If Menu\ControlAssignmentSource=2 And Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_BACK, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*1)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource)
 	;;;
 	DrawRealText("Back: ", GAME_WINDOW_W/2+(BUTTON_PLACE2#-160+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*1)*GAME_WINDOW_SCALE#-15*GAME_WINDOW_SCALE#, (Interface_Text_1))
 	;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*2)*GAME_WINDOW_SCALE#, 78)
 	If Menu\OptionOrder2=23 Then DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+30+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*2)*GAME_WINDOW_SCALE#)
-	DrawSmartKey(INPUT_BUTTON_CAM_LEFT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*2)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource, true)
-	If Menu\ControlAssignmentSource=2 and Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_CAM_LEFT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*2)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource)
+	DrawSmartKey(INPUT_BUTTON_CAM_LEFT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*2)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource, True)
+	If Menu\ControlAssignmentSource=2 And Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_CAM_LEFT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*2)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource)
 	;;;
 	DrawRealText("Turn cam left: ", GAME_WINDOW_W/2+(BUTTON_PLACE2#-160+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*2)*GAME_WINDOW_SCALE#-15*GAME_WINDOW_SCALE#, (Interface_Text_1))
 	;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*3)*GAME_WINDOW_SCALE#, 79)
 	If Menu\OptionOrder2=24 Then DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+30+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*3)*GAME_WINDOW_SCALE#)
-	DrawSmartKey(INPUT_BUTTON_CAM_RIGHT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*3)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource, true)
-	If Menu\ControlAssignmentSource=2 and Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_CAM_RIGHT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*3)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource)
+	DrawSmartKey(INPUT_BUTTON_CAM_RIGHT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*3)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource, True)
+	If Menu\ControlAssignmentSource=2 And Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_CAM_RIGHT, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*3)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource)
 	;;;
 	DrawRealText("Turn cam right: ", GAME_WINDOW_W/2+(BUTTON_PLACE2#-160+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*3)*GAME_WINDOW_SCALE#-15*GAME_WINDOW_SCALE#, (Interface_Text_1))
 	;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*4)*GAME_WINDOW_SCALE#, 77)
 	If Menu\OptionOrder2=25 Then DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+30+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*4)*GAME_WINDOW_SCALE#)
-	DrawSmartKey(INPUT_BUTTON_CAM_CENTER, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*4)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource, true)
-	If Menu\ControlAssignmentSource=2 and Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_CAM_CENTER, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*4)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource)
+	DrawSmartKey(INPUT_BUTTON_CAM_CENTER, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*4)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource, True)
+	If Menu\ControlAssignmentSource=2 And Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_CAM_CENTER, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*4)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource)
 	;;;
 	DrawRealText("Center cam: ", GAME_WINDOW_W/2+(BUTTON_PLACE2#-160+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*4)*GAME_WINDOW_SCALE#-15*GAME_WINDOW_SCALE#, (Interface_Text_1))
 	;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*5)*GAME_WINDOW_SCALE#, 76)
 	If Menu\OptionOrder2=26 Then DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+30+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*5)*GAME_WINDOW_SCALE#)
-	DrawSmartKey(INPUT_BUTTON_ACTIONSKILLX, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*5)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource, true)
-	If Menu\ControlAssignmentSource=2 and Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_ACTIONSKILLX, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*5)*GAME_WINDOW_SCALE#, true, 0, Menu\ControlAssignmentSource)
+	DrawSmartKey(INPUT_BUTTON_ACTIONSKILLX, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+60+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*5)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource, True)
+	If Menu\ControlAssignmentSource=2 And Menu\Settings\ControllerLayout#<3 Then DrawSmartKey_WithNewGamepad(INPUT_BUTTON_ACTIONSKILLX, GAME_WINDOW_W/2+(BUTTON_PLACE2#-150+90+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*5)*GAME_WINDOW_SCALE#, True, 0, Menu\ControlAssignmentSource)
 	;;;
 	DrawRealText("Extra skill: ", GAME_WINDOW_W/2+(BUTTON_PLACE2#-160+250)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-40+33*5)*GAME_WINDOW_SCALE#-15*GAME_WINDOW_SCALE#, (Interface_Text_1))
 	;***************************************************************************************************************************
@@ -1025,7 +990,7 @@ Function Menu_Options_Controls_Update()
 			EndIf
 		EndIf
 
-		If Input\Pressed\ActionSkill2 and (Not(Menu\OptionOrder2<1)) Then
+		If Input\Pressed\ActionSkill2 And (Not(Menu\OptionOrder2<1)) Then
 			PlaySmartSound(Sound_MenuAccept)
 			Menu\ControlsAfterOptions=True
 			Select Menu\OptionOrder2
@@ -1308,11 +1273,11 @@ Function Menu_Options_Controls_Update()
 				Case 35: newbuttonchoice=26
 				Case 36: newbuttonchoice=27
 			End Select
-			newbuttonalreadyused = false
-			For i=0 to 17
-				If CONTROLS_NEWGAMEPAD(i) = newbuttonchoice and CONTROLS_NEWGAMEPAD(i) <> oldbuttonchoice Then newbuttonalreadyused=true
+			newbuttonalreadyused = False
+			For i=0 To 17
+				If CONTROLS_NEWGAMEPAD(i) = newbuttonchoice And CONTROLS_NEWGAMEPAD(i) <> oldbuttonchoice Then newbuttonalreadyused=True
 			Next
-			If newbuttonalreadyused=false Then
+			If newbuttonalreadyused=False Then
 				PlaySmartSound(Sound_MenuAccept)
 				CONTROLS_NEWGAMEPAD(Menu\ButtonThatWasChanged) = newbuttonchoice
 				Menu\ButtonIconChoice=0
@@ -1339,7 +1304,7 @@ Function Menu_Options_Controls_Update()
 	If Menu\ButtonBeChangeBy=0 Or Menu\ButtonBeChangeBy-999 Then
 		Select Menu\ControlAssignmentSource
 			Case 1:
-				For i=1 to 53
+				For i=1 To 53
 					If KeyHit(BUTTONS[i]) Then Menu\ButtonBeChangeBy=BUTTONS[i] : FlushAll()
 				Next
 
@@ -1349,7 +1314,7 @@ Function Menu_Options_Controls_Update()
 			Case 2:
 				If JoyType()>0 Then
 				g = Input_Gamepad
-				For i=1 to 12
+				For i=1 To 12
 					If JoyHit(i, g) Then Menu\ButtonBeChangeBy=i+900+50 : FlushAll()
 				Next
 	 			If (JoyX#(g)<-Input_GamepadThreshold2#) Then Menu\ButtonBeChangeBy=KEY_GAMEPAD_X_MINUS : FlushAll()
@@ -1358,10 +1323,10 @@ Function Menu_Options_Controls_Update()
 	 			If (JoyY#(g)>Input_GamepadThreshold2#)  Then Menu\ButtonBeChangeBy=KEY_GAMEPAD_Y_PLUS : FlushAll()
 	 			If (JoyZ#(g)<-Input_GamepadThreshold2#) Then Menu\ButtonBeChangeBy=KEY_GAMEPAD_Z_MINUS : FlushAll()
 	 			If (JoyZ#(g)>Input_GamepadThreshold2#)  Then Menu\ButtonBeChangeBy=KEY_GAMEPAD_Z_PLUS : FlushAll()
-				If (Not(JoyHat(g)=-1)) and (JoyHat(g)=0) Then Menu\ButtonBeChangeBy=KEY_GAMEPAD_DPAD_UP : FlushAll()
-				If (Not(JoyHat(g)=-1)) and (JoyHat(g)=270) Then Menu\ButtonBeChangeBy=KEY_GAMEPAD_DPAD_LEFT : FlushAll()
-				If (Not(JoyHat(g)=-1)) and (JoyHat(g)=90) Then Menu\ButtonBeChangeBy=KEY_GAMEPAD_DPAD_RIGHT : FlushAll()
-				If (Not(JoyHat(g)=-1)) and (JoyHat(g)=180) Then Menu\ButtonBeChangeBy=KEY_GAMEPAD_DPAD_DOWN : FlushAll()
+				If (Not(JoyHat(g)=-1)) And (JoyHat(g)=0) Then Menu\ButtonBeChangeBy=KEY_GAMEPAD_DPAD_UP : FlushAll()
+				If (Not(JoyHat(g)=-1)) And (JoyHat(g)=270) Then Menu\ButtonBeChangeBy=KEY_GAMEPAD_DPAD_LEFT : FlushAll()
+				If (Not(JoyHat(g)=-1)) And (JoyHat(g)=90) Then Menu\ButtonBeChangeBy=KEY_GAMEPAD_DPAD_RIGHT : FlushAll()
+				If (Not(JoyHat(g)=-1)) And (JoyHat(g)=180) Then Menu\ButtonBeChangeBy=KEY_GAMEPAD_DPAD_DOWN : FlushAll()
 				Select JoyType(g)
 					Case 1: ;digital
 						If ((JoyPitch#(g)/180.0)<-Input_GamepadThreshold2#) Then Menu\ButtonBeChangeBy=KEY_GAMEPAD_P_MINUS : FlushAll()
@@ -1378,18 +1343,18 @@ Function Menu_Options_Controls_Update()
 		End Select
 	EndIf
 
-	If Menu\ButtonBeChangeBy<>0 and (Not(Menu\ButtonBeChangeBy=-999)) Then
+	If Menu\ButtonBeChangeBy<>0 And (Not(Menu\ButtonBeChangeBy=-999)) Then
 		If (Not(ChannelPlaying(Menu\Channel_Emblem))) Then Menu\Channel_Emblem=PlaySmartSound(Sound_MenuAccept)
 		FlushAll()
 		CONTROLS(Menu\ControlAssignmentSource,Menu\ButtonToChange)=Menu\ButtonBeChangeBy
 		Menu\ButtonWasUsed=0
-		For i=0 to 17
-			If Menu\ButtonWasUsed=0 and (Not(Menu\ButtonToChange=i)) and CONTROLS(Menu\ControlAssignmentSource,Menu\ButtonToChange)=CONTROLS(Menu\ControlAssignmentSource,i) Then Menu\ButtonWasUsed=-999
+		For i=0 To 17
+			If Menu\ButtonWasUsed=0 And (Not(Menu\ButtonToChange=i)) And CONTROLS(Menu\ControlAssignmentSource,Menu\ButtonToChange)=CONTROLS(Menu\ControlAssignmentSource,i) Then Menu\ButtonWasUsed=-999
 		Next
 		If Menu\ButtonWasUsed=-999 Then
 			Menu\ButtonBeChangeBy=Menu\ButtonWasUsed
 		Else
-			If Menu\ControlAssignmentSource=2 and Menu\Settings\ControllerLayout#<3 Then
+			If Menu\ControlAssignmentSource=2 And Menu\Settings\ControllerLayout#<3 Then
 				Menu\ButtonThatWasChanged=Menu\ButtonToChange
 				Select CONTROLS_NEWGAMEPAD(Menu\ButtonThatWasChanged)
 					Case 1: Menu\ButtonIconChoice=1
@@ -1431,10 +1396,10 @@ Function Menu_Options_Controls_Update()
 End Function
 
 Function Menu_Options_Controls_ReturnNonEmpty()
-	For i=0 to 17
-		If CONTROLS(Menu\ControlAssignmentSource,i)=KEY_EMPTY Then Return false
+	For i=0 To 17
+		If CONTROLS(Menu\ControlAssignmentSource,i)=KEY_EMPTY Then Return False
 	Next
-	Return true
+	Return True
 End Function
 
 ;===============================================================================================================================================================
@@ -1443,10 +1408,10 @@ Function Menu_Options_Reset_Update()
 
 	Menu\ControlsToShow=Menu\Menu2*100
 
-	DrawSmartButton(1, "Options", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#-90*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+50*GAME_WINDOW_SCALE#, true)
-	DrawSmartButton(2, "Game Progress", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#-90*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+100*GAME_WINDOW_SCALE#, true)
-	DrawSmartButton(3, "Records", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#+110*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+50*GAME_WINDOW_SCALE#, true)
-	DrawSmartButton(4, "Chao Garden", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#+110*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+100*GAME_WINDOW_SCALE#, true)
+	DrawSmartButton(1, "Options", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#-90*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+50*GAME_WINDOW_SCALE#, True)
+	DrawSmartButton(2, "Game Progress", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#-90*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+100*GAME_WINDOW_SCALE#, True)
+	DrawSmartButton(3, "Records", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#+110*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+50*GAME_WINDOW_SCALE#, True)
+	DrawSmartButton(4, "Chao Garden", GAME_WINDOW_W/2+BUTTON_PLACE2#*GAME_WINDOW_SCALE#+110*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+100*GAME_WINDOW_SCALE#, True)
 
 	DrawRealText(Menu\Warning$, GAME_WINDOW_W/2+(BUTTON_PLACE2#-130)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-100*GAME_WINDOW_SCALE#, (Interface_Text_3), 0, GAME_WINDOW_W/2+(BUTTON_PLACE2#+120)*GAME_WINDOW_SCALE#)
 
@@ -1585,3 +1550,6 @@ Function Menu_Options_Volume_Update()
 	EndIf
 
 End Function
+
+;~IDEal Editor Parameters:
+;~C#Blitz3D

@@ -1,11 +1,14 @@
 Global Object_Texture_Quad = LoadTexture("Textures\Woosh.png", 1+256)
 
 Global Object_Texture_Pads=LoadTexture("Objects\Fasteners\Pad.png", 1+256)
+Global Object_Texture_Panel=LoadTexture("Objects\Fasteners\Panel.png", 1+256)
 Global Object_Texture_DashHoop=LoadTexture("Objects\Hoops\DashHoop.png", 1+256)
 Global Object_Texture_RainbowHoop=LoadTexture("Objects\Hoops\RainbowHoop.png", 1+256)
 Global Object_Texture_AcceleratorLight=LoadTexture("Objects\Fasteners\accellight.png", 1+256)
 
 Global Object_Texture_Gold=LoadTexture("Textures\Gold.png", 64+256) : TextureBlend Object_Texture_Gold,2
+
+Global Object_Texture_ChaosControl=LoadTexture("Textures\ChaosControl.png", 64+256) : TextureBlend Object_Texture_ChaosControl,2
 
 Global Object_Texture_AntiGlow = CreateTexture(0,0)
 Global Object_Texture_PsychoGlow = LoadTexture("Textures/levitation.png",64) : TextureBlend Object_Texture_PsychoGlow,3
@@ -21,6 +24,7 @@ Global Object_Texture_Box_Cage=LoadTexture("Objects\Boxes\box_cage.png", 4)
 Global Object_Texture_Box_Tnt=LoadTexture("Objects\Boxes\box_tnt.png")
 Global Object_Texture_Box_Nitro=LoadTexture("Objects\Boxes\box_nitro.png")
 Global Object_Texture_Box_Float=LoadTexture("Objects\Boxes\box_float.png")
+Global Object_Texture_Box_Yellow=LoadTexture("Objects\Boxes\box_yellow.png")
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
@@ -30,9 +34,12 @@ Global Object_Texture_Box_Float=LoadTexture("Objects\Boxes\box_float.png")
 	Global OBJTYPE_NULL			= i : i=i+1
 
 	Global OBJTYPE_RING			= i : i=i+1
-	Global OBJTYPE_REDRING		= i : i=i+1
+	Global OBJTYPE_REDRING			= i : i=i+1
+	Global OBJTYPE_SHARD		= i : i=i+1
 
 	Global OBJTYPE_SPRING		= i : i=i+1
+	Global OBJTYPE_SPRINGICE		= i : i=i+1
+	Global OBJTYPE_SPRINGTHORN		= i : i=i+1
 	Global OBJTYPE_BSPRING		= i : i=i+1
 	Global OBJTYPE_SPRINGX		= i : i=i+1
 	Global OBJTYPE_SPRINGTRAP	= i : i=i+1
@@ -49,6 +56,8 @@ Global Object_Texture_Box_Float=LoadTexture("Objects\Boxes\box_float.png")
 	Global OBJTYPE_FAN			= i : i=i+1
 	Global OBJTYPE_BFAN			= i : i=i+1
 	Global OBJTYPE_BFANLOW		= i : i=i+1
+	Global OBJTYPE_PANEL1		= i : i=i+1
+	Global OBJTYPE_PANEL2		= i : i=i+1
 
 	Global OBJTYPE_CHECK		= i : i=i+1
 
@@ -88,6 +97,8 @@ Global Object_Texture_Box_Float=LoadTexture("Objects\Boxes\box_float.png")
 
 	Global OBJTYPE_GOAL			= i : i=i+1
 	Global OBJTYPE_GOAL2		= i : i=i+1
+	
+	Global OBJTYPE_WARPRING			= i : i=i+1
 
 	Global OBJTYPE_FLAMESPOUT	= i : i=i+1
 	Global OBJTYPE_ICESPOUT		= i : i=i+1
@@ -105,6 +116,7 @@ Global Object_Texture_Box_Float=LoadTexture("Objects\Boxes\box_float.png")
 	Global OBJTYPE_BOXTNT		= i : i=i+1
 	Global OBJTYPE_BOXNITRO		= i : i=i+1
 	Global OBJTYPE_BOXFLOAT		= i : i=i+1
+	Global OBJTYPE_BOXYELLOW		= i : i=i+1
 
 	Global OBJTYPE_BALLBUMPER	= i : i=i+1
 	Global OBJTYPE_GROUNDBUMPER	= i : i=i+1
@@ -155,6 +167,7 @@ Global Object_Texture_Box_Float=LoadTexture("Objects\Boxes\box_float.png")
 	Global OBJTYPE_FIGHTER		= i : i=i+1
 	Global OBJTYPE_EGGROBO		= i : i=i+1
 	Global OBJTYPE_CAMERON		= i : i=i+1
+	Global OBJTYPE_GUNNER		= i : i=i+1
 	Global OBJTYPE_KLAGEN		= i : i=i+1
 	Global OBJTYPE_ORBINAUT		= i : i=i+1
 	Global OBJTYPE_TYPHOON		= i : i=i+1
@@ -225,6 +238,10 @@ Global Object_Texture_Box_Float=LoadTexture("Objects\Boxes\box_float.png")
 	Global OBJTYPE_BOSSRUN		= i : i=i+1
 	Global OBJTYPE_BOSSBETA		= i : i=i+1
 	Global OBJTYPE_BOSSMECHA	= i : i=i+1
+	
+	Global OBJTYPE_SEARCHER		= i : i=i+1
+	Global OBJTYPE_EGGHUNTER		= i : i=i+1
+	
 
 	Global OBJTYPE_BUBBLES		= i : i=i+1
 
@@ -309,7 +326,7 @@ Global Object_Texture_Box_Float=LoadTexture("Objects\Boxes\box_float.png")
 
 	;objects below dont show up in obj placer--
 	Global OBJTYPE_SPEWRING		= i : i=i+1
-	Global OBJTYPE_SPEWREDRING	= i : i=i+1
+	Global OBJTYPE_SPEWSHARD	= i : i=i+1
 	Global OBJTYPE_FLICKY		= i : i=i+1
 
 	Global OBJTYPE_PIECE		= i : i=i+1
@@ -332,9 +349,15 @@ Global Object_Texture_Box_Float=LoadTexture("Objects\Boxes\box_float.png")
 
 	Global OBJTYPE_HOMMER		= i : i=i+1
 	Global OBJTYPE_REPEATER		= i : i=i+1
+	
+	Global OBJTYPE_STAGEVISUAL1 =i : i=i+1
+	Global OBJTYPE_STAGEVISUAL2 =i : i=i+1
+	Global OBJTYPE_STAGEVISUAL3 =i : i=i+1
+	Global OBJTYPE_STAGEVISUAL4 =i : i=i+1
+	Global OBJTYPE_STAGEVISUAL5 =i : i=i+1
 	;---
 
-	i=901
+	i=911
 
 	Global OBJTYPE_TREE1	= i : i=i+1
 	Global OBJTYPE_TREE2	= i : i=i+1
@@ -421,7 +444,7 @@ Global Object_Texture_Box_Float=LoadTexture("Objects\Boxes\box_float.png")
 		Field ObjType
 		Field ID
 		Field AlwaysPresent
-		Field HasRedRing
+		Field HasShard
 		Field InView
 		Field InView2
 		Field CanBeInsideBox
@@ -430,6 +453,7 @@ Global Object_Texture_Box_Float=LoadTexture("Objects\Boxes\box_float.png")
 		Field k.tBoxBlocker
 		Field Repeated
 		Field AddedToIdealScore
+		Field EggpawnShootTimer
 
 		;extensive types
 		Field Enemy.tObject_Enemy
@@ -498,12 +522,14 @@ Global Object_Texture_Box_Float=LoadTexture("Objects\Boxes\box_float.png")
 		Field HasRotation
 		Field Power#
 		Field HitType
+		Field RingDrawIn
 		Field HitBox.tVector
 		Field Speed.tVector
 		Field SlopeRotation#
 		Field g.tGravity
 		Field HasGravity
 		Field GotAssignedBomb
+		Field TagTip$
 
 		;this-is-a flags
 		Field BombHittable
@@ -536,6 +562,7 @@ Global Object_Texture_Box_Float=LoadTexture("Objects\Boxes\box_float.png")
 		Field AttackDetectRestrict
 		Field AimedAt
 		Field ForceCollisionReset
+		Field Falls
 
 		; Homing flags
 		Field CanRingDash
@@ -630,6 +657,7 @@ Global Object_Texture_Box_Float=LoadTexture("Objects\Boxes\box_float.png")
 		Field VoiceTimer
 		Field HiddenSeenTimer
 		Field Alpha#
+		Field Gun
 	End Type
 
 	;enemy missile values
@@ -729,6 +757,17 @@ Global Object_Texture_Box_Float=LoadTexture("Objects\Boxes\box_float.png")
 		Field PulleyReturnTimer
 		Field TransfererInverted
 		Field TransfererIsBeingUsed
+		Field Frame
+		Field ThornSpringState
+		Field ThornSpringDamage
+		Field ThornSpringTimer
+		Field ThornSpringActualRotation#
+		Field ThornSpringTargetRotation#
+		Field ThornSpringTargetRotation2#
+		
+		Field PanelDisabler
+		Field PanelDisablerTimer
+		Field PanelSoundDisabler
 	End Type
 
 	;omochao values
@@ -740,6 +779,9 @@ Global Object_Texture_Box_Float=LoadTexture("Objects\Boxes\box_float.png")
 		Field Channel_OmochaoFly
 		Field Mode
 		Field Direction
+		Field CustomVoiceOn
+		Field Voice
+		Field Voiced
 	End Type
 
 	;spike values
@@ -763,6 +805,9 @@ Global Object_Texture_Box_Float=LoadTexture("Objects\Boxes\box_float.png")
 		Field DestroyBox
 		Field TntBoxTimer
 		Field TntBoxCount
+		Field YellowBoxTimer
+		Field YellowBoxState
+		Field YellowBoxDone
 		Field hask
 		Field k.tBoxBlocker
 	End Type
@@ -787,9 +832,9 @@ Global Object_Texture_Box_Float=LoadTexture("Objects\Boxes\box_float.png")
 
 	;treasure values
 	Type tObject_Treasure
-		Field RedRingFlyStopTimer
-		Field RedRingNo
-		Field RedRingFly
+		Field ShardFlyStopTimer
+		Field ShardNo
+		Field ShardFly
 		Field BoxShouldHide
 	End Type
 
@@ -819,9 +864,11 @@ Global Object_Texture_Box_Float=LoadTexture("Objects\Boxes\box_float.png")
 	Type tObject_Hint
 		Field HintLine1$
 		Field HintLine2$
+		Field HintLength#
 		Field HintRevealTimer
 		Field SignType
 		Field SignAlpha#
+		Field Sound
 	End Type
 
 	;visuals values
@@ -875,9 +922,16 @@ End Type
 		Next
 
 		For p.tPlayer = Each tPlayer
-		If p\No#=1 and Game\Gameplay\Time>10 Then
+		If p\No#=1 And Game\Gameplay\Time>10 Then
 
 			For o.tObject = Each tObject
+				If o\ObjType=OBJTYPE_GOAL And Game\Victory=0 Then
+					If EntityDistance(p\Objects\Entity,o\Entity)<500 Then Object_Goal_Sound(o,p)
+				EndIf 
+				If o\ObjType=OBJTYPE_SPRINGTHORN Then
+					Object_ThornSpringAnimation(o,p,d)
+				EndIf 
+				
 				distance# = EntityDistance(p\Objects\Entity, o\Entity)
 				Select o\ObjType
 					Case OBJTYPE_BFAN,OBJTYPE_BFANLOW:
@@ -937,25 +991,25 @@ End Type
 				o\InView2 = distance# < (OBJECT_VIEWDISTANCE#+300*i#)
 				If Not o\InView2 Then o\SavedFromInsideBoxOnce=0
 
-				If o\HasRedRing Then
+				If o\HasShard Then
 					If o\Done=0 Then
 					Select o\ObjType
-						Case OBJTYPE_REDRING,OBJTYPE_SPEWREDRING:
-							Object_EnforceTreasureRadar(o,p,o\Treasure\RedRingNo)
+						Case OBJTYPE_SHARD,OBJTYPE_SPEWSHARD:
+							Object_EnforceTreasureRadar(o,p,o\Treasure\SHARDNo)
 						Default:
 							If o\ThisIsAnEnemy Then Object_EnforceTreasureRadar(o,p,-o\Enemy\EnemyNo)
 					End Select
 					EndIf
 				EndIf
 
-				If (o\InView2 Or o\AlwaysPresent) and o\Done=0 Then
-					If Objects_GeneralViewable(o) and o\InView2 Then
+				If (o\InView2 Or o\AlwaysPresent) And o\Done=0 Then
+					If Objects_GeneralViewable(o) And o\InView2 Then
 							ShowEntity(o\Entity)
 							If o\HasEntity2 Then ShowEntity(o\Entity2)
 							If o\HasEntity3 Then ShowEntity(o\Entity3)
 							If o\HasEntity4 Then ShowEntity(o\Entity4)
 							If o\HasEntityX Then
-								If o\ThisIsAMonitor and o\State=1 Then HideEntity(o\EntityX) Else ShowEntity(o\EntityX)
+								If o\ThisIsAMonitor And o\State=1 Then HideEntity(o\EntityX) Else ShowEntity(o\EntityX)
 							EndIf
 							If o\HasEntityCube Then ShowEntity(o\EntityCube)
 							If o\HasEntityCube2 Then ShowEntity(o\EntityCube2)
@@ -972,11 +1026,11 @@ End Type
 
 					Object_BoxBlocker_ObjectInBox(o)
 
-					If o\InView=False and o\AlwaysPresent=False and o\Psychoed=0 and o\Rubied=0 and Game\Interface\DebugPlacerOn=0 Then
+					If o\InView=False And o\AlwaysPresent=False And o\Psychoed=0 And o\Rubied=0 And Game\Interface\DebugPlacerOn=0 Then
 						Select o\ObjType
-							Case OBJTYPE_RING:
+							Case OBJTYPE_RING,OBJTYPE_REDRING:
 								RotateEntity o\EntityX, 0, EntityYaw(Menu\RingRotator), 0
-							Case OBJTYPE_SPEWRING:
+							Case OBJTYPE_SPEWRING,OBJTYPE_WARPRING:
 								RotateEntity o\Entity, 0, EntityYaw(Menu\RingRotator), 0
 							Case OBJTYPE_GOAL,OBJTYPE_GOAL2:
 								If (Not(Menu\Mission=MISSION_ESCAPE#)) Then
@@ -989,19 +1043,23 @@ End Type
 								Select o\State
 									Case 0:
 										ShowEntity(o\Entity)
+										ShowEntity(o\Entity3)
 										HideEntity(o\Entity2)
 										Animate o\Entity,1,0.5,1,0
 									Case 1,2:
 										ShowEntity(o\Entity)
 										HideEntity(o\Entity2)
 										If o\State=1 Then
+											ShowEntity(o\Entity3)
 											o\State=2
 										ElseIf o\State=2 Then
 											If Not(Animating(o\Entity)) Then o\State=3
+											HideEntity(o\Entity3)
 										EndIf
 									Case 3:
 										ShowEntity(o\Entity2)
 										HideEntity(o\Entity)
+										HideEntity(o\Entity3)
 										Animate o\Entity2,1,0.5,1,0
 								End Select
 							Case OBJTYPE_BOXLIGHT:
@@ -1011,12 +1069,20 @@ End Type
 										Case 0: HideEntity(o\Entity) : ShowEntity(o\EntityX)
 										Case 1: ShowEntity(o\Entity) : HideEntity(o\EntityX)
 									End Select
+									
 								EndIf
+							Case OBJTYPE_BOXYELLOW
+									Select o\Box\YellowBoxState
+										Case 0
+											ShowEntity(o\Entity)
+										Case 1
+											HideEntity(o\Entity)
+									End Select
 							Case OBJTYPE_LASERH,OBJTYPE_LASERV,OBJTYPE_RINGGATEV,OBJTYPE_RINGGATEH:
 								Object_Laser_Update_SwitchControl(o,p)
 							Case OBJTYPE_HINT,OBJTYPE_COUNTER:
 								PointEntity(o\Entity,cam\Entity)
-							Case OBJTYPE_REDRING,OBJTYPE_SPEWREDRING:
+							Case OBJTYPE_SHARD,OBJTYPE_SPEWSHARD:
 								RotateEntity o\Entity, 0, -EntityYaw(Menu\RingRotator), 0
 							Case OBJTYPE_SPRINKLER:
 								Select o\Mode
@@ -1029,7 +1095,7 @@ End Type
 							Case OBJTYPE_SWITCH,OBJTYPE_SWITCHAIR,OBJTYPE_SWITCHBASE,OBJTYPE_SWITCHWATER:
 								Object_Switch_Appear(o)
 							Case OBJTYPE_FLAMESPOUT,OBJTYPE_ICESPOUT,OBJTYPE_SHOCKSPOUT:
-								Object_Spout_Particles(o,p,true)
+								Object_Spout_Particles(o,p,True)
 							Case OBJTYPE_PROPELLER,OBJTYPE_PULLEY,OBJTYPE_ROCKET,OBJTYPE_ELEVATOR:
 								Object_Transferer_UpdateAlways(o,p,d)
 							Case OBJTYPE_SEAGULL,OBJTYPE_SEAC,OBJTYPE_BUTTERFLY:
@@ -1085,7 +1151,7 @@ End Type
 									Object_QuadEffect(o,p,d)
 								ElseIf o\ThisIsAMonitor Then
 									Object_Monitor_ItemRotate(o,p)
-									If (Not(Animating(o\Entity))) and o\State=1 Then
+									If (Not(Animating(o\Entity))) And o\State=1 Then
 										o\Done=1
 										Return
 									EndIf
@@ -1110,7 +1176,7 @@ End Type
 				Else
 					Objects_Hide(o)
 				EndIf
-				If (o\InView Or o\AlwaysPresent Or o\Psychoed>0 Or o\Rubied>0 Or o\ObjPickedUp<>0) and o\Done=0 Then
+				If (o\InView Or o\AlwaysPresent Or o\Psychoed>0 Or o\Rubied>0 Or o\ObjPickedUp<>0) And o\Done=0 Then
 
 					If Game\Interface\DebugPlacerOn=0 Then
 
@@ -1124,11 +1190,13 @@ End Type
 
 							Case OBJTYPE_RING
 								Object_Ring_Update(o, p, d)
+							Case OBJTYPE_REDRING
+								Object_RedRing_Update(o, p, d)
 
 							Case OBJTYPE_SPEWRING
 								Object_SpewRing_Update(o, p, d)
 
-							Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_FORCER,OBJTYPE_NODE,OBJTYPE_NODE2,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW
+							Case OBJTYPE_SPRING,OBJTYPE_SPRINGICE,OBJTYPE_SPRINGTHORN,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PANEL1,OBJTYPE_PANEL2,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_FORCER,OBJTYPE_NODE,OBJTYPE_NODE2,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW
 								Object_Translator_Update(o, p, d)
 
 							Case OBJTYPE_CHECK
@@ -1143,7 +1211,7 @@ End Type
 							Case OBJTYPE_SPIKEBALL,OBJTYPE_SPIKEBOMB,OBJTYPE_SPIKECRUSHER,OBJTYPE_SPIKEDRILL,OBJTYPE_SPIKETIMED,OBJTYPE_SPIKETRAP,OBJTYPE_SPIKEBAR,OBJTYPE_SPIKESWING,OBJTYPE_SPIKESWINGBALL,OBJTYPE_SPEWSPIKEBOMB,OBJTYPE_SPIKECYLINDER
 								Object_Spike_Update(o, p, d)
 
-							Case OBJTYPE_GOAL,OBJTYPE_GOAL2
+							Case OBJTYPE_GOAL,OBJTYPE_GOAL2,OBJTYPE_WARPRING
 								Object_Goal_Update(o, p)
 
 							Case OBJTYPE_FLAMESPOUT,OBJTYPE_ICESPOUT,OBJTYPE_SHOCKSPOUT
@@ -1152,7 +1220,7 @@ End Type
 							Case OBJTYPE_LASERV,OBJTYPE_LASERH,OBJTYPE_RINGGATEV,OBJTYPE_RINGGATEH
 								Object_Laser_Update(o, p)
 
-							Case OBJTYPE_BOXCAGE,OBJTYPE_BOXIRON,OBJTYPE_BOXMETAL,OBJTYPE_BOXWOODEN,OBJTYPE_BOXLIGHT,OBJTYPE_BOXTNT,OBJTYPE_BOXNITRO,OBJTYPE_BOXFLOAT
+							Case OBJTYPE_BOXCAGE,OBJTYPE_BOXYELLOW,OBJTYPE_BOXIRON,OBJTYPE_BOXMETAL,OBJTYPE_BOXWOODEN,OBJTYPE_BOXLIGHT,OBJTYPE_BOXTNT,OBJTYPE_BOXNITRO,OBJTYPE_BOXFLOAT
 								Object_Box_Update(o, p, d)
 								If o\Box\hask Then Object_BoxBlocker_Update(o\Box\k,o,p)
 
@@ -1165,17 +1233,17 @@ End Type
 							Case OBJTYPE_ENEMYMISSILE
 								Object_EnemyMissile_Update(o, p, d)
 
-							Case OBJTYPE_PAWN,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSWORD,OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_SPONA,OBJTYPE_MOTOBUG,OBJTYPE_CATERKILLER,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_CHOPPER,OBJTYPE_CRABMEAT,OBJTYPE_JAWS,OBJTYPE_SPINY,OBJTYPE_GRABBER,OBJTYPE_KIKI,OBJTYPE_COP,OBJTYPE_COPRACER,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_ACHAOS,OBJTYPE_ACHAOSBLOB,OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_CHASER,OBJTYPE_FIGHTER,OBJTYPE_EGGROBO,OBJTYPE_CAMERON,OBJTYPE_KLAGEN,OBJTYPE_ORBINAUT,OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_ANTON,OBJTYPE_AQUIS,OBJTYPE_BOMBIE,OBJTYPE_NEWTRON,OBJTYPE_PENGUINATOR,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_SPIKES,OBJTYPE_ASTERON,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_STEELION,OBJTYPE_BOO,OBJTYPE_BOOSCARE,OBJTYPE_GHOST,OBJTYPE_BALKIRY,OBJTYPE_BURROBOT,OBJTYPE_CRAWL,OBJTYPE_DRAGONFLY,OBJTYPE_MADMOLE,OBJTYPE_MANTA,OBJTYPE_MUSHMEANIE,OBJTYPE_OCTUS,OBJTYPE_PATABATA,OBJTYPE_ZOOMER,OBJTYPE_BITER,OBJTYPE_CRAWLER,OBJTYPE_TAKER,OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_E1000,OBJTYPE_BALLHOG,OBJTYPE_RHINOTANK,OBJTYPE_TECHNOSQU,OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_OAKSWORD,OBJTYPE_LEECH,OBJTYPE_WING,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_CATAKILLER,OBJTYPE_CLUCKOID,OBJTYPE_MANTIS,OBJTYPE_NEBULA,OBJTYPE_ROLLER,OBJTYPE_SHEEP,OBJTYPE_SNOWY,OBJTYPE_SPLATS,OBJTYPE_TOXO,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE,OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER,OBJTYPE_HAMMERSHIELD,OBJTYPE_WITCH1,OBJTYPE_WITCH2,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3
+							Case OBJTYPE_PAWN,OBJTYPE_GUNNER,OBJTYPE_SEARCHER,OBJTYPE_EGGHUNTER,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSWORD,OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_SPONA,OBJTYPE_MOTOBUG,OBJTYPE_CATERKILLER,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_CHOPPER,OBJTYPE_CRABMEAT,OBJTYPE_JAWS,OBJTYPE_SPINY,OBJTYPE_GRABBER,OBJTYPE_KIKI,OBJTYPE_COP,OBJTYPE_COPRACER,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_ACHAOS,OBJTYPE_ACHAOSBLOB,OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_CHASER,OBJTYPE_FIGHTER,OBJTYPE_EGGROBO,OBJTYPE_CAMERON,OBJTYPE_KLAGEN,OBJTYPE_ORBINAUT,OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_ANTON,OBJTYPE_AQUIS,OBJTYPE_BOMBIE,OBJTYPE_NEWTRON,OBJTYPE_PENGUINATOR,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_SPIKES,OBJTYPE_ASTERON,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_STEELION,OBJTYPE_BOO,OBJTYPE_BOOSCARE,OBJTYPE_GHOST,OBJTYPE_BALKIRY,OBJTYPE_BURROBOT,OBJTYPE_CRAWL,OBJTYPE_DRAGONFLY,OBJTYPE_MADMOLE,OBJTYPE_MANTA,OBJTYPE_MUSHMEANIE,OBJTYPE_OCTUS,OBJTYPE_PATABATA,OBJTYPE_ZOOMER,OBJTYPE_BITER,OBJTYPE_CRAWLER,OBJTYPE_TAKER,OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_E1000,OBJTYPE_BALLHOG,OBJTYPE_RHINOTANK,OBJTYPE_TECHNOSQU,OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_OAKSWORD,OBJTYPE_LEECH,OBJTYPE_WING,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_CATAKILLER,OBJTYPE_CLUCKOID,OBJTYPE_MANTIS,OBJTYPE_NEBULA,OBJTYPE_ROLLER,OBJTYPE_SHEEP,OBJTYPE_SNOWY,OBJTYPE_SPLATS,OBJTYPE_TOXO,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE,OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER,OBJTYPE_HAMMERSHIELD,OBJTYPE_WITCH1,OBJTYPE_WITCH2,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3
 								Object_Enemy_Update(o, p, d)
 
 							Case OBJTYPE_BUBBLES
 								Object_Bubbles_Update(o, p, d)
 
-							Case OBJTYPE_REDRING
-								Object_RedRing_Update(o, p)
+							Case OBJTYPE_SHARD
+								Object_Shard_Update(o, p)
 
-							Case OBJTYPE_SPEWREDRING
-								Object_SpewRedRing_Update(o, p, d)
+							Case OBJTYPE_SPEWSHARD
+								Object_SpewShard_Update(o, p, d)
 
 							Case OBJTYPE_TELEPORTER,OBJTYPE_TELEPORTER2,OBJTYPE_TELEPORTER3,OBJTYPE_TELEPORTER4,OBJTYPE_TELEPORTER5,OBJTYPE_TELEPORTER6,OBJTYPE_TELEPORTEREND
 								Object_Teleporter_Update(o, p)
@@ -1297,7 +1365,7 @@ End Type
 				End If
 			Next
 
-			If Game\CheeseTimer>0 Or Game\FroggyTimer>0 Or p\Action = ACTION_JUMPDASH Or (p\Action = ACTION_DOUBLEJUMP and (p\Character=CHAR_AMY Or p\Character=CHAR_BLA Or p\Character=CHAR_EME)) Or p\Action = ACTION_DIVE Then
+			If Game\CheeseTimer>0 Or Game\FroggyTimer>0 Or p\Action = ACTION_JUMPDASH Or (p\Action = ACTION_DOUBLEJUMP And (p\Character=CHAR_AMY Or p\Character=CHAR_BLA Or p\Character=CHAR_EME)) Or p\Action = ACTION_DIVE Or p\Action=ACTION_LIGHTATTACK Then
 				Player_GetClosestObject(p,1)
 			ElseIf p\LightDashRequestTimer>0 Then
 				Player_GetClosestObject(p,2)
@@ -1319,10 +1387,10 @@ End Type
 		Objects_Reset()
 
 		; If not enough golden enemies
-		If Menu\Mission=MISSION_GOLD# and Game\Gameplay\TotalGoldEnemies=0 and Game\Victory=0 Then
+		If Menu\Mission=MISSION_GOLD# And Game\Gameplay\TotalGoldEnemies=0 And Game\Victory=0 Then
 			For o.tObject=Each tObject
 				If o\ThisIsAnEnemy Then
-					If Object_IsEnemyRobot(o\ObjType) and Object_IsActualEnemy(o\ObjType) Then
+					If Object_IsEnemyRobot(o\ObjType) And Object_IsActualEnemy(o\ObjType) Then
 						If Rand(1,6)=1 Then
 							o\Enemy\Gold=1 : EntityTexture o\Entity, Object_Texture_Gold : Gameplay_AddTotalGoldEnemies(1)
 						EndIf
@@ -1344,7 +1412,7 @@ End Type
 	End Function
 
 	Function Objects_GeneralViewable(o.tObject)
-		If (o\ThisIsABumper=False and o\ThisIsAnEnemy=False) and (Not(o\ObjType=OBJTYPE_REDRING Or o\ObjType=OBJTYPE_BALLOON Or o\ObjType=OBJTYPE_BOXLIGHT Or o\ObjType=OBJTYPE_SWITCH Or o\ObjType=OBJTYPE_SWITCHBASE Or o\ObjType=OBJTYPE_SWITCHWATER Or o\ObjType=OBJTYPE_SWITCHAIR Or o\ObjType=OBJTYPE_LASERV Or o\ObjType=OBJTYPE_LASERH Or o\ObjType=OBJTYPE_RINGGATEV Or o\ObjType=OBJTYPE_RINGGATEH Or o\ObjType=OBJTYPE_CHECK)) Or (o\ObjType=OBJTYPE_REDRING and Game\Interface\DebugPlacerOn) Then Return True Else Return False
+		If (o\ThisIsABumper=False And o\ThisIsAnEnemy=False) And (Not(o\ObjType=OBJTYPE_SHARD Or o\ObjType=OBJTYPE_BALLOON Or o\ObjType=OBJTYPE_BOXLIGHT Or o\ObjType=OBJTYPE_SWITCH Or o\ObjType=OBJTYPE_SWITCHBASE Or o\ObjType=OBJTYPE_SWITCHWATER Or o\ObjType=OBJTYPE_SWITCHAIR Or o\ObjType=OBJTYPE_LASERV Or o\ObjType=OBJTYPE_LASERH Or o\ObjType=OBJTYPE_RINGGATEV Or o\ObjType=OBJTYPE_RINGGATEH Or o\ObjType=OBJTYPE_CHECK)) Or (o\ObjType=OBJTYPE_SHARD And Game\Interface\DebugPlacerOn) Then Return True Else Return False
 	End Function
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
@@ -1378,12 +1446,12 @@ Function Player_GetClosestObject(p.tPlayer, mode=1)
 		;Check if homing able
 		Select mode
 		Case 1,3:
-			mayhom=true
-			If o\IsInBox=0 and ( ((Not(Game\CheeseTimer>0 Or Game\FroggyTimer>0)) and o\CanHoming) Or ((Game\CheeseTimer>0 Or Game\FroggyTimer>0) and o\CheeseCanHoming) ) Then mayhom=true Else mayhom=false
+			mayhom=True
+			If o\IsInBox=0 And ( ((Not(Game\CheeseTimer>0 Or Game\FroggyTimer>0)) And o\CanHoming) Or ((Game\CheeseTimer>0 Or Game\FroggyTimer>0) And o\CheeseCanHoming) ) Then mayhom=True Else mayhom=False
 			If o\ObjType=OBJTYPE_HOMMER Then
-				If (p\No#>0 and o\State=-1) Or (p\No#<0 and o\State=1) Then mayhom=true Else mayhom=false
+				If (p\No#>0 And o\State=-1) Or (p\No#<0 And o\State=1) Then mayhom=True Else mayhom=False
 			EndIf
-			If p\No#<0 and (Not(o\ObjType=OBJTYPE_HOMMER)) Then mayhom=false
+			If p\No#<0 And (Not(o\ObjType=OBJTYPE_HOMMER)) Then mayhom=False
 			If o\ThisIsAnEnemy Then
 				If o\Enemy\EnemyShallAppear=False Then mayhom=False
 			EndIf
@@ -1392,11 +1460,11 @@ Function Player_GetClosestObject(p.tPlayer, mode=1)
 				If o\ThisIsAnEnemy=False Then
 					obj.tObjectList=Player_GetClosestObject_Get.tObjectList(o,p)
 				Else
-					If o\Enemy\MayNotBeTargeted=False and (Not(o\Enemy\WasJustAttacked>0)) Then obj.tObjectList=Player_GetClosestObject_Get.tObjectList(o,p)
+					If o\Enemy\MayNotBeTargeted=False And (Not(o\Enemy\WasJustAttacked>0)) Then obj.tObjectList=Player_GetClosestObject_Get.tObjectList(o,p)
 				EndIf
 			End If
 		Case 2:
-			If o\IsInBox=0 and o\CanRingDash Then
+			If o\IsInBox=0 And o\CanRingDash Then
 				obj.tObjectList=Player_GetClosestObject_Get.tObjectList(o,p)
 			End If
 		Case 4:
@@ -1421,7 +1489,7 @@ Function Player_GetClosestObject(p.tPlayer, mode=1)
 			obj2\ShortestDistance# = ob2\ObjectDistance#
 
 			ClosestObjectX# = EntityX(obj2\ClosestObjectName)
-			If (obj2\ClosestObjectType = OBJTYPE_SPRING Or obj2\ClosestObjectType = OBJTYPE_SPRINGTRAP) Then
+			If (obj2\ClosestObjectType = OBJTYPE_SPRING Or obj2\ClosestObjectType = OBJTYPE_SPRINGICE Or obj2\ClosestObjectType = OBJTYPE_SPRINGTRAP) Then
 				ClosestObjectY# = EntityY(obj2\ClosestObjectName)+1
 			Else
 				ClosestObjectY# = EntityY(obj2\ClosestObjectName)
@@ -1432,10 +1500,10 @@ Function Player_GetClosestObject(p.tPlayer, mode=1)
 	
 	; Once that is done, check if the distance is short enough and if character is facing the object
 	If obj2\ClosestObjectName<>0 Then
-	If (Player_IsStaring(p,obj2\ClosestObjectName) Or (Game\CheeseTimer>0 Or Game\FroggyTimer>0)) Or Menu\ChaoGarden=1 Then
+		If (Player_IsStaring(p,obj2\ClosestObjectName) Or (Game\CheeseTimer>0 Or Game\FroggyTimer>0)) Or Menu\ChaoGarden=1 Or p\Action=ACTION_LIGHTATTACK Then
 		Select mode
 		Case 1:
-			If (obj2\ShortestDistance# <= 55) Then
+			If (obj2\ShortestDistance# <= 55) Or (obj2\ShortestDistance# <= 100 And obj2\ClosestObject\ThisIsAnEnemy And p\Action=ACTION_LIGHTATTACK) Then
 				If obj2\ClosestObject\ThisIsAnEnemy Then obj2\ClosestObject\Enemy\WillBeHomedTimer=0.25*secs#
 				p\Flags\HomingTarget\x# = ClosestObjectX#
 				p\Flags\HomingTarget\y# = ClosestObjectY#
@@ -1448,7 +1516,11 @@ Function Player_GetClosestObject(p.tPlayer, mode=1)
 					Else
 						p\ForceAfterHomDirectionApplicable=False
 					EndIf
-					p\Action = ACTION_HOMING : EmitSmartSound(Sound_HomingAttackDeep,p\Objects\Entity) : p\HomingTimer=1.1*secs#
+					If p\Action=ACTION_LIGHTATTACK Then
+						p\Action=ACTION_LIGHTATTACK 
+					Else
+						p\Action = ACTION_HOMING : EmitSmartSound(Sound_HomingAttackDeep,p\Objects\Entity) : p\HomingTimer=1.1*secs#
+					EndIf 
 				Else
 					If Game\CheeseTimer>0 Or Game\FroggyTimer>0 Then
 						Select p\Character
@@ -1468,8 +1540,8 @@ Function Player_GetClosestObject(p.tPlayer, mode=1)
 				p\RingDashStopTimer=1*secs#
 			EndIf
 		Case 3:
-			If (Not(Game\MachLock>0)) and (obj2\ShortestDistance# <= 30) and obj2\ClosestObject\ThisIsAnEnemy and obj2\ClosestObject\Psychoed=0 and obj2\ClosestObject\Rubied=0 Then
-			If (p\Motion\Ground and abs(obj2\ClosestObject\Position\y#-p\Objects\Position\y#)<2.5) Or p\Motion\Ground=False Then
+			If (Not(Game\MachLock>0)) And (obj2\ShortestDistance# <= 30) And obj2\ClosestObject\ThisIsAnEnemy And obj2\ClosestObject\Psychoed=0 And obj2\ClosestObject\Rubied=0 Then
+			If (p\Motion\Ground And Abs(obj2\ClosestObject\Position\y#-p\Objects\Position\y#)<2.5) Or p\Motion\Ground=False Then
 				If p\Flags\InTargeterAttack Or p\Flags\InTargeterAirAttack Then
 					obj2\ClosestObject\Enemy\WillBeHomedTimer=0.25*secs#
 					p\Flags\HomingTarget\x# = ClosestObjectX#
@@ -1498,3 +1570,5 @@ Function Player_GetClosestObject(p.tPlayer, mode=1)
 		Delete instance2
 	Next
 End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

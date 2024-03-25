@@ -8,7 +8,7 @@
 	Dim CONTROLS_NEWGAMEPAD(17)
 
 	; ---- Game global settings ----
-	Global 	GAME_TITLE$ = "Sonic World"
+	Global 	GAME_TITLE$ = "Sonic World DX"
 	Global 	GAME_WINDOW_W
 	Global 	GAME_WINDOW_H
 	Global	GAME_WINDOW_DEPTH
@@ -84,7 +84,7 @@
 		Input_GamepadThreshold = 0.2
 		Game_MainControlConfig()
 
-		For i=18 to 23
+		For i=18 To 23
 			Input\Configuration1[i]\Device = INPUT_DEVICE_MOUSE
 		Next
 		Input\Configuration1[INPUT_BUTTON_MOUSECAM_UP]\Button = INPUT_MOUSE_YMINUS
@@ -100,7 +100,7 @@
 	End Function
 
 	Function Game_MainControlConfig()
-		For i=0 to 17
+		For i=0 To 17
 			If CONTROLS(1,i)<0 Then
 				Input\Configuration1[i]\Device = INPUT_DEVICE_MOUSE
 				Select CONTROLS(1,i)
@@ -116,7 +116,7 @@
 				Input\Configuration1[i]\Button = CONTROLS(1,i)
 			EndIf
 		Next
-		For i=0 to 17
+		For i=0 To 17
 			If CONTROLS(2,i)>=900 Then
 				Input\Configuration2[i]\Device = INPUT_DEVICE_GAMEPAD
 				Input\Configuration2[i]\Button = CONTROLS(2,i)-900
@@ -147,7 +147,7 @@
 ;-----------------------------------------------------------------------------------------------------------------------------------------
 
 Function SetGameGraphics()
-	If (Menu\Settings\Resolution#<=6 and Menu\Settings\ScreenMode#=0) Or (GfxMode3DExists(GAME_WINDOW_W, GAME_WINDOW_H, 16) Or GfxMode3DExists(GAME_WINDOW_W, GAME_WINDOW_H, 24) Or GfxMode3DExists(GAME_WINDOW_W, GAME_WINDOW_H, 32)) Then
+	If (Menu\Settings\Resolution#<=6 And Menu\Settings\ScreenMode#=0) Or (GfxMode3DExists(GAME_WINDOW_W, GAME_WINDOW_H, 16) Or GfxMode3DExists(GAME_WINDOW_W, GAME_WINDOW_H, 24) Or GfxMode3DExists(GAME_WINDOW_W, GAME_WINDOW_H, 32)) Then
 		InitializeGraphicsWindow(GAME_WINDOW_W, GAME_WINDOW_H, GAME_WINDOW_DEPTH, GAME_WINDOW_MODE)
 	Else 
 		Menu\Settings\Resolution#=6
@@ -156,3 +156,5 @@ Function SetGameGraphics()
 		RuntimeError("Unable to set 3D graphics mode. Graphics settings were reset. Try again.")
 	EndIf
 End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

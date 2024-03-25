@@ -1,7 +1,7 @@
 Function Menu_DrawCardsTitleControls()
 	If (Menu\ShowCards Or Menu\Transition>0) Then
 		If Menu\Menu=MENU_BLACKMARKET# Then SetColor(210,28,28)
-		For x=-30 to 30
+		For x=-30 To 30
 		DrawImageEx(INTERFACE(Interface_Card1), GAME_WINDOW_W/2+x*24*GAME_WINDOW_SCALE#, 0-(CARD_PLACE#+90)*GAME_WINDOW_SCALE#+30*(GAME_WINDOW_SCALE#-Float(1066)/640.0)*GAME_WINDOW_SCALE2#, 1)
 		DrawImageEx(INTERFACE(Interface_Card1), GAME_WINDOW_W/2+x*24*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#+90)*GAME_WINDOW_SCALE#-30*(GAME_WINDOW_SCALE#-Float(1066)/640.0)*GAME_WINDOW_SCALE2#, 0)
 		Next
@@ -79,29 +79,29 @@ Function Menu_DrawCardsTitleControls()
 					DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2-(40-100)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#)
 					DrawRealText("Move", GAME_WINDOW_W/2+(-10-100)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 				Case MENU_OPTIONS#:
-					DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2-(40)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeyJump[Menu\Settings\PrimaryController#])
+					DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2-(40)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, False, Menu\OptionsForceKeyJump[Menu\Settings\PrimaryController#])
 					DrawRealText("Select", GAME_WINDOW_W/2+(-10)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-					DrawSmartKey(INPUT_BUTTON_ACTIONROLL, GAME_WINDOW_W/2-(40-200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeyRoll[Menu\Settings\PrimaryController#])
+					DrawSmartKey(INPUT_BUTTON_ACTIONROLL, GAME_WINDOW_W/2-(40-200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, False, Menu\OptionsForceKeyRoll[Menu\Settings\PrimaryController#])
 					DrawRealText("Move", GAME_WINDOW_W/2+(-10-200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 					DrawSmartKey_MovementGeneral(GAME_WINDOW_W/2-(40+200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#)
 					DrawRealText("Done", GAME_WINDOW_W/2+(-10+200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 				Case MENU_VOLUME#*100:
-					DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2-(40-75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeyJump[Menu\Settings\PrimaryController#])
+					DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2-(40-75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, False, Menu\OptionsForceKeyJump[Menu\Settings\PrimaryController#])
 					DrawRealText("Less", GAME_WINDOW_W/2+(-10-75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-					DrawSmartKey(INPUT_BUTTON_ACTIONSKILL2, GAME_WINDOW_W/2-(40+75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeySkill2[Menu\Settings\PrimaryController#])
+					DrawSmartKey(INPUT_BUTTON_ACTIONSKILL2, GAME_WINDOW_W/2-(40+75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, False, Menu\OptionsForceKeySkill2[Menu\Settings\PrimaryController#])
 					DrawRealText("More", GAME_WINDOW_W/2+(-10+75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-					DrawSmartKey(INPUT_BUTTON_ACTIONROLL, GAME_WINDOW_W/2-(40-225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeyRoll[Menu\Settings\PrimaryController#])
+					DrawSmartKey(INPUT_BUTTON_ACTIONROLL, GAME_WINDOW_W/2-(40-225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, False, Menu\OptionsForceKeyRoll[Menu\Settings\PrimaryController#])
 					DrawRealText("Move", GAME_WINDOW_W/2+(-10-225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 					DrawSmartKey_MovementGeneral(GAME_WINDOW_W/2-(40+225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#)
 					DrawRealText("Done", GAME_WINDOW_W/2+(-10+225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 				Case MENU_CONTROLS#*100,MENU_CONTROLS2#*100:
 					If Menu\ButtonToChange=-1 Then
 					If Not(Menu\ButtonIconChoice>0) Then
-					DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2-(40-75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeyJump[Menu\Settings\PrimaryController#])
+					DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2-(40-75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, False, Menu\OptionsForceKeyJump[Menu\Settings\PrimaryController#])
 					DrawRealText("Clear", GAME_WINDOW_W/2+(-10-75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-					DrawSmartKey(INPUT_BUTTON_ACTIONSKILL2, GAME_WINDOW_W/2-(40+75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeySkill2[Menu\Settings\PrimaryController#])
+					DrawSmartKey(INPUT_BUTTON_ACTIONSKILL2, GAME_WINDOW_W/2-(40+75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, False, Menu\OptionsForceKeySkill2[Menu\Settings\PrimaryController#])
 					DrawRealText("Choose", GAME_WINDOW_W/2+(-10+75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-					DrawSmartKey(INPUT_BUTTON_ACTIONROLL, GAME_WINDOW_W/2-(40-225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeyRoll[Menu\Settings\PrimaryController#])
+					DrawSmartKey(INPUT_BUTTON_ACTIONROLL, GAME_WINDOW_W/2-(40-225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, False, Menu\OptionsForceKeyRoll[Menu\Settings\PrimaryController#])
 					DrawRealText("Move", GAME_WINDOW_W/2+(-10-225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 					DrawSmartKey_MovementGeneral(GAME_WINDOW_W/2-(40+225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#)
 					DrawRealText("Done", GAME_WINDOW_W/2+(-10+225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
@@ -113,18 +113,18 @@ Function Menu_DrawCardsTitleControls()
 					EndIf
 					EndIf
 				Case MENU_RESET#*100:
-					DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2-(40-75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeyJump[Menu\Settings\PrimaryController#])
+					DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2-(40-75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, False, Menu\OptionsForceKeyJump[Menu\Settings\PrimaryController#])
 					DrawRealText("All", GAME_WINDOW_W/2+(-10-75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-					DrawSmartKey(INPUT_BUTTON_ACTIONSKILL2, GAME_WINDOW_W/2-(40+75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeySkill2[Menu\Settings\PrimaryController#])
+					DrawSmartKey(INPUT_BUTTON_ACTIONSKILL2, GAME_WINDOW_W/2-(40+75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, False, Menu\OptionsForceKeySkill2[Menu\Settings\PrimaryController#])
 					DrawRealText("Select", GAME_WINDOW_W/2+(-10+75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-					DrawSmartKey(INPUT_BUTTON_ACTIONROLL, GAME_WINDOW_W/2-(40-225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeyRoll[Menu\Settings\PrimaryController#])
+					DrawSmartKey(INPUT_BUTTON_ACTIONROLL, GAME_WINDOW_W/2-(40-225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, False, Menu\OptionsForceKeyRoll[Menu\Settings\PrimaryController#])
 					DrawRealText("Move", GAME_WINDOW_W/2+(-10-225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 					DrawSmartKey_MovementGeneral(GAME_WINDOW_W/2-(40+225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#)
 					DrawRealText("Back", GAME_WINDOW_W/2+(-10+225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 				Case MENU_RESOLUTION#*100,MENU_SCREEN#*100,MENU_DEBUG#*100,MENU_DOF#*100,MENU_SHADOWS#*100,MENU_BLUR#*100,MENU_SRAYS#*100,MENU_SOUNDS#*100,MENU_THEME#*100,MENU_BUMPMAPS#*100,MENU_PLANTS#*100,MENU_VIEW#*100,MENU_AUTOCAM#*100,MENU_VSYNC#*100,MENU_MODS#*100,MENU_TIPS#*100:
-					DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2-(40)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeyJump[Menu\Settings\PrimaryController#])
+					DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2-(40)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, False, Menu\OptionsForceKeyJump[Menu\Settings\PrimaryController#])
 					DrawRealText("Select", GAME_WINDOW_W/2+(-10)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-					DrawSmartKey(INPUT_BUTTON_ACTIONROLL, GAME_WINDOW_W/2-(40-200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeyRoll[Menu\Settings\PrimaryController#])
+					DrawSmartKey(INPUT_BUTTON_ACTIONROLL, GAME_WINDOW_W/2-(40-200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, False, Menu\OptionsForceKeyRoll[Menu\Settings\PrimaryController#])
 					DrawRealText("Move", GAME_WINDOW_W/2+(-10-200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 					DrawSmartKey_MovementGeneral(GAME_WINDOW_W/2-(40+200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#)
 					DrawRealText("Back", GAME_WINDOW_W/2+(-10+200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
@@ -137,17 +137,14 @@ Function Menu_DrawCardsTitleControls()
 					DrawRealText("Back", GAME_WINDOW_W/2+(-10+200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 				Case MENU_CHARACTERS#:
 					DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2-(40-75+2.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#)
-					DrawRealText("Roster", GAME_WINDOW_W/2+(-10-75-20)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-					DrawSmartKey(INPUT_BUTTON_ACTIONSKILL2, GAME_WINDOW_W/2-(40+75+20)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#)
+					;CHANGEMEEE
+					;DrawRealText("Roster", GAME_WINDOW_W/2+(-10-75-20)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+					;DrawSmartKey(INPUT_BUTTON_ACTIONSKILL2, GAME_WINDOW_W/2-(40+75+20)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#)
 					DrawRealText("Select", GAME_WINDOW_W/2+(-10+75-2.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 					DrawSmartKey(INPUT_BUTTON_ACTIONROLL, GAME_WINDOW_W/2-(40-225+2.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#)
 					DrawRealText("Change", GAME_WINDOW_W/2+(-10-225-22.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 					DrawSmartKey_MovementGeneral(GAME_WINDOW_W/2-(40+225+22.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#)
 					DrawRealText("Back", GAME_WINDOW_W/2+(-10+225-2.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-					If Menu_Character(Menu\Option,Menu\Option2)=CHAR_TAI Then
-						DrawSmartKey(INPUT_BUTTON_ACTIONSKILL3, GAME_WINDOW_W/2+(BUTTON_PLACE1#-150)*GAME_WINDOW_SCALE#+(7-1)*40*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-100)*GAME_WINDOW_SCALE#+(6-1)*40*GAME_WINDOW_SCALE#)
-						DrawRealText("Alt.", GAME_WINDOW_W/2+(BUTTON_PLACE1#-150)*GAME_WINDOW_SCALE#+(7-1)*40*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-100)*GAME_WINDOW_SCALE#+(6-1)*40*GAME_WINDOW_SCALE#-20*GAME_WINDOW_SCALE#, (Interface_Text_2), 1)
-					EndIf
 				Case MENU_CHARACTERS2#:
 					DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2-(40-75+2.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#)
 					DrawRealText("Controls", GAME_WINDOW_W/2+(-10-75-20)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
@@ -164,7 +161,7 @@ Function Menu_DrawCardsTitleControls()
 						DrawRealText("Alt.", GAME_WINDOW_W/2+(BUTTON_PLACE1#-150)*GAME_WINDOW_SCALE#+(7-1)*40*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-100)*GAME_WINDOW_SCALE#+(6-2)*40*GAME_WINDOW_SCALE#-20*GAME_WINDOW_SCALE#, (Interface_Text_2), 1)
 					EndIf
 				Case MENU_BIOS#:
-					DrawSmartKey(INPUT_BUTTON_ACTIONACT, GAME_WINDOW_W/2-(40-75+2.5-15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, true)
+					DrawSmartKey(INPUT_BUTTON_ACTIONACT, GAME_WINDOW_W/2-(40-75+2.5-15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, True)
 					DrawRealText("Animation", GAME_WINDOW_W/2+(-10-75-20)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 					DrawSmartKey(INPUT_BUTTON_ACTIONSKILL2, GAME_WINDOW_W/2-(40+75+20)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#)
 					DrawRealText("Super", GAME_WINDOW_W/2+(-10+75-2.5+15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
@@ -176,14 +173,16 @@ Function Menu_DrawCardsTitleControls()
 					Select Menu\Menu
 						Case MENU_STAGE2#:
 							DrawRealText("Records", GAME_WINDOW_W/2+(-10-75-20)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-							DrawSmartKey(INPUT_BUTTON_ACTIONDRIFT, GAME_WINDOW_W/2-(40-75+2.5)*GAME_WINDOW_SCALE#, 0-(CARD_PLACE#-20)*GAME_WINDOW_SCALE#)
-							DrawRealText("Randomize chars", GAME_WINDOW_W/2+(-10+75-2.5)*GAME_WINDOW_SCALE#, 0-(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+							;changemee
+;							DrawSmartKey(INPUT_BUTTON_ACTIONDRIFT, GAME_WINDOW_W/2-(40-75+2.5)*GAME_WINDOW_SCALE#, 0-(CARD_PLACE#-20)*GAME_WINDOW_SCALE#)
+;							DrawRealText("Randomize chars", GAME_WINDOW_W/2+(-10+75-2.5)*GAME_WINDOW_SCALE#, 0-(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 							DrawSmartKey(INPUT_BUTTON_ACTIONSKILL3, GAME_WINDOW_W/2-(40+225+22.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-50)*GAME_WINDOW_SCALE#)
 							DrawRealText("Randomize stage", GAME_WINDOW_W/2+(-10-225-22.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-50)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 						Default:
 							DrawRealText("Panel", GAME_WINDOW_W/2+(-10-75-20)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-							DrawSmartKey(INPUT_BUTTON_ACTIONDRIFT, GAME_WINDOW_W/2-(40+225+22.5)*GAME_WINDOW_SCALE#, 0-(CARD_PLACE#-20)*GAME_WINDOW_SCALE#)
-							DrawRealText("Randomize chars", GAME_WINDOW_W/2+(-10-225-22.5)*GAME_WINDOW_SCALE#, 0-(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+							
+							;DrawSmartKey(INPUT_BUTTON_ACTIONDRIFT, GAME_WINDOW_W/2-(40+225+22.5)*GAME_WINDOW_SCALE#, 0-(CARD_PLACE#-20)*GAME_WINDOW_SCALE#)
+							;DrawRealText("Randomize chars", GAME_WINDOW_W/2+(-10-225-22.5)*GAME_WINDOW_SCALE#, 0-(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 					End Select
 					DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2-(40-75+2.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#)
 					DrawSmartKey(INPUT_BUTTON_ACTIONSKILL2, GAME_WINDOW_W/2-(40+75+20)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#)
@@ -321,7 +320,7 @@ Function Menu_Transition(d.tDeltaTime)
 		Select Menu\Transition
 			Case 1: ;OUTGOING
 				Menu\FrozenMenuSaverTimer=0
-				If Menu\Menu2=0 and Menu\NewMenu2=0 Then
+				If Menu\Menu2=0 And Menu\NewMenu2=0 Then
 					Select Menu\Menu
 						Case MENU_START#,MENU_WELCOME#:
 							Menu_ResetCards_Mid() : Menu_ResetButtonPlace1_LeftOut()
@@ -363,7 +362,7 @@ Function Menu_Transition(d.tDeltaTime)
 					End Select
 				EndIf
 				Select Menu\Settings\Theme#
-					Case 8,30:
+					Case 5,30:
 						Select Menu\NewMenu
 							Case MENU_START#: Menu\RoundNewPos=0
 							Case MENU_OPTIONS#: Menu\RoundNewPos=1
@@ -376,7 +375,7 @@ Function Menu_Transition(d.tDeltaTime)
 				End Select
 				Menu\Transition=2
 			Case 2: ;INCOMING
-				If Menu\Menu2=0 and Menu\NewMenu2=0 Then
+				If Menu\Menu2=0 And Menu\NewMenu2=0 Then
 					Select Menu\NewMenu
 						Case MENU_LOADING#:
 							Menu_ResetCards_Out() : Menu_ResetButtonPlace1_LeftOut()
@@ -415,9 +414,9 @@ Function Menu_Transition(d.tDeltaTime)
 						Case MENU_TRANSPORTER#:
 							Menu_ResetCards_In()
 							Select Menu\NewMenu2
-								Case MENU_TRANSPORTER_INVENTORY#:
+								Case Menu_Transporter_Inventory#:
 									Menu_TakeButton1Place_RightOut() : Menu_ResetButtonPlace1_RightIn()
-								Case MENU_TRANSPORTER_GOODBYE#:
+								Case Menu_Transporter_Goodbye#:
 									Menu_TakeButton1Place_RightOut() : Menu_ResetButtonPlace1_MidIn()
 								Default:
 									Menu_TakeButton1Place_LeftOut() : Menu_ResetButtonPlace1_MidIn()
@@ -499,7 +498,7 @@ Function Menu_Bubble_Create.tMenu_Bubble()
 	bubble.tMenu_Bubble = New tMenu_Bubble
 	bubble\x# = Rand(0,GAME_WINDOW_W)
 	bubble\y# = GAME_WINDOW_H+Rand(0,500)
-	bubble\color = Rand(1,6)
+	bubble\Color = Rand(1,6)
 	Select(Rand(1,4))
 		Case 1,2,3: bubble\speed# = 5
 		Case 4: bubble\speed# = 2.5
@@ -511,7 +510,7 @@ End Function
 Function Menu_Bubble_Update(bubble.tMenu_Bubble, d.tDeltaTime)
 	SetAlpha(0.6)
 	If Menu\Settings\Theme#=27 Then SetRotation(bubble\rot#)
-	DrawImageEx(INTERFACE(Interface_Bubble_1+bubble\color-1), bubble\x#, bubble\y#)
+	DrawImageEx(INTERFACE(Interface_Bubble_1+bubble\Color-1), bubble\x#, bubble\y#)
 	SetRotation(0)
 	SetAlpha(1)
 	If bubble\y#>-500 Then bubble\y#=bubble\y#-bubble\speed#*d\Delta Else Delete bubble
@@ -520,7 +519,7 @@ End Function
 Function Menu_FloatingBubbles(d.tDeltaTime)
 	If Not(Menu\BubbleCreatorTimer>0) Then
 		Menu\BubbleCreatorTimer=Rand(1,2)*secs#
-		For i=1 to 14 : Menu_Bubble_Create.tMenu_Bubble() : Next
+		For i=1 To 14 : Menu_Bubble_Create.tMenu_Bubble() : Next
 	Else
 		Menu\BubbleCreatorTimer=Menu\BubbleCreatorTimer-timervalue#
 	EndIf
@@ -554,3 +553,5 @@ Function Menu_CharScroll(d.tDeltaTime)
 	DrawImageEx(INTERFACE(Interface_Background2), GAME_WINDOW_W/2, GAME_WINDOW_H/2+1800+Menu\CharScrollY#/2)
 	SetAlpha(1)
 End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

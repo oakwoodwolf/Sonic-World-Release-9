@@ -56,6 +56,7 @@ Function GetMenuCharacterExtraY#(mode#=0)
 	End Select
 End Function
 
+
 Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 	If Menu\MeshMayChangeTimer>0 Then Menu\MeshMayChangeTimer=Menu\MeshMayChangeTimer-timervalue#
 
@@ -86,14 +87,14 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 		EndIf
 		Menu\MeshChange = 2
 		Menu\HasMeshBone = 0
-	ElseIf Menu\MeshChange = 2 and (Not(Menu\MeshMayChangeTimer>0)) and Menu\Transition=0 Then
+	ElseIf Menu\MeshChange = 2 And (Not(Menu\MeshMayChangeTimer>0)) And Menu\Transition=0 Then
 		Select Menu\Menu
 		Case MENU_BIOS#:
 			StopChannel(Menu\Channel_MenuCharacter)
 			If IsCharMod(Menu\Option) Then
 				LoadGoodSound(Sound_MenuCharacter,1,"Mods/Characters/"+MODCHARS_PATH$(Menu\Option-CHAR_MOD1+1)+"/sounds/Theme.ogg",3)
 			Else
-				LoadGoodSound(Sound_MenuCharacter,1,"Sounds/MenuChar"+ShortCharNames$(InterfaceChar(Menu\Option),1)+".ogg",3)
+				LoadGoodSound(Sound_MenuCharacter,1,"Sounds/Menu/CharacterThemes/"+ShortCharNames$(InterfaceChar(Menu\Option),1)+".ogg",3)
 			EndIf
 			If Menu\DontReplayMusic>0 Then Menu\DontReplayMusic=3
 			Menu\Channel_MenuCharacter=PlaySmartSound(Sound_MenuCharacter)
@@ -115,7 +116,7 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 			Select Menu\Menu
 				Case MENU_CHARACTERS#,MENU_CHARACTERS2#:
 					char = Menu_Character(Menu\Option,Menu\Option2)
-					If char=CHAR_TAI and Menu\CharacterMode[Menu\MemberToSelect]=1 Then charalt=1 Else charalt=0
+					If char=CHAR_TAI And Menu\CharacterMode[Menu\MemberToSelect]=1 Then charalt=1 Else charalt=0
 					If Menu\Menu=MENU_CHARACTERS2# Then
 						If (Not(Menu\Option>=6*6)) Then
 							If UNLOCKEDCHAR[char]=0 Then found=False Else found=True
@@ -125,17 +126,17 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 					Else
 						If UNLOCKEDCHAR[char]=0 Then found=False Else found=True
 					EndIf
-					If char>CHAR_NONMODPLAYABLECOUNT and Menu\Settings\Mods#=0 Then found=False
+					If char>CHAR_NONMODPLAYABLECOUNT And Menu\Settings\Mods#=0 Then found=False
 					If found=False Then
 						LoadCharacterMesh(-1)
 						Menu\Mesh[1]=CopyEntity(CharacterMesh, Game\Stage\Root)
 						DeleteCharacterMesh()
 						EntityColor(Menu\Mesh[1],0,0,0)
-						scale# = 0.11*GetMenuCharacterScale#()
+						scale# = 0.07*GetMenuCharacterScale#()
 						ScaleEntity(Menu\Mesh[1],scale#,scale#,scale#)
 						Menu\CharacterMeshAnimation=0
 					Else
-						If Menu\Menu=MENU_CHARACTERS2# and (Menu\Option>=6*6) Then
+						If Menu\Menu=MENU_CHARACTERS2# And (Menu\Option>=6*6) Then
 							LoadCharacterMesh(-1)
 						Else
 							Select char
@@ -155,29 +156,29 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 						Menu\Mesh[1]=CopyEntity(CharacterMesh, Game\Stage\Root)
 						DeleteCharacterMesh()
 						If (Not(Menu\Menu=MENU_CHARACTERS2#)) Or (Not(Menu\Option>=6*6)) Then
-							RotateEntity(Menu\Mesh[1],0,90,0)
+							RotateEntity(Menu\Mesh[1],0,180,0)
 							Select char
 								Case CHAR_TAI: actualchar=900*charalt+char
 								Default: actualchar=char
 							End Select
 							Select actualchar
 								Case CHAR_HBO:
-									scale# = (0.11/(1.325+0.15*(0.125*GetCharScaleFactor#(actualchar))))*GetMenuCharacterScale#()
+									scale# = (0.07/(1.325+0.15*(0.125*GetCharScaleFactor#(actualchar))))*GetMenuCharacterScale#()
 									ScaleEntity(Menu\Mesh[1],scale#,scale#,scale#)
 								Default:
 									If GetCharScaleFactor#(actualchar)<0 Then
-										scale# = (0.11/(0.90+0.15*(0.125*GetCharScaleFactor#(actualchar))))*GetMenuCharacterScale#()
+										scale# = (0.07/(0.90+0.15*(0.125*GetCharScaleFactor#(actualchar))))*GetMenuCharacterScale#()
 										ScaleEntity(Menu\Mesh[1],scale#,scale#,scale#)
 									ElseIf GetCharScaleFactor#(actualchar)>5 Then
-										scale# = (0.11/(1.75+0.15*(0.125*GetCharScaleFactor#(actualchar))))*GetMenuCharacterScale#()
+										scale# = (0.07/(1.75+0.15*(0.125*GetCharScaleFactor#(actualchar))))*GetMenuCharacterScale#()
 										ScaleEntity(Menu\Mesh[1],scale#,scale#,scale#)
 									Else
-										scale# = (0.11/(1.00+0.15*(0.125*GetCharScaleFactor#(actualchar))))*GetMenuCharacterScale#()
+										scale# = (0.07/(1.00+0.15*(0.125*GetCharScaleFactor#(actualchar))))*GetMenuCharacterScale#()
 										ScaleEntity(Menu\Mesh[1],scale#,scale#,scale#)
 									EndIf
 							End Select
 						Else
-							scale# = (0.11/(1.00+0.15*(0.125*GetCharScaleFactor#(char))))*GetMenuCharacterScale#()
+							scale# = (0.07/(1.00+0.15*(0.125*GetCharScaleFactor#(char))))*GetMenuCharacterScale#()
 							ScaleEntity(Menu\Mesh[1],scale#,scale#,scale#)
 							EntityColor(Menu\Mesh[1],210,210,0)
 						EndIf
@@ -259,7 +260,7 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 								DeleteCharacterMesh()
 								ScaleEntity(Menu\Mesh[2],0.06*GetMenuCharacterScale#(),0.06*GetMenuCharacterScale#(),0.06*GetMenuCharacterScale#())
 								RotateEntity(Menu\Mesh[2],0,180,0)
-								Menu\MeshChaoEmo = Object_ChaoEmo_Create.tChaoEmo(Menu\Mesh[2],CHAOSIDE_NEUTRAL,true)
+								Menu\MeshChaoEmo = Object_ChaoEmo_Create.tChaoEmo(Menu\Mesh[2],CHAOSIDE_NEUTRAL,True)
 								Menu\MeshChaoEmoActivated=1
 							Case CHAR_BIG:
 								LoadCharacterMesh(CHAR_FRO,2)
@@ -273,7 +274,7 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 								DeleteCharacterMesh()
 								ScaleEntity(Menu\Mesh[2],0.06*GetMenuCharacterScale#(),0.06*GetMenuCharacterScale#(),0.06*GetMenuCharacterScale#())
 								RotateEntity(Menu\Mesh[2],0,180,0)
-								Menu\MeshChaoEmo = Object_ChaoEmo_Create.tChaoEmo(Menu\Mesh[2],CHAOSIDE_NEUTRAL,true)
+								Menu\MeshChaoEmo = Object_ChaoEmo_Create.tChaoEmo(Menu\Mesh[2],CHAOSIDE_NEUTRAL,True)
 								Menu\MeshChaoEmoActivated=1
 							Default:
 								Menu\Mesh[2] = CopyEntity(MESHES(Mesh_Empty), Game\Stage\Root)
@@ -312,7 +313,7 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 						Else
 							Menu\MeshBone=0
 							Menu\HasMeshBone=0
-							For i=1 to 3
+							For i=1 To 3
 								Select m
 									Case TEAM_SONIC:
 										Select i
@@ -398,7 +399,7 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 						ScaleEntity(Menu\Mesh[1],0.11,0.11,0.11)
 					Else
 						Menu\Mesh[1]=CopyEntity(MESHES(SmartEntity(Mesh_EmeraldGoal)), Game\Stage\Root)
-						EntityColorEmerald(Menu\Mesh[1],abs(Menu\EmblemsGot))
+						EntityColorEmerald(Menu\Mesh[1],Abs(Menu\EmblemsGot))
 						ScaleEntity(Menu\Mesh[1],0.09,0.09,0.09)
 					EndIf
 					Menu\CharacterMeshAnimation=0
@@ -421,7 +422,7 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 				PositionEntity(Menu\Mesh[2],0,-3.4275+0.28,31.55)
 				Animate(Menu\Mesh[2], 1, 0.255, 1, 10)
 
-				For x=INTERFACE_STAGETOTAL+1 to INTERFACE_BLACKMARKETTOTAL : LoadSmartImage(x) : Next
+				For x=INTERFACE_STAGETOTAL+1 To INTERFACE_BLACKMARKETTOTAL : LoadSmartImage(x) : Next
 
 				Menu\EggsBought=0
 
@@ -430,7 +431,7 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 
 			If Menu\Mesh[3]<>0 Then FreeEntity(Menu\Mesh[3])
 			Select Menu\NewMenu2
-				Case MENU_BLACKMARKET_BUYLIST#,MENU_BLACKMARKET_BUYCONFIRM#:
+				Case Menu_BlackMarket_BuyList#,Menu_BlackMarket_BuyConfirm#:
 					Select Menu\BlackMarketBuyCategory
 						Case 1: Menu\Mesh[3]=LoadMesh("ChaoWorld\Fruits\"+FRUITS$(Menu\CurrentItem)+".b3d", Game\Stage\Root)
 						Case 2: Menu\Mesh[3]=LoadMesh("ChaoWorld\Hats\"+HATS_FILE$(Menu\CurrentItem)+".b3d", Game\Stage\Root)
@@ -452,7 +453,7 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 						Default:
 							PositionEntity(Menu\Mesh[3],-0.575,-3.2325+0.28,30.995)
 					End Select
-				Case MENU_BLACKMARKET_SELLLIST#,MENU_BLACKMARKET_SELLCONFIRM#:
+				Case Menu_BlackMarket_SellList#,Menu_BlackMarket_SellConfirm#:
 					Select Menu\BlackMarketBuyCategory
 						Case 1: Menu\Mesh[3]=LoadMesh("ChaoWorld\Fruits\"+FRUITS$(Menu\BlackMarketSellCategory)+".b3d", Game\Stage\Root)
 						Case 2: Menu\Mesh[3]=LoadMesh("ChaoWorld\Hats\"+HATS_FILE$(Menu\BlackMarketSellCategory)+".b3d", Game\Stage\Root)
@@ -511,7 +512,7 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 					FreeTexture bodyglaretexture
 					FreeTexture officeglaretexture
 
-					Menu\MeshChaoEmo = Object_ChaoEmo_Create.tChaoEmo(Menu\Mesh[2],Menu\HeldChaoSide,false,Menu\HeldChaoEternal)
+					Menu\MeshChaoEmo = Object_ChaoEmo_Create.tChaoEmo(Menu\Mesh[2],Menu\HeldChaoSide,False,Menu\HeldChaoEternal)
 					Menu\MeshChaoEmoActivated=1
 					Menu\MeshChaoEmo\Emotion=Menu\HeldChaoPersona
 					ExtractAllCharacterAnimations_DealerChao(Menu\Mesh[2])
@@ -520,7 +521,7 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 					RotateEntity(Menu\Mesh[2],0,180,0)
 				EndIf
 
-				For x=INTERFACE_CHAOGARDENTOTAL+1 to INTERFACE_TRANSPORTERTOTAL : LoadSmartImage(x) : Next
+				For x=INTERFACE_CHAOGARDENTOTAL+1 To INTERFACE_TRANSPORTERTOTAL : LoadSmartImage(x) : Next
 				If Menu\HeldChaoNumber>0 Then LoadSmartImage(Interface_Boxes) : LoadSmartImage(Interface_Stats)
 
 				Menu\WentToChaoMenu=1
@@ -528,7 +529,7 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 
 			If Menu\Mesh[3]<>0 Then FreeEntity(Menu\Mesh[3])
 			Select Menu\NewMenu2
-				Case MENU_TRANSPORTER_INVENTORY#:
+				Case Menu_Transporter_Inventory#:
 					If Not(TOTALITEMS>0) Then
 						Menu\Mesh[3] = CopyEntity(MESHES(Mesh_Empty), Game\Stage\Root)
 					Else
@@ -584,7 +585,7 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 				PositionEntity(Menu\Mesh[2],-2.275,-3.4275+0.28,31.55)
 				Animate(Menu\Mesh[2], 1, 0.255, 1, 10)
 
-				For x=INTERFACE_CHAOGARDENTOTAL+1 to INTERFACE_TRANSPORTERTOTAL : LoadSmartImage(x) : Next
+				For x=INTERFACE_CHAOGARDENTOTAL+1 To INTERFACE_TRANSPORTERTOTAL : LoadSmartImage(x) : Next
 
 				Menu\WentToChaoMenu=1
 			EndIf
@@ -605,43 +606,17 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 					Case MENU_TEAMS#: k=3
 					Default: k=1
 				End Select
-				For i=1 to k
+				For i=1 To k
 					Select Menu\CharacterMeshAnimation
-						Case 0;Spin
-							Animate(Menu\Mesh[i],1, ((0.6))/2,ANIMATION_SPIN,0)
-						Case 1,2;Idle
-							Select Menu\MeshCharacter[i]
-								Case CHAR_CHA: Animate(Menu\Mesh[i], 1, 0.1915, Menu\CharacterMeshAnimation, 10)
-								Default: Animate(Menu\Mesh[i], 1, 0.0415, Menu\CharacterMeshAnimation, 10)
-							End Select
-						Case 3;Walk
-							Animate(Menu\Mesh[i], 1, 0.3405, Menu\CharacterMeshAnimation, 10)
-						Case 4;Jog
-							Animate(Menu\Mesh[i], 1, 0.4420, Menu\CharacterMeshAnimation, 10)
-						Case 5;Run
-							If (Not(Menu\Menu=MENU_BIOS#)) Or CharHasSuperModel(Menu\MeshCharacterSuper,Menu\MeshCharacter[i])=0 Then
-								Select Menu\MeshCharacter[i]
-									Case CHAR_SHA: Animate(Menu\Mesh[i], 1, 0.4938, Menu\CharacterMeshAnimation, 10)
-									Case CHAR_CRE: Animate(Menu\Mesh[i], 1, 0.5903, Menu\CharacterMeshAnimation, 10)
-									Default:
-										If IsCharMod(Menu\MeshCharacter[i]) Then
-											If MODCHARS_SKATES(Menu\MeshCharacter[i]-CHAR_MOD1+1)>0 Then
-												Animate(Menu\Mesh[i], 1, 0.4938, Menu\CharacterMeshAnimation, 10)
-											Else
-												Animate(Menu\Mesh[i], 1, 0.6868, Menu\CharacterMeshAnimation, 10)
-											EndIf
-										Else
-											Animate(Menu\Mesh[i], 1, 0.6868, Menu\CharacterMeshAnimation, 10)
-										EndIf
-								End Select
-							Else
-								Animate(Menu\Mesh[i], 1, 0.6868, 7, 10)
-							EndIf
+						Case 0,1;Spin
+							Animate(Menu\Mesh[i],1, ((0.3))/2,ANIMATION_BIO,0)
 					End Select
+
 				Next
 				If Menu\Menu=MENU_BIOS# Then
 					Select Menu\CharacterMeshAnimation
 						Case 0;Spin
+							Animate(Menu\Mesh[i],1, ((0.6))/2,ANIMATION_BIO,0)
 						Case 1,2;Idle
 							Select Menu\Option
 								Case CHAR_CRE: Animate(Menu\Mesh[2], 1, 0.255, 1, 10) : If Menu\MeshChaoEmoActivated=1 Then Menu\MeshChaoEmo\Emotion=CHAOEMO_default
@@ -673,7 +648,12 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 	;Position mesh and do other stuff to it
 	Select Menu\Menu
 		Case MENU_CHARACTERS#,MENU_CHARACTERS2#:
-			PositionEntity(Menu\Mesh[1],-0.275,0.165+CARD_PLACE#/100,0)
+			If Menu\Menu=MENU_CHARACTERS# Then
+				PositionEntity(Menu\Mesh[1],0,0.025+CARD_PLACE#/100,0)
+			Else
+				PositionEntity(Menu\Mesh[1],-0.275,0.045+CARD_PLACE#/100,0)
+			EndIf 
+				
 			PositionEntity(Menu\Mesh[1],EntityX(Menu\Mesh[1])*GetMenuCharacterScale#(),EntityY(Menu\Mesh[1])*GetMenuCharacterScale#()-GetMenuCharacterExtraY#(),EntityZ(Menu\Mesh[1])*GetMenuCharacterScale#())
 		Case MENU_BIOS#:
 			If Menu\Option<=CHAR_PLAYABLECOUNT Then
@@ -761,16 +741,16 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 			EndIf
 		Case MENU_BLACKMARKET#:
 			Select Menu\Menu2
-				Case MENU_BLACKMARKET_BUYLIST#,MENU_BLACKMARKET_BUYCONFIRM#,MENU_BLACKMARKET_SELLLIST#,MENU_BLACKMARKET_SELLCONFIRM#:
+				Case Menu_BlackMarket_BuyList#,Menu_BlackMarket_BuyConfirm#,Menu_BlackMarket_SellList#,Menu_BlackMarket_SellConfirm#:
 					TurnEntity Menu\Mesh[3], 0, 2.5*d\Delta, 0
 			End Select
 		Case MENU_TRANSPORTER#:
 			Select Menu\Menu2
-				Case MENU_TRANSPORTER_INVENTORY#:
+				Case Menu_Transporter_Inventory#:
 					TurnEntity Menu\Mesh[3], 0, 2.5*d\Delta, 0
 			End Select
 			Select Menu\Menu2
-				Case MENU_TRANSPORTER_GOODBYE#:
+				Case Menu_Transporter_Goodbye#:
 					If Menu\OptionOrder2<3 Then
 						PositionEntity(Menu\Mesh[2],+0.4,CARD_PLACE#/100,0)
 						Menu_CharacterMeshOnScreen_RotateControl_Chao()
@@ -778,7 +758,7 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 						PositionEntity(Menu\Mesh[2],0,5,0)
 					EndIf
 					PositionEntity(Menu\Mesh[2],EntityX(Menu\Mesh[2])*GetMenuCharacterScale#(),EntityY(Menu\Mesh[2])*GetMenuCharacterScale#()-GetMenuCharacterExtraY#(4),EntityZ(Menu\Mesh[2])*GetMenuCharacterScale#())
-				Case MENU_TRANSPORTER_STADIUM#:
+				Case Menu_Transporter_Stadium#:
 					PositionEntity(Menu\Mesh[2],-0.025,CARD_PLACE#/100-0.0125,0)
 					Menu_CharacterMeshOnScreen_RotateControl_Chao()
 					PositionEntity(Menu\Mesh[2],EntityX(Menu\Mesh[2])*GetMenuCharacterScale#(),EntityY(Menu\Mesh[2])*GetMenuCharacterScale#()-GetMenuCharacterExtraY#(4),EntityZ(Menu\Mesh[2])*GetMenuCharacterScale#())
@@ -789,7 +769,7 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 	End Select
 End Function
 
-Function Menu_CharacterMeshOnScreen_RotateControl(char,found=true)
+Function Menu_CharacterMeshOnScreen_RotateControl(char,found=True)
 	If found Then
 		If Input\Hold\MouseCamRight Or Input\Hold\CamRight Then TurnEntity Menu\Mesh[1], 0, 5*Game\DeltaTime\Delta, 0 : TurnEntity Menu\Mesh[2], 0, 5*Game\DeltaTime\Delta, 0 : TurnEntity Menu\Mesh[3], 0, 5*Game\DeltaTime\Delta, 0
 		If Input\Hold\MouseCamLeft Or Input\Hold\CamLeft Then TurnEntity Menu\Mesh[1], 0, -5*Game\DeltaTime\Delta, 0 : TurnEntity Menu\Mesh[2], 0, -5*Game\DeltaTime\Delta, 0 : TurnEntity Menu\Mesh[3], 0, -5*Game\DeltaTime\Delta, 0
@@ -820,15 +800,15 @@ Function Menu_WasMemberChosen(j=0)
 		Default: char = Menu\Option
 	End Select
 	char=InterfaceChar(char)
-	For i=1 to Menu\MemberToSelect-1+j
+	For i=1 To Menu\MemberToSelect-1+j
 		If InterfaceChar(Menu\Character[i])=char Then Return True
 	Next
 	Return False
 End Function
 
-Function Menu_ReturnCardColor(rgb, value, lives=false)
+Function Menu_ReturnCardColor(rgb, value, lives=False)
 	If Menu\Team=0 Then
-		If lives=false Then
+		If lives=False Then
 			Select rgb
 				Case 1: Return Interface_Card2_R[InterfaceChar(value)]
 				Case 2: Return Interface_Card2_G[InterfaceChar(value)]
@@ -867,50 +847,50 @@ Function Menu_Play_Update(mode=0)
 	If Not mode=2 Then
 		If Menu\NewMenu=Menu\Menu Then
 			DrawImageEx(INTERFACE(Interface_Icons), (25+BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, 55*GAME_WINDOW_SCALE#, 4)
-			SetColor(255,230,43)
 			DrawBetterNumber(EMBLEMS, (53+BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, 55*GAME_WINDOW_SCALE#)
-			SetColor(255,255,255)
 			;---
 			DrawImageEx(INTERFACE(Interface_Icons), (25+BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, 91*GAME_WINDOW_SCALE#, 2)
 			DrawBetterNumber(Menu\Wallet, (53+BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, 91*GAME_WINDOW_SCALE#)
 			;---
 			SetColor(Interface_Lives_R[InterfaceChar(Menu\Character[1])],Interface_Lives_G[InterfaceChar(Menu\Character[1])],Interface_Lives_B[InterfaceChar(Menu\Character[1])])
 			Interface_DrawHead((25+BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, 127*GAME_WINDOW_SCALE#, Menu\Character[1]-1)
-			DrawBetterNumber(Game\Gameplay\Lives, (53+BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, 127*GAME_WINDOW_SCALE#)
 			SetColor(255,255,255)
+			DrawBetterNumber(Game\Gameplay\Lives, (53+BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, 127*GAME_WINDOW_SCALE#)
+			
 		Else
 			DrawImageEx(INTERFACE(Interface_Icons), (25-BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, 55*GAME_WINDOW_SCALE#, 4)
-			SetColor(255,230,43)
 			DrawBetterNumber(EMBLEMS, (53-BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, 55*GAME_WINDOW_SCALE#)
-			SetColor(255,255,255)
 			;---
 			DrawImageEx(INTERFACE(Interface_Icons), (25-BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, 91*GAME_WINDOW_SCALE#, 2)
 			DrawBetterNumber(Menu\Wallet, (53-BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, 91*GAME_WINDOW_SCALE#)
 			;---
 			SetColor(Interface_Lives_R[InterfaceChar(Menu\Character[1])],Interface_Lives_G[InterfaceChar(Menu\Character[1])],Interface_Lives_B[InterfaceChar(Menu\Character[1])])
 			Interface_DrawHead((25-BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, 127*GAME_WINDOW_SCALE#, Menu\Character[1]-1)
-			DrawBetterNumber(Game\Gameplay\Lives, (53-BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, 127*GAME_WINDOW_SCALE#)
 			SetColor(255,255,255)
+			DrawBetterNumber(Game\Gameplay\Lives, (53-BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, 127*GAME_WINDOW_SCALE#)
+			
+			
 		EndIf
 	EndIf
 
 	Select mode
 		Case 0:
 			DrawSmartButton(1, "Single", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-50*GAME_WINDOW_SCALE#)
-			DrawSmartButton(2, "Pair", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#)
-			DrawSmartButton(3, "Team", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+50*GAME_WINDOW_SCALE#)
-
-			If Menu\NewMenu=Menu\Menu Then
-				DrawSmartButton(4, "Chao World", GAME_WINDOW_W-80*GAME_WINDOW_SCALE#, (58+BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, False, True)
-				DrawSmartButton(5, "Special Stage", GAME_WINDOW_W-80*GAME_WINDOW_SCALE#, (58+BUTTON_PLACE1#)*GAME_WINDOW_SCALE#+32.5*GAME_WINDOW_SCALE#, False, True, abs(UNLOCKEDSPECIALSTAGES[0]-1))
-				DrawSmartButton(6, "Marathon Mode", GAME_WINDOW_W-80*GAME_WINDOW_SCALE#, (58+BUTTON_PLACE1#)*GAME_WINDOW_SCALE#+2*32.5*GAME_WINDOW_SCALE#, False, True)
-				DrawSmartKey(INPUT_BUTTON_ACTIONDRIFT, GAME_WINDOW_W-160*GAME_WINDOW_SCALE#, (58+BUTTON_PLACE1#)*GAME_WINDOW_SCALE#)
-			Else
-				DrawSmartButton(4, "Chao World", GAME_WINDOW_W-80*GAME_WINDOW_SCALE#, (58-BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, False, True)
-				DrawSmartButton(5, "Special Stage", GAME_WINDOW_W-80*GAME_WINDOW_SCALE#, (58-BUTTON_PLACE1#)*GAME_WINDOW_SCALE#+32.5*GAME_WINDOW_SCALE#, False, True, abs(UNLOCKEDSPECIALSTAGES[0]-1))
-				DrawSmartButton(6, "Marathon Mode", GAME_WINDOW_W-80*GAME_WINDOW_SCALE#, (58-BUTTON_PLACE1#)*GAME_WINDOW_SCALE#+2*32.5*GAME_WINDOW_SCALE#, False, True)
-				DrawSmartKey(INPUT_BUTTON_ACTIONDRIFT, GAME_WINDOW_W-160*GAME_WINDOW_SCALE#, (58-BUTTON_PLACE1#)*GAME_WINDOW_SCALE#)
-			EndIf
+			DrawSmartButton(2, "Pear", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#)
+			DrawSmartButton(3, "Teem", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+50*GAME_WINDOW_SCALE#)
+			
+			;changemee
+;			If Menu\NewMenu=Menu\Menu Then
+;				DrawSmartButton(4, "Chao World", GAME_WINDOW_W-80*GAME_WINDOW_SCALE#, (58+BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, False, True)
+;				DrawSmartButton(5, "Special Stage", GAME_WINDOW_W-80*GAME_WINDOW_SCALE#, (58+BUTTON_PLACE1#)*GAME_WINDOW_SCALE#+32.5*GAME_WINDOW_SCALE#, False, True, Abs(UNLOCKEDSPECIALSTAGES[0]-1))
+;				DrawSmartButton(6, "Marathon Mode", GAME_WINDOW_W-80*GAME_WINDOW_SCALE#, (58+BUTTON_PLACE1#)*GAME_WINDOW_SCALE#+2*32.5*GAME_WINDOW_SCALE#, False, True)
+;				DrawSmartKey(INPUT_BUTTON_ACTIONDRIFT, GAME_WINDOW_W-160*GAME_WINDOW_SCALE#, (58+BUTTON_PLACE1#)*GAME_WINDOW_SCALE#)
+;			Else
+;				DrawSmartButton(4, "Chao World", GAME_WINDOW_W-80*GAME_WINDOW_SCALE#, (58-BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, False, True)
+;				DrawSmartButton(5, "Special Stage", GAME_WINDOW_W-80*GAME_WINDOW_SCALE#, (58-BUTTON_PLACE1#)*GAME_WINDOW_SCALE#+32.5*GAME_WINDOW_SCALE#, False, True, Abs(UNLOCKEDSPECIALSTAGES[0]-1))
+;				DrawSmartButton(6, "Marathon Mode", GAME_WINDOW_W-80*GAME_WINDOW_SCALE#, (58-BUTTON_PLACE1#)*GAME_WINDOW_SCALE#+2*32.5*GAME_WINDOW_SCALE#, False, True)
+;				DrawSmartKey(INPUT_BUTTON_ACTIONDRIFT, GAME_WINDOW_W-160*GAME_WINDOW_SCALE#, (58-BUTTON_PLACE1#)*GAME_WINDOW_SCALE#)
+;			EndIf
 
 			If Input\Pressed\Down Then
 				If (Not(Menu\Option=5)) Or UNLOCKEDSPECIALSTAGES[0] Then PlaySmartSound(Sound_MenuMove)
@@ -935,19 +915,20 @@ Function Menu_Play_Update(mode=0)
 					Case 6: If UNLOCKEDSPECIALSTAGES[0] Then Menu\Option=5 Else Menu\Option=4
 				End Select
 			EndIf
-
-			If Input\Pressed\ActionDrift Then
-				PlaySmartSound(Sound_MenuMove)
-				Select Menu\Option
-					Case 4,5,6: Menu\Option=1
-					Default: Menu\Option=4
-				End Select
-			EndIf
+			
+			;changemeee
+;			If Input\Pressed\ActionDrift Then
+;				PlaySmartSound(Sound_MenuMove)
+;				Select Menu\Option
+;					Case 4,5,6: Menu\Option=1
+;					Default: Menu\Option=4
+;				End Select
+;			EndIf
 
 			If Input\Pressed\ActionJump Or Input\Pressed\Start Then
 				PlaySmartSound(Sound_MenuAccept)
 				Menu\Transition=1
-				For i = 1 to 3 : Menu\Character[i]=InterfaceChar(Menu\Character[i]) : Next
+				For i = 1 To 3 : Menu\Character[i]=InterfaceChar(Menu\Character[i]) : Next
 				Select Menu\Option
 					Case 4:
 						Menu\Members=1
@@ -977,14 +958,24 @@ Function Menu_Play_Update(mode=0)
 						Menu\MarathonMode=0
 						Select Menu\Option
 							Case 3:
+								;Menu\NewOption=1
+								;If Menu\Team>0 Then Menu\TeamOrder=Menu\Team-1 Else Menu\TeamOrder=1-1
+								;Menu\NewMenu=MENU_TEAMS#
+								Menu\Members=3
+								Menu\MemberToSelect=1
+								Menu\NewOption2=1
 								Menu\NewOption=1
-								If Menu\Team>0 Then Menu\TeamOrder=Menu\Team-1 Else Menu\TeamOrder=1-1
-								Menu\NewMenu=MENU_TEAMS#
+								Menu\NewMenu=MENU_CHARACTERS#
 							Default:
 								Menu\MemberToSelect=1
-								Menu\NewOption2=Ceil#(Menu\Character[1]/35.0)
-								Menu\NewOption=Menu\Character[1]-35*(Menu\NewOption2-1)
-								Menu\NewMenu=MENU_CHARACTERS2#
+								Menu\NewOption2=1
+								Menu\NewOption=1
+								Menu\NewMenu=MENU_CHARACTERS#
+								;changemeee
+								;Menu\MemberToSelect=1
+								;Menu\NewOption2=Ceil#(Menu\Character[1]/35.0)
+								;Menu\NewOption=Menu\Character[1]-35*(Menu\NewOption2-1)
+								;Menu\NewMenu=MENU_CHARACTERS2#
 						End Select
 				End Select
 			EndIf
@@ -1021,7 +1012,7 @@ Function Menu_Play_Update(mode=0)
 				PlaySmartSound(Sound_MenuAccept)
 				Select Menu\Option
 					Case 4:
-						Menu\MarathonRandom=abs(Menu\MarathonRandom-1)
+						Menu\MarathonRandom=Abs(Menu\MarathonRandom-1)
 					Default:
 						Menu\Transition=1
 						Menu\ChaoGarden=0
@@ -1029,7 +1020,7 @@ Function Menu_Play_Update(mode=0)
 							Menu\Members=Menu\Option : Menu\MembersMarathon=Menu\Members
 							Menu_GoToStage()
 						Else
-							For i = 1 to 3 : Menu\Character[i]=InterfaceChar(Menu\Character[i]) : Next
+							For i = 1 To 3 : Menu\Character[i]=InterfaceChar(Menu\Character[i]) : Next
 							Menu\Members=Menu\Option : Menu\MembersMarathon=Menu\Members
 							Select Menu\Option
 								Case 3:
@@ -1058,7 +1049,7 @@ Function Menu_Play_Update(mode=0)
 			DrawRealText("you can continue from where you left off.", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-85*GAME_WINDOW_SCALE#+2*20*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
 
 			DrawSmartButton(1, "New Marathon", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+10*GAME_WINDOW_SCALE#)
-			DrawSmartButton(2, "Continue", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+60*GAME_WINDOW_SCALE#, False, False, abs(Menu\MarathonExists-1))
+			DrawSmartButton(2, "Continue", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+60*GAME_WINDOW_SCALE#, False, False, Abs(Menu\MarathonExists-1))
 
 			If Input\Pressed\Down Or Input\Pressed\Up Then
 			 	Select Menu\Option
@@ -1074,10 +1065,10 @@ Function Menu_Play_Update(mode=0)
 				Menu\NewMenu=MENU_PLAYMARATHON#
 				If Menu\Option=1 Then
 					Menu\MarathonStage=1
-					For i=2 to StageAmount
+					For i=2 To StageAmount
 						MarathonStage(i-1)=i
 					Next
-					For i=1 to StageAmount-1
+					For i=1 To StageAmount-1
 						j=Rand(1,StageAmount-1)
 						temp=MarathonStage(i)
 						MarathonStage(i)=MarathonStage(j)
@@ -1197,3 +1188,5 @@ Function Menu_Teams_Update()
 	EndIf
 
 End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

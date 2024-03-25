@@ -96,7 +96,7 @@
 			c\Alignment		 = Vector(0, 1, 0)
 			c\TargetPosition = Vector(0, 0, 0)
 			c\TargetRotation = Vector(0, 0, 0)
-			c\Lock = new tCamera_Lock
+			c\Lock = New tCamera_Lock
 			c\Lock\Position = Vector(0, 0, 0)
 			c\Lock\Rotation = Vector(0, 0, 0)
 			c\Lock\PosMesh=CreatePivot()
@@ -181,7 +181,7 @@
 
 		; ---- Finally, change camera position around the target -----
 		; Change position
-		If Not((Game\CamLock>0 Or Game\CamLock2>0) and c\Lock\PosTimer>0) Then
+		If Not((Game\CamLock>0 Or Game\CamLock2>0) And c\Lock\PosTimer>0) Then
 			Vector_Set(c\TargetPosition, EntityX#(c\Target\Objects\Entity), EntityY#(c\Target\Objects\Entity), EntityZ#(c\Target\Objects\Entity))
 			Vector_LinearInterpolation(c\Position, c\TargetPosition, Gameplay_Camera_Smoothness#*d\Delta)
 			If c\MouseCameraTimer>0 Then
@@ -211,7 +211,7 @@
 		RotateEntity(c\Entity, 0, 0, 0)
 		
 		If (c\Mode = CAMERA_MODE_TARGETPOV) Then
-			If c\Target\Action=ACTION_CLIMB Or (c\Target\Action=ACTION_SPRINT and Player_CanWallKick(c\Target)) Then
+			If c\Target\Action=ACTION_CLIMB Or (c\Target\Action=ACTION_SPRINT And Player_CanWallKick(c\Target)) Then
 				c\ClimbTimer=0.5*secs#
 			Else
 				If c\ClimbTimer>0 Then
@@ -227,7 +227,7 @@
 			EndIf
 		EndIf
 
-		If c\Lock\CamLockedRightNow Or (Menu\ChaoGarden=1 and Menu\Stage<>999) Then
+		If c\Lock\CamLockedRightNow Or (Menu\ChaoGarden=1 And Menu\Stage<>999) Then
 			TurnEntity(c\Entity, c\TargetRotation\x#, c\TargetRotation\y#, c\TargetRotation\z#)
 		Else
 			TurnEntity(c\Entity, c\TargetRotation\x#+pp(1)\ScaleFactor#*2.5, c\TargetRotation\y#, c\TargetRotation\z#)
@@ -237,7 +237,7 @@
 		;Extra control stuff
 		Camera_Control(c,d)
 
-		If Menu\ChaoGarden=1 and (Not(Menu\Stage=999)) Then CAMERA_CONTROL_SIZEFACTOR#=0
+		If Menu\ChaoGarden=1 And (Not(Menu\Stage=999)) Then CAMERA_CONTROL_SIZEFACTOR#=0
 		Select c\Target\Action
 			Case ACTION_CANNON,ACTION_CANNON2: c\DistanceFromCamera# = ((CAMERA_DISTANCE_NEAR#+20)+(CAMERA_DISTANCE_FAR#+20))*0.5
 			Default: c\DistanceFromCamera# = ((CAMERA_DISTANCE_NEAR#+CAMERA_CONTROL_SIZEFACTOR#)+(CAMERA_DISTANCE_FAR#+CAMERA_CONTROL_SIZEFACTOR#))*0.5
@@ -254,7 +254,7 @@
 	End Function
 
 	Function Camera_BossCamera(c.tCamera, p.tPlayer, entity)
-		If Game\Victory=0 and (Not(c\Target\Action=ACTION_DIE)) and c\Lock\NoBossCam=0 Then
+		If Game\Victory=0 And (Not(c\Target\Action=ACTION_DIE)) And c\Lock\NoBossCam=0 Then
 			If EntityDistance(entity,p\Objects\Entity)<300 Then
 				Game\CamLock2 = 2*secs#
 				c\Lock\OnlyYawTimer = 2*secs#
@@ -265,5 +265,5 @@
 				c\Lock\Immediate=0
 			EndIf
 		EndIf
-		If Input\Pressed\CamCenter Then c\Lock\NoBossCam=abs(c\Lock\NoBossCam-1)
+		If Input\Pressed\CamCenter Then c\Lock\NoBossCam=Abs(c\Lock\NoBossCam-1)
 	End Function

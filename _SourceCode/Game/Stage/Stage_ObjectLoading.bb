@@ -12,6 +12,7 @@ Const ATTRIB_TELEPORTER = 9
 Const ATTRIB_DESTINATION = 10
 Const ATTRIB_HINT = 11
 Const ATTRIB_CARNIVAL = 12
+Const ATTRIB_OMOVOICE=13
 
 Type tTempAttribute
 	Field ID#
@@ -66,12 +67,18 @@ Type tTempAttribute
 
 	Field hint1$
 	Field hint2$
+	Field hintlength#
 
 	Field carnival#
 
 	Field ObjectNo
 	Field ObjectID
 	Field TempObject
+	
+	Field omovoiceon#
+	Field omovoicepath$
+	
+	Field soundpath$
 End Type
 
 Global TempAttribute.tTempAttribute = New tTempAttribute
@@ -100,6 +107,15 @@ Function GetAttribute(Attribute, Node)
 				TempAttribute\yaw# = Float(xmlNodeAttributeValueGet(SceneRotation, "yaw"))
 				TempAttribute\roll# = Float(xmlNodeAttributeValueGet(SceneRotation, "roll"))
 			End If
+			
+		Case ATTRIB_OMOVOICE
+			TempAttribute\omovoiceon# = 0
+			TempAttribute\omovoicepath$ = 0
+			SceneOmovoice = xmlNodeFind("omovoice", Node)
+			If (SceneOmovoice<>0) Then
+				TempAttribute\omovoiceon# = Float(xmlNodeAttributeValueGet(SceneOmovoice, "on"))
+				TempAttribute\omovoicepath$ = xmlNodeAttributeValueGet(SceneOmovoice, "path")
+			End If
 
 		Case ATTRIB_POWER
 			TempAttribute\power# = 0
@@ -123,6 +139,7 @@ Function GetAttribute(Attribute, Node)
 						Case OBJTYPE_CLOUD,OBJTYPE_POLE: TempAttribute\power# = 1.5
 						Case OBJTYPE_SWITCHWATER: TempAttribute\power# = 0
 						Case OBJTYPE_COUNTER: TempAttribute\power# = 5
+						Case OBJTYPE_HINT: TempAttribute\power# = 2
 						Default: TempAttribute\power# = 1
 					End Select
 				Else
@@ -296,10 +313,12 @@ Function GetAttribute(Attribute, Node)
 		Case ATTRIB_HINT
 			TempAttribute\hint1$ = ""
 			TempAttribute\hint2$ = ""
+			TempAttribute\soundpath$ = ""
 			SceneHint = xmlNodeFind("hint", Node)
 			If (SceneHint<>0) Then
 				TempAttribute\hint1$ = xmlNodeAttributeValueGet(SceneHint, "line1")
 				TempAttribute\hint2$ = xmlNodeAttributeValueGet(SceneHint, "line2")
+				TempAttribute\soundpath$ = xmlNodeAttributeValueGet(SceneHint, "soundpath")
 			End If
 
 		Case ATTRIB_CARNIVAL
@@ -311,3 +330,5 @@ Function GetAttribute(Attribute, Node)
 
 	End Select
 End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

@@ -164,7 +164,7 @@
 		g\Motion\Speed\z# = 0
 
 		; Check if object falls
-		If g\Motion\Ground and (g\Motion\Align\y# <= 0.1 And Vector_Length#(g\Motion\Speed)*10<(2.0)) Then
+		If g\Motion\Ground And (g\Motion\Align\y# <= 0.1 And Vector_Length#(g\Motion\Speed)*10<(2.0)) Then
 			Gravity_ConvertGroundToAir(pivot, g)
 			g\Motion\Align\x# 	= Game\Stage\GravityAlignment\x#
 			g\Motion\Align\y# 	= Game\Stage\GravityAlignment\y#
@@ -259,7 +259,7 @@
 		; If there was a collision in the front, calculate how much the speed should drop.
 		If (g\Collision\FrontTest#>g\Physics\MOTION_WALL_DIRECTION#) Then
 			g\Collision\FrontFactor# = 1-Min#(((g\Collision\FrontTest#-g\Physics\MOTION_WALL_DIRECTION#)/(1-g\Physics\MOTION_WALL_DIRECTION#))*d\Delta*1.2, 1.0)
-			If g\SpeedLength#>0 and (Not(g\Motion\ChangedWallTimer>0)) Then g\Motion\WallWasHitTimer=0.1*secs#
+			If g\SpeedLength#>0 And (Not(g\Motion\ChangedWallTimer>0)) Then g\Motion\WallWasHitTimer=0.1*secs#
 			g\Motion\Speed\x# = g\Motion\Speed\x#*g\Collision\FrontFactor#
 			g\Motion\Speed\z# = g\Motion\Speed\z#*g\Collision\FrontFactor#
 		End If

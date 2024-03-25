@@ -12,7 +12,7 @@
 	; ---- Player management ----
 	; =========================================================================================================
 	; =========================================================================================================
-	Function Player_Handle(p.tPlayer, d.tDeltaTime)
+Function Player_Handle(p.tPlayer, d.tDeltaTime)
 
 	; Run physics
 	Player_Physics(p,d)
@@ -30,11 +30,11 @@
 	EndIf
 
 	; Change leader
-	If p\No#=1 and Game\Interface\DebugPlacerOn=0 Then
+	If p\No#=1 And Game\Interface\DebugPlacerOn=0 Then
 		If p\MateChangeTimer>0 Then
 			If EntityDistance(p\Objects\Entity,pp(1)\Objects\FollowerPlace[p\No#-1])>2.5+p\SpeedLength# Then
-				If p\Motion\Ground and Menu\MissionMach=0 and Game\SpeedShoes=0 and abs(p\Rotation#)<30 Then
-					If Sqr#( abs(p\Objects\Position\x#-EntityX(pp(1)\Objects\FollowerPlace[p\No#-1]))^2+abs(p\Objects\Position\z#-EntityZ(pp(1)\Objects\FollowerPlace[p\No#-1]))^2 )>5 Then
+				If p\Motion\Ground And Menu\MissionMach=0 And Game\SpeedShoes=0 And Abs(p\Rotation#)<30 Then
+					If Sqr#( Abs(p\Objects\Position\x#-EntityX(pp(1)\Objects\FollowerPlace[p\No#-1]))^2+Abs(p\Objects\Position\z#-EntityZ(pp(1)\Objects\FollowerPlace[p\No#-1]))^2 )>5 Then
 						p\Animation\Direction#=DeltaYaw#(p\Objects\Entity,pp(1)\Objects\FollowerPlace[p\No#-1])-180
 						If pp(1)\SpeedLength#<0.5 Then
 							Player_SetSpeed(p,0.5)
@@ -58,9 +58,9 @@
 			EndIf
 		EndIf
 
-		If p\Underwater=0 and (Not(p\Action=ACTION_HURT Or p\Action=ACTION_DIE Or p\Action=ACTION_BUMPED Or p\Action=ACTION_HOLD Or p\Action=ACTION_CARRY Or p\Action=ACTION_CARRYJUMP Or p\Action=ACTION_CARRYTHROWN Or p\Action=ACTION_CLIMB Or p\HasVehicle=2)) Then p\Flags\MayChangeCharacter=True Else p\Flags\MayChangeCharacter=False
+		If p\Underwater=0 And (Not(p\Action=ACTION_HURT Or p\Action=ACTION_DIE Or p\Action=ACTION_BUMPED Or p\Action=ACTION_HOLD Or p\Action=ACTION_CARRY Or p\Action=ACTION_CARRYJUMP Or p\Action=ACTION_CARRYTHROWN Or p\Action=ACTION_CLIMB Or p\HasVehicle=2)) Then p\Flags\MayChangeCharacter=True Else p\Flags\MayChangeCharacter=False
 
-		If Input\Pressed\Change and Menu\Members>1 and (Not(p\JustChangedMateTimer>0)) Then
+		If Input\Pressed\Change And Menu\Members>1 And (Not(p\JustChangedMateTimer>0)) Then
 			If p\Flags\MayChangeCharacter Then
 				Select Menu\Members
 					Case 2:
@@ -81,7 +81,7 @@
 			Input\Pressed\Change=False
 		EndIf
 		If Game\Leader<>Game\NewLeader Or (p\NewCharacter>0 And p\NewCharacter<>p\RealCharacter) Then
-			If p\ForceBeingAbleToChangeLeaderTimer>0 Or (p\Motion\Ground and (Not(p\JustLandedTimer>0)) and (Not(p\Action=ACTION_HURT Or p\Action=ACTION_DIE Or p\Action=ACTION_STOMP Or p\Action=ACTION_TORNADO))) Then ChangeCharacter(p\NewCharacter)
+			If p\ForceBeingAbleToChangeLeaderTimer>0 Or (p\Motion\Ground And (Not(p\JustLandedTimer>0)) And (Not(p\Action=ACTION_HURT Or p\Action=ACTION_DIE Or p\Action=ACTION_STOMP Or p\Action=ACTION_TORNADO))) Then ChangeCharacter(p\NewCharacter)
 		EndIf
 	EndIf
 
@@ -105,7 +105,7 @@
 	p\Rotation# = Sqr#(EntityPitch(p\Objects\Mesh)^2+EntityRoll(p\Objects\Mesh)^2)
 
 	; Check if player is underwater
-	If p\Objects\Position\y# < Game\Stage\Properties\WaterLevel+5 Or p\UnderwaterTriggerTimer>0 Then
+	If p\Objects\Position\y# < Game\Stage\Properties\WaterLevel+5 Or p\UnderwaterTriggerTimer>0 And p\WaterRunning=0 Then
 		If p\UnderwaterTriggerTimer>0 Or Game\Interface\DebugPlacerOn=1 Then
 			p\Underwater=1
 			p\UnderwaterFeet=1
@@ -136,7 +136,7 @@
 	If p\Motion\Ground=False Then
 		If p\No#=1 Or pp(1)\Flags\CanStomp Then
 			Select p\Action
-				Case ACTION_DEBUG,ACTION_CHAORACE,ACTION_VICTORY,ACTION_VICTORYHOLD,ACTION_STOMP,ACTION_HURT,ACTION_DIE,ACTION_GRABBED,ACTION_CANNON,ACTION_CANNON2,ACTION_FLOAT,ACTION_CARRYJUMP,ACTION_CARRYTHROWN,ACTION_SPIRIT,ACTION_HOLD,ACTION_BOARD,ACTION_BOARDJUMP,ACTION_BOARDFALL,ACTION_BOARDTRICK,ACTION_TRANSFORM,ACTION_SKYDIVE,ACTION_GLIDER,ACTION_FREEZE,ACTION_SINK,ACTION_CAR,ACTION_CARFALL,ACTION_CARDRIFT,ACTION_BELLYFLOP,ACTION_TORNADO:
+				Case ACTION_DEBUG,ACTION_CHAORACE,ACTION_VICTORY,ACTION_VICTORYHOLD,ACTION_STOMP,ACTION_HURT,ACTION_DIE,ACTION_GRABBED,ACTION_CANNON,ACTION_CANNON2,ACTION_CARRYJUMP,ACTION_CARRYTHROWN,ACTION_SPIRIT,ACTION_HOLD,ACTION_BOARD,ACTION_BOARDJUMP,ACTION_BOARDFALL,ACTION_BOARDTRICK,ACTION_TRANSFORM,ACTION_SKYDIVE,ACTION_GLIDER,ACTION_FREEZE,ACTION_SINK,ACTION_CAR,ACTION_CARFALL,ACTION_CARDRIFT,ACTION_BELLYFLOP,ACTION_TORNADO:
 					p\Flags\CanStomp=False
 				Case ACTION_BUMPED:
 					If p\BumpedCloudTimer>0 Then p\Flags\CanStomp=True Else p\Flags\CanStomp=False
@@ -149,25 +149,21 @@
 	Else
 		p\Flags\CanStomp=False
 	EndIf
-	If p\Flags\CanStomp and Player_IsPlayable(p) Then
+	If p\Flags\CanStomp And Player_IsPlayable(p) Then
 		If Input\Pressed\ActionRoll Then Player_Action_Stomp_Initiate(p)
-		If Input\Pressed\ActionDrift Then Player_Action_Stomp_Initiate(p,true)
 	EndIf
 
-	; Can hyper blast
-	If p\Action=ACTION_COMMON Or p\Flags\CanStomp Then
-		Player_HyperBlast(p)
-	EndIf
+	
 
 	; Can drift any time on ground
-	If (Not(p\Action=ACTION_DEBUG Or p\Action=ACTION_DRIFT Or p\Action=ACTION_GRIND Or p\Action=ACTION_DIE Or p\Action=ACTION_HURT Or p\Action=ACTION_BUMPED Or p\HasVehicle>0 Or p\Action=ACTION_FREEZE Or p\Action=ACTION_SINK)) and p\Motion\Ground and (p\Flags\CanClimb=False) Then
-		If Player_IsPlayable(p) and Input\Pressed\ActionDrift Then Player_Action_Drift_Initiate(p)
+	If (Not(p\Action=ACTION_DEBUG Or p\Action=ACTION_DRIFT Or p\Action=ACTION_GRIND Or p\Action=ACTION_DIE Or p\Action=ACTION_HURT Or p\Action=ACTION_BUMPED Or p\HasVehicle>0 Or p\Action=ACTION_FREEZE Or p\Action=ACTION_SINK)) And p\Motion\Ground And (p\Flags\CanClimb=False) Then
+		If Player_IsPlayable(p) And Input\Pressed\ActionDrift Then Player_Action_Drift_Initiate(p)
 	EndIf
 
 	; Some skills performable anytime
-	If p\No#=1 and Player_IsPlayable(p) and Menu\ChaoGarden=0 Then
-	If Menu\Stage>0 and (Not(p\Action=ACTION_DEBUG Or Game\Victory<>0 Or p\Action=ACTION_HURT Or p\Action=ACTION_DIE Or p\Action=ACTION_GRABBED Or p\Action=ACTION_HOLD Or p\Action=ACTION_TRANSFORM Or p\Action=ACTION_BOARD Or p\Action=ACTION_BOARDJUMP Or p\Action=ACTION_BOARDDRIFT Or p\Action=ACTION_BOARDFALL Or p\Action=ACTION_BOARDTRICK Or p\Action=ACTION_SKYDIVE Or p\Action=ACTION_GLIDER Or p\Action=ACTION_FREEZE Or p\Action=ACTION_SINK Or p\Action=ACTION_CAR Or p\Action=ACTION_CARFALL Or p\Action=ACTION_CARDRIFT Or p\Action=ACTION_TORNADO)) and p\ObjPickUp=0 Then
-		If Input\Pressed\ActionSkill1 and (Not(p\Action=ACTION_CHARGE Or p\Action=ACTION_ROLL Or p\Action=ACTION_DRIFT)) Then
+	If p\No#=1 And Player_IsPlayable(p) And Menu\ChaoGarden=0 Then
+	If Menu\Stage>0 And (Not(p\Action=ACTION_DEBUG Or Game\Victory<>0 Or p\Action=ACTION_HURT Or p\Action=ACTION_DIE Or p\Action=ACTION_GRABBED Or p\Action=ACTION_HOLD Or p\Action=ACTION_TRANSFORM Or p\Action=ACTION_BOARD Or p\Action=ACTION_BOARDJUMP Or p\Action=ACTION_BOARDDRIFT Or p\Action=ACTION_BOARDFALL Or p\Action=ACTION_BOARDTRICK Or p\Action=ACTION_SKYDIVE Or p\Action=ACTION_GLIDER Or p\Action=ACTION_FREEZE Or p\Action=ACTION_SINK Or p\Action=ACTION_CAR Or p\Action=ACTION_CARFALL Or p\Action=ACTION_CARDRIFT Or p\Action=ACTION_TORNADO)) And p\ObjPickUp=0 Then
+		If Input\Pressed\ActionSkill1 And (Not(p\Action=ACTION_CHARGE Or p\Action=ACTION_ROLL Or p\Action=ACTION_DRIFT)) Then
 			Select p\Character
 				Case CHAR_SIL:
 					Player_Action_Psycho_Initiate(p)
@@ -179,6 +175,8 @@
 			Select p\Character
 				Case CHAR_TIK:
 					Player_Action_Spirit_Initiate(p)
+				Default
+					If Player_CanLightDash(p\Character) And (Not(Game\Interface\ControlTipPickUpTimer>0)) Then p\LightDashRequestTimer=0.1*secs#
 			End Select
 		EndIf
 		If Input\Pressed\ActionSkill3 Then
@@ -190,7 +188,7 @@
 			End Select
 		EndIf
 		If Input\Pressed\ActionAct Then
-			If Player_CanLightDash(p\Character) and (Not(Game\Interface\ControlTipPickUpTimer>0)) Then p\LightDashRequestTimer=0.1*secs#
+			
 		EndIf
 	EndIf
 	EndIf
@@ -219,7 +217,7 @@
 	EndIf
 
 	; Determine if attacking
-	If p\Flags\StronglyAttacking Or p\Action=ACTION_JUMP Or p\Action=ACTION_HOP Or p\Action=ACTION_CHARGE Or p\Action=ACTION_ROLL Or p\Action=ACTION_DRIFT Or p\Action=ACTION_HOMING Or p\Action=ACTION_BUMPED Then
+	If p\Flags\StronglyAttacking Or p\Action=ACTION_JUMP Or p\Action=ACTION_HOP Or p\FlyingSwipe=1 Or p\Action=ACTION_CHARGE Or p\Action=ACTION_ROLL Or p\Action=ACTION_DRIFT Or p\Action=ACTION_HOMING Or p\Action=ACTION_BUMPED Then
 		p\Flags\Attacking=True
 		If Not(p\Flags\TargeterTimer>0) Then p\Flags\Targeter=0
 	Else
@@ -228,14 +226,14 @@
 	EndIf
 
 	; Determine if attacking strongly
-	If p\Action=ACTION_STOMP Or (p\Action=ACTION_GLIDE and Menu\ChaoGarden=0) Or p\Action=ACTION_SPRINT Or p\Action=ACTION_PUNCH Or p\Action=ACTION_THRUST Or p\Action=ACTION_SWIPE Or p\Action=ACTION_UPPERCUT Or p\Action=ACTION_CLAW Or (p\Action=ACTION_THROW and (p\Character=CHAR_KNU Or p\Character=CHAR_HBO Or p\Character=CHAR_STO Or p\Character=CHAR_MET Or p\Character=CHAR_MT3)) Or (p\Action=ACTION_BOARD and (p\GrindTurn=2 Or p\SpeedLength#>1)) Or p\Action=ACTION_BOARDJUMP Or p\Action=ACTION_BOARDFALL Or p\Action=ACTION_BOARDDRIFT Or p\Action=ACTION_BOARDTRICK Or p\Action=ACTION_GLIDER Or ((p\Action=ACTION_CAR Or p\Action=ACTION_CARFALL Or p\Action=ACTION_CARDRIFT) and (p\SpeedLength#>1 Or p\Motion\Speed\y#>1)) Or p\Action=ACTION_BELLYFLOP Or p\Action=ACTION_TORNADO Then
+	If p\Action=ACTION_STOMP Or p\Action=ACTION_LIGHTATTACK Or p\Action=ACTION_BOOST Or  p\Action=ACTION_BOOSTFALL  Or (p\Action=ACTION_GLIDE And Menu\ChaoGarden=0) Or p\Action=ACTION_SPRINT Or p\Action=ACTION_PUNCH Or p\Action=ACTION_THRUST Or p\Action=ACTION_SWIPE Or p\Action=ACTION_UPPERCUT Or p\Action=ACTION_CLAW Or (p\Action=ACTION_THROW And (p\Character=CHAR_KNU Or p\Character=CHAR_HBO Or p\Character=CHAR_STO Or p\Character=CHAR_MET Or p\Character=CHAR_MT3)) Or (p\Action=ACTION_BOARD And (p\GrindTurn=2 Or p\SpeedLength#>1)) Or p\Action=ACTION_BOARDJUMP Or p\Action=ACTION_BOARDFALL Or p\Action=ACTION_BOARDDRIFT Or p\Action=ACTION_BOARDTRICK Or p\Action=ACTION_GLIDER Or ((p\Action=ACTION_CAR Or p\Action=ACTION_CARFALL Or p\Action=ACTION_CARDRIFT) And (p\SpeedLength#>1 Or p\Motion\Speed\y#>1)) Or p\Action=ACTION_BELLYFLOP Or p\Action=ACTION_TORNADO Then
 		p\Flags\StronglyAttacking=True
 	Else
 		p\Flags\StronglyAttacking=False
 	EndIf
 
 	; Determine if doing air attack
-	If (p\Action=ACTION_GLIDE and Menu\ChaoGarden=0) Or p\Action=ACTION_PUNCH Or p\Action=ACTION_THRUST Or p\Action=ACTION_SWIPE Or p\Action=ACTION_SPRINT Or p\Action=ACTION_CLAW Or p\Action=ACTION_UPPERCUT Then
+	If (p\Action=ACTION_GLIDE And Menu\ChaoGarden=0) Or p\Action=ACTION_PUNCH Or p\Action=ACTION_THRUST Or p\Action=ACTION_SWIPE Or p\Action=ACTION_SPRINT Or p\Action=ACTION_CLAW Or p\Action=ACTION_UPPERCUT Or p\FlyingSwipe=1 Then
 		p\Flags\InAirAttack=True
 	Else
 		p\Flags\InAirAttack=False
@@ -243,7 +241,7 @@
 
 	; Determine if doing targeter attack
 	Select p\Action
-		Case ACTION_PUNCH,ACTION_THRUST,ACTION_SPRINT,ACTION_UPPERCUT,ACTION_SWIPE,ACTION_CLAW:
+		Case ACTION_PUNCH,ACTION_THRUST,ACTION_UPPERCUT,ACTION_SWIPE,ACTION_CLAW
 			p\Flags\InTargeterAttack=True
 		Default:
 			p\Flags\InTargeterAttack=False
@@ -251,7 +249,7 @@
 
 	; Determine if doing targeter air attack
 	Select p\Action
-		Case ACTION_THRUST,ACTION_SPRINT,ACTION_UPPERCUT,ACTION_SWIPE,ACTION_CLAW:
+		Case ACTION_THRUST,ACTION_UPPERCUT,ACTION_SWIPE,ACTION_CLAW:
 			If p\Motion\Ground=False Then p\Flags\InTargeterAirAttack=True Else p\Flags\InTargeterAirAttack=False
 		Default:
 			p\Flags\InTargeterAirAttack=False
@@ -275,7 +273,7 @@
 	If p\No#=1 Then
 		If p\Action=ACTION_JUMPFALL Or p\Action=ACTION_JUMP Or p\Action=ACTION_HOP Then p\Flags\CanSuperTransform=True Else p\Flags\CanSuperTransform=False
 		If Input\Pressed\ActionAct Then
-			If Menu\Stage>0 and UNLOCKEDEMERALDS[7]=1 And (Game\SuperForm<2 and Player_IsPlayable(p)) And Game\Gameplay\Rings>=50+50*Game\SuperForm And p\Flags\CanSuperTransform And (Not(Game\Interface\ControlTipPickUpTimer>0)) Then
+			If Menu\Stage>0 And UNLOCKEDEMERALDS[7]=1 And (Game\SuperForm=0 And Player_IsPlayable(p)) And Game\Gameplay\Rings>=50 And p\Flags\CanSuperTransform And (Not(Game\Interface\ControlTipPickUpTimer>0)) Then
 				For ppp.tPlayer = Each tPlayer
 					If Player_IsPlayable(ppp) Then
 						ppp\Action=ACTION_TRANSFORM
@@ -288,14 +286,7 @@
 	EndIf
 
 	; Be super
-	If (Game\SuperForm>0 and Player_IsPlayable(p)) Then Game\Invinc=1 : Game\SpeedShoes=1
-
-	;Change jump action mode
-	If p\No#=1 and Input\Pressed\Back Then
-		If Len(CONTROLTIPS$(TIP_JUMPA2[p\Character]))>0 Then PlaySmartSound(Sound_MenuMove)
-		p\JumpActionMode=abs(p\JumpActionMode-1)
-		JUMPAMODE[p\RealCharacter]=p\JumpActionMode
-	EndIf
+	If (Game\SuperForm=1 And Player_IsPlayable(p)) Then Game\Invinc=1 : Game\SpeedShoes=1
 
 	; Control tips
 	If p\No#=1 Then Interface_ControlTipUpdate(p\Action)
@@ -307,13 +298,13 @@
 
 		; If the character's on the ground, apply deceleration based on the current slope, and
 		; check if he has not enough speed to go further.
-		If p\CanClimbTimer>0 and p\AirBegTooFar=False and (p\Action=ACTION_CLIMB Or (p\Action=ACTION_GLIDE and (Not(p\Character=CHAR_OME))) Or (p\Action=ACTION_SPRINT and Player_CanWallKick(p))) Then
+		If p\CanClimbTimer>0 And p\AirBegTooFar=False And (p\Action=ACTION_CLIMB Or (p\Action=ACTION_GLIDE And (Not(p\Character=CHAR_OME))) Or (p\Action=ACTION_SPRINT And Player_CanWallKick(p))) Then
 			p\Flags\CanClimb=True
 			p\Physics\MOTION_GROUND# = -1
 		Else
 			p\Flags\CanClimb=False
 			If p\Motion\Ground Then Player_HandleAngleAcceleration(p, d)
-			p\Physics\MOTION_GROUND# = 0.8 ; 0.65
+			p\Physics\MOTION_GROUND# = 0.7 ; 0.65
 		EndIf
 		
 		; However, decelerate if no acceleration exists.
@@ -348,7 +339,7 @@ Function Player_Movement(p.tPlayer, d.tDeltaTime)
 			p\Motion\Direction# = p\Objects\Camera\Rotation\y#-Input\Movement_Direction#
 		EndIf
 		p\Motion\Pressure#  = Input\Movement_Pressure#
-		
+
 		; Declarate acceleration and speed vectors and setup.
 		p\Motion\Acceleration		= Vector(Cos#(p\Motion\Direction#)*p\Motion\Pressure#, 0, Sin#(p\Motion\Direction#)*p\Motion\Pressure#)
 		p\Motion\PlayerSpeed 		= Vector(p\Motion\Speed\x#, 0, p\Motion\Speed\z#)
@@ -357,7 +348,7 @@ Function Player_Movement(p.tPlayer, d.tDeltaTime)
 		p\Motion\SpeedNormal		= Vector(p\Motion\SpeedNormalX#, 0, p\Motion\SpeedNormalZ#)
 		p\Motion\SpeedCompensation	= Vector(0, 0, 0)
 		p\Motion\SpeedLength#		= Vector_Length#(p\Motion\PlayerSpeed)
-		
+
 		; Disable skidding flag
 		p\Flags\Skidding = False
 
@@ -451,7 +442,7 @@ End Function
 
 	; =========================================================================================================
 	; =========================================================================================================
-	Function Player_HandleAngleAcceleration(p.tPlayer, d.tDeltaTime)
+Function Player_HandleAngleAcceleration(p.tPlayer, d.tDeltaTime)
 		; Decelerate and check for falling
 		If (Abs(p\Motion\Align\y#) <= 0.7) Then 
 			p\Motion\Speed\x# = p\Motion\Speed\x#+p\Motion\Align\x#^2*0.04*Sgn(p\Motion\Align\x#)*d\Delta
@@ -468,7 +459,7 @@ End Function
 		End If
 
 		; Some kind of rolling physics
-		If p\Physics\Rolling and p\SpeedLength#<p\Physics\COMMON_XZTOPSPEED# Then
+		If p\Physics\Rolling And p\SpeedLength#<p\Physics\COMMON_XZTOPSPEED# Then
 			p\Motion\Speed\x# = p\Motion\Speed\x#+p\Motion\Align\x#^2*(0.0579*Abs(p\Motion\Align\y#)+0.0902)*Sgn(p\Motion\Align\x#)*d\Delta
 			p\Motion\Speed\z# = p\Motion\Speed\z#+p\Motion\Align\z#^2*(0.0579*Abs(p\Motion\Align\y#)+0.0902)*Sgn(p\Motion\Align\z#)*d\Delta
 		;Else
@@ -476,11 +467,11 @@ End Function
 		;	p\Motion\Speed\z# = p\Motion\Speed\z#+p\Motion\Align\z#^2*(0.054*Abs(p\Motion\Align\y#)+0.0402)*Sgn(p\Motion\Align\z#)*d\Delta
 		End If
 
-	End Function
+End Function
 
 	; =========================================================================================================
 	; =========================================================================================================
-	Function Player_SubstractTowardsZero(v.tVector, Delta#)
+Function Player_SubstractTowardsZero(v.tVector, Delta#)
 		; Clamp delta
 		Delta# = Min#(Max#(Delta#, 0.0), 1.0)
 
@@ -506,17 +497,17 @@ End Function
 ;----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ;----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-	Function Player_Rival(p.tPlayer, d.tDeltaTime)
+Function Player_Rival(p.tPlayer, d.tDeltaTime)
 
 		If (Not(p\Action=ACTION_RIVALDIE)) Then
-			doattack=false
-			doattack2=false
-			dojumps=false
+			doattack=False
+			doattack2=False
+			dojumps=False
 			If (Not(p\Rival\Running)) Then
 				If EntityDistance(p\Objects\Entity,pp(1)\Objects\Entity)<200 Then
-					doattack=true
-					doattack2=true
-					dojumps=true
+					doattack=True
+					doattack2=True
+					dojumps=True
 					If Not(p\Rival\MoveTimer>0) Then
 						If p\Rival\DontMoveTimer>0 Then
 							Player_SetSpeed(p,0)
@@ -525,9 +516,9 @@ End Function
 							p\Rival\DontMoveTimer=(Rand(0,2)/2.0)*secs#
 							p\Rival\Speed#=Rand(1,4)/2.0
 						EndIf
-					ElseIf p\Rival\MoveTimer>0 and (Not(p\Action=ACTION_HURT)) Then
+					ElseIf p\Rival\MoveTimer>0 And (Not(p\Action=ACTION_HURT)) Then
 						If (Not(p\Action=ACTION_CHARGE)) Then
-							If (EntityDistance(pp(1)\Objects\Entity,p\Objects\Entity)>15 and p\Flags\Attacking=False) Or p\Action=ACTION_ROLL Then
+							If (EntityDistance(pp(1)\Objects\Entity,p\Objects\Entity)>15 And p\Flags\Attacking=False) Or p\Action=ACTION_ROLL Then
 								If p\Action=ACTION_ROLL Then
 									Player_SetSpeed(p,p\Rival\Speed#)
 								Else
@@ -550,7 +541,7 @@ End Function
 				EndIf
 			Else
 				p\Animation\Direction#=180
-				If p\Objects\Position\z#<pp(1)\Objects\Position\z#-300 Or p\Objects\Position\z#>pp(1)\Objects\Position\z#+700 Or abs(p\Objects\Position\y#-pp(1)\Objects\Position\y#)>700 Then
+				If p\Objects\Position\z#<pp(1)\Objects\Position\z#-300 Or p\Objects\Position\z#>pp(1)\Objects\Position\z#+700 Or Abs(p\Objects\Position\y#-pp(1)\Objects\Position\y#)>700 Then
 					PositionEntity p\Objects\Entity, 0, pp(1)\Objects\Position\y#+20, pp(1)\Objects\Position\z#+250, 1
 					EmitSmartSound(Sound_Teleport,p\Objects\Entity)
 				Else
@@ -562,7 +553,7 @@ End Function
 								If pp(1)\SpeedLength#<2.5 Then
 									Player_SetSpeed(p,2.5)
 								Else
-									If pp(1)\Flags\Attacking=False and pp(1)\Flags\InJumpAction=False and Game\SpeedShoes=0 Then
+									If pp(1)\Flags\Attacking=False And pp(1)\Flags\InJumpAction=False And Game\SpeedShoes=0 Then
 										Player_SetSpeed(p,pp(1)\SpeedLength#-0.25)
 									Else
 										Player_SetSpeed(p,pp(1)\SpeedLength#-0.5)
@@ -593,25 +584,25 @@ End Function
 							If p\Objects\Position\x#>18*p\Rival\MoveSide Then MoveEntity p\Objects\Entity, -0.25*d\Delta, 0, 0
 						EndIf
 					EndIf
-					If pp(1)\Flags\Attacking Then doattack=true
-					If p\Objects\Position\z#<pp(1)\Objects\Position\z#+50 and p\Objects\Position\z#>pp(1)\Objects\Position\z#-200 Then doattack=true : doattack2=true
-					If p\Objects\Position\z#<pp(1)\Objects\Position\z#+200 Then dojumps=true
+					If pp(1)\Flags\Attacking Then doattack=True
+					If p\Objects\Position\z#<pp(1)\Objects\Position\z#+50 And p\Objects\Position\z#>pp(1)\Objects\Position\z#-200 Then doattack=True : doattack2=True
+					If p\Objects\Position\z#<pp(1)\Objects\Position\z#+200 Then dojumps=True
 				EndIf
 			EndIf
 
 			If EntityDistance(pp(1)\Objects\Entity,p\Objects\Entity)<5 Then
-				If p\Flags\Attacking and (pp(1)\Flags\Attacking Or Game\Invinc=1) Then
-					If pp(1)\Action=ACTION_STOMP Then rockP=true else rockP=false
-					If p\Action=ACTION_STOMP Then rockE=true else rockE=false
-					If pp(1)\Action=ACTION_CHARGE Or pp(1)\Action=ACTION_ROLL Or pp(1)\Action=ACTION_DRIFT Then paperP=true else paperP=false
-					If p\Action=ACTION_CHARGE Or p\Action=ACTION_ROLL Or p\Action=ACTION_DRIFT Then paperE=true else paperE=false
-					If rockP=false and paperP=false and pp(1)\Flags\Attacking Then scissorsP=true Else scissorsP=False
-					If rockE=false and paperE=false and p\Flags\Attacking Then scissorsE=true Else scissorsE=False
-					If Game\Invinc=1 Then rockP=true : paperP=true : scissorsP=true
+				If p\Flags\Attacking And (pp(1)\Flags\Attacking Or Game\Invinc=1) Then
+					If pp(1)\Action=ACTION_STOMP Then rockP=True Else rockP=False
+					If p\Action=ACTION_STOMP Then rockE=True Else rockE=False
+					If pp(1)\Action=ACTION_CHARGE Or pp(1)\Action=ACTION_ROLL Or pp(1)\Action=ACTION_DRIFT Then paperP=True Else paperP=False
+					If p\Action=ACTION_CHARGE Or p\Action=ACTION_ROLL Or p\Action=ACTION_DRIFT Then paperE=True Else paperE=False
+					If rockP=False And paperP=False And pp(1)\Flags\Attacking Then scissorsP=True Else scissorsP=False
+					If rockE=False And paperE=False And p\Flags\Attacking Then scissorsE=True Else scissorsE=False
+					If Game\Invinc=1 Then rockP=True : paperP=True : scissorsP=True
 
-					If (rockP and scissorsE) or (paperP and rockE) or (scissorsP and paperE) Then
+					If (rockP And scissorsE) Or (paperP And rockE) Or (scissorsP And paperE) Then
 						Player_Hit(p)
-					ElseIf (rockP and paperE) or (paperP and scissorsE) or (scissorsP and rockE) Then
+					ElseIf (rockP And paperE) Or (paperP And scissorsE) Or (scissorsP And rockE) Then
 						Player_Hit(pp(1))
 					Else
 						p\Motion\Ground=False : p\Action=ACTION_FALL : Player_SetSpeed(p,-1.75) : p\Motion\Speed\y#=0.4
@@ -619,49 +610,49 @@ End Function
 					EndIf
 					ParticleTemplate_Call(p\SmokeParticle, PARTICLE_PLAYER_CONTACTSPARK, p\Objects\Mesh, 1+p\ScaleFactor#*0.1)
 					ParticleTemplate_Call(pp(1)\SmokeParticle, PARTICLE_PLAYER_CONTACTSPARK, p\Objects\Mesh, 1+p\ScaleFactor#*0.1)
-				ElseIf p\Flags\Attacking=False and (pp(1)\Flags\Attacking and (Not(pp(1)\Action=ACTION_JUMP))) Then
+				ElseIf p\Flags\Attacking=False And (pp(1)\Flags\Attacking And (Not(pp(1)\Action=ACTION_JUMP))) Then
 					Player_Hit(p)
 					ParticleTemplate_Call(p\SmokeParticle, PARTICLE_PLAYER_CONTACTSPARK, p\Objects\Mesh, 1+p\ScaleFactor#*0.1)
-				ElseIf (p\Flags\Attacking and (Not(p\Action=ACTION_JUMP))) and pp(1)\Flags\Attacking=False Then
+				ElseIf (p\Flags\Attacking And (Not(p\Action=ACTION_JUMP))) And pp(1)\Flags\Attacking=False Then
 					Player_Hit(pp(1))
 					ParticleTemplate_Call(pp(1)\SmokeParticle, PARTICLE_PLAYER_CONTACTSPARK, p\Objects\Mesh, 1+p\ScaleFactor#*0.1)
 				EndIf
 			EndIf
 
-			If doattack or dojumps Then
+			If doattack Or dojumps Then
 				If Not(p\Rival\JustHadActionTimer>0) Then
 					If dojumps Then
-						If (Not(p\Action=ACTION_HOP OR p\Action=ACTION_JUMP)) and p\Motion\Ground and ( (Not(p\Rival\MakeJumpTimer>0)) Or (pp(1)\Action=ACTION_JUMP and Rand(1,2)=1) ) Then
-							Player_ActuallyJump(p,true)
+						If (Not(p\Action=ACTION_HOP Or p\Action=ACTION_JUMP)) And p\Motion\Ground And ( (Not(p\Rival\MakeJumpTimer>0)) Or (pp(1)\Action=ACTION_JUMP And Rand(1,2)=1) ) Then
+							Player_ActuallyJump(p,True)
 						EndIf
-						If p\Flags\InJumpAction=False and p\Motion\Ground=False and ( (Not(p\Rival\MakeJumpActionTimer>0)) Or (pp(1)\Flags\InJumpAction and Rand(1,3)=1) ) Then
-							If (Not(p\Action=ACTION_HOP OR p\Action=ACTION_JUMP)) and p\Motion\Ground Then Player_ActuallyJump(p,true)
+						If p\Flags\InJumpAction=False And p\Motion\Ground=False And ( (Not(p\Rival\MakeJumpActionTimer>0)) Or (pp(1)\Flags\InJumpAction And Rand(1,3)=1) ) Then
+							If (Not(p\Action=ACTION_HOP Or p\Action=ACTION_JUMP)) And p\Motion\Ground Then Player_ActuallyJump(p,True)
 							Select(Rand(1,2))
-							Case 1: p\JumpActionMode=abs(p\JumpActionMode-1)
+							Case 1: p\JumpActionMode=Abs(p\JumpActionMode-1)
 							End Select
-							Player_JumpActions(p,true)
+							Player_JumpActions(p,True)
 							p\Rival\JustHadActionTimer=0.8*secs#
 						EndIf
 					EndIf
 
 					If doattack Then
 						If EntityDistance(pp(1)\Objects\Entity,p\Objects\Entity)<50 Then
-							If p\Flags\Attacking=False and ( (Not(p\Rival\MakeChargeTimer>0)) Or ((pp(1)\Action=ACTION_CHARGE Or pp(1)\Action=ACTION_ROLL Or pp(1)\Action=ACTION_DRIFT) and Rand(1,3)=1) ) Then
+							If p\Flags\Attacking=False And ( (Not(p\Rival\MakeChargeTimer>0)) Or ((pp(1)\Action=ACTION_CHARGE Or pp(1)\Action=ACTION_ROLL Or pp(1)\Action=ACTION_DRIFT) And Rand(1,3)=1) ) Then
 								Player_Action_Roll_Initiate_Rival(p)
 								p\Rival\JustHadActionTimer=0.8*secs#
 							EndIf
-							If p\Flags\Attacking=False and p\Motion\Ground=False and ( (Not(p\Rival\MakeStompTimer>0)) Or (pp(1)\Action=ACTION_STOMP and Rand(1,2)=1) ) Then
+							If p\Flags\Attacking=False And p\Motion\Ground=False And ( (Not(p\Rival\MakeStompTimer>0)) Or (pp(1)\Action=ACTION_STOMP And Rand(1,2)=1) ) Then
 								Select(Rand(0,1))
 								Case 0: Player_Action_Stomp_Initiate_Rival(p)
-								Case 1: Player_Action_Stomp_Initiate_Rival(p,true)
+								Case 1: Player_Action_Stomp_Initiate_Rival(p,True)
 								End Select
 								p\Rival\JustHadActionTimer=0.8*secs#
 							EndIf
-							If doattack2 and p\Flags\Attacking=False and ( (Not(p\Rival\MakeAttackTimer>0)) Or ((pp(1)\Flags\Attacking Or pp(1)\Action=ACTION_THROW Or pp(1)\Action=ACTION_SHOOT Or pp(1)\Action=ACTION_SHOOTHOVER Or pp(1)\Action=ACTION_PSYCHO) and Rand(1,4)=1) ) Then
+							If doattack2 And p\Flags\Attacking=False And ( (Not(p\Rival\MakeAttackTimer>0)) Or ((pp(1)\Flags\Attacking Or pp(1)\Action=ACTION_THROW Or pp(1)\Action=ACTION_SHOOT Or pp(1)\Action=ACTION_SHOOTHOVER Or pp(1)\Action=ACTION_PSYCHO) And Rand(1,4)=1) ) Then
 								Select(Rand(1,3))
-									Case 1: Player_SkillActions(p,true)
-									Case 2: Player_SkillActions2(p,true)
-									Case 3: Player_SkillActions3(p,true)
+									Case 1: Player_SkillActions(p,True)
+									Case 2: Player_SkillActions2(p,True)
+									Case 3: Player_SkillActions3(p,True)
 								End Select
 								p\Rival\JustHadActionTimer=0.8*secs#
 							EndIf
@@ -675,7 +666,7 @@ End Function
 				If Not(p\Rival\MakeChargeTimer>0) Then p\Rival\MakeChargeTimer=(Rand(1,16)/4.0)*secs#
 				If Not(p\Rival\MakeStompTimer>0) Then p\Rival\MakeStompTimer=(Rand(1,32)/4.0)*secs#
 
-				If p\Action = ACTION_JUMPDASH Or (p\Action = ACTION_DOUBLEJUMP and (p\Character=CHAR_AMY Or p\Character=CHAR_BLA Or p\Character=CHAR_EME)) Or p\Action = ACTION_DIVE Then
+				If p\Action = ACTION_JUMPDASH Or (p\Action = ACTION_DOUBLEJUMP And (p\Character=CHAR_AMY Or p\Character=CHAR_BLA Or p\Character=CHAR_EME)) Or p\Action = ACTION_DIVE Then
 					Player_GetClosestObject(p,1)
 				ElseIf p\Flags\Attacking Then
 					Player_GetClosestObject(p,3)
@@ -694,7 +685,7 @@ End Function
 
 	End Function
 
-	Function Player_ReturnChosenRival(char,try)
+Function Player_ReturnChosenRival(char,try)
 		Select char
 			Case CHAR_SON:
 				Select(try)
@@ -1014,3 +1005,5 @@ End Function
 		End Select
 		Return CHAR_SON
 	End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

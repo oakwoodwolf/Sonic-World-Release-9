@@ -6,7 +6,7 @@
 	; ---- Motion routines ----
 	; =========================================================================================================
 	; =========================================================================================================
-	Function Player_Motion(p.tPlayer, d.tDeltaTime)
+Function Player_Motion(p.tPlayer, d.tDeltaTime)
 
 		; Acquire position
 		Player_UpdatePosition(p)
@@ -25,7 +25,7 @@
 					Player_ConvertGroundToRoll(p, d)
 				End If
 
-				If p\Motion\Ground=False and (Not(p\OnDeathMeshTimer>0)) Then					
+				If p\Motion\Ground=False And (Not(p\OnDeathMeshTimer>0)) Then					
 					; If character just landed, transpose air speed to ground					
 					Player_ConvertAirToGround(p)
 					p\Motion\Ground = True
@@ -47,24 +47,6 @@
 				Player_Align(p)
 		End Select
 
-		; Place air beginner
-		Select p\AirBegGround
-			Case False:
-				If EntityDistance(p\Objects\Entity,p\Objects\AirBeg)>800 Then
-					If (Not(p\Action=ACTION_TORNADO Or p\BoardWaterTimer>0)) Then p\AirBegTooFar=True
-				EndIf
-				If p\Motion\Ground Then
-					If (Not(p\Action=ACTION_CLIMB)) Then p\AirBegGround=True
-				EndIf
-			Case True:
-				If (Not(p\Action=ACTION_CLIMB)) Then
-					p\AirBegTooFar=False
-					If p\Motion\Ground=False Then Player_Motion_ResetAirBeg(p)
-				Else
-					p\AirBegGround=False
-				EndIf
-		End Select
-
 		; Place hommer
 		If p\Objects\Hommer\Done=0 Then
 			PositionEntity p\Objects\Hommer\Entity, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 1
@@ -84,7 +66,7 @@
 			Player_Motion_Placements(p)
 
 			; dummy fix for turning back
-			If abs(p\Animation\Direction#-180)<0.05 Or abs(p\Animation\Direction#-0)<0.05 Then
+			If Abs(p\Animation\Direction#-180)<0.05 Or Abs(p\Animation\Direction#-0)<0.05 Then
 				Select(Rand(1,2))
 				Case 1: p\Animation\Direction#=p\Animation\Direction#+0.1
 				Case 2: p\Animation\Direction#=p\Animation\Direction#-0.1
@@ -116,25 +98,25 @@
 
 		; Apply minimum speed
 		If p\SpeedLength#<p\Physics\COMMON_XZMINSPEED# Then
-			If abs(p\SpeedLength#-p\Physics\COMMON_XZMINSPEED#)<1 Then
-				Player_SetSpeed(p,p\SpeedLength#+abs(p\SpeedLength#-p\Physics\COMMON_XZMINSPEED#)*d\Delta)
+			If Abs(p\SpeedLength#-p\Physics\COMMON_XZMINSPEED#)<1 Then
+				Player_SetSpeed(p,p\SpeedLength#+Abs(p\SpeedLength#-p\Physics\COMMON_XZMINSPEED#)*d\Delta)
 			Else
 				Player_SetSpeed(p,p\SpeedLength#+1*d\Delta)
 			EndIf
 		EndIf
 
 		; Deal trails
-		If p\No#=1 and (Game\MachLock>0 Or Game\SpeedShoes=1 Or (p\Action=ACTION_SKYDIVE and Input\Hold\ActionRoll)) and (Not(p\Action=ACTION_HOMING Or p\Action=ACTION_DEBUG)) and (p\SpeedLength#>0 Or abs(p\Motion\Speed\y#)>1) and (Game\SuperForm=0 Or Game\MachLock>0) and Game\Victory=0 Then
+		If p\No#=1 And (Game\MachLock>0 Or Game\SpeedShoes=1 Or (p\Action=ACTION_SKYDIVE And Input\Hold\ActionRoll)) And (Not(p\Action=ACTION_HOMING Or p\Action=ACTION_DEBUG)) And (p\SpeedLength#>0 Or Abs(p\Motion\Speed\y#)>1) And (Game\SuperForm=0 Or Game\MachLock>0) And Game\Victory=0 Then
 			If (Not(p\SonicBoomTrailTimer>0)) Then
 				Player_FreeTrails(p,1)
-				For i=0 to 4
+				For i=0 To 4
 					PositionEntity(p\Objects\PPivot[i], EntityX#(p\Objects\Mesh),EntityY#(p\Objects\Mesh),EntityZ#(p\Objects\Mesh), True)
 					MoveEntity(p\Objects\PPivot[i], 0.5*Rand(-3,3)+Rand(-1,1)*p\ScaleFactor#,0.5*Rand(-3,3)+Rand(-1,1)*p\ScaleFactor#,0.15*Rand(-2,2)+Rand(-1,1)*p\ScaleFactor#)
 					Player_SpawnTrail(p,i)
 				Next
 				p\SonicBoomTrailTimer=0.15*secs#
 			EndIf
-			For i=0 to 4
+			For i=0 To 4
 				RotateEntity(p\Objects\PPivot[i],EntityPitch(p\Objects\Entity),p\Animation\Direction#,EntityRoll(p\Objects\Entity))
 			Next
 		Else
@@ -143,7 +125,7 @@
 		
 		; Deal longtrail
 		Select p\Action
-			Case ACTION_JUMPDASH,ACTION_SPRINT,ACTION_HOMING,ACTION_STOMP,ACTION_BUMPED,ACTION_ROLL,ACTION_DRIFT,ACTION_BELLYFLOP: 
+			Case ACTION_JUMPDASH,ACTION_SPRINT,ACTION_LIGHTATTACK,ACTION_HOMING,ACTION_STOMP,ACTION_BUMPED,ACTION_ROLL,ACTION_DRIFT,ACTION_BELLYFLOP,ACTION_BOOST,ACTION_BOOSTFALL
 				If p\Flags\LongTrailCreated=0 Then 
 					Player_LongTrail(p, 1)
 					p\Flags\LongTrailCreated=1
@@ -183,7 +165,7 @@
 
 	End Function
 
-	Function Player_ReturnFollowerPosition(p.tPlayer,xz,follower)
+Function Player_ReturnFollowerPosition(p.tPlayer,xz,follower)
 		Select follower
 			Case 2: side=1
 			Case 3: side=-1
@@ -220,14 +202,9 @@
 		End Select
 	End Function
 
-	Function Player_Motion_ResetAirBeg(p.tPlayer)
-		p\AirBegGround=False : p\AirBegTooFar=False
-		PositionEntity p\Objects\AirBeg, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 1
-	End Function
-
 	; =========================================================================================================
 	; =========================================================================================================
-	Function Player_TestCollisions(p.tPlayer, d.tDeltaTime)
+Function Player_TestCollisions(p.tPlayer, d.tDeltaTime)
 		; Define values for the dot product to be considered up and down collisions
 		p\Collision\CeilingTest# = -p\Physics\MOTION_CEILING#
 		p\Collision\GroundTest#  = p\Physics\MOTION_GROUND#
@@ -287,7 +264,7 @@
 							If Game\Victory=0 Then Player_Hit(p)
 						Case COLLISION_WORLD_POLYGON_RAIL:
 							If (Not(p\Action=ACTION_GRIND)) Then
-								If (Not(p\CanClimbTimer>0)) and Game\Victory=0 and (Not(p\Action=ACTION_DIE Or p\Action=ACTION_HURT)) and p\Motion\Ground and (p\Flags\CanClimb=False) Then
+								If (Not(p\CanClimbTimer>0)) And Game\Victory=0 And (Not(p\Action=ACTION_DIE Or p\Action=ACTION_HURT)) And p\Motion\Ground And (p\Flags\CanClimb=False) Then
 									If Game\Vehicle=0 Or (p\No#=1 Or pp(1)\Action=ACTION_GRIND) Then
 										If p\No#=1 Then EmitSmartSound(Sound_GrindStart,p\Objects\Entity)
 										p\Action=ACTION_GRIND
@@ -295,11 +272,11 @@
 								EndIf
 							EndIf
 						Case COLLISION_WORLD_POLYGON_PINBALL,COLLISION_WORLD_POLYGON_BOUNCE:
-							If (Not(p\Action=ACTION_HURT Or p\Action=ACTION_DIE)) and Game\Victory=0 Then
+							If (Not(p\Action=ACTION_HURT Or p\Action=ACTION_DIE)) And Game\Victory=0 Then
 								If (Not(p\Action=ACTION_BUMPED Or p\Action=ACTION_FREEZE)) Then
 									If (Not(p\Collision\GroundType=COLLISION_WORLD_POLYGON_BOUNCE)) Or p\Motion\Ground Then p\Action=ACTION_BUMPED : p\BumpedTimer=0.8*secs#
 								EndIf
-								If p\Collision\GroundType=COLLISION_WORLD_POLYGON_BOUNCE and p\Motion\Ground Then
+								If p\Collision\GroundType=COLLISION_WORLD_POLYGON_BOUNCE And p\Motion\Ground Then
 									Player_Action_BumpedBounce_Initiate(p)
 								EndIf
 							EndIf
@@ -398,116 +375,123 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-	Function Player_Motion_Placements(p.tPlayer)
+Function Player_Motion_Placements(p.tPlayer)
 		; Position the mesh
-		If Game\Interface\DebugPlacerOn=1 Then
-			PositionEntity(Game\Interface\DebugAxesMesh, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 1)
+	If Game\Interface\DebugPlacerOn=1 Then
+		PositionEntity(Game\Interface\DebugAxesMesh, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 1)
+		PositionEntity(p\Objects\Mesh, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 1)
+		PositionEntity(p\Objects\Mesh2, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 1)
+		PositionEntity(p\Objects\Mesh3, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 1)
+		PositionEntity(p\Objects\Mesh4, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 1)
+	Else
+		If p\Motion\Ground And (p\Action=ACTION_CHARGE Or p\Action=ACTION_ROLL Or p\Action=ACTION_JUMP Or p\Action=ACTION_BUMPED Or p\Action=ACTION_GRABBED Or p\Action=ACTION_LAND) Then
+			PositionEntity(p\Objects\Mesh, p\Objects\Position\x#, p\Objects\Position\y#+p\ScaleFactor#, p\Objects\Position\z#, 1)
+		Else
 			PositionEntity(p\Objects\Mesh, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 1)
-			PositionEntity(p\Objects\Mesh2, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 1)
-			PositionEntity(p\Objects\Mesh3, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 1)
-			PositionEntity(p\Objects\Mesh4, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 1)
-		Else
-			If p\Motion\Ground and (p\Action=ACTION_CHARGE Or p\Action=ACTION_ROLL Or p\Action=ACTION_DRIFT Or p\Action=ACTION_JUMP Or p\Action=ACTION_BUMPED Or p\Action=ACTION_GRABBED Or p\Action=ACTION_LAND) Then
-				PositionEntity(p\Objects\Mesh, p\Objects\Position\x#, p\Objects\Position\y#+p\ScaleFactor#, p\Objects\Position\z#, 1)
-			Else
-				PositionEntity(p\Objects\Mesh, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 1)
-			EndIf
 		EndIf
-
+	EndIf
+	
 		; Change direction of the mesh
-		If Game\Interface\DebugPlacerOn=0 Then
-			RotateEntity(p\Objects\Mesh, 0, p\Animation\Direction#-180, 0)
-			AlignToVector(p\Objects\Mesh, p\Animation\Align\x#, p\Animation\Align\y#, p\Animation\Align\z#, 2)
-			If p\Action=ACTION_DRIFT Then
-				ScaleEntity(p\Objects\Mesh, 1, 1.3, 1.3)
-				If abs(p\Physics\DRIFT_ANGLE#)>5 Then p\Physics\DRIFT_ANGLE_ACTUAL#=p\Physics\DRIFT_ANGLE# Else p\Physics\DRIFT_ANGLE_ACTUAL#=0
-				TurnEntity(p\Objects\Mesh,0,0,p\Physics\DRIFT_ANGLE_ACTUAL#)
-			ElseIf p\Action=ACTION_CHARGE and p\ChargeTimer>0.125*secs# Then
-				ScaleEntity(p\Objects\Mesh, 1, 1.375, 1)
-				TurnEntity(p\Objects\Mesh,45.25,0,0)
-			Else
-				ScaleEntity(p\Objects\Mesh, 1, 1, 1)
-				If p\Physics\TRICK_ANGLE#>5 Then p\Physics\TRICK_ANGLE_ACTUAL#=p\Physics\TRICK_ANGLE# Else p\Physics\TRICK_ANGLE_ACTUAL#=0
-				If abs(p\Physics\LEAN_ANGLE#)>5 Then p\Physics\LEAN_ANGLE_ACTUAL#=p\Physics\LEAN_ANGLE# Else p\Physics\LEAN_ANGLE_ACTUAL#=0
-				If Not(p\Action=ACTION_FLOAT Or p\Action=ACTION_GLIDER) Then
-					If abs(p\Physics\UP_ANGLE#)>5 Then p\Physics\UP_ANGLE_ACTUAL#=p\Physics\UP_ANGLE# Else p\Physics\UP_ANGLE_ACTUAL#=0
-				Else
-					p\Physics\UP_ANGLE_ACTUAL#=p\Physics\UP_ANGLE#
-				EndIf
-
-				TurnEntity(p\Objects\Mesh,p\Physics\UP_ANGLE_ACTUAL#,0,p\Physics\LEAN_ANGLE_ACTUAL#)
-				If p\Physics\TRICK_ANGLE_ACTUAL#>0 Then TurnEntity(p\Objects\Mesh,0,p\Physics\TRICK_ANGLE_ACTUAL#,0)
-			EndIf
-
-			If p\HasVehicle>0 Then
-				If abs(p\Physics\DRIFT_ANGLE#)>10 Then p\Physics\DRIFT_ANGLE_ACTUAL#=p\Physics\DRIFT_ANGLE# Else p\Physics\DRIFT_ANGLE_ACTUAL#=0
-				If Game\Vehicle=9 Then
-					TurnEntity(p\Objects\Mesh,0,p\Physics\DRIFT_ANGLE_ACTUAL#,0)
-				Else
-					TurnEntity(p\Objects\Mesh,0,0,p\Physics\DRIFT_ANGLE_ACTUAL#)
-				EndIf
-				RotateEntity(p\Objects\Vehicle, EntityPitch(p\Objects\Mesh), EntityYaw(p\Objects\Mesh), EntityRoll(p\Objects\Mesh), 1)
-				Select Game\Vehicle
-					Case 2:
-						PositionEntity(p\Objects\Vehicle, (EntityX(p\Objects\HandR,1)+EntityX(p\Objects\HandL,1))/2.0, EntityY(p\Objects\HandR,1), (EntityZ(p\Objects\HandR,1)+EntityZ(p\Objects\HandL,1))/2.0, 1)
-					Default:
-						PositionEntity(p\Objects\Vehicle, EntityX(p\Objects\Mesh), EntityY(p\Objects\Mesh), EntityZ(p\Objects\Mesh), 1)
-				End Select
-				Select Game\Vehicle
-					Case 1:
-						MoveEntity p\Objects\Vehicle, 0, -2.2, 0
-					Case 2:
-						TurnEntity p\Objects\Vehicle, -60, 0, 0
-						MoveEntity p\Objects\Vehicle, 0, 0.25, 0.5
-					Case 3:
-						MoveEntity p\Objects\Vehicle, 0, 0.2+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
-					Case 4,9:
-						MoveEntity p\Objects\Vehicle, 0, 0.65+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
-					Case 5,8:
-						MoveEntity p\Objects\Vehicle, 0, 1.05+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
-				End Select
-			EndIf
+	If Game\Interface\DebugPlacerOn=0 Then
+		If (Not(p\Action=ACTION_SKYDIVE Or p\Action=ACTION_TORNADO))Then 
+			Select p\Action
+				Case ACTION_PANEL2
+					RotateEntity(p\Objects\Mesh, p\PanelRotation#, p\Animation\Direction#-180, 0)
+				Default
+					RotateEntity(p\Objects\Mesh, 0, p\Animation\Direction#-180, 0)
+			End Select 
+			
 		Else
-			Select Game\Interface\DebugMenu
-				Case DEBUGMENU_ATTRIBUTES_CAMPOSITION#,DEBUGMENU_ATTRIBUTES_CAMROTATION#,DEBUGMENU_ATTRIBUTES_CAMZOOM#,DEBUGMENU_ATTRIBUTES_CAMSPEED#:
-					ShowEntity(p\Objects\Mesh4)
-					RotateEntity(p\Objects\Mesh4,TempAttribute\campitch#+90,TempAttribute\camyaw#,0)
-				Case DEBUGMENU_ATTRIBUTES_AMOUNT#,DEBUGMENU_ATTRIBUTES_AMOUNTROTATION#,DEBUGMENU_ATTRIBUTES_AMOUNTSPACE#:
-					ShowEntity(p\Objects\Mesh4)
-					RotateEntity(p\Objects\Mesh4,TempAttribute\amountpitch#+90,TempAttribute\amountyaw#,0)
+			
+			For c.tCamera = Each tCamera
+				RotateEntity(p\Objects\Mesh, 0, c\TargetRotation\y#, 0)
+			Next
+			
+		EndIf 
+		AlignToVector(p\Objects\Mesh, p\Animation\Align\x#, p\Animation\Align\y#, p\Animation\Align\z#, 2)
+		ScaleEntity(p\Objects\Mesh, 1, 1, 1)
+		
+		If p\Physics\TRICK_ANGLE#>5 Then p\Physics\TRICK_ANGLE_ACTUAL#=p\Physics\TRICK_ANGLE# Else p\Physics\TRICK_ANGLE_ACTUAL#=0
+		If Abs(p\Physics\LEAN_ANGLE#)>5 Then p\Physics\LEAN_ANGLE_ACTUAL#=p\Physics\LEAN_ANGLE# Else p\Physics\LEAN_ANGLE_ACTUAL#=0
+		If Not(p\Action=ACTION_GLIDER) Then
+			If Abs(p\Physics\UP_ANGLE#)>5 Then p\Physics\UP_ANGLE_ACTUAL#=p\Physics\UP_ANGLE# Else p\Physics\UP_ANGLE_ACTUAL#=0
+		Else
+			p\Physics\UP_ANGLE_ACTUAL#=p\Physics\UP_ANGLE#
+		EndIf
+		
+		TurnEntity(p\Objects\Mesh,p\Physics\UP_ANGLE_ACTUAL#,0,p\Physics\LEAN_ANGLE_ACTUAL#)
+		If p\Physics\TRICK_ANGLE_ACTUAL#>0 Then TurnEntity(p\Objects\Mesh,0,p\Physics\TRICK_ANGLE_ACTUAL#,0)
+		
+		
+		If p\HasVehicle>0 Then
+			If Abs(p\Physics\DRIFT_ANGLE#)>10 Then p\Physics\DRIFT_ANGLE_ACTUAL#=p\Physics\DRIFT_ANGLE# Else p\Physics\DRIFT_ANGLE_ACTUAL#=0
+			If Game\Vehicle=9 Then
+				TurnEntity(p\Objects\Mesh,0,p\Physics\DRIFT_ANGLE_ACTUAL#,0)
+			Else
+				TurnEntity(p\Objects\Mesh,0,0,p\Physics\DRIFT_ANGLE_ACTUAL#)
+			EndIf
+			RotateEntity(p\Objects\Vehicle, EntityPitch(p\Objects\Mesh), EntityYaw(p\Objects\Mesh), EntityRoll(p\Objects\Mesh), 1)
+			Select Game\Vehicle
+				Case 2:
+					PositionEntity(p\Objects\Vehicle, (EntityX(p\Objects\HandR,1)+EntityX(p\Objects\HandL,1))/2.0, EntityY(p\Objects\HandR,1), (EntityZ(p\Objects\HandR,1)+EntityZ(p\Objects\HandL,1))/2.0, 1)
 				Default:
-					HideEntity(p\Objects\Mesh4)
-					Select p\ObjType
-						Case OBJTYPE_CHECK,OBJTYPE_CHECK+1000,OBJTYPE_CHECK+2000,OBJTYPE_TELEPORTER,OBJTYPE_TELEPORTER2,OBJTYPE_TELEPORTER3,OBJTYPE_TELEPORTER4,OBJTYPE_TELEPORTER5,OBJTYPE_TELEPORTER6,OBJTYPE_TELEPORTEREND,OBJTYPE_GARDENPOINT,OBJTYPE_SPRINKLER+2000:
-							RotateEntity(p\Objects\Mesh,TempAttribute\pitch#,TempAttribute\yaw#,0)
-							RotateEntity(p\Objects\Mesh2,TempAttribute\pitch#+90,TempAttribute\yaw#,0)
-							RotateEntity(p\Objects\Mesh3,TempAttribute\pitch#,TempAttribute\yaw#,0)
-						Case OBJTYPE_CANNON:
-							RotateEntity(p\Objects\Mesh,TempAttribute\pitch#+35,TempAttribute\yaw#,0)
-							RotateEntity(p\Objects\Mesh2,TempAttribute\pitch#+35,TempAttribute\yaw#,0)
-							RotateEntity(p\Objects\Mesh3,TempAttribute\pitch#+35,TempAttribute\yaw#,0)
-						Case OBJTYPE_BSPRING,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000,OBJTYPE_BOXWOODEN,OBJTYPE_BOXMETAL,OBJTYPE_BOXIRON,OBJTYPE_BOXCAGE,OBJTYPE_BOXLIGHT,OBJTYPE_BOXTNT,OBJTYPE_BOXNITRO,OBJTYPE_BOXFLOAT,OBJTYPE_BOXWOODEN+1000,OBJTYPE_BOXMETAL+1000,OBJTYPE_BOXIRON+1000,OBJTYPE_BOXCAGE+1000,OBJTYPE_BOXLIGHT+1000,OBJTYPE_BOXTNT+1000,OBJTYPE_BOXNITRO+1000,OBJTYPE_BOXFLOAT+1000,OBJTYPE_BOXWOODEN+2000,OBJTYPE_BOXMETAL+2000,OBJTYPE_BOXIRON+2000,OBJTYPE_BOXCAGE+2000,OBJTYPE_BOXLIGHT+2000,OBJTYPE_BOXTNT+2000,OBJTYPE_BOXNITRO+2000,OBJTYPE_BOXFLOAT+2000,OBJTYPE_FLAMESPOUT,OBJTYPE_ICESPOUT,OBJTYPE_SHOCKSPOUT,OBJTYPE_SWITCH,OBJTYPE_SWITCHAIR,OBJTYPE_SWITCHBASE,OBJTYPE_SWITCHTOP,OBJTYPE_SWITCHWATER,OBJTYPE_LASERV,OBJTYPE_LASERH,OBJTYPE_RINGGATEV,OBJTYPE_RINGGATEH,OBJTYPE_OMOCHAO,OBJTYPE_SPIKEBAR,OBJTYPE_SPIKEBAR+1000,OBJTYPE_SPIKEBAR+2000,OBJTYPE_PROPELLER,OBJTYPE_PULLEY,OBJTYPE_PULLEY+1000,OBJTYPE_ROCKET,OBJTYPE_ELEVATOR,OBJTYPE_FPLAT,OBJTYPE_SPIKESWING,OBJTYPE_SPIKESWING+1000,OBJTYPE_SPIKESWING+2000,OBJTYPE_AIRBALLOON,OBJTYPE_CLOUD,OBJTYPE_POLE,OBJTYPE_EXPLOSION,OBJTYPE_EXPLOSION2,OBJTYPE_HANDLE,OBJTYPE_ICEDECOR,OBJTYPE_ICEDECOR+1000,OBJTYPE_CAPSULE:
-							RotateEntity(p\Objects\Mesh,0,TempAttribute\yaw#,0)
-							RotateEntity(p\Objects\Mesh2,0,TempAttribute\yaw#,0)
-							RotateEntity(p\Objects\Mesh3,0,TempAttribute\yaw#,0)
-						Case OBJTYPE_PAWN,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSWORD,OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_SPONA,OBJTYPE_MOTOBUG,OBJTYPE_CATERKILLER,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_CHOPPER,OBJTYPE_CRABMEAT,OBJTYPE_JAWS,OBJTYPE_SPINY,OBJTYPE_GRABBER,OBJTYPE_KIKI,OBJTYPE_COP,OBJTYPE_COPRACER,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_ACHAOS,OBJTYPE_ACHAOSBLOB,OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_CHASER,OBJTYPE_FIGHTER,OBJTYPE_EGGROBO,OBJTYPE_CAMERON,OBJTYPE_KLAGEN,OBJTYPE_ORBINAUT,OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_ANTON,OBJTYPE_AQUIS,OBJTYPE_BOMBIE,OBJTYPE_NEWTRON,OBJTYPE_PENGUINATOR,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_SPIKES,OBJTYPE_ASTERON,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_STEELION,OBJTYPE_BOO,OBJTYPE_BOOSCARE,OBJTYPE_GHOST,OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BALKIRY,OBJTYPE_BURROBOT,OBJTYPE_CRAWL,OBJTYPE_DRAGONFLY,OBJTYPE_MADMOLE,OBJTYPE_MANTA,OBJTYPE_MUSHMEANIE,OBJTYPE_OCTUS,OBJTYPE_PATABATA,OBJTYPE_ZOOMER,OBJTYPE_BITER,OBJTYPE_CRAWLER,OBJTYPE_TAKER,OBJTYPE_E1000,OBJTYPE_BALLHOG,OBJTYPE_RHINOTANK,OBJTYPE_TECHNOSQU,OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_OAKSWORD,OBJTYPE_LEECH,OBJTYPE_WING,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_CATAKILLER,OBJTYPE_CLUCKOID,OBJTYPE_MANTIS,OBJTYPE_NEBULA,OBJTYPE_ROLLER,OBJTYPE_SHEEP,OBJTYPE_SNOWY,OBJTYPE_SPLATS,OBJTYPE_TOXO,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE,OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER,OBJTYPE_HAMMERSHIELD,OBJTYPE_WITCH1,OBJTYPE_WITCH2,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3,OBJTYPE_BOMBER1,OBJTYPE_BOMBER2:
-							RotateEntity(p\Objects\Mesh,0,TempAttribute\yaw#,0)
-							RotateEntity(p\Objects\Mesh2,0,TempAttribute\yaw#,0)
-							RotateEntity(p\Objects\Mesh3,0,TempAttribute\yaw#,0)
-						Case OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000:
-							RotateEntity(p\Objects\Mesh,TempAttribute\pitch#+90,TempAttribute\yaw#,0)
-							RotateEntity(p\Objects\Mesh2,TempAttribute\pitch#+90,TempAttribute\yaw#,0)
-							RotateEntity(p\Objects\Mesh3,TempAttribute\pitch#+90,TempAttribute\yaw#,0)
-						Default:
-							RotateEntity(p\Objects\Mesh,TempAttribute\pitch#,TempAttribute\yaw#,0)
-							RotateEntity(p\Objects\Mesh2,TempAttribute\pitch#,TempAttribute\yaw#,0)
-							RotateEntity(p\Objects\Mesh3,TempAttribute\pitch#,TempAttribute\yaw#,0)
-					End Select
+					PositionEntity(p\Objects\Vehicle, EntityX(p\Objects\Mesh), EntityY(p\Objects\Mesh), EntityZ(p\Objects\Mesh), 1)
+			End Select
+			Select Game\Vehicle
+				Case 1:
+					MoveEntity p\Objects\Vehicle, 0, -2.2, 0
+				Case 2:
+					TurnEntity p\Objects\Vehicle, -60, 0, 0
+					MoveEntity p\Objects\Vehicle, 0, 0.25, 0.5
+				Case 3:
+					MoveEntity p\Objects\Vehicle, 0, 0.2+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
+				Case 4,9:
+					MoveEntity p\Objects\Vehicle, 0, 0.65+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
+				Case 5,8:
+					MoveEntity p\Objects\Vehicle, 0, 1.05+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
 			End Select
 		EndIf
-	End Function
+	Else
+		Select Game\Interface\DebugMenu
+			Case DEBUGMENU_ATTRIBUTES_CAMPOSITION#,DEBUGMENU_ATTRIBUTES_CAMROTATION#,DEBUGMENU_ATTRIBUTES_CAMZOOM#,DEBUGMENU_ATTRIBUTES_CAMSPEED#:
+				ShowEntity(p\Objects\Mesh4)
+				RotateEntity(p\Objects\Mesh4,TempAttribute\campitch#+90,TempAttribute\camyaw#,0)
+			Case DEBUGMENU_ATTRIBUTES_AMOUNT#,DEBUGMENU_ATTRIBUTES_AMOUNTROTATION#,DEBUGMENU_ATTRIBUTES_AMOUNTSPACE#:
+				ShowEntity(p\Objects\Mesh4)
+				RotateEntity(p\Objects\Mesh4,TempAttribute\amountpitch#+90,TempAttribute\amountyaw#,0)
+			Default:
+				HideEntity(p\Objects\Mesh4)
+				Select p\ObjType
+					Case OBJTYPE_CHECK,OBJTYPE_CHECK+1000,OBJTYPE_CHECK+2000,OBJTYPE_TELEPORTER,OBJTYPE_TELEPORTER2,OBJTYPE_TELEPORTER3,OBJTYPE_TELEPORTER4,OBJTYPE_TELEPORTER5,OBJTYPE_TELEPORTER6,OBJTYPE_TELEPORTEREND,OBJTYPE_GARDENPOINT,OBJTYPE_SPRINKLER+2000:
+						RotateEntity(p\Objects\Mesh,TempAttribute\pitch#,TempAttribute\yaw#,0)
+						RotateEntity(p\Objects\Mesh2,TempAttribute\pitch#+90,TempAttribute\yaw#,0)
+						RotateEntity(p\Objects\Mesh3,TempAttribute\pitch#,TempAttribute\yaw#,0)
+					Case OBJTYPE_CANNON:
+						RotateEntity(p\Objects\Mesh,TempAttribute\pitch#+35,TempAttribute\yaw#,0)
+						RotateEntity(p\Objects\Mesh2,TempAttribute\pitch#+35,TempAttribute\yaw#,0)
+						RotateEntity(p\Objects\Mesh3,TempAttribute\pitch#+35,TempAttribute\yaw#,0)
+					Case OBJTYPE_BSPRING,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000,OBJTYPE_BOXWOODEN,OBJTYPE_BOXMETAL,OBJTYPE_BOXIRON,OBJTYPE_BOXCAGE,OBJTYPE_BOXLIGHT,OBJTYPE_BOXTNT,OBJTYPE_BOXNITRO,OBJTYPE_BOXFLOAT,OBJTYPE_BOXWOODEN+1000,OBJTYPE_BOXMETAL+1000,OBJTYPE_BOXIRON+1000,OBJTYPE_BOXCAGE+1000,OBJTYPE_BOXLIGHT+1000,OBJTYPE_BOXTNT+1000,OBJTYPE_BOXNITRO+1000,OBJTYPE_BOXFLOAT+1000,OBJTYPE_BOXWOODEN+2000,OBJTYPE_BOXMETAL+2000,OBJTYPE_BOXIRON+2000,OBJTYPE_BOXCAGE+2000,OBJTYPE_BOXLIGHT+2000,OBJTYPE_BOXTNT+2000,OBJTYPE_BOXNITRO+2000,OBJTYPE_BOXFLOAT+2000,OBJTYPE_FLAMESPOUT,OBJTYPE_ICESPOUT,OBJTYPE_SHOCKSPOUT,OBJTYPE_SWITCH,OBJTYPE_SWITCHAIR,OBJTYPE_SWITCHBASE,OBJTYPE_SWITCHTOP,OBJTYPE_SWITCHWATER,OBJTYPE_LASERV,OBJTYPE_LASERH,OBJTYPE_RINGGATEV,OBJTYPE_RINGGATEH,OBJTYPE_OMOCHAO,OBJTYPE_SPIKEBAR,OBJTYPE_SPIKEBAR+1000,OBJTYPE_SPIKEBAR+2000,OBJTYPE_PROPELLER,OBJTYPE_PULLEY,OBJTYPE_PULLEY+1000,OBJTYPE_ROCKET,OBJTYPE_ELEVATOR,OBJTYPE_FPLAT,OBJTYPE_SPIKESWING,OBJTYPE_SPIKESWING+1000,OBJTYPE_SPIKESWING+2000,OBJTYPE_AIRBALLOON,OBJTYPE_CLOUD,OBJTYPE_POLE,OBJTYPE_EXPLOSION,OBJTYPE_EXPLOSION2,OBJTYPE_HANDLE,OBJTYPE_ICEDECOR,OBJTYPE_ICEDECOR+1000,OBJTYPE_CAPSULE:
+						RotateEntity(p\Objects\Mesh,0,TempAttribute\yaw#,0)
+						RotateEntity(p\Objects\Mesh2,0,TempAttribute\yaw#,0)
+						RotateEntity(p\Objects\Mesh3,0,TempAttribute\yaw#,0)
+					Case OBJTYPE_PAWN,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSWORD,OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_SPONA,OBJTYPE_MOTOBUG,OBJTYPE_CATERKILLER,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_CHOPPER,OBJTYPE_CRABMEAT,OBJTYPE_JAWS,OBJTYPE_SPINY,OBJTYPE_GRABBER,OBJTYPE_KIKI,OBJTYPE_COP,OBJTYPE_COPRACER,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_ACHAOS,OBJTYPE_ACHAOSBLOB,OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_CHASER,OBJTYPE_FIGHTER,OBJTYPE_EGGROBO,OBJTYPE_CAMERON,OBJTYPE_KLAGEN,OBJTYPE_ORBINAUT,OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_ANTON,OBJTYPE_AQUIS,OBJTYPE_BOMBIE,OBJTYPE_NEWTRON,OBJTYPE_PENGUINATOR,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_SPIKES,OBJTYPE_ASTERON,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_STEELION,OBJTYPE_BOO,OBJTYPE_BOOSCARE,OBJTYPE_GHOST,OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BALKIRY,OBJTYPE_BURROBOT,OBJTYPE_CRAWL,OBJTYPE_DRAGONFLY,OBJTYPE_MADMOLE,OBJTYPE_MANTA,OBJTYPE_MUSHMEANIE,OBJTYPE_OCTUS,OBJTYPE_PATABATA,OBJTYPE_ZOOMER,OBJTYPE_BITER,OBJTYPE_CRAWLER,OBJTYPE_TAKER,OBJTYPE_E1000,OBJTYPE_BALLHOG,OBJTYPE_RHINOTANK,OBJTYPE_TECHNOSQU,OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_OAKSWORD,OBJTYPE_LEECH,OBJTYPE_WING,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_CATAKILLER,OBJTYPE_CLUCKOID,OBJTYPE_MANTIS,OBJTYPE_NEBULA,OBJTYPE_ROLLER,OBJTYPE_SHEEP,OBJTYPE_SNOWY,OBJTYPE_SPLATS,OBJTYPE_TOXO,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE,OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER,OBJTYPE_HAMMERSHIELD,OBJTYPE_WITCH1,OBJTYPE_WITCH2,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3,OBJTYPE_BOMBER1,OBJTYPE_BOMBER2:
+						RotateEntity(p\Objects\Mesh,0,TempAttribute\yaw#,0)
+						RotateEntity(p\Objects\Mesh2,0,TempAttribute\yaw#,0)
+						RotateEntity(p\Objects\Mesh3,0,TempAttribute\yaw#,0)
+					Case OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000:
+						RotateEntity(p\Objects\Mesh,TempAttribute\pitch#+90,TempAttribute\yaw#,0)
+						RotateEntity(p\Objects\Mesh2,TempAttribute\pitch#+90,TempAttribute\yaw#,0)
+						RotateEntity(p\Objects\Mesh3,TempAttribute\pitch#+90,TempAttribute\yaw#,0)
+					Default:
+						RotateEntity(p\Objects\Mesh,TempAttribute\pitch#,TempAttribute\yaw#,0)
+						RotateEntity(p\Objects\Mesh2,TempAttribute\pitch#,TempAttribute\yaw#,0)
+						RotateEntity(p\Objects\Mesh3,TempAttribute\pitch#,TempAttribute\yaw#,0)
+				End Select
+		End Select
+	EndIf
+End Function
 
-	Function Player_Motion_PetPlacements(p.tPlayer)
+Function Player_Motion_PetPlacements(p.tPlayer)
 		Select p\Character
 			Case CHAR_CRE:
 				PositionEntity p\Objects\Follower, EntityX(p\Objects\Mesh), EntityY(p\Objects\Mesh), EntityZ(p\Objects\Mesh), 1
@@ -524,7 +508,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-	Function Player_Align(p.tPlayer)
+Function Player_Align(p.tPlayer)
 		RotateEntity(p\Objects\Entity, 0, 0, 0)
 		AlignToVector(p\Objects\Entity, p\Motion\Align\x#, p\Motion\Align\y#, p\Motion\Align\z#, 2)
 		; dummy fix
@@ -533,7 +517,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-	Function Player_ConvertAirToGround(p.tPlayer)
+Function Player_ConvertAirToGround(p.tPlayer)
 		TFormVector(p\Motion\Speed\x#, p\Motion\Speed\y#, p\Motion\Speed\z#, Game\Stage\Gravity, p\Objects\Entity)
 		p\Motion\Speed\x# = TFormedX#()
 		p\Motion\Speed\y# = 0
@@ -542,7 +526,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-	Function Player_ConvertGroundToAir(p.tPlayer)
+Function Player_ConvertGroundToAir(p.tPlayer)
 		TFormVector(p\Motion\Speed\x#, p\Motion\Speed\y#, p\Motion\Speed\z#, p\Objects\Entity, Game\Stage\Gravity)
 		p\Motion\Speed\x# = TFormedX#()
 		p\Motion\Speed\y# = TFormedY#()
@@ -551,7 +535,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-	Function Player_ConvertGroundToRoll(p.tPlayer, d.tDeltaTime)
+Function Player_ConvertGroundToRoll(p.tPlayer, d.tDeltaTime)
 	If p\Motion\Align\x#<>0 Or p\Motion\Align\z#<>0 Then
 		TFormVector(p\Motion\Align\x#, p\Motion\Speed\y#, p\Motion\Align\z#, Game\Stage\Gravity, p\Objects\Entity)
 		
@@ -599,7 +583,7 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_FollowerHolding_ByFeet(p.tPlayer, groundnotforced=false)
+Function Player_FollowerHolding_ByFeet(p.tPlayer, groundnotforced=False)
 		If p\Invisibility=1 Then Return
 
 		holdingpivot=CreatePivot()
@@ -621,7 +605,7 @@
 		End Select
 
 		If Menu\Members>=2 Then
-			If EntityDistance(p\Objects\Entity,pp(2)\Objects\Entity)<50 and ((pp(2)\Motion\Ground=False and pp(2)\RadiusChange<=1) or groundnotforced) Then
+			If EntityDistance(p\Objects\Entity,pp(2)\Objects\Entity)<50 And ((pp(2)\Motion\Ground=False And pp(2)\RadiusChange<=1) Or groundnotforced) Then
 				pp(2)\Action=ACTION_HOLD2 : pp(2)\ShouldBeHoldingTimer=0.1*secs# : pp(2)\BumpedCloudTimer=0
 				PositionEntity pp(2)\Objects\Entity, EntityX(holdingpivot,1), EntityY(holdingpivot,1)-0.5, EntityZ(holdingpivot,1), 1
 				pp(2)\Animation\Direction#=p\Animation\Direction#
@@ -649,9 +633,9 @@
 						PositionEntity holdingpivot2, (EntityX(pp(2)\Objects\ToeR,1)+EntityX(pp(2)\Objects\ToeL,1))/2.0, (EntityY(pp(2)\Objects\ToeR,1)+EntityY(pp(2)\Objects\ToeL,1))/2.0, (EntityZ(pp(2)\Objects\ToeR,1)+EntityZ(pp(2)\Objects\ToeL,1))/2.0, 1
 					EndIf
 			End Select
-			If EntityDistance(p\Objects\Entity,pp(3)\Objects\Entity)<50 and ((pp(3)\Motion\Ground=False and pp(3)\RadiusChange<=1) or groundnotforced) Then
+			If EntityDistance(p\Objects\Entity,pp(3)\Objects\Entity)<50 And ((pp(3)\Motion\Ground=False And pp(3)\RadiusChange<=1) Or groundnotforced) Then
 				pp(3)\Action=ACTION_HOLD2 : pp(3)\ShouldBeHoldingTimer=0.1*secs# : pp(3)\BumpedCloudTimer=0
-				If EntityDistance(p\Objects\Entity,pp(2)\Objects\Entity)<50 and ((pp(2)\Motion\Ground=False and pp(2)\RadiusChange<=1) or groundnotforced) Then
+				If EntityDistance(p\Objects\Entity,pp(2)\Objects\Entity)<50 And ((pp(2)\Motion\Ground=False And pp(2)\RadiusChange<=1) Or groundnotforced) Then
 					PositionEntity pp(3)\Objects\Entity, EntityX(holdingpivot2,1), EntityY(holdingpivot2,1)-0.5, EntityZ(holdingpivot2,1), 1
 				Else
 					PositionEntity pp(3)\Objects\Entity, EntityX(holdingpivot,1), EntityY(holdingpivot,1)-0.5, EntityZ(holdingpivot,1), 1
@@ -668,7 +652,7 @@
 		If Menu\Members>=3 Then FreeEntity holdingpivot2
 	End Function
 
-	Function Player_FollowerHolding_ByTriangleDive(p.tPlayer)
+Function Player_FollowerHolding_ByTriangleDive(p.tPlayer)
 		If p\Invisibility=1 Then Return
 
 		holdingpivot=CreatePivot()
@@ -684,7 +668,7 @@
 		RotateEntity holdingpivot_right, 0, p\Animation\Direction#, 0, 1 : MoveEntity holdingpivot_right, 0, 0, -2
 
 		If Menu\Members>=3 Then
-			If EntityDistance(p\Objects\Entity,pp(3)\Objects\Entity)<50 and EntityDistance(p\Objects\Entity,pp(2)\Objects\Entity)<50 and (pp(3)\Motion\Ground=False and pp(3)\RadiusChange<=1) and (pp(2)\Motion\Ground=False and pp(2)\RadiusChange<=1) Then
+			If EntityDistance(p\Objects\Entity,pp(3)\Objects\Entity)<50 And EntityDistance(p\Objects\Entity,pp(2)\Objects\Entity)<50 And (pp(3)\Motion\Ground=False And pp(3)\RadiusChange<=1) And (pp(2)\Motion\Ground=False And pp(2)\RadiusChange<=1) Then
 				pp(2)\Action=ACTION_HOLD : pp(2)\ShouldBeHoldingTimer=0.1*secs# : pp(2)\BumpedCloudTimer=0
 				PositionEntity pp(2)\Objects\Entity, EntityX(holdingpivot_right,1), EntityY(holdingpivot_right,1), EntityZ(holdingpivot_right,1), 1
 				pp(2)\Animation\Direction#=p\Animation\Direction#+180-45
@@ -702,7 +686,7 @@
 				TurnEntity(pp(3)\Objects\Mesh, 90, 0, 0)
 				TurnEntity(pp(3)\Objects\Mesh, 0, 0, pp(1)\Physics\LEAN_ANGLE_ACTUAL#)
 				pp(3)\FollowerIsHoldingLeaderTimer=0.1*secs#
-			ElseIf EntityDistance(p\Objects\Entity,pp(2)\Objects\Entity)<50 and (pp(2)\Motion\Ground=False and pp(2)\RadiusChange<=1) Then
+			ElseIf EntityDistance(p\Objects\Entity,pp(2)\Objects\Entity)<50 And (pp(2)\Motion\Ground=False And pp(2)\RadiusChange<=1) Then
 				pp(2)\Action=ACTION_HOLD : pp(2)\ShouldBeHoldingTimer=0.1*secs# : pp(2)\BumpedCloudTimer=0
 				PositionEntity pp(2)\Objects\Entity, EntityX(holdingpivot,1), EntityY(holdingpivot,1), EntityZ(holdingpivot,1), 1
 				pp(2)\Animation\Direction#=p\Animation\Direction#+180
@@ -711,7 +695,7 @@
 				TurnEntity(pp(2)\Objects\Mesh, 90, 0, 0)
 				TurnEntity(pp(2)\Objects\Mesh, 0, 0, pp(1)\Physics\LEAN_ANGLE_ACTUAL#)
 				pp(2)\FollowerIsHoldingLeaderTimer=0.1*secs#
-			ElseIf EntityDistance(p\Objects\Entity,pp(3)\Objects\Entity)<50 and (pp(3)\Motion\Ground=False and pp(3)\RadiusChange<=1) Then
+			ElseIf EntityDistance(p\Objects\Entity,pp(3)\Objects\Entity)<50 And (pp(3)\Motion\Ground=False And pp(3)\RadiusChange<=1) Then
 				pp(3)\Action=ACTION_HOLD : pp(3)\ShouldBeHoldingTimer=0.1*secs# : pp(3)\BumpedCloudTimer=0
 				PositionEntity pp(3)\Objects\Entity, EntityX(holdingpivot,1), EntityY(holdingpivot,1), EntityZ(holdingpivot,1), 1
 				pp(3)\Animation\Direction#=p\Animation\Direction#+180
@@ -739,7 +723,7 @@
 		FreeEntity holdingpivot_right
 	End Function
 
-	Function Player_FollowerHolding_ByLatchOn(p.tPlayer)
+Function Player_FollowerHolding_ByLatchOn(p.tPlayer)
 		If p\Invisibility=1 Then Return
 
 		Select p\Character
@@ -816,24 +800,26 @@
 		FreeEntity holdingpivot_right
 	End Function
 
-	Function Player_FollowerHolding_EveryoneJumpDashes_Real(p.tPlayer)
-		If EntityDistance(pp(1)\Objects\Entity,p\Objects\Entity)<50 and (p\Motion\Ground=False) Then
+Function Player_FollowerHolding_EveryoneJumpDashes_Real(p.tPlayer)
+		If EntityDistance(pp(1)\Objects\Entity,p\Objects\Entity)<50 And (p\Motion\Ground=False) Then
 			Player_Action_JumpDash_Initiate_Generic(p)
 		EndIf
 	End Function
-	Function Player_FollowerHolding_EveryoneJumpDashes(p.tPlayer)
+Function Player_FollowerHolding_EveryoneJumpDashes(p.tPlayer)
 		If p\Invisibility=1 Then Return
 		If Menu\Members>=2 Then Player_FollowerHolding_EveryoneJumpDashes_Real(pp(2))
 		If Menu\Members>=3 Then Player_FollowerHolding_EveryoneJumpDashes_Real(pp(3))
 	End Function
 
-	Function Player_FollowerHolding_EveryoneDoubleJumps_Real(p.tPlayer)
-		If EntityDistance(pp(1)\Objects\Entity,p\Objects\Entity)<50 and (p\Motion\Ground=False) Then
+Function Player_FollowerHolding_EveryoneDoubleJumps_Real(p.tPlayer)
+		If EntityDistance(pp(1)\Objects\Entity,p\Objects\Entity)<50 And (p\Motion\Ground=False) Then
 			Player_Action_DoubleJump_Initiate_Generic(p)
 		EndIf
 	End Function
-	Function Player_FollowerHolding_EveryoneDoubleJumps(p.tPlayer)
+Function Player_FollowerHolding_EveryoneDoubleJumps(p.tPlayer)
 		If p\Invisibility=1 Then Return
 		If Menu\Members>=2 Then Player_FollowerHolding_EveryoneDoubleJumps_Real(pp(2))
 		If Menu\Members>=3 Then Player_FollowerHolding_EveryoneDoubleJumps_Real(pp(3))
 	End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

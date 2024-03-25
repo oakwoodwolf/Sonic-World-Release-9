@@ -97,7 +97,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 	
-	Function Object_ChaoEmo_Create.tChaoEmo(mesh, side=1, charchao=false, eternal=0)
+	Function Object_ChaoEmo_Create.tChaoEmo(mesh, side=1, charchao=False, eternal=0)
 	
 		ce.tChaoEmo = New tChaoEmo
 		ce\Objects = New tChaoEmo_Objects
@@ -129,7 +129,7 @@
 			ce\CurrentTexture$=CHAOEMO_EYETEXTURENAMES$(side,0)+".eye1.png"
 		EndIf
 
-		For i=1 to 3 : ce\JiggleSize[i]=1 : Next
+		For i=1 To 3 : ce\JiggleSize[i]=1 : Next
 
 		Return ce
 		
@@ -338,11 +338,11 @@
 				ScaleEntity ce\Objects\wicked,		1,1,1
 		End Select
 
-		For i=1 to 3
+		For i=1 To 3
 			If ce\JiggleState[i]>0 Then
 				If ce\JiggleSize#[i]<ce\JiggleSizeTarget#[i] Then ce\JiggleSize#[i]=ce\JiggleSize#[i]+0.01*d\Delta
 				If ce\JiggleSize#[i]>ce\JiggleSizeTarget#[i] Then ce\JiggleSize#[i]=ce\JiggleSize#[i]-0.01*d\Delta
-				If abs(ce\JiggleSize#[i]-ce\JiggleSizeTarget#[i])<0.025 Then ce\JiggleState[i]=0
+				If Abs(ce\JiggleSize#[i]-ce\JiggleSizeTarget#[i])<0.025 Then ce\JiggleState[i]=0
 			Else
 				ce\JiggleSizeTarget#[i]=1.0+Rand(0,5)/20.0
 				ce\JiggleState[i]=1

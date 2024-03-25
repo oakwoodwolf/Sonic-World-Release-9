@@ -61,9 +61,11 @@ Global TimeControl# = 1
 		d\Delta# 	= d\Delta#*0.05				; d\Delta/20
 		d\InvDelta#	= 1.0/d\Delta#
 
-		If Game\TimeControl=1 Then
-			If KeyHit(KEY_Y) Then TimeControl# = 1 : Game\Cheater=1
-			If KeyHit(KEY_U) Then TimeControl# = TimeControl# + 0.2 : Game\Cheater=1
-			If KeyHit(KEY_I) Then TimeControl# = TimeControl# - 0.2 : Game\Cheater=1
-		EndIf
+		;If Game\TimeControl=1 Then
+		;	If KeyHit(KEY_Y) Then TimeControl# = 1 : Game\Cheater=1
+		;	If KeyHit(KEY_U) Then TimeControl# = TimeControl# + 0.2 : Game\Cheater=1
+		;	If KeyHit(KEY_I) Then TimeControl# = TimeControl# - 0.2 : Game\Cheater=1
+		;EndIf
 	End Function 
+;~IDEal Editor Parameters:
+;~C#Blitz3D

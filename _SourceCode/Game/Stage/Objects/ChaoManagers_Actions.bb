@@ -145,7 +145,7 @@
 				Select cc\g\Motion\Ground
 				Case True:
 					If cc\g\SpeedLength#>0 Then
-						If cc\Stats\Age<=1 and cc\Stats\Run#<4 Then
+						If cc\Stats\Age<=1 And cc\Stats\Run#<4 Then
 							cc\Animation=CHAOANIMATION_CRAWL
 						ElseIf cc\Stats\Run#<10 Then
 							cc\Animation=CHAOANIMATION_WALK
@@ -153,7 +153,7 @@
 							cc\Animation=CHAOANIMATION_RUN
 						EndIf
 					Else
-						If cc\Stats\Age<=1 and cc\Stats\Run#<4 Then
+						If cc\Stats\Age<=1 And cc\Stats\Run#<4 Then
 							cc\Animation=CHAOANIMATION_SIT
 						Else
 							cc\Animation=CHAOANIMATION_IDLE
@@ -161,7 +161,7 @@
 					EndIf
 				Case False:
 					If cc\g\SpeedLength#>0 Then
-						If cc\Stats\Age<=1 and cc\Stats\Run#<4 Then
+						If cc\Stats\Age<=1 And cc\Stats\Run#<4 Then
 							cc\Animation=CHAOANIMATION_WALKAIR
 						ElseIf cc\Stats\Run#<10 Then
 							cc\Animation=CHAOANIMATION_WALKAIR
@@ -240,7 +240,7 @@
 					Case 2: cc\Animation=CHAOANIMATION_EXCLAMATION
 				End Select
 			Case CHAOACTION_PETTED:
-				If cc\Stats\Age<=1 and cc\Stats\Run#<4 Then
+				If cc\Stats\Age<=1 And cc\Stats\Run#<4 Then
 					cc\Animation=CHAOANIMATION_SIT
 				Else
 					cc\Animation=CHAOANIMATION_IDLE
@@ -253,7 +253,7 @@
 				cc\Animation=CHAOANIMATION_SORRY
 			Case CHAOACTION_KARATE_COMMON:
 				If cc\g\SpeedLength#>0 Then
-					If cc\Stats\Age<=1 and cc\Stats\Run#<4 Then
+					If cc\Stats\Age<=1 And cc\Stats\Run#<4 Then
 						cc\Animation=CHAOANIMATION_CRAWL
 					ElseIf cc\Stats\Run#<10 Then
 						cc\Animation=CHAOANIMATION_WALK
@@ -449,7 +449,7 @@
 		EndIf
 
 		; hit a wall
-		If cc\g\Motion\WallWasHitTimer>0 and (Not(cc\FollowWhistleTimer>0)) Then
+		If cc\g\Motion\WallWasHitTimer>0 And (Not(cc\FollowWhistleTimer>0)) Then
 			cc\g\Motion\Direction#=cc\g\Motion\Direction#-180
 			cc\WanderDirection=cc\g\Motion\Direction#
 			cc\WanderDirectionTimer=4.25*secs#
@@ -458,13 +458,13 @@
 		EndIf
 
 		; Control needs
-		If ChaoManager_ChaoAlive(cc) and Menu\Stage=999 Then
-			If (Not(cc\GetHungryTimer>0)) and (Not(cc\Action=CHAOACTION_EAT)) Then
+		If ChaoManager_ChaoAlive(cc) And Menu\Stage=999 Then
+			If (Not(cc\GetHungryTimer>0)) And (Not(cc\Action=CHAOACTION_EAT)) Then
 				cc\Stats\Hunger#=cc\Stats\Hunger#+1
 				cc\GetHungryTimer=(100+cc\Stats\Stamina#)*secs#
 				If cc\Stats\TooFull#>0 Then cc\Stats\TooFull#=cc\Stats\TooFull#-1
 			EndIf
-			If (Not(cc\GetSleepyTimer>0)) and (Not(cc\Action=CHAOACTION_SLEEP)) Then
+			If (Not(cc\GetSleepyTimer>0)) And (Not(cc\Action=CHAOACTION_SLEEP)) Then
 				cc\Stats\Sleep#=cc\Stats\Sleep#+1
 				cc\GetSleepyTimer=(300+cc\Stats\Stamina#*2)*secs#
 			EndIf
@@ -478,20 +478,20 @@
 		EndIf
 
 		; Take away happiness
-		If cc\CanBeInterrupted=1 and (Not(cc\Action=CHAOACTION_EAT Or cc\Action=CHAOACTION_SUCK Or cc\Action=CHAOACTION_SLEEP Or cc\Action=CHAOACTION_PILLOWSLEEP)) Then
+		If cc\CanBeInterrupted=1 And (Not(cc\Action=CHAOACTION_EAT Or cc\Action=CHAOACTION_SUCK Or cc\Action=CHAOACTION_SLEEP Or cc\Action=CHAOACTION_PILLOWSLEEP)) Then
 			ChaoManager_GetSad(cc)
 			cc\CanBeInterrupted=0
 		EndIf
-		If cc\Stats\Hunger#>=10 and (Not(cc\HungerIgnoredTimer>0)) and (Not(cc\Action=CHAOACTION_SLEEP Or cc\Action=CHAOACTION_PILLOWSLEEP Or cc\Action=CHAOACTION_EAT Or cc\Action=CHAOACTION_SUCK)) Then
+		If cc\Stats\Hunger#>=10 And (Not(cc\HungerIgnoredTimer>0)) And (Not(cc\Action=CHAOACTION_SLEEP Or cc\Action=CHAOACTION_PILLOWSLEEP Or cc\Action=CHAOACTION_EAT Or cc\Action=CHAOACTION_SUCK)) Then
 			ChaoManager_GetSad(cc)
 			cc\HungerIgnoredTimer=240*secs#
 			Interface_CreateChaoNamedMsg("is hungry.",cc\Name$,255,182,8)
 		EndIf
 
 		; Mate timing
-		If cc\Stats\Age=3 and Menu\Stage=999 Then
+		If cc\Stats\Age=3 And Menu\Stage=999 Then
 			If (Not(cc\MateTimer>0)) Then
-				cc\Stats\MateSeason=abs(cc\Stats\MateSeason-1)
+				cc\Stats\MateSeason=Abs(cc\Stats\MateSeason-1)
 				Select cc\Stats\MateSeason
 					Case 0: cc\MateTimer=(3600+Rand(-1800,1800))*secs#
 					Case 1: cc\MateTimer=(1800+Rand(-900,900))*secs# : Interface_CreateChaoNamedMsg("is in mating season.",cc\Name$,234,29,121)
@@ -525,11 +525,11 @@
 		EndIf
 
 		; Hatch (this has to be at the bottom because it deletes the current chao)
-		If cc\Action=CHAOACTION_COMMON and cc\Stats\MateSeason=0 and Menu\Stage=999 Then
+		If cc\Action=CHAOACTION_COMMON And cc\Stats\MateSeason=0 And Menu\Stage=999 Then
 			Select cc\Stats\Age
 				Case 0: If (Not(cc\HatchTimer>0)) Then cc\Stats\ShellGrit#=cc\Stats\ShellGrit#-1 : cc\HatchTimer=Rand(30,60)*secs#
 					If (Not(cc\Stats\ShellGrit#>0)) Then ChaoManager_AgeUp(cc, True)
-				Case 3: If (Not(cc\HatchTimer>0)) and cc\Stats\ReviveEternal=0 Then ChaoManager_AgeUp(cc)
+				Case 3: If (Not(cc\HatchTimer>0)) And cc\Stats\ReviveEternal=0 Then ChaoManager_AgeUp(cc)
 				Default: If (Not(cc\HatchTimer>0)) Then ChaoManager_AgeUp(cc)
 			End Select
 		EndIf
@@ -620,7 +620,7 @@
 
 		If (Not(cc\WillWanderTimer>0)) Then
 			cc\WillWanderTimer=(4+Rand(1,4))*secs#
-		ElseIf cc\WillWanderTimer>0*secs# and cc\WillWanderTimer<1*secs# Then
+		ElseIf cc\WillWanderTimer>0*secs# And cc\WillWanderTimer<1*secs# Then
 			If (Not(cc\WanderTimer>0)) Then cc\WanderTimer=(8+Rand(0,10))*secs#
 		EndIf
 
@@ -661,8 +661,8 @@
 		cc\LuckSpeed#=Rand(0,cc\Stats\Stamina#/1000.0)+Rand(0,cc\Stats\Luck#/2000.0)+Rand(0,cc\Stats\Intelligence#/3000.0)
 		If cc\CheeredTimer>0 Then cc\LuckSpeed#=cc\LuckSpeed#+0.0125+Rand(0,cc\Stats\Stamina#/4000.0)
 
-		If (Not(cc\RandomBoostTimer>0)) and (Not(cc\RandomBoostedTimer>0)) Then cc\RandomBoostTimer=(1+4+Rand(-2,1))*secs#
-		If cc\RandomBoostTimer>0 and cc\RandomBoostTimer<1*secs# Then cc\RandomBoostTimer=0 : cc\RandomBoostedTimer=(2+Rand(1,2))*secs#
+		If (Not(cc\RandomBoostTimer>0)) And (Not(cc\RandomBoostedTimer>0)) Then cc\RandomBoostTimer=(1+4+Rand(-2,1))*secs#
+		If cc\RandomBoostTimer>0 And cc\RandomBoostTimer<1*secs# Then cc\RandomBoostTimer=0 : cc\RandomBoostedTimer=(2+Rand(1,2))*secs#
 		If cc\RandomBoostedTimer>0 Then cc\LuckSpeed#=cc\LuckSpeed#+0.025+Rand(0,cc\Stats\Stamina#/4000.0)
 
 		Select cc\Action
@@ -689,8 +689,8 @@
 		If cc\FoundTarget Then
 			cc\Action=CHAOACTION_COMMON
 			Select cc\Target\ObjType
-				Case OBJTYPE_FRUIT: ChaoManager_EatorSuck(cc, true)
-				Case OBJTYPE_DRIVE: ChaoManager_EatorSuck(cc, false)
+				Case OBJTYPE_FRUIT: ChaoManager_EatorSuck(cc, True)
+				Case OBJTYPE_DRIVE: ChaoManager_EatorSuck(cc, False)
 				Case OBJTYPE_HAT: ChaoManager_ShallWear(cc)
 				Case OBJTYPE_TOY: ChaoManager_ShallPlay(cc)
 			End Select
@@ -749,9 +749,9 @@
 
 		cc\g\Motion\Speed\z#=0
 		Select eat
-			Case true: cc\EatTimer=(2+Rand(1,4))*secs# : cc\Action=CHAOACTION_EAT
-			Case false: cc\EatTimer=(1+Rand(1,2)/2.0)*secs# : cc\Action=CHAOACTION_SUCK
-		End select
+			Case True: cc\EatTimer=(2+Rand(1,4))*secs# : cc\Action=CHAOACTION_EAT
+			Case False: cc\EatTimer=(1+Rand(1,2)/2.0)*secs# : cc\Action=CHAOACTION_SUCK
+		End Select
 		cc\EatingWaiting=1
 		ChaoManager_GetHappy(cc)
 		cc\CanBeInterrupted=1
@@ -821,7 +821,7 @@
 
 		;Start dancing
 		If Not(cc\DanceTimer>0) Then cc\DanceTimer=(8+Rand(1,5))*secs#
-		If cc\WanderTimer<5*secs# and (cc\DanceTimer<1*secs# and cc\DanceTimer>0*secs#) Then cc\DanceTimer=(3+Rand(1,3))*secs : cc\Action=CHAOACTION_DANCE
+		If cc\WanderTimer<5*secs# And (cc\DanceTimer<1*secs# And cc\DanceTimer>0*secs#) Then cc\DanceTimer=(3+Rand(1,3))*secs : cc\Action=CHAOACTION_DANCE
 
 		;Start swimming
 		If cc\Underwater=1 Then
@@ -832,11 +832,11 @@
 		;Start flying
 		If cc\Stats\Fly#>=6 Then
 			If (Not(cc\WillFlyTimer>0)) Then cc\WillFlyTimer=(10+Rand(1,8))*secs#
-			If cc\WillFlyTimer>0*secs# and cc\WillFlyTimer<1*secs# Then cc\Action=CHAOACTION_FLY : cc\FlyTimer=(Rand(1,7)/1.75)*secs#
+			If cc\WillFlyTimer>0*secs# And cc\WillFlyTimer<1*secs# Then cc\Action=CHAOACTION_FLY : cc\FlyTimer=(Rand(1,7)/1.75)*secs#
 		EndIf
 
 		;Start sleeping
-		If cc\Stats\Sleep#>=10 and cc\g\Motion\Ground Then
+		If cc\Stats\Sleep#>=10 And cc\g\Motion\Ground Then
 			cc\CanBeInterrupted=1
 			cc\Action=CHAOACTION_SLEEP
 			cc\SleepTimer=12*secs#
@@ -846,12 +846,12 @@
 
 		;Start thinking
 		If Not(cc\ThinkingTimer>0) Then cc\ThinkingTimer=(10+Rand(1,4))*secs#
-		If cc\WanderTimer<5*secs# and (cc\ThinkingTimer<1*secs# and cc\ThinkingTimer>0*secs#) Then cc\ThinkingTimer=(6+Rand(0,2))*secs : cc\Action=CHAOACTION_THINK
+		If cc\WanderTimer<5*secs# And (cc\ThinkingTimer<1*secs# And cc\ThinkingTimer>0*secs#) Then cc\ThinkingTimer=(6+Rand(0,2))*secs : cc\Action=CHAOACTION_THINK
 
 		;Start waiting breed
-		If cc\Stats\MateSeason=1 and cc\FoundTarget=False Then
+		If cc\Stats\MateSeason=1 And cc\FoundTarget=False Then
 			If Not(cc\WillWaitBreedTimer>0) Then cc\WillWaitBreedTimer=(6+Rand(-1,1))*secs#
-			If cc\WillWaitBreedTimer>0*secs# and cc\WillWaitBreedTimer<1*secs# Then
+			If cc\WillWaitBreedTimer>0*secs# And cc\WillWaitBreedTimer<1*secs# Then
 				cc\Action=CHAOACTION_WAITBREED
 				cc\WaitBreedTimer=(20+Rand(-5,5))*secs#
 				cc\breeder = Object_Breeder_Create(cc\Position\x#, cc\Position\y#, cc\Position\z#, cc)
@@ -861,7 +861,7 @@
 		;Random whistle
 		If Not(cc\RandomWhistleTimer>0) Then
 			cc\RandomWhistleTimer=(30+Rand(0,300))*secs#
-			If CHARSIDES(InterfaceChar(pp(1)\Character))=ChaoManager_GetHighestSide(cc) and cc\ShallFollowWhistleTimer>0 Then cc\FollowWhistleTimer=5*secs# : cc\WhistleLoveTimer=0 : cc\WhistleThinkTimer=0
+			If CHARSIDES(InterfaceChar(pp(1)\Character))=ChaoManager_GetHighestSide(cc) And cc\ShallFollowWhistleTimer>0 Then cc\FollowWhistleTimer=5*secs# : cc\WhistleLoveTimer=0 : cc\WhistleThinkTimer=0
 		EndIf
 
 	End Function
@@ -946,7 +946,7 @@
 
 		If cc\FoundTarget Then
 			ChaoManager_PlaceTargetWith(cc)
-			If cc\Stats\TooFull#>=20 Or (cc\Target\ChaoObj\FruitType=FRUIT_PEPPER and cc\EatingWaiting=2) Then
+			If cc\Stats\TooFull#>=20 Or (cc\Target\ChaoObj\FruitType=FRUIT_PEPPER And cc\EatingWaiting=2) Then
 				cc\Target\ObjPickedUp=6
 				cc\Target\ChaoObj\ChaoTargetedThis=False
 				cc\FoundTarget=False
@@ -1111,26 +1111,26 @@
 		If cc\Underwater=1 Then cc\g\Motion\Speed\y#=0
 
 		If Not(cc\WearTimer>0) Then
-			gotit=true
+			gotit=True
 			If cc\Stats\Intelligence#>=2 Then
 				Select cc\Target\ChaoObj\ToyType
-					Case TOY_BEACHBALL,TOY_SOCCERBALL: If (Not(cc\Stats\Age<=1 and cc\Stats\Run#<4)) Then cc\Action=CHAOACTION_BALL Else gotit=false
-					Case TOY_TOYCAR: If (Not(cc\Stats\Age<=1 and cc\Stats\Run#<4)) Then cc\Action=CHAOACTION_DRIVE Else gotit=false
+					Case TOY_BEACHBALL,TOY_SOCCERBALL: If (Not(cc\Stats\Age<=1 And cc\Stats\Run#<4)) Then cc\Action=CHAOACTION_BALL Else gotit=False
+					Case TOY_TOYCAR: If (Not(cc\Stats\Age<=1 And cc\Stats\Run#<4)) Then cc\Action=CHAOACTION_DRIVE Else gotit=False
 					Case TOY_RUBBERDUCK: If cc\Underwater=0 Then
-									gotit=false
+									gotit=False
 								Else
-									If Not(cc\Stats\Swim#<3) Then cc\Action=CHAOACTION_DRIVEDUCK Else gotit=false
+									If Not(cc\Stats\Swim#<3) Then cc\Action=CHAOACTION_DRIVEDUCK Else gotit=False
 								EndIf
 					Case TOY_TEDDYBEAR: cc\Action=CHAOACTION_TEDDYBEAR
-					Case TOY_MICROPHONE: If cc\Stats\Stamina#>=2 Then cc\Action=CHAOACTION_SING Else gotit=false
-					Case TOY_DUMBBELL1,TOY_DUMBBELL2,TOY_DUMBBELL3,TOY_DUMBBELL4,TOY_DUMBBELL5: If (cc\Stats\Strength#>=(cc\Target\ChaoObj\ToyType-TOY_DUMBBELL1-1)*10) Then cc\Action=CHAOACTION_LIFT Else gotit=false
+					Case TOY_MICROPHONE: If cc\Stats\Stamina#>=2 Then cc\Action=CHAOACTION_SING Else gotit=False
+					Case TOY_DUMBBELL1,TOY_DUMBBELL2,TOY_DUMBBELL3,TOY_DUMBBELL4,TOY_DUMBBELL5: If (cc\Stats\Strength#>=(cc\Target\ChaoObj\ToyType-TOY_DUMBBELL1-1)*10) Then cc\Action=CHAOACTION_LIFT Else gotit=False
 					Case TOY_RATTLE: cc\Action=CHAOACTION_RATTLE : Animate cc\Target\Entity,1,0.15,1,10
 					Case TOY_PILLOW: cc\Action=CHAOACTION_PILLOWSLEEP : cc\SleepTimer=12*secs# : Interface_CreateChaoNamedMsg("is asleep.",cc\Name$,105,202,33)
 				End Select
 			Else
-				gotit=false
+				gotit=False
 			EndIf
-			If gotit=false Then
+			If gotit=False Then
 				If cc\Stats\Intelligence#>=2 Then
 					Select cc\Target\ChaoObj\ToyType
 						Case TOY_BEACHBALL,TOY_SOCCERBALL: Interface_CreateChaoNamedMsg("cannot walk and thus cannot play with balls.",cc\Name$,105,202,33)
@@ -1458,8 +1458,8 @@
 		Else
 			If cc\Number=1 Then karateopponent=2 Else karateopponent=1
 			For oppcc.tChaoManager=Each tChaoManager
-				If oppcc\Number=karateopponent and (Not(oppcc\HurtTimer>0)) and (Not(oppcc\FlyTimer>0)) and (Not(oppcc\Action=CHAOACTION_KARATE_THROWN Or oppcc\Action=CHAOACTION_KARATE_HURT Or oppcc\Action=CHAOACTION_KARATE_DODGE)) and (Not(Game\Interface\KarateEndTimer>0)) Then
-					If abs(cc\Position\x#-oppcc\Position\x#)>3.2 Then
+				If oppcc\Number=karateopponent And (Not(oppcc\HurtTimer>0)) And (Not(oppcc\FlyTimer>0)) And (Not(oppcc\Action=CHAOACTION_KARATE_THROWN Or oppcc\Action=CHAOACTION_KARATE_HURT Or oppcc\Action=CHAOACTION_KARATE_DODGE)) And (Not(Game\Interface\KarateEndTimer>0)) Then
+					If Abs(cc\Position\x#-oppcc\Position\x#)>3.2 Then
 						cc\g\Motion\Speed\z#=0.05+(cc\Stats\Run#/500.0)+(Rand(1,4)/100.0)
 					ElseIf Game\Interface\KarateTurn=cc\Number Then
 						Game\Interface\KarateTurn=Game\Interface\KarateTurn+5

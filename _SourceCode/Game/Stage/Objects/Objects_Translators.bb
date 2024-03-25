@@ -1,20 +1,33 @@
 Function Object_LockCamera(o.tObject,p.tPlayer)
-
-	;control lock
+	
+		;control lock
 	Select o\Translator\LockControl#
 		Case 0:
 			Select o\ObjType
 				Case OBJTYPE_LOCKER,OBJTYPE_NODE,OBJTYPE_NODE2,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FORCER,OBJTYPE_ACCEL:
-					Game\ControlLock=0
-				Default: Game\ControlLock=0.2*secs#
+					Game\ControlLock=0 : Game\TwoDLock=0
+				Default: Game\ControlLock=0.2*secs#  : Game\TwoDLock=0
+
 			End Select
-		Case 1: Game\ControlLock=1800*secs#
-		Case 2: Game\ControlLock=1*secs#
-		Case 3: Game\ControlLock=3*secs#
-		Case 4: Game\ControlLock=0.5*secs#
-		Case 5: Game\ControlLock=2*secs#
+		Case 1: Game\ControlLock=1800*secs# : Game\TwoDLock=0
+
+		Case 2: Game\ControlLock=1*secs# : Game\TwoDLock=0
+
+		Case 3: Game\ControlLock=3*secs# : Game\TwoDLock=0
+
+		Case 4: Game\ControlLock=0.5*secs# : Game\TwoDLock=0
+
+		Case 5: Game\ControlLock=2*secs# : Game\TwoDLock=0
+
+		Case 6: 
+			Game\ControlLock=0.2*secs#
+			Game\TwoDLock=1 : p\TwoDDirection=1
+			
+			
+			
 	End Select
 	If o\Translator\LockControl#>0 Then Input_ResetActionInput2()
+	
 
 	;cam lock
 	If o\Translator\LockCam#=0 Then
@@ -137,18 +150,19 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Translator_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, power#, special#=0)
+Function Object_Translator_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, power#, special#=0)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		Select o\ObjType
-			Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX:
+			Case OBJTYPE_SPRING,OBJTYPE_SPRINGICE,OBJTYPE_SPRINGTHORN,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX:
 				o\CanHoming=True
 			Default:
 				o\CanHoming=False
 		End Select
 		o\ThisIsATranslator=True : o\Translator = New tObject_Translator : o\HasValuesetTranslator=True
-
+		If o\Objtype=OBJTYPE_PANEL2 Then o\AlwaysPresent=True
 		Select o\ObjType
-			Case OBJTYPE_SPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX: Object_CreateHitBox(HITBOXTYPE_SPEEDY,o,6.5,6.5,6.5)
+			Case OBJTYPE_SPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGICE,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX: Object_CreateHitBox(HITBOXTYPE_SPEEDY,o,6.5,6.5,6.5)
+			Case OBJTYPE_SPRINGTHORN: Object_CreateHitBox(HITBOXTYPE_SPEEDY,o,6.5,6.5,6.5)
 			Case OBJTYPE_BSPRING: Object_CreateHitBox(HITBOXTYPE_SPEEDY_BSPRING,o,6.5,6.5,6.5)
 			Case OBJTYPE_PAD: Object_CreateHitBox(HITBOXTYPE_SPEEDY,o,8.5,6,8.5)
 			Case OBJTYPE_RAMP: Object_CreateHitBox(HITBOXTYPE_SPEEDY,o,10,6,10)
@@ -160,6 +174,8 @@ End Function
 			Case OBJTYPE_FAN: Object_CreateHitBox(HITBOXTYPE_FAN,o,13.5,70,13.5)
 			Case OBJTYPE_BFAN: Object_CreateHitBox(HITBOXTYPE_FAN,o,50.25,470,50.25)
 			Case OBJTYPE_BFANLOW: Object_CreateHitBox(HITBOXTYPE_FAN,o,50.25,186,50.25)
+			Case OBJTYPE_PANEL2:  Object_CreateHitBox(HITBOXTYPE_SPEEDY_LOCKER,o,12,12,12)
+			Case OBJTYPE_PANEL1: Object_CreateHitBox(HITBOXTYPE_NORMAL,o,6,9,6)
 		End Select
 
 		Object_Acquire_Position(o,x#,y#,z#)
@@ -182,18 +198,23 @@ End Function
 		Select o\ObjType
 			Case OBJTYPE_LOCKER,OBJTYPE_FORCER:
 				o\Translator\LockerBType=special#
-			Case OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW:
+			Case OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_PANEL2:
 				o\Translator\FanInvisible=special#
 		End Select
 
 		Select o\ObjType
 			Case OBJTYPE_SPRING:
 				o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Spring)), Game\Stage\Root)
+			Case OBJTYPE_SPRINGICE:
+				o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_SpringIce)), Game\Stage\Root)
 			Case OBJTYPE_BSPRING:
 				o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_BSpring)), Game\Stage\Root)
 			Case OBJTYPE_SPRINGX:
 				o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_SpringX)), Game\Stage\Root)
 				Animate o\Entity,1,0.15,1
+			Case OBJTYPE_SPRINGTHORN:
+				o\Entity = CreatePivot()
+				o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_SpringThorn)), Game\Stage\Root)
 			Case OBJTYPE_SPRINGTRAP:
 				o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_SpringTrap)), Game\Stage\Root)
 			Case OBJTYPE_SPRINGTRAPX:
@@ -205,19 +226,19 @@ End Function
 			Case OBJTYPE_THOOP: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_RainbowHoop)), Game\Stage\Root)
 			Case OBJTYPE_ACCEL: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Accelerator)), Game\Stage\Root)
 			Case OBJTYPE_LOCKER:
-				If (Menu\Settings\Debug#=1 and Menu\Settings\DebugNodes#=1) Then
+				If (Menu\Settings\Debug#=1 And Menu\Settings\DebugNodes#=1) Then
 					o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Locker)), Game\Stage\Root)
 				Else
 					o\Entity = CreatePivot()
 				EndIf
 			Case OBJTYPE_FORCER,OBJTYPE_NODE,OBJTYPE_NODE2:
-				If (Menu\Settings\Debug#=1 and Menu\Settings\DebugNodes#=1) Then
+				If (Menu\Settings\Debug#=1 And Menu\Settings\DebugNodes#=1) Then
 					o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Locker2)), Game\Stage\Root)
 				Else
 					o\Entity = CreatePivot()
 				EndIf
 			Case OBJTYPE_FAN:
-				If o\Translator\FanInvisible=0 Or (Menu\Settings\Debug#=1 and Menu\Settings\DebugNodes#=1) Then
+				If o\Translator\FanInvisible=0 Or (Menu\Settings\Debug#=1 And Menu\Settings\DebugNodes#=1) Then
 					o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Fan)), Game\Stage\Root)
 					Animate(o\Entity,1,0.3,1)
 					If Not(o\Translator\FanInvisible=0) Then
@@ -229,7 +250,7 @@ End Function
 					o\Entity = CreatePivot()
 				EndIf
 			Case OBJTYPE_BFAN,OBJTYPE_BFANLOW:
-				If o\Translator\FanInvisible=0 Or (Menu\Settings\Debug#=1 and Menu\Settings\DebugNodes#=1) Then
+				If o\Translator\FanInvisible=0 Or (Menu\Settings\Debug#=1 And Menu\Settings\DebugNodes#=1) Then
 					o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Fan)), Game\Stage\Root)
 					ScaleEntity(o\Entity, 5.5, 5.5, 5.5)
 					Animate(o\Entity,1,0.3,1)
@@ -242,9 +263,20 @@ End Function
 					o\Entity = CreatePivot()
 					ScaleEntity(o\Entity, 5.5, 5.5, 5.5)
 				EndIf
+			Case OBJTYPE_PANEL1:
+				o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_JumpPanel)), Game\Stage\Root)
+			Case OBJTYPE_PANEL2:
+				If o\Translator\FanInvisible=0 Or (Menu\Settings\Debug#=1 And Menu\Settings\DebugNodes#=1) Then
+					o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_JumpPanel2)), Game\Stage\Root)
+				Else
+					o\Entity = CreatePivot()
+					ScaleEntity(o\Entity, 5.5, 5.5, 5.5)
+				EndIf 
 		End Select
 
 		If o\Objtype = OBJTYPE_THOOP Then o\Translator\THoopPointDisabler = 0
+		
+		If o\ObjType=OBJTYPE_SPRINGTHORN Then o\Translator\ThornSpringState=THORN_UP
 
 		Select o\ObjType
 			Case OBJTYPE_PAD: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_DashPanelPads)), Game\Stage\Root)
@@ -261,223 +293,424 @@ End Function
 	End Function
 	
 	; =========================================================================================================
+Function Object_Translator_JumpPanel(o.tObject, p.tPlayer, d.tDeltaTime)	
 	
-	Function Object_Translator_Update(o.tObject, p.tPlayer, d.tDeltaTime)
-
-		; Movement
-		If o\ObjType=OBJTYPE_SPRINGX and o\InitialRotation\x#=0 Then
-			If o\State=1 Then
-				If o\Position\y#<o\InitialPosition\y#+100 Then MoveEntity o\Entity, 0,0.5*d\Delta,0
-			ElseIf o\State=0
-				If o\Position\y#>o\InitialPosition\y# Then MoveEntity o\Entity, 0,-0.1*d\Delta,0
-			EndIf
-		EndIf
-
-		; For fan
-		If (o\ObjType=OBJTYPE_FAN Or o\ObjType=OBJTYPE_BFAN Or o\ObjType=OBJTYPE_BFANLOW) Then
-			If o\Translator\FanInvisible=0 And ChannelPlaying(o\Translator\Channel_Fan)=False Then o\Translator\Channel_Fan=EmitSmartSound(Sound_Fan,o\Entity)
-			Select o\ObjType
-				Case OBJTYPE_BFAN: ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_WINDTUNNEL, o\Entity, 4.5, 0, 60, 0, 0, 0.085)
-				Case OBJTYPE_BFANLOW: ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_WINDTUNNEL, o\Entity, 4.5, 0, 6, 0, 0, 0.085)
-			End Select
-			If (Abs(p\Objects\Position\x# - o\Position\x#) < o\HitBox\x#) And (p\Objects\Position\y# > o\Position\y#-5) And (p\Objects\Position\y# < o\Position\y#+o\HitBox\y#+30) And (Abs(p\Objects\Position\z# - o\Position\z#) < o\HitBox\z#) Then p\FloatTimer=1.05*secs#
-		EndIf
-
-		; Update timer
-		If o\Translator\WasJustUsedTimer>0 Then o\Translator\WasJustUsedTimer=o\Translator\WasJustUsedTimer-timervalue#
-
-		; Player collided with object
-		If (Not(o\Translator\WasJustUsedTimer>0)) And o\Hit And p\TranslatorsTouched<3 Then
-			Select o\ObjType
-				Case OBJTYPE_LOCKER,OBJTYPE_FORCER,OBJTYPE_NODE,OBJTYPE_NODE2,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW:
-				Default: o\State = 1
-			End Select
-			o\FValues[0] = 0.0
-
-			If (Not(p\Action=ACTION_HURT Or p\Action=ACTION_DIE)) and (Not(o\ObjType=OBJTYPE_LOCKER)) Then
-				; Transform the Speed vector to the Player space
-				Select o\ObjType
-					Case OBJTYPE_BFAN,OBJTYPE_BFANLOW: ScaleEntity o\Entity, 5.5, 5.5, 5.5
-					Default: ScaleEntity o\Entity, 1.5, 1.5, 1.5
-				End Select
-
-				; Make Sonic a move
-				Select o\ObjType
-					Case OBJTYPE_SPRING,OBJTYPE_SPRINGX,OBJTYPE_BSPRING,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW:
-						p\Motion\Ground = False
-						Player_Align(p)
-					Case OBJTYPE_PAD,OBJTYPE_FORCER:
-						If p\Motion\Ground = False Then Player_Align(p)
-						p\Motion\Ground = True
-				End Select
-				TFormVector 0, 1, 0, o\Entity, p\Objects\Entity
-				If o\Power#>0 Then
-					Select o\ObjType
-						Case OBJTYPE_NODE:
-						Case OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW:
-							If p\Objects\Position\y# < o\Position\y#+o\HitBox\y# Then
-								Select o\ObjType
-									Case OBJTYPE_BFAN: p\Motion\Speed\y#=(-p\Physics\FLOATFALL_SPEED#)*2.75
-									Case OBJTYPE_BFANLOW: p\Motion\Speed\y#=(-p\Physics\FLOATFALL_SPEED#)*1.375
-									Default: p\Motion\Speed\y#=(-p\Physics\FLOATFALL_SPEED#)
-								End Select
-							EndIf
-						Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL:
-							If p\Action=ACTION_STOMP and (o\InitialRotation\x#=0) Then
-								p\Motion\Speed\x# = TFormedX()*(o\Power#+0.25) : p\Motion\Speed\y# = TFormedY()*(o\Power#+0.25) : p\Motion\Speed\z# = TFormedZ()*(o\Power#+0.25)
-							Else
-								p\Motion\Speed\x# = TFormedX()*(o\Power#) : p\Motion\Speed\y# = TFormedY()*(o\Power#) : p\Motion\Speed\z# = TFormedZ()*(o\Power#)
-							EndIf
-						Default:
-							p\Motion\Speed\x# = TFormedX()*(o\Power#) : p\Motion\Speed\y# = TFormedY()*(o\Power#) : p\Motion\Speed\z# = TFormedZ()*(o\Power#)
-					End Select
-				EndIf
-				p\IceFloorTimer=0
-				p\Flags\HomingWasLockedTimer=0
-
-				If p\Action=ACTION_CARRY Or p\Action=ACTION_CARRYJUMP Or p\Action=ACTION_CARRYTHROWN Then
-					p\Action=ACTION_CARRYTHROWN
-				Else
-					Select o\ObjType
-						Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_HOOP,OBJTYPE_THOOP:
-							If p\HasVehicle=0 Then
-								p\Action = ACTION_UP
-							Else
-								Select Game\Vehicle
-								Case 1,5,8: p\Action = ACTION_BOARDFALL
-								Case 2: p\Action = ACTION_GLIDER
-								Case 3,4,9: p\Action = ACTION_CARFALL
-								Case 6,7: p\Action = ACTION_TORNADO
-								End Select
-							EndIf
-						Case OBJTYPE_RAMP:
-							If p\HasVehicle=0 Then
-								p\Action = ACTION_FWD
-							Else
-								Select Game\Vehicle
-								Case 1,5,8: p\Action = ACTION_BOARDFALL
-								Case 2: p\Action = ACTION_GLIDER
-								Case 3,4,9: p\Action = ACTION_CARFALL
-								Case 6,7: p\Action = ACTION_TORNADO
-								End Select
-							EndIf
-						Case OBJTYPE_ACCEL:
-							If p\HasVehicle=0 Then
-								If p\Flags\InJumpAction and (Not(p\Action=ACTION_JUMPDASH Or p\Action=ACTION_DOUBLEJUMP Or p\Action=ACTION_DIVE)) Then
-									Player_ResetJumpActionStuff(p)
-								Else
-									p\Action = ACTION_JUMPFALL
-								EndIf
-							Else
-								Select Game\Vehicle
-								Case 1,5,8: p\Action = ACTION_BOARDFALL
-								Case 2: p\Action = ACTION_GLIDER
-								Case 3,4,9: p\Action = ACTION_CARFALL
-								Case 6,7: p\Action = ACTION_TORNADO
-								End Select
-							EndIf
-						Case OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW:
-							Player_ConvertGroundToAir(p)
-							p\Motion\Ground = False
-							If Not(p\HasVehicle>0 Or p\Action=ACTION_JUMP Or p\Action=ACTION_HOP Or p\Action=ACTION_GLIDE Or p\Action=ACTION_SLOWGLIDE Or p\Action=ACTION_HOVER Or p\Action=ACTION_SOAR Or p\Action=ACTION_SOARFLAP Or (p\Character=CHAR_CHA and p\Action=ACTION_FLY) Or p\Action=ACTION_JUMPDASH Or p\Action=ACTION_HOMING Or p\Action=ACTION_TRANSFORM) Then
-								p\Action = ACTION_FLOAT
-								Player_ResetJumpActionStuff(p)
-							Else
-								p\JumpActionRestrictTimer=0.5*secs#
-							EndIf
-					End Select
-				EndIf
-
-				; Rotate Sonic
-				Select o\ObjType
-					Case OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW:
-					Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL:
-						If (Not(o\InitialRotation\x#=0)) Then p\Animation\Direction#=o\InitialRotation\y#+180
-						p\Physics\UP_ANGLE#=20*p\SpeedLength#
-					Case OBJTYPE_PAD,OBJTYPE_FORCER:
-						p\Animation\Direction#=o\InitialRotation\y#+180
-						If p\HasVehicle=0 Then p\Action=ACTION_COMMON
-					Case OBJTYPE_RAMP,OBJTYPE_NODE,OBJTYPE_NODE2:
-						p\Animation\Direction#=o\InitialRotation\y#+180
-				End Select
-
-				; Transform the position vector to World space
-				TFormVector 0, 1, 0, o\Entity, 0
-				Select o\ObjType
-					Case OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW:
-					Case OBJTYPE_BSPRING:
-						PositionEntity p\Objects\Entity, o\Position\x#+o\Translator\BigSpringPoint*5.5*Cos(o\Rotation\y#) + TFormedX()*4, o\Position\y# + TFormedY()*4, o\Position\z#+o\Translator\BigSpringPoint*5.5*Sin(o\Rotation\y#) + TFormedZ()*4
-					Default:
-						PositionEntity p\Objects\Entity, o\Position\x# + TFormedX()*4, o\Position\y# + TFormedY()*4, o\Position\z# + TFormedZ()*4
-				End Select
-				p\Physics\MOTION_GROUND# = 0.65
-				Player_Motion_ResetAirBeg(p)
-			EndIf
-
-			; Add to counter
-			If o\ObjType=OBJTYPE_THOOP And o\Translator\THoopPointDisabler = 0 Then 
-				Gameplay_AddScore(100)
-				o\Translator\THoopPointDisabler = 1
-			EndIf
-				
-			; Sound effect!
-			Select o\ObjType
-				Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX:
-					EmitSmartSound(Sound_Spring,o\Entity)
-				Case OBJTYPE_PAD:
-					EmitSmartSound(Sound_DashPad,o\Entity)
-				Case OBJTYPE_RAMP:
-					EmitSmartSound(Sound_DashRamp,o\Entity)
-				Case OBJTYPE_HOOP:
-					EmitSmartSound(Sound_HoopDash,o\Entity) : p\Physics\TRICK_ANGLE#=360
-				Case OBJTYPE_THOOP:
-					EmitSmartSound(Sound_HoopRainbow,o\Entity) : p\Physics\TRICK_ANGLE#=360 : p\TrickTimer=1*secs#
-				Case OBJTYPE_ACCEL:
-					EmitSmartSound(Sound_HoopDash,o\Entity)
-				Case OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX:
-					EmitSmartSound(Sound_SpringTrap,o\Entity)
-			End Select
-				
-			; Apply motion blur
-			Select o\ObjType
-				Case OBJTYPE_LOCKER,OBJTYPE_FORCER,OBJTYPE_NODE,OBJTYPE_NODE2,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW:
-				Default: PostEffect_Create_MotionBlur(0.85)
-					 PositionEntity(o\IValues[0],p\Objects\Position\x#,p\Objects\Position\y#,p\Objects\Position\z#)
-			End Select
-
-			; Save stuck
-			Select o\ObjType
-				Case OBJTYPE_LOCKER,OBJTYPE_FORCER,OBJTYPE_NODE,OBJTYPE_NODE2,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_ACCEL:
-				Default: If Game\Vehicle=0 Then Input_ResetActionInput()
-			End Select
-
-			; Do lock
+	If o\Translator\PanelDisablerTimer>0 Then o\Translator\PanelDisablerTimer=o\Translator\PanelDisablerTimer-timervalue#
+	
+	;initiating panel
+	If (o\ObjType = OBJTYPE_PANEL1) And (Input\Pressed\ActionJump) And (o\Hit)
+		Object_LockCamera(o,p)
+		Object_LockDestination(o,p)
+		EmitSmartSound(Sound_JumpPanelExit,o\Entity)
+		Input\Pressed\ActionJump = False
+		Input\Pressed\ActionJump = 0
+		p\Action=ACTION_PANEL
+	EndIf
+	
+	;initiate land on second panel
+	If (o\ObjType = OBJTYPE_PANEL2) And (o\Hit) And p\Flags\OnJumpPanel=0 And (Not(p\Action=ACTION_FALL Or p\Action=ACTION_PANEL2)) And o\Translator\PanelDisabler=0 Then
+		p\Flags\OnJumpPanel=1
+		p\PanelStayTimer=2*secs#
+		
+		
+		;PlaySmartSound(Sound_Ring)
+		If o\Translator\PanelSoundDisabler=0 Then 
+			If o\Translator\FanInvisible=0 Or (Menu\Settings\Debug#=1 And Menu\Settings\DebugNodes#=1)
+				EmitSmartSound(Sound_JumpPanelLand,o\Entity) : o\Translator\PanelSoundDisabler=1
+			Else
+				EmitSmartSound(Sound_GroundLand,o\Entity) : o\Translator\PanelSoundDisabler=1
+			EndIf 
+		EndIf 
+		p\Action=ACTION_PANEL2 
+		p\PanelX#=o\Position\x#
+		p\PanelY#=o\Position\y#
+		p\PanelZ#=o\Position\z#
+		p\Animation\Direction#=o\InitialRotation\y#;+180
+		o\Translator\PanelDisabler=1	
+	EndIf
+	
+	;initiate jump on second panel
+	If (o\ObjType = OBJTYPE_PANEL2) And (o\Hit) And p\Action=ACTION_PANEL2 Then
+		If Input\Pressed\ActionJump Then 
+			p\JumpPanelTimer=0.25*secs#
+			o\Translator\PanelDisabler=1
+			o\Translator\PanelDisablerTimer=1.5*secs#
 			Object_LockCamera(o,p)
 			Object_LockDestination(o,p)
+			If o\Translator\FanInvisible=0 Or (Menu\Settings\Debug#=1 And Menu\Settings\DebugNodes#=1)Then EmitSmartSound(Sound_JumpPanelExit,o\Entity)
+			o\Translator\PanelSoundDisabler=0
+			Input\Pressed\ActionJump = False
+			Input\Pressed\ActionJump = 0
+			Player_PlayJumpVoice(p)
+			p\Action=ACTION_PANEL
+			p\Flags\OnJumpPanel=0
+			
+		EndIf 
+	EndIf 
+	
+	If (Not(o\Translator\PanelDisablerTimer>0)) And o\Translator\PanelDisabler=1 Then o\Translator\PanelDisabler=0 
+	
+End Function 
 
-			; Initiate restricting timer
-			Select o\ObjType
-				Case OBJTYPE_LOCKER,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW:
-				Default:
-					Select o\ObjType
-						Case OBJTYPE_ACCEL: o\Translator\WasJustUsedTimer=0.225*secs#
-						Default: o\Translator\WasJustUsedTimer=0.1*secs#
-					End Select
-					p\TranslatorsTouchedTimer=0.1*secs#
-					p\TranslatorsTouched=p\TranslatorsTouched+1
-			End Select
-
+Const THORN_UP=1
+Const THORN_DOWN=2
+Const THORN_UP2=3
+Const THORN_DOWN2=4
+Function Object_ThornSpringAnimation(o.tObject, p.tPlayer, d.tDeltaTime)
+	If o\Translator\ThornSpringTimer>0 Then o\Translator\ThornSpringTimer=o\Translator\ThornSpringTimer-timervalue#
+	RotateEntity(o\EntityX,o\Translator\ThornSpringActualRotation#,0,0)
+	RotateEntity(o\Entity,o\Translator\ThornSpringActualRotation#,0,0)
+	
+	If o\Translator\ThornSpringState=THORN_UP And (Not(o\Translator\ThornSpringTimer>0)) Then 
+		o\Translator\ThornSpringState=THORN_DOWN : o\Translator\ThornSpringTimer=3*secs# : EmitSmartSound(Sound_SpringThorn,o\Entity)
+	EndIf 
+	
+	If o\Translator\ThornSpringState=THORN_DOWN And (Not(o\Translator\ThornSpringTimer>0)) Then 
+		o\Translator\ThornSpringState=THORN_UP : o\Translator\ThornSpringTimer=3*secs#  : EmitSmartSound(Sound_SpringThorn,o\Entity)
+	EndIf 
+	
+	
+	
+	If o\Translator\ThornSpringState=THORN_UP Then 
+		o\Translator\ThornSpringTargetRotation#=0
+		If o\Translator\ThornSpringActualRotation#>=360 Then o\Translator\ThornSpringActualRotation#=0
+		If o\Translator\ThornSpringActualRotation#<>o\Translator\ThornSpringTargetRotation# Then 
+			o\Translator\ThornSpringActualRotation#=o\Translator\ThornSpringActualRotation#+15*d\Delta
+		EndIf 
+	EndIf 		
+	
+	If o\Translator\ThornSpringState=THORN_DOWN Then 
+		o\Translator\ThornSpringTargetRotation#=180
+		If o\Translator\ThornSpringActualRotation#>=180 Then o\Translator\ThornSpringActualRotation#=180
+		If o\Translator\ThornSpringActualRotation#<o\Translator\ThornSpringTargetRotation# Then 
+			o\Translator\ThornSpringActualRotation#=o\Translator\ThornSpringActualRotation#+15*d\Delta
+		EndIf 
+	EndIf 
+End Function
+Function Object_Translator_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+	
+	Object_Translator_JumpPanel(o,p,d)
+	
+		; Movement
+	If o\ObjType=OBJTYPE_SPRINGX And o\InitialRotation\x#=0 Then
+		If o\State=1 Then
+			If o\Position\y#<o\InitialPosition\y#+100 Then MoveEntity o\Entity, 0,0.5*d\Delta,0
+			
+		ElseIf o\State=0
+			If o\Position\y#>o\InitialPosition\y# Then MoveEntity o\Entity, 0,-0.1*d\Delta,0
 		EndIf
-		
-		;Quad effect
-		Object_QuadEffect(o,p,d)
-		
-	End Function
+	EndIf
+	
+	
+	
+		; For fan
+	If (o\ObjType=OBJTYPE_FAN Or o\ObjType=OBJTYPE_BFAN Or o\ObjType=OBJTYPE_BFANLOW) Then
+		If o\Translator\FanInvisible=0 And ChannelPlaying(o\Translator\Channel_Fan)=False Then o\Translator\Channel_Fan=EmitSmartSound(Sound_Fan,o\Entity)
+		Select o\ObjType
+			Case OBJTYPE_BFAN: ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_WINDTUNNEL, o\Entity, 4.5, 0, 60, 0, 0, 0.085)
+			Case OBJTYPE_BFANLOW: ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_WINDTUNNEL, o\Entity, 4.5, 0, 6, 0, 0, 0.085)
+		End Select
+		If (Abs(p\Objects\Position\x# - o\Position\x#) < o\HitBox\x#) And (p\Objects\Position\y# > o\Position\y#-5) And (p\Objects\Position\y# < o\Position\y#+o\HitBox\y#+30) And (Abs(p\Objects\Position\z# - o\Position\z#) < o\HitBox\z#) Then p\FloatTimer=1.05*secs#
+	EndIf
+	
+		; Update timer
+	If o\Translator\WasJustUsedTimer>0 Then o\Translator\WasJustUsedTimer=o\Translator\WasJustUsedTimer-timervalue#
+	
+		; Player collided with object
+	If (Not(o\Translator\WasJustUsedTimer>0)) And p\TranslatorsTouched<3 Then
+		Select o\ObjType
+			Default
+				If o\Hit Then
+					Select o\ObjType
+						Case OBJTYPE_LOCKER,OBJTYPE_FORCER,OBJTYPE_NODE,OBJTYPE_NODE2,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW:
+						Default: o\State = 1
+					End Select
+					o\FValues[0] = 0.0
+					
+					
+					
+					If (Not(p\Action=ACTION_HURT Or p\Action=ACTION_DIE)) And (Not(o\ObjType=OBJTYPE_LOCKER)) Then
+				; Transform the Speed vector to the Player space
+						Select o\ObjType
+							Case OBJTYPE_BFAN,OBJTYPE_BFANLOW: ScaleEntity o\Entity, 5.5, 5.5, 5.5
+							Case OBJTYPE_SPRINGTHORN
+								Select o\Translator\ThornSpringState
+									Case THORN_UP
+										If p\Objects\Position\y#>=o\Position\y+2 Then 
+											ScaleEntity o\Entity, 1.5, 1.5, 1.5
+										Else
+											
+										EndIf
+									Case THORN_DOWN
+										If p\Objects\Position\y#>=o\Position\y+2 Then 
+											
+										Else
+											ScaleEntity o\Entity, 1.5, 1.5, 1.5
+										EndIf
+								End Select 
+							Case OBJTYPE_SPRINGICE
+							Default: ScaleEntity o\Entity, 1.5, 1.5, 1.5
+						End Select
+						
+				; Make Sonic a move
+						Select o\ObjType
+							Case OBJTYPE_SPRING,OBJTYPE_SPRINGICE,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTHORN,OBJTYPE_BSPRING,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW:
+								p\Motion\Ground = False
+								Player_Align(p)
+							Case OBJTYPE_PAD,OBJTYPE_FORCER:
+								If p\Motion\Ground = False Then Player_Align(p)
+								p\Motion\Ground = True
+						End Select
+						TFormVector 0, 1, 0, o\Entity, p\Objects\Entity
+						If o\Power#>0 Then
+							Select o\ObjType
+								Case OBJTYPE_NODE,OBJTYPE_PANEL1,OBJTYPE_PANEL2
+								Case OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW:
+									If p\Objects\Position\y# < o\Position\y#+o\HitBox\y# Then
+										Select o\ObjType
+											Case OBJTYPE_BFAN: p\Motion\Speed\y#=(-p\Physics\FLOATFALL_SPEED#)*2.75
+											Case OBJTYPE_BFANLOW: p\Motion\Speed\y#=(-p\Physics\FLOATFALL_SPEED#)*1.375
+											Default: p\Motion\Speed\y#=(-p\Physics\FLOATFALL_SPEED#)
+										End Select
+									EndIf
+								Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL:
+									If p\Action=ACTION_STOMP And (o\InitialRotation\x#=0) Then
+										p\Motion\Speed\x# = TFormedX()*(o\Power#+0.25) : p\Motion\Speed\y# = TFormedY()*(o\Power#+0.25) : p\Motion\Speed\z# = TFormedZ()*(o\Power#+0.25)
+									Else
+										p\Motion\Speed\x# = TFormedX()*(o\Power#) : p\Motion\Speed\y# = TFormedY()*(o\Power#) : p\Motion\Speed\z# = TFormedZ()*(o\Power#)
+									EndIf
+								Case OBJTYPE_SPRINGX:
+									If p\Action=ACTION_STOMP And (o\InitialRotation\x#=0) Then
+										
+										p\Motion\Speed\x# = TFormedX()*(o\Power#+0.25) : p\Motion\Speed\y# = TFormedY()*(o\Power#+0.25) : p\Motion\Speed\z# = TFormedZ()*(o\Power#+0.25)
+									Else
+										p\Motion\Speed\x# = TFormedX()*(o\Power#) : p\Motion\Speed\y# = TFormedY()*(o\Power#) : p\Motion\Speed\z# = TFormedZ()*(o\Power#)
+									EndIf
+								Case OBJTYPE_SPRINGTHORN
+									Select o\Translator\ThornSpringState
+										Case THORN_UP
+											If p\Objects\Position\y#>=o\Position\y+2 Then 
+												p\Motion\Speed\x# = TFormedX()*(o\Power#) : p\Motion\Speed\y# = TFormedY()*(o\Power#) : p\Motion\Speed\z# = TFormedZ()*(o\Power#)
+											Else
+												Player_Hit(p)
+											EndIf
+										Case THORN_DOWN
+											If p\Objects\Position\y#>=o\Position\y+2 Then 
+												Player_Hit(p)
+											Else
+												p\Motion\Speed\x# = TFormedX()*(o\Power#) : p\Motion\Speed\y# = TFormedY()*(o\Power#) : p\Motion\Speed\z# = TFormedZ()*(o\Power#)
+											EndIf
+									End Select 
+								Default:
+									p\Motion\Speed\x# = TFormedX()*(o\Power#) : p\Motion\Speed\y# = TFormedY()*(o\Power#) : p\Motion\Speed\z# = TFormedZ()*(o\Power#)
+							End Select
+						EndIf
+						p\IceFloorTimer=0
+						
+						p\Flags\HomingWasLockedTimer=0
+						
+						If p\Action=ACTION_CARRY Or p\Action=ACTION_CARRYJUMP Or p\Action=ACTION_CARRYTHROWN Then
+							p\Action=ACTION_CARRYTHROWN
+						Else
+							Select o\ObjType
+								Case OBJTYPE_SPRING,OBJTYPE_SPRINGICE,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTHORN,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_HOOP,OBJTYPE_THOOP:
+									If p\HasVehicle=0 Then
+										If o\ObjType=OBJTYPE_THOOP Then 
+											p\Action=ACTION_TRICK
+										ElseIf o\ObjType=OBJTYPE_SPRINGTHORN
+											Select o\Translator\ThornSpringState
+												Case THORN_UP
+													If p\Objects\Position\y#>=o\Position\y+2 Then 
+														p\Action = ACTION_UP
+													Else
+														
+													EndIf
+												Case THORN_DOWN
+													If p\Objects\Position\y#>=o\Position\y+2 Then 
+														
+													Else
+														p\Action = ACTION_UP
+													EndIf
+											End Select 	
+										Else
+											
+											p\Action = ACTION_UP
+										EndIf 
+									Else
+										Select Game\Vehicle
+											Case 1,5,8: p\Action = ACTION_BOARDFALL
+											Case 2: p\Action = ACTION_GLIDER
+											Case 3,4,9: p\Action = ACTION_CARFALL
+											Case 6,7: p\Action = ACTION_TORNADO
+										End Select
+									EndIf
+								Case OBJTYPE_RAMP:
+									If p\HasVehicle=0 Then
+										p\Action = ACTION_FWD
+									Else
+										Select Game\Vehicle
+											Case 1,5,8: p\Action = ACTION_BOARDFALL
+											Case 2: p\Action = ACTION_GLIDER
+											Case 3,4,9: p\Action = ACTION_CARFALL
+											Case 6,7: p\Action = ACTION_TORNADO
+										End Select
+									EndIf
+								Case OBJTYPE_ACCEL:
+									If p\HasVehicle=0 Then
+										If p\Flags\InJumpAction And (Not(p\Action=ACTION_JUMPDASH Or p\Action=ACTION_DOUBLEJUMP Or p\Action=ACTION_DIVE)) Then
+											Player_ResetJumpActionStuff(p)
+										Else
+											p\Action = ACTION_JUMPFALL
+										EndIf
+									Else
+										Select Game\Vehicle
+											Case 1,5,8: p\Action = ACTION_BOARDFALL
+											Case 2: p\Action = ACTION_GLIDER
+											Case 3,4,9: p\Action = ACTION_CARFALL
+											Case 6,7: p\Action = ACTION_TORNADO
+										End Select
+									EndIf
+								Case OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW:
+									Player_ConvertGroundToAir(p)
+									p\Motion\Ground = False
+									If Not(p\HasVehicle>0 Or p\Action=ACTION_JUMP Or p\Action=ACTION_HOP Or p\Action=ACTION_GLIDE Or p\Action=ACTION_SLOWGLIDE Or p\Action=ACTION_HOVER Or p\Action=ACTION_SOAR Or p\Action=ACTION_SOARFLAP Or (p\Character=CHAR_CHA And p\Action=ACTION_FLY) Or p\Action=ACTION_JUMPDASH Or p\Action=ACTION_HOMING Or p\Action=ACTION_TRANSFORM) Then
+										p\Action = ACTION_FLOAT
+										Player_ResetJumpActionStuff(p)
+									Else
+										p\JumpActionRestrictTimer=0.5*secs#
+									EndIf
+							End Select
+						EndIf
+						
+				; Rotate Sonic
+						Select o\ObjType
+							Case OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW:
+							Case OBJTYPE_SPRING,OBJTYPE_SPRINGICE,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTHORN,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL:
+								If (Not(o\InitialRotation\x#=0)) Then p\Animation\Direction#=o\InitialRotation\y#+180
+								p\Physics\UP_ANGLE#=20*p\SpeedLength#
+							Case OBJTYPE_PAD,OBJTYPE_FORCER:
+								p\Animation\Direction#=o\InitialRotation\y#+180
+								If p\HasVehicle=0 Then p\Action=ACTION_COMMON
+							Case OBJTYPE_RAMP,OBJTYPE_NODE,OBJTYPE_NODE2:
+								p\Animation\Direction#=o\InitialRotation\y#+180
+						End Select
+						
+				; Transform the position vector to World space
+						TFormVector 0, 1, 0, o\Entity, 0
+						Select o\ObjType
+							Case OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_PANEL1,OBJTYPE_PANEL2,OBJTYPE_BFAN,OBJTYPE_BFANLOW:
+							Case OBJTYPE_BSPRING:
+								PositionEntity p\Objects\Entity, o\Position\x#+o\Translator\BigSpringPoint*5.5*Cos(o\Rotation\y#) + TFormedX()*4, o\Position\y# + TFormedY()*4, o\Position\z#+o\Translator\BigSpringPoint*5.5*Sin(o\Rotation\y#) + TFormedZ()*4
+							Default:
+								PositionEntity p\Objects\Entity, o\Position\x# + TFormedX()*4, o\Position\y# + TFormedY()*4, o\Position\z# + TFormedZ()*4
+						End Select
+						p\Physics\MOTION_GROUND# = 0.65
+					EndIf
+					
+			; Add to counter
+					If o\ObjType=OBJTYPE_THOOP And o\Translator\THoopPointDisabler = 0 Then 
+						Gameplay_AddScore(100)
+						o\Translator\THoopPointDisabler = 1
+					EndIf
+					
+			; Sound effect!
+					Select o\ObjType
+						Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGICE,OBJTYPE_SPRINGX:
+							EmitSmartSound(Sound_Spring,o\Entity)
+						Case OBJTYPE_SPRINGTHORN
+							If (Not(p\Action=ACTION_HURT)) Then EmitSmartSound(Sound_Spring,o\Entity)
+							
+						Case OBJTYPE_PAD:
+							EmitSmartSound(Sound_DashPad,o\Entity)
+						Case OBJTYPE_RAMP:
+							EmitSmartSound(Sound_DashRamp,o\Entity)
+						Case OBJTYPE_HOOP:
+							EmitSmartSound(Sound_HoopDash,o\Entity) : p\Physics\TRICK_ANGLE#=360
+						Case OBJTYPE_THOOP:
+							EmitSmartSound(Sound_HoopRainbow,o\Entity)  : p\TrickTimer=1.5*secs#
+						Case OBJTYPE_ACCEL:
+							EmitSmartSound(Sound_HoopDash,o\Entity)
+						Case OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX:
+							EmitSmartSound(Sound_SpringTrap,o\Entity)
+					End Select
+					
+			; Apply motion blur
+					Select o\ObjType
+						Case OBJTYPE_LOCKER,OBJTYPE_FORCER,OBJTYPE_NODE,OBJTYPE_NODE2,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_PANEL1,OBJTYPE_PANEL2:
+						Case OBJTYPE_SPRINGICE	
+						Default: PostEffect_Create_MotionBlur(0.85)
+							PositionEntity(o\IValues[0],p\Objects\Position\x#,p\Objects\Position\y#,p\Objects\Position\z#)
+					End Select
+					
+			; Save stuck
+					Select o\ObjType
+						Case OBJTYPE_LOCKER,OBJTYPE_FORCER,OBJTYPE_NODE,OBJTYPE_NODE2,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_ACCEL,OBJTYPE_PANEL1,OBJTYPE_PANEL2:
+						Default: If Game\Vehicle=0 Then Input_ResetActionInput()
+					End Select
+					
+			;delete the object
+					
+					
+			; Do lock
+					Select o\ObjType
+						Case OBJTYPE_PANEL1,OBJTYPE_PANEL2:
+						Case OBJTYPE_SPRINGTHORN
+							Select o\Translator\ThornSpringState
+								Case THORN_UP
+									If p\Objects\Position\y#>=o\Position\y+2 Then 
+										If o\Power>0 Then Object_LockCamera(o,p)
+										Object_LockDestination(o,p)
+									Else
+										
+									EndIf
+								Case THORN_DOWN
+									If p\Objects\Position\y#>=o\Position\y+2 Then 
+										
+									Else
+										If o\Power>0 Then Object_LockCamera(o,p)
+										Object_LockDestination(o,p)
+									EndIf
+							End Select 	
+						Default:
+							If o\Power>0 Then Object_LockCamera(o,p)
+							Object_LockDestination(o,p)
+					End Select
+					
+			; Initiate restricting timer
+					Select o\ObjType
+						Case OBJTYPE_LOCKER,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW:
+						Default:
+							Select o\ObjType
+								Case OBJTYPE_ACCEL,OBJTYPE_SPRINGICE: o\Translator\WasJustUsedTimer=0.225*secs#
+								Default: o\Translator\WasJustUsedTimer=0.1*secs#
+							End Select
+							p\TranslatorsTouchedTimer=0.1*secs#
+							p\TranslatorsTouched=p\TranslatorsTouched+1
+					End Select
+					
+					Select o\ObjType
+						Case OBJTYPE_SPRINGICE
+								Object_Pieces_Create(False,OBJTYPE_ICICLE,o\Psychoed,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1,0,False,0)
+								EmitSmartSound(Sound_Break,o\Entity)
+								o\Done=1
+					End Select
+					
+				EndIf 
+		End Select 
+	EndIf 
+	Select o\ObjType
+		Case OBJTYPE_PANEL1,OBJTYPE_PANEL2,OBJTYPE_SPRINGICE:
+		Default: Object_QuadEffect(o,p,d)
+	End Select
+	
+	
+	
+End Function
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Bumper_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, paddletype#=0)
+Function Object_Bumper_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, paddletype#=0)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		If o\ObjType=OBJTYPE_BALLBUMPER Then o\CanHoming=True Else o\CanHoming=False
 		o\ThisIsABumper=True : o\Translator = New tObject_Translator : o\HasValuesetTranslator=True
@@ -524,7 +757,7 @@ End Function
 	
 	; =========================================================================================================
 	
-	Function Object_Bumper_Appearance(o.tObject, d.tDeltaTime)
+Function Object_Bumper_Appearance(o.tObject, d.tDeltaTime)
 		Select o\ObjType
 			Case OBJTYPE_BALLBUMPER,OBJTYPE_GROUNDBUMPER:
 				TurnEntity o\Entity, 0, -0.15*20*d\Delta, 0
@@ -567,7 +800,7 @@ End Function
 		End Select
 	End Function
 
-	Function Object_Bumper_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_Bumper_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		; Availability
 		If o\Translator\BumperCoolDownTimer>0 Then o\Translator\BumperCoolDownTimer=o\Translator\BumperCoolDownTimer-timervalue#
@@ -600,7 +833,7 @@ End Function
 		Object_Bumper_Appearance(o,d)
 		
 		; Player collided with object
-		If (Not(o\Translator\BumperCoolDownTimer>0)) And o\Hit and (Not(p\TranslatorsTouchedTimer>0)) Then
+		If (Not(o\Translator\BumperCoolDownTimer>0)) And o\Hit And (Not(p\TranslatorsTouchedTimer>0)) Then
 			Select o\ObjType
 				Case OBJTYPE_BALLBUMPER,OBJTYPE_GROUNDBUMPER,OBJTYPE_PLATEBUMPER: o\State = 1 : o\FValues[0] = 40.0
 				Case OBJTYPE_METROBUMPER,OBJTYPE_TRIANGLEBUMPER: o\State = 1 : o\FValues[0] = 0.0
@@ -629,7 +862,7 @@ End Function
 					Case OBJTYPE_GROUNDBUMPER:
 						Object_Bumper_Update_Bumped(o,p,4.7)
 					Case OBJTYPE_METROBUMPER:
-						Object_Bumper_Update_Bumped(o,p,6.4,false)
+						Object_Bumper_Update_Bumped(o,p,6.4,False)
 					Case OBJTYPE_PLATEBUMPER:
 						If o\Rotation\x#=0 Then
 							Player_Action_BumpedJump_Initiate(p)
@@ -723,11 +956,11 @@ End Function
 		
 	End Function
 
-	Function Object_Bumper_Update_Bumped(o.tObject, p.tPlayer, power#, vertical=true)
+Function Object_Bumper_Update_Bumped(o.tObject, p.tPlayer, power#, vertical=True)
 		Player_Action_Bumped_Initiate(p)
 		If EntityDistance(p\Objects\Entity,o\Entity)>0.1 Then
 			p\Motion\Speed\x# = p\Motion\Speed\x#-TFormedX()*power#
-			If vertical and p\Motion\Ground=False Then p\Motion\Speed\y# = p\Motion\Speed\y#-TFormedY()*power#
+			If vertical And p\Motion\Ground=False Then p\Motion\Speed\y# = p\Motion\Speed\y#-TFormedY()*power#
 			p\Motion\Speed\z# = p\Motion\Speed\z#-TFormedZ()*power#
 			p\Motion\Ground = False
 		EndIf
@@ -736,7 +969,7 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Cannon_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, power#)
+Function Object_Cannon_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, power#)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\Translator = New tObject_Translator : o\HasValuesetTranslator=True
 
@@ -757,14 +990,13 @@ End Function
 	
 	; =========================================================================================================
 	
-	Function Object_Cannon_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_Cannon_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		If o\Translator\CannonWasUsedTimer>0 Then o\Translator\CannonWasUsedTimer=o\Translator\CannonWasUsedTimer-timervalue#
 
 		; Player collided with object
-		If (o\Rotation\x#>0) and (Not(p\Action=ACTION_CANNON Or p\Action=ACTION_CANNON2)) Then
+		If (o\Rotation\x#>0) And (Not(p\Action=ACTION_CANNON Or p\Action=ACTION_CANNON2)) Then
 			TurnEntity o\Entity,-2.75*d\Delta,0,0
-			Player_Motion_ResetAirBeg(p)
 		ElseIf (Not(o\Translator\CannonWasUsedTimer>0)) Then
 			If o\Hit Then
 			Select p\Action
@@ -850,9 +1082,10 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Transferer_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, power#, inverted#=0)
+Function Object_Transferer_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, power#, inverted#=0)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\Translator = New tObject_Translator : o\HasValuesetTranslator=True
+		
 
 		Object_CreateHitBox(HITBOXTYPE_SPEEDY_TRANSFERER,o,7.875,5.25,7.875)
 
@@ -894,7 +1127,16 @@ End Function
 	
 	; =========================================================================================================
 	
-	Function Object_Transferer_UpdateAlways(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_Transferer_UpdateAlways(o.tObject, p.tPlayer, d.tDeltaTime)
+
+		If EntityX(o\Entity) = o\Translator\Destination\x# And EntityY(o\Entity) = o\Translator\Destination\y# And EntityZ(o\Entity) = o\Translator\Destination\z# Then 
+			o\CanHoming=True
+		Else
+			o\CanHoming=False
+		EndIf 
+
+
+		
 		; Place destination
 		If o\Translator\TransfererInverted=0 Then
 			If o\Translator\TransfererPlace Then i=1 Else i=0
@@ -927,7 +1169,7 @@ End Function
 					Case OBJTYPE_PULLEY:
 						o\Translator\PulleyReturnTimer=4*secs#
 					Case OBJTYPE_ELEVATOR:
-						If (p\Action=ACTION_HOLD and o\Hit) Then
+						If (p\Action=ACTION_HOLD And o\Hit) Then
 							p\BumpedCloudTimer=0.5*secs#
 							ParticleTemplate_Call(p\SmokeParticle, PARTICLE_PLAYER_CHARACTERDUST, p\Objects\Mesh, 0, 0, 0, p\RealCharacter)
 							Game\ControlLock=0.1*secs#
@@ -939,8 +1181,8 @@ End Function
 			; Almost reached destination
 			Else
 				MoveEntity o\Entity4, 0, 0, EntityDistance(o\Entity4,o\Entity3)*d\Delta
-				If (p\Action=ACTION_HOLD and o\Hit) Then holding=true Else holding=false
-				If o\Translator\TransfererDone=0 and (holding Or ((Not(p\Action=ACTION_HOLD)) and (o\ObjType=OBJTYPE_ROCKET Or o\ObjType=OBJTYPE_ELEVATOR))) Then
+				If (p\Action=ACTION_HOLD And o\Hit) Then holding=True Else holding=False
+				If o\Translator\TransfererDone=0 And (holding Or ((Not(p\Action=ACTION_HOLD)) And (o\ObjType=OBJTYPE_ROCKET Or o\ObjType=OBJTYPE_ELEVATOR))) Then
 					If holding Then
 						p\Action=ACTION_JUMPFALL : p\ShouldBeHoldingTimer=0.75*secs#
 						Select o\ObjType
@@ -951,7 +1193,7 @@ End Function
 					Select o\ObjType
 						Case OBJTYPE_PULLEY:
 							If ChannelPlaying(o\Translator\Channel_Fan) Then StopChannel(o\Translator\Channel_Fan)
-							If o\Translator\TransfererPlace=0 Then Player_ActuallyJump(p,true)
+							If o\Translator\TransfererPlace=0 Then Player_ActuallyJump(p,True)
 						Case OBJTYPE_ROCKET:
 							If ChannelPlaying(o\Translator\Channel_Fan) Then StopChannel(o\Translator\Channel_Fan)
 							ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_ROCKETEXPLODE, o\Entity) : EmitSmartSound(Sound_Explode,p\Objects\Entity)
@@ -969,7 +1211,7 @@ End Function
 			EndIf
 
 			; Continuous sound
-			If o\Inview and EntityDistance(o\Entity4,o\Entity3)>0.5 and o\Translator\TransfererForcePlace=0 and ChannelPlaying(o\Translator\Channel_Fan)=False and o\Translator\TransfererDone=0 Then
+			If o\InView And EntityDistance(o\Entity4,o\Entity3)>0.5 And o\Translator\TransfererForcePlace=0 And ChannelPlaying(o\Translator\Channel_Fan)=False And o\Translator\TransfererDone=0 Then
 				Select o\ObjType
 					Case OBJTYPE_PULLEY: o\Translator\Channel_Fan=EmitSmartSound(Sound_Grabber,o\Entity)
 					Case OBJTYPE_ROCKET: o\Translator\Channel_Fan=EmitSmartSound(Sound_Rocket,o\Entity)
@@ -993,20 +1235,20 @@ End Function
 				PositionTexture(o\ExtraTexture, 0, 0.0007*Game\Gameplay\Time)
 		End Select
 
-		If Not( o\Hit and o\Translator\TransfererDone=0 and ( (Not(o\ObjType=OBJTYPE_PULLEY)) Or (o\Translator\TransfererPlace=1 Or p\Motion\Ground=False) ) )Then
+		If Not( o\Hit And o\Translator\TransfererDone=0 And ( (Not(o\ObjType=OBJTYPE_PULLEY)) Or (o\Translator\TransfererPlace=1 Or p\Motion\Ground=False) ) )Then
 			PositionEntity o\Entity, EntityX(o\Entity4), EntityY(o\Entity4), EntityZ(o\Entity4), 1
 		EndIf
 	End Function
 
-	Function Object_Transferer_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_Transferer_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		Object_Transferer_UpdateAlways(o,p,d)
 
 		; For fan
-		If o\ObjType=OBJTYPE_PROPELLER and ChannelPlaying(o\Translator\Channel_Fan)=False Then o\Translator\Channel_Fan=EmitSmartSound(Sound_Propel,o\Entity)
+		If o\ObjType=OBJTYPE_PROPELLER And ChannelPlaying(o\Translator\Channel_Fan)=False Then o\Translator\Channel_Fan=EmitSmartSound(Sound_Propel,o\Entity)
 
 		; Player collided with object
-		If (o\Hit Or o\Translator\TransfererIsBeingUsed) and o\Translator\TransfererDone=0 and ( (Not(o\ObjType=OBJTYPE_PULLEY)) Or (o\Translator\TransfererPlace=1 Or p\Motion\Ground=False) ) Then
+		If (o\Hit Or o\Translator\TransfererIsBeingUsed) And o\Translator\TransfererDone=0 And ( (Not(o\ObjType=OBJTYPE_PULLEY)) Or (o\Translator\TransfererPlace=1 Or p\Motion\Ground=False) ) Then
 			; If player is already holding
 			If p\Action=ACTION_HOLD Then
 				; Player's speed and direction
@@ -1021,7 +1263,7 @@ End Function
 
 				; Place player at destination checker
 				PositionEntity p\Objects\Entity, EntityX(o\Entity4), EntityY(o\Entity4), EntityZ(o\Entity4), 1
-				Player_FollowerHolding_ByFeet(p,true)
+				Player_FollowerHolding_ByFeet(p,True)
 
 				; Fix position of transferer
 				Select o\ObjType
@@ -1029,12 +1271,11 @@ End Function
 					Default: MoveEntity o\Entity, 0, 0.5+p\ScaleFactor#, 0
 				End Select
 
-				Player_Motion_ResetAirBeg(p)
 				p\ShouldBeHoldingTimer=0.1*secs#
 
 			; If player is not holding yet
-			ElseIf (Not(p\ShouldBeHoldingTimer>0)) and o\Translator\TransfererPlace<2 Then
-				If (Not(EntityDistance(o\Entity4,o\Entity3)>0.5)) Then o\Translator\TransfererPlace=abs(o\Translator\TransfererPlace-1)
+			ElseIf (Not(p\ShouldBeHoldingTimer>0)) And o\Translator\TransfererPlace<2 Then
+				If (Not(EntityDistance(o\Entity4,o\Entity3)>0.5)) Then o\Translator\TransfererPlace=Abs(o\Translator\TransfererPlace-1)
 				p\Action=ACTION_HOLD : o\Translator\TransfererIsBeingUsed=True
 				Game\Vehicle=0
 				p\IceFloorTimer=0
@@ -1065,7 +1306,7 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Trigger_Create.tObject(x#, y#, z#, special#=0, size#=0)
+Function Object_Trigger_Create.tObject(x#, y#, z#, special#=0, size#=0)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 
 		Select o\ObjType
@@ -1075,7 +1316,7 @@ End Function
 
 		Object_Acquire_Position(o,x#,y#,z#)
 
-		If (Menu\Settings\Debug#=1 and Menu\Settings\DebugNodes#=1) Then
+		If (Menu\Settings\Debug#=1 And Menu\Settings\DebugNodes#=1) Then
 			o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Point)), Game\Stage\Root)
 		Else
 			o\Entity = CreatePivot()
@@ -1088,7 +1329,7 @@ End Function
 	
 	; =========================================================================================================
 	
-	Function Object_Trigger_Update(o.tObject, p.tPlayer)
+Function Object_Trigger_Update(o.tObject, p.tPlayer)
 
 		; Player collided with object
 		If o\Hit Then
@@ -1110,7 +1351,7 @@ End Function
 					If Not(Game\Stage\Properties\MusicMode=o\Mode) Then
 						Game\Stage\Properties\MusicMode=o\Mode
 						StopChannel(Game\Stage\Properties\MusicChn[o\Mode])
-						For i=0 to 2
+						For i=0 To 2
 							If i=o\Mode Then
 								Game\Stage\Properties\MusicFade#[i]=0.0
 							Else
@@ -1126,71 +1367,72 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_FPlat_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#)
-		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
-
-		Object_CreateHitBox(HITBOXTYPE_NORMAL,o,10,5,10)
-
-		Object_Acquire_Position(o,x#,y#,z#)
-		Object_Acquire_Rotation(o,0,yaw#,0)
-
-		o\Entity = CreatePivot()
-		EntityRadius(o\Entity,5)
-		EntityType(o\Entity,COLLISION_OBJECT)
-		o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_Platform)), Game\Stage\Root)
-		EntityType(o\EntityX,COLLISION_WORLD_POLYGON)
-
-		Return o
-	End Function
+Function Object_FPlat_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#)
+	o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 	
+	Object_CreateHitBox(HITBOXTYPE_NORMAL,o,10,5,10)
+	
+	Object_Acquire_Position(o,x#,y#,z#)
+	Object_Acquire_Rotation(o,0,yaw#,0)
+	
+	o\Entity = CreatePivot()
+	EntityRadius(o\Entity,5)
+	EntityType(o\Entity,COLLISION_OBJECT)
+	o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_Platform)), Game\Stage\Root)
+	EntityType(o\EntityX,COLLISION_WORLD_POLYGON)
+	
+	Return o
+End Function
+
 	; =========================================================================================================
+
+Function Object_FPlat_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 	
-	Function Object_FPlat_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+	If o\Mode>0 Then o\Mode=o\Mode-timervalue#
+	
+	PositionEntity o\EntityX, o\Position\x#, o\Position\y#, o\Position\z#, 1
+	
+	Select o\State
+		Case 0:
+			Animate o\EntityX,1,0,1,10
+			o\AlwaysPresent=False
+			If o\Hit And p\Objects\Position\y#>o\Position\y# Then
+				o\Mode=0.25*secs#
+				o\State=1
+				o\AlwaysPresent=True
+			EndIf
+		Case 1:
+			If Not(o\Mode>0) Then
+				EmitSmartSound(Sound_Crumble,o\Entity)
+				Animate o\EntityX,3,0.5,1,10
+				o\Mode=0.875*secs#
+				o\State=2
+			EndIf
+		Case 2:
+			If Not(o\Mode>0) Then
+				EmitSmartSound(Sound_Crusher,o\Entity)
+				o\Mode=3*secs#
+				o\State=3
+			EndIf
+		Case 3:
+			MoveEntity o\Entity, 0, -2*d\Delta, 0
+			If Not(o\Mode>0) Then
+				o\Mode=3.5*secs#
+				o\State=4
+			EndIf
+		Case 4:
+			If Not(o\Mode>0) Then
+				Objects_Reset_Object(o)
+			EndIf
+	End Select
+	
+End Function
 
-		If o\Mode>0 Then o\Mode=o\Mode-timervalue#
-
-		PositionEntity o\EntityX, o\Position\x#, o\Position\y#, o\Position\z#, 1
-
-		Select o\State
-			Case 0:
-				Animate o\EntityX,1,0,1,10
-				o\AlwaysPresent=False
-				If o\Hit and p\Objects\Position\y#>o\Position\y# Then
-					o\Mode=0.25*secs#
-					o\State=1
-					o\AlwaysPresent=True
-				EndIf
-			Case 1:
-				If Not(o\Mode>0) Then
-					EmitSmartSound(Sound_Crumble,o\Entity)
-					Animate o\EntityX,3,0.5,1,10
-					o\Mode=0.875*secs#
-					o\State=2
-				EndIf
-			Case 2:
-				If Not(o\Mode>0) Then
-					EmitSmartSound(Sound_Crusher,o\Entity)
-					o\Mode=3*secs#
-					o\State=3
-				EndIf
-			Case 3:
-				MoveEntity o\Entity, 0, -2*d\Delta, 0
-				If Not(o\Mode>0) Then
-					o\Mode=3.5*secs#
-					o\State=4
-				EndIf
-			Case 4:
-				If Not(o\Mode>0) Then
-					Objects_Reset_Object(o)
-				EndIf
-		End Select
-
-	End Function
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Handle_Create.tObject(x#, y#, z#, yaw#)
+Function Object_Handle_Create.tObject(x#, y#, z#, yaw#)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 
 		Object_CreateHitBox(HITBOXTYPE_SPEEDY,o,5.875,5.25,5.875)
@@ -1205,7 +1447,7 @@ End Function
 	
 	; =========================================================================================================
 
-	Function Object_Handle_Update(o.tObject, p.tPlayer)
+Function Object_Handle_Update(o.tObject, p.tPlayer)
 
 		; Player collided with object
 		If o\Hit Then
@@ -1216,12 +1458,11 @@ End Function
 				p\Animation\Direction#=o\Rotation\y#
 				PositionEntity p\Objects\Entity, EntityX(o\Entity), EntityY(o\Entity), EntityZ(o\Entity), 1
 				MoveEntity p\Objects\Entity, 0, -(0.5+p\ScaleFactor#), 0
-				Player_FollowerHolding_ByFeet(p,true)
-				Player_Motion_ResetAirBeg(p)
+				Player_FollowerHolding_ByFeet(p,True)
 				p\ShouldBeHoldingTimer=0.25*secs#
 
 			; If player is not holding yet
-			ElseIf (Not(p\ShouldBeHoldingTimer>0)) and p\Objects\Position\y#<o\Position\y#+1 Then
+			ElseIf (Not(p\ShouldBeHoldingTimer>0)) And p\Objects\Position\y#<o\Position\y#+1 Then
 				p\Action=ACTION_HOLD
 				Game\Vehicle=0
 				p\IceFloorTimer=0
@@ -1235,3 +1476,5 @@ End Function
 		EndIf
 		
 	End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

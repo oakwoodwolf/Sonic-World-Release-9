@@ -7,7 +7,7 @@
 	Global Interface_Card2_G[CHAR_PLAYABLECOUNT]
 	Global Interface_Card2_B[CHAR_PLAYABLECOUNT]
 	Interface_Card2_R[CHAR_SON]=032	: Interface_Card2_G[CHAR_SON]=096	: Interface_Card2_B[CHAR_SON]=202
-	Interface_Card2_R[CHAR_TAI]=244	: Interface_Card2_G[CHAR_TAI]=200	: Interface_Card2_B[CHAR_TAI]=025
+	Interface_Card2_R[CHAR_TAI]=255	: Interface_Card2_G[CHAR_TAI]=128	: Interface_Card2_B[CHAR_TAI]=32
 	Interface_Card2_R[CHAR_KNU]=227	: Interface_Card2_G[CHAR_KNU]=036	: Interface_Card2_B[CHAR_KNU]=036
 	Interface_Card2_R[CHAR_AMY]=250	: Interface_Card2_G[CHAR_AMY]=105	: Interface_Card2_B[CHAR_AMY]=211
 	Interface_Card2_R[CHAR_SHA]=074	: Interface_Card2_G[CHAR_SHA]=074	: Interface_Card2_B[CHAR_SHA]=074
@@ -58,7 +58,7 @@
 	Global Interface_TextNames_G[CHAR_FULLCOUNT]
 	Global Interface_TextNames_B[CHAR_FULLCOUNT]
 	Interface_TextNames_R[CHAR_SON]=067	: Interface_TextNames_G[CHAR_SON]=195	: Interface_TextNames_B[CHAR_SON]=255
-	Interface_TextNames_R[CHAR_TAI]=255	: Interface_TextNames_G[CHAR_TAI]=228	: Interface_TextNames_B[CHAR_TAI]=000
+	Interface_TextNames_R[CHAR_TAI]=255	: Interface_TextNames_G[CHAR_TAI]=128	: Interface_TextNames_B[CHAR_TAI]=32
 	Interface_TextNames_R[CHAR_KNU]=255	: Interface_TextNames_G[CHAR_KNU]=053	: Interface_TextNames_B[CHAR_KNU]=053
 	Interface_TextNames_R[CHAR_AMY]=255	: Interface_TextNames_G[CHAR_AMY]=164	: Interface_TextNames_B[CHAR_AMY]=231
 	Interface_TextNames_R[CHAR_SHA]=134	: Interface_TextNames_G[CHAR_SHA]=134	: Interface_TextNames_B[CHAR_SHA]=134
@@ -118,8 +118,8 @@
 	Global Interface_Circle_R[CHAR_NORMALCOUNT]
 	Global Interface_Circle_G[CHAR_NORMALCOUNT]
 	Global Interface_Circle_B[CHAR_NORMALCOUNT]
-	Interface_Circle_R[CHAR_SON]=049	: Interface_Circle_G[CHAR_SON]=103	: Interface_Circle_B[CHAR_SON]=255
-	Interface_Circle_R[CHAR_TAI]=255	: Interface_Circle_G[CHAR_TAI]=203	: Interface_Circle_B[CHAR_TAI]=061
+	Interface_Circle_R[CHAR_SON]=0	: Interface_Circle_G[CHAR_SON]=0	: Interface_Circle_B[CHAR_SON]=255
+	Interface_Circle_R[CHAR_TAI]=255	: Interface_Circle_G[CHAR_TAI]=128	: Interface_Circle_B[CHAR_TAI]=32
 	Interface_Circle_R[CHAR_KNU]=255	: Interface_Circle_G[CHAR_KNU]=050	: Interface_Circle_B[CHAR_KNU]=050
 	Interface_Circle_R[CHAR_AMY]=255	: Interface_Circle_G[CHAR_AMY]=053	: Interface_Circle_B[CHAR_AMY]=130
 	Interface_Circle_R[CHAR_SHA]=255	: Interface_Circle_G[CHAR_SHA]=238	: Interface_Circle_B[CHAR_SHA]=054
@@ -176,7 +176,7 @@
 	Global Interface_Lives_G[CHAR_PLAYABLECOUNT]
 	Global Interface_Lives_B[CHAR_PLAYABLECOUNT]
 	Interface_Lives_R[CHAR_SON]=029	: Interface_Lives_G[CHAR_SON]=029	: Interface_Lives_B[CHAR_SON]=235
-	Interface_Lives_R[CHAR_TAI]=255	: Interface_Lives_G[CHAR_TAI]=204	: Interface_Lives_B[CHAR_TAI]=051
+	Interface_Lives_R[CHAR_TAI]=255	: Interface_Lives_G[CHAR_TAI]=128	: Interface_Lives_B[CHAR_TAI]=32
 	Interface_Lives_R[CHAR_KNU]=216	: Interface_Lives_G[CHAR_KNU]=032	: Interface_Lives_B[CHAR_KNU]=032
 	Interface_Lives_R[CHAR_AMY]=242	: Interface_Lives_G[CHAR_AMY]=118	: Interface_Lives_B[CHAR_AMY]=153
 	Interface_Lives_R[CHAR_SHA]=044	: Interface_Lives_G[CHAR_SHA]=044	: Interface_Lives_B[CHAR_SHA]=044
@@ -261,10 +261,13 @@
 	Global Interface_Card2			= i : i=i+1
 	Global Interface_Card3			= i : i=i+1
 	Global Interface_Spinner		= i : i=i+1
+	Global Interface_Spinner1		= i : i=i+1
+	Global Interface_Spinner2		= i : i=i+1
+	Global Interface_Spinner3		= i : i=i+1
 	Global Interface_Icons			= i : i=i+1
 	Global Interface_Heads			= i : i=i+1
 	Global Interface_HeadsMod[MODCHAR_AMOUNT]
-	For j=1 to MODCHAR_AMOUNT : Interface_HeadsMod[j] = i : i=i+1 : Next
+	For j=1 To MODCHAR_AMOUNT : Interface_HeadsMod[j] = i : i=i+1 : Next
 	Global Interface_Black			= i : i=i+1
 	Global Interface_BlackBig		= i : i=i+1
 	Global Interface_Results		= i : i=i+1
@@ -316,7 +319,7 @@
 	Global Interface_Bubble_3_2		= i : i=i+1
 	Global Interface_Characters		= i : i=i+1
 	Global Interface_CharactersMod[MODCHAR_AMOUNT]
-	For j=1 to MODCHAR_AMOUNT : Interface_CharactersMod[j] = i : i=i+1 : Next
+	For j=1 To MODCHAR_AMOUNT : Interface_CharactersMod[j] = i : i=i+1 : Next
 
 	Global INTERFACE_MENUTOTAL=i-1
 
@@ -328,8 +331,12 @@
 	Global Interface_Inventory		= i : i=i+1
 	Global Interface_Monitors		= i : i=i+1
 	Global Interface_Boss			= i : i=i+1
+	Global Interface_Gauge		= i : i=i+1
 	Global Interface_ProgressBar	= i : i=i+1
+	Global Interface_HudLeft		= i : i=i+1
+	Global Interface_HudRight		= i : i=i+1
 	Global Interface_Progress		= i : i=i+1
+	Global Interface_RedRingBox		= i : i=i+1
 
 	Global INTERFACE_STAGETOTAL=i-1
 
@@ -357,7 +364,7 @@
 
 	Global Interface_Thumbnail		= i : i=i+1
 	Global Interface_StageSelectThumbnails[12]
-		For j=1 to 12 : Interface_StageSelectThumbnails[j] = i : i=i+1 : Next
+		For j=1 To 12 : Interface_StageSelectThumbnails[j] = i : i=i+1 : Next
 	Global Interface_Debug			= i : i=i+1
 
 	Global Interface_Race			= i : i=i+1
@@ -371,3 +378,5 @@
 ;-------------------------------------------------------------------------------------------------
 ;-------------------------------------------------------------------------------------------------
 ;-------------------------------------------------------------------------------------------------
+;~IDEal Editor Parameters:
+;~C#Blitz3D

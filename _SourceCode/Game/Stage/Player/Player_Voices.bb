@@ -1,7 +1,6 @@
 
 	i = 0
 	Global Sound_Jump = i : i=i+1
-	Global Sound_JumpC = i : i=i+1
 	Global Sound_JumpX = i : i=i+1
 	Global Voice_Attack1 = i : i=i+1
 	Global Voice_Attack2 = i : i=i+1
@@ -32,12 +31,14 @@
 	Global Voice_RankC = i : i=i+1
 	Global Voice_RankD = i : i=i+1
 	Global Voice_RankEF = i : i=i+1
+	Global Voice_Idle = i : i=i+1
+	Global Voice_Transform = i : i=i+1
 
 	Global PLAYER_VOICES = i-1
 
 ;-----------------------------------------------------------------------------------------------------------------------------------
 
-	Function LoadGoodPlayerVoice(p.tPlayer,sound,directory$,volume=1)
+Function LoadGoodPlayerVoice(p.tPlayer,sound,directory$,volume=1)
 		Select sound
 			Case 0: mode=3
 			Default: If Player_IsPlayable(p) Then mode=1 Else mode=3
@@ -64,23 +65,43 @@
 
 Function Player_JumpSoundLoad(p.tPlayer,jumptype,jumppitch)
 	Select jumptype
-	Case 0:
-		Select jumppitch
-		Case -2: LoadGoodPlayerVoice(p,Sound_Jump,"Sounds/JumpLoLo.ogg")
-		Case -1: LoadGoodPlayerVoice(p,Sound_Jump,"Sounds/JumpLo.ogg")
-		Case 00: LoadGoodPlayerVoice(p,Sound_Jump,"Sounds/JumpMed.ogg")
-		Case +1: LoadGoodPlayerVoice(p,Sound_Jump,"Sounds/JumpHi.ogg")
-		Case +2: LoadGoodPlayerVoice(p,Sound_Jump,"Sounds/JumpHiHi.ogg")
-		End Select
+		Case 0:
+			Select jumppitch
+				Case -2: 
+				;LoadGoodPlayerVoice(p,Sound_Jump,"Sounds/JumpLoLo.ogg")
+					If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/JumpLoLo.ogg")) Then 
+						LoadGoodPlayerVoice(p,Sound_Jump,"Sounds/Menu/Theme1/JumpLoLo.ogg")
+					Else
+						LoadGoodPlayerVoice(p,Sound_Jump,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/JumpLoLo.ogg")
+					EndIf 
+				Case -1:
+					If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/JumpLo.ogg")) Then 
+						LoadGoodPlayerVoice(p,Sound_Jump,"Sounds/Menu/Theme1/JumpLo.ogg")
+					Else
+						LoadGoodPlayerVoice(p,Sound_Jump,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/JumpLo.ogg")
+					EndIf 
+				Case 00:
+					If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/JumpMed.ogg")) Then 
+						LoadGoodPlayerVoice(p,Sound_Jump,"Sounds/Menu/Theme1/JumpMed.ogg")
+					Else
+						LoadGoodPlayerVoice(p,Sound_Jump,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/JumpMed.ogg")
+					EndIf 
+				Case +1:
+					If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/JumpHi.ogg")) Then 
+						LoadGoodPlayerVoice(p,Sound_Jump,"Sounds/Menu/Theme1/JumpHi.ogg")
+					Else
+						LoadGoodPlayerVoice(p,Sound_Jump,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/JumpHi.ogg")
+					EndIf 
+				Case +2: 
+					If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/JumpHiHi.ogg")) Then 
+						LoadGoodPlayerVoice(p,Sound_Jump,"Sounds/Menu/Theme1/JumpHiHi.ogg")
+					Else
+						LoadGoodPlayerVoice(p,Sound_Jump,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/JumpHiHi.ogg")
+					EndIf 
+			End Select
+			
+
 	Case 1:
-		Select jumppitch
-		Case -2: LoadGoodPlayerVoice(p,Sound_JumpC,"Sounds/JumpCLoLo.ogg")
-		Case -1: LoadGoodPlayerVoice(p,Sound_JumpC,"Sounds/JumpCLo.ogg")
-		Case 00: LoadGoodPlayerVoice(p,Sound_JumpC,"Sounds/JumpCMed.ogg")
-		Case +1: LoadGoodPlayerVoice(p,Sound_JumpC,"Sounds/JumpCHi.ogg")
-		Case +2: LoadGoodPlayerVoice(p,Sound_JumpC,"Sounds/JumpCHiHi.ogg")
-		End Select
-	Case 2:
 		Select jumppitch
 		Case 0: LoadGoodPlayerVoice(p,Sound_JumpX,"Sounds/0.ogg")
 		Case 1: LoadGoodPlayerVoice(p,Sound_JumpX,"Sounds/JumpRobot.ogg")
@@ -156,12 +177,12 @@ End Function
 ;-----------------------------------------------------------------------------------------------------------------------------------
 
 Function Player_LoadVoices(p.tPlayer)
-	hasvoicemod=false
+	hasvoicemod=False
 	If Menu\Settings\Mods#>0 Then
-		If MODVOICES_FOUND(InterfaceChar(p\RealCharacter))>0 and (Not(IsCharMod(InterfaceChar(p\RealCharacter)))) Then hasvoicemod=true
+		If MODVOICES_FOUND(InterfaceChar(p\RealCharacter))>0 And (Not(IsCharMod(InterfaceChar(p\RealCharacter)))) Then hasvoicemod=True
 	EndIf
 	Select hasvoicemod
-		Case false:
+		Case False:
 			If IsCharMod(InterfaceChar(p\RealCharacter)) Then
 				voicedir$="Mods/Characters/"+MODCHARS_PATH$(InterfaceChar(p\RealCharacter-CHAR_MOD1+1))+"/voice"
 				dir$=""
@@ -174,7 +195,7 @@ Function Player_LoadVoices(p.tPlayer)
 						dir$=ShortCharNames$(InterfaceChar(p\RealCharacter),1)
 				End Select
 			EndIf
-		Case true:
+		Case True:
 			voicedir$="Mods/Voices/"+MODVOICES_PATH$(InterfaceChar(p\RealCharacter))
 			dir$=ShortCharNames$(InterfaceChar(p\RealCharacter),1)
 			dir$=""
@@ -209,14 +230,16 @@ Function Player_LoadVoices(p.tPlayer)
 	LoadGoodPlayerVoice(p,Voice_RankC,voicedir$+dir$+"/rankc.ogg",2)
 	LoadGoodPlayerVoice(p,Voice_RankD,voicedir$+dir$+"/rankd.ogg",2)
 	LoadGoodPlayerVoice(p,Voice_RankEF,voicedir$+dir$+"/rankef.ogg",2)
+	LoadGoodPlayerVoice(p,Voice_Idle,voicedir$+dir$+"/idle.ogg",2)
+	LoadGoodPlayerVoice(p,Voice_Transform,voicedir$+dir$+"/transform.ogg",2)
 End Function
 
 ;-----------------------------------------------------------------------------------------------------------------------------------
 
 Function Player_PlayAttackVoice(p.tPlayer)
-If Player_IsSoundable(p) and (Not(ChannelPlaying(p\Channel_Voice))) Then
+If Player_IsSoundable(p) And (Not(ChannelPlaying(p\Channel_Voice))) Then
 	StopChannel p\Channel_Voice
-	Select(Rand(1,6))
+	Select(Rand(1,5))
 		Case 1: p\Channel_Voice=EmitSound(p\Voice[Voice_Attack1],p\Objects\Entity)
 		Case 2: p\Channel_Voice=EmitSound(p\Voice[Voice_Attack2],p\Objects\Entity)
 		Case 3: p\Channel_Voice=EmitSound(p\Voice[Voice_Attack3],p\Objects\Entity)
@@ -226,7 +249,7 @@ EndIf
 End Function
 
 Function Player_PlayDieVoice(p.tPlayer)
-If Player_IsSoundable(p) and (Not(ChannelPlaying(p\Channel_Voice))) Then
+If Player_IsSoundable(p) And (Not(ChannelPlaying(p\Channel_Voice))) Then
 	StopChannel p\Channel_Voice
 	Select(Rand(1,2))
 		Case 1: p\Channel_Voice=EmitSound(p\Voice[Voice_Die],p\Objects\Entity)
@@ -237,7 +260,7 @@ End Function
 Function Player_PlayTurnVoice(p.tPlayer)
 If Player_IsSoundable(p) Then
 	StopChannel p\Channel_Voice
-	Select(Rand(1,7))
+	Select(Rand(1,5))
 		Case 1: p\Channel_Voice=EmitSound(p\Voice[Voice_Go1],p\Objects\Entity)
 		Case 2: p\Channel_Voice=EmitSound(p\Voice[Voice_Go2],p\Objects\Entity)
 		Case 3: p\Channel_Voice=EmitSound(p\Voice[Voice_Go3],p\Objects\Entity)
@@ -248,9 +271,9 @@ EndIf
 End Function
 
 Function Player_PlayGoodVoice(p.tPlayer)
-If Player_IsSoundable(p) and (Not(ChannelPlaying(p\Channel_Voice))) Then
+If Player_IsSoundable(p) And (Not(ChannelPlaying(p\Channel_Voice))) Then
 	StopChannel p\Channel_Voice
-	Select(Rand(1,6))
+	Select(Rand(1,5))
 		Case 1: p\Channel_Voice=EmitSound(p\Voice[Voice_Good1],p\Objects\Entity)
 		Case 2: p\Channel_Voice=EmitSound(p\Voice[Voice_Good2],p\Objects\Entity)
 		Case 3: p\Channel_Voice=EmitSound(p\Voice[Voice_Good3],p\Objects\Entity)
@@ -260,18 +283,31 @@ EndIf
 End Function
 
 Function Player_PlayHurtVoice(p.tPlayer)
-If Player_IsSoundable(p) and (Not(ChannelPlaying(p\Channel_Voice))) Then
+If Player_IsSoundable(p) And (Not(ChannelPlaying(p\Channel_Voice))) Then
 	StopChannel p\Channel_Voice
 	Select(Rand(1,2))
 		Case 1: p\Channel_Voice=EmitSound(p\Voice[Voice_Hurt],p\Objects\Entity)
 	End Select
 EndIf
 End Function
-
-Function Player_PlayJumpVoice(p.tPlayer)
-If Player_IsSoundable(p) and (Not(ChannelPlaying(p\Channel_Voice))) Then
+Function Player_PlayIdleVoice(p.tPlayer)
+If Player_IsSoundable(p) And (Not(ChannelPlaying(p\Channel_Voice))) Then
 	StopChannel p\Channel_Voice
-	Select(Rand(1,6))
+	Select(Rand(1,2))
+		Case 1: p\Channel_Voice=EmitSound(p\Voice[Voice_Idle],p\Objects\Entity)
+	End Select
+EndIf
+End Function
+Function Player_PlayTransformVoice(p.tPlayer)
+	If Player_IsSoundable(p) And (Not(ChannelPlaying(p\Channel_Voice))) Then
+		StopChannel p\Channel_Voice
+		p\Channel_Voice=EmitSound(p\Voice[Voice_Idle],p\Objects\Entity)
+	EndIf
+End Function
+Function Player_PlayJumpVoice(p.tPlayer)
+If Player_IsSoundable(p) And (Not(ChannelPlaying(p\Channel_Voice))) Then
+	StopChannel p\Channel_Voice
+	Select(Rand(1,5))
 		Case 1: p\Channel_Voice=EmitSound(p\Voice[Voice_Jump1],p\Objects\Entity)
 		Case 2: p\Channel_Voice=EmitSound(p\Voice[Voice_Jump2],p\Objects\Entity)
 		Case 3: p\Channel_Voice=EmitSound(p\Voice[Voice_Jump3],p\Objects\Entity)
@@ -281,9 +317,9 @@ EndIf
 End Function
 
 Function Player_PlayJumpActionVoice(p.tPlayer)
-If Player_IsSoundable(p) and (Not(ChannelPlaying(p\Channel_Voice))) Then
+If Player_IsSoundable(p) And (Not(ChannelPlaying(p\Channel_Voice))) Then
 	StopChannel p\Channel_Voice
-	Select(Rand(1,6))
+	Select(Rand(1,5))
 		Case 1: p\Channel_Voice=EmitSound(p\Voice[Voice_Jumpa1],p\Objects\Entity)
 		Case 2: p\Channel_Voice=EmitSound(p\Voice[Voice_Jumpa2],p\Objects\Entity)
 		Case 3: p\Channel_Voice=EmitSound(p\Voice[Voice_Jumpa3],p\Objects\Entity)
@@ -293,7 +329,7 @@ EndIf
 End Function
 
 Function Player_PlayRankVoice(p.tPlayer,rank#)
-If Player_IsSoundable(p) and (Not(ChannelPlaying(p\Channel_Voice))) Then
+If Player_IsSoundable(p) And (Not(ChannelPlaying(p\Channel_Voice))) Then
 	StopChannel p\Channel_Voice
 	Select rank#
 		Case 1: p\Channel_Voice=EmitSound(p\Voice[Voice_RankS],p\Objects\Entity)
@@ -308,6 +344,7 @@ End Function
 
 Function Player_JumpSound(p.tPlayer)
 	EmitSound(p\Voice[Sound_Jump],p\Objects\Entity)
-	EmitSound(p\Voice[Sound_JumpC],p\Objects\Entity)
 	EmitSound(p\Voice[Sound_JumpX],p\Objects\Entity)
 End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

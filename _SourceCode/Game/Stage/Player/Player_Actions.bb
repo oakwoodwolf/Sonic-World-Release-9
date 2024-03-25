@@ -1,8 +1,24 @@
+Function Player_Action_Boost_Initiate(p.tPlayer)
+	If p\Motion\Ground=True
+		p\Action = ACTION_BOOST
+	Else
+		p\Action = ACTION_BOOSTFALL
+	EndIf 
+		
+	EmitSmartSound(Sound_BoostStart,p\Objects\Entity)
+	EmitSmartSound(Sound_ChaosBoost,p\Objects\Entity)
+		p\Channel_BoostCharge=EmitSmartSound(Sound_BoostCharge,p\Objects\Entity)
+		
+		Player_PlayAttackVoice(p)
+		Player_SetSpeed(p,p\Physics\SPINDASH_SPEED#*(2))
+		
+		
+	
+End Function 
 
-	; =========================================================================================================
-	; =========================================================================================================
-
-	Function Player_Action_ChaoRace(p.tPlayer)
+; =========================================================================================================
+; =========================================================================================================
+Function Player_Action_ChaoRace(p.tPlayer)
 
 		p\Motion\Ground=False
 
@@ -15,27 +31,33 @@
 
 		Game\StartoutLock=0
 
-	End Function
+End Function
 
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Common(p.tPlayer)
+Function Player_Action_Common(p.tPlayer)
+		
+		If p\Action=ACTION_BOOST Then
+			If (Not(Input\Hold\ActionSkill3))  Then p\Action=ACTION_COMMON : StopChannel(p\Channel_BoostCharge)
+			If p\Motion\Ground=False Then p\Action=ACTION_BOOSTFALL
+			;If (Not(p\BoostingTimer>0)) Then p\BoostingTimer=0.05*secs# : Gameplay_SubstractGaugeEnergy(1)
+		Else
+			Player_ActuallyFall(p)
 
-		Player_ActuallyFall(p)
+			Player_SkillActions(p)
 
+			Player_ActuallyCharge(p)
+		EndIf 
+		
 		Player_ActuallyJump(p)
 
-		Player_SkillActions(p)
-
-		Player_ActuallyCharge(p)
-
 	End Function
 
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Hop(p.tPlayer)
+Function Player_Action_Hop(p.tPlayer)
 	
 		Player_Action_Jump(p)
 
@@ -46,23 +68,25 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Jump(p.tPlayer)
+Function Player_Action_Jump(p.tPlayer)
 
 		Player_JumpActions(p)
 
 		If p\Bouncing=0 Then
-			If ((Player_IsPlayable(p) and Input\Hold\ActionJump=False) Or (p\No#<0)) And p\Motion\Speed\y# > p\Physics\JUMP_STRENGTH_VARIABLE# and (Not(p\JumpMayRiseTimer>0)) Then
+			If ((Player_IsPlayable(p) And Input\Hold\ActionJump=False) Or (p\No#<0)) And p\Motion\Speed\y# > p\Physics\JUMP_STRENGTH_VARIABLE# And (Not(p\JumpMayRiseTimer>0)) Then
 				p\Motion\Speed\y# = p\Physics\JUMP_STRENGTH_VARIABLE#
 			End If
 
-			If ((Not(Player_IsPlayable(p) and Input\Hold\ActionJump)) Or p\No#<0) and p\JumpTimer>0.93*secs# Then
+			If ((Not(Player_IsPlayable(p) And Input\Hold\ActionJump)) Or p\No#<0) And p\JumpTimer>0.93*secs# Then
 				p\Action=ACTION_JUMPFALL
 			EndIf
 		EndIf
 
 		Player_ActuallyLand(p)
-
-		If Player_IsSoundable(p) and p\JumpHopTimer>0.4*secs# and p\JumpHopTimer<0.5*secs# and ChannelPlaying(p\Channel_Spin)=False Then
+		
+		If (Not(Animating(p\Objects\Mesh))) Then p\Action=ACTION_JUMPFALL
+		
+		If Player_IsSoundable(p) And p\JumpHopTimer>0.4*secs# And p\JumpHopTimer<0.5*secs# And ChannelPlaying(p\Channel_Spin)=False And Player_CanCharSpin(p) Then
 			p\Channel_Spin=EmitSmartSound(Sound_Spin,p\Objects\Entity)
 		EndIf
 
@@ -71,7 +95,7 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Land(p.tPlayer)
+Function Player_Action_Land(p.tPlayer)
 		
 		Player_Action_Common(p)
 
@@ -82,190 +106,226 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Fall(p.tPlayer)
+Function Player_Action_Fall(p.tPlayer)
+
+		Player_ActuallyLand(p)
+		
+		If p\Action=ACTION_BOOSTFALL Then
+			If (Not(Input\Hold\ActionSkill3))  Then p\Action=ACTION_FALL : StopChannel(p\Channel_BoostCharge)
+			;If (Not(p\BoostingTimer>0)) Then p\BoostingTimer=0.05*secs# : Gameplay_SubstractGaugeEnergy(1)
+		EndIf 
+
+		
+End Function
+Function Player_Action_Trick(p.tPlayer)
+		
+		Player_ResetAirRestrictionStuff(p)
+
+		If (Not(Animating(p\Objects\Mesh))) Then p\Action=ACTION_JUMPFALL
+
+		Player_JumpActions(p)
 
 		Player_ActuallyLand(p)
 
-	End Function
-
+End Function
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_JumpFall(p.tPlayer)
+Function Player_Action_JumpFall(p.tPlayer)
 
 		Player_JumpActions(p)
 		
 		Player_Action_Fall(p)
 
-	End Function
+End Function
 
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Charge(p.tPlayer)
+Function Player_Action_Charge(p.tPlayer)
 
 		ParticleTemplate_Call(p\SmokeParticle, PARTICLE_PLAYER_SMOKE, p\Objects\Mesh, 1, 0.075, p\SpeedLength#+1.25, 0, 1, 0.0375)
 
 		Player_ActuallyFall(p)
 
-		If p\JustChargedTimer>13*secs# Then
-			If p\SpeedLength#>0.71 Then
-				Player_SetSpeed(p,0.71)
-			EndIf
-		EndIf
+	;	If p\JustChargedTimer>13*secs# Then
+		;	If p\SpeedLength#>0.71 Then
+		;		Player_SetSpeed(p,0.71)
+		;	EndIf
+		;EndIf
 
 		Player_ActuallyJump(p)
 
-		If (Not(Player_IsPlayable(p) and Input\Hold\ActionRoll)) and p\ChargeTimer>0.2*secs# Then
-			If p\ChargeTimer>chargedelay#*secs# Then
+		If (Not(Player_IsPlayable(p) And Input\Hold\ActionRoll)) And p\ChargeTimer>0.01*secs# Then
+		;	If p\ChargeTimer>chargedelay#*secs# Then
 				Player_Action_Roll_Initiate(p,0.125)
-			Else
-				p\Action = ACTION_COMMON
-			EndIf
+				StopChannel(Channel_SpindashCharge)
+		;	Else
+			;	p\Action = ACTION_COMMON
+		;	EndIf
 		EndIf
 
-	End Function
+End Function
+
+
 
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Roll_Initiate(p.tPlayer, chargedelay#)
+Function Player_Action_Roll_Initiate(p.tPlayer, chargedelay#)
 		p\Action = ACTION_ROLL
 		If Player_IsSoundable(p) Then EmitSmartSound(Sound_SpinDashRelease,p\Objects\Entity)
 		Player_PlayAttackVoice(p)
-		If p\ChargeTimer<=5.0*secs# Then
-			Player_SetSpeed(p,p\Physics\SPINDASH_SPEED#+1.0+(p\ChargeTimer/secs#-chargedelay#),true)
+		If p\ChargeTimer<=0.1*secs# Then
+			Player_SetSpeed(p,p\SpeedLength#+1.8)
+		ElseIf p\ChargeTimer<=3.0*secs# Then
+			Player_SetSpeed(p,p\Physics\SPINDASH_SPEED#*(1+(p\ChargeTimer/secs#*0.84)))
 		Else
-			Player_SetSpeed(p,p\Physics\SPINDASH_SPEED#+1.0+(5.0-chargedelay#),true)
+			Player_SetSpeed(p,p\Physics\SPINDASH_SPEED#*(3.52))
 		EndIf
-	End Function
+End Function
 
-	Function Player_Action_Roll_Initiate_Rival(p.tPlayer)
+Function Player_Action_Roll_Initiate_Rival(p.tPlayer)
 		p\Action = ACTION_ROLL
 		p\Rival\Speed#=p\Physics\SPINDASH_SPEED#+Rand(0,4)/2.0
 		EmitSmartSound(Sound_SpinDashCharge,p\Objects\Entity)
 		EmitSmartSound(Sound_SpinDashRelease,p\Objects\Entity)
 		Player_PlayAttackVoice(p)
-	End Function
+End Function
 
-	Function Player_Action_Roll(p.tPlayer)
+Function Player_Action_Roll(p.tPlayer)
 
-		If p\No#>1 and (Not(pp(1)\Action=ACTION_CHARGE Or pp(1)\Action=ACTION_ROLL)) Then p\Action=ACTION_COMMON
+		If p\No#>1 And (Not(pp(1)\Action=ACTION_CHARGE Or pp(1)\Action=ACTION_ROLL)) Then p\Action=ACTION_COMMON
 
 		Player_ActuallyFall(p)
 
 		Player_ActuallyJump(p)
-
+		
+		
+		
 		If p\SpeedLength# < 0.05 Then p\Action=ACTION_COMMON
 
 		If Input\Pressed\ActionRoll Then
-			If Player_IsPlayable(p) and p\Motion\Ground Then p\Action=ACTION_COMMON
+			If Player_IsPlayable(p) And p\Motion\Ground Then p\Action=ACTION_COMMON
 		EndIf
 
-	End Function
-
-	; =========================================================================================================
-	; =========================================================================================================
-
-	Function Player_Action_Drift_Initiate(p.tPlayer)
-		If p\No#=1 Then
-			If (Not(p\Action=ACTION_CHARGE Or p\Action=ACTION_ROLL)) Then EmitSmartSound(Sound_SpinDashCharge,p\Objects\Entity)
-			If (Not(p\Action=ACTION_ROLL)) Then EmitSmartSound(Sound_SpinDashRelease,p\Objects\Entity)
-		EndIf
+End Function
+; =========================================================================================================
+; =========================================================================================================
+Function Player_Action_Drift_Initiate(p.tPlayer)
+		If p\SpeedLength# > 2.05 Then
+;		If p\No#=1 Then
+;			If (Not(p\Action=ACTION_CHARGE Or p\Action=ACTION_ROLL)) Then EmitSmartSound(Sound_SpinDashCharge,p\Objects\Entity)
+;			If (Not(p\Action=ACTION_ROLL)) Then EmitSmartSound(Sound_SpinDashRelease,p\Objects\Entity)
+;		EndIf
 		p\Action=ACTION_DRIFT
-		Player_SetSpeed(p,p\Physics\SPINDASH_SPEED#-0.4,true)
+;		Player_SetSpeed(p,p\Physics\SPINDASH_SPEED#-0.4,True)
 		Select(Rand(1,2))
 			Case 1: p\DriftDirection=1
 			Case 2: p\DriftDirection=-1
 		End Select
-	End Function
+		EndIf 
+End Function
 
-	Function Player_Action_Drift(p.tPlayer)
+Function Player_Action_Drift(p.tPlayer)
         
 		Create_Spark.tSpark(p,p\Objects\Entity,MESHES(Mesh_Spark),cam\Entity, p\Animation\Direction#, 0, p\No#)
 		Create_Spark.tSpark(p,p\Objects\Entity,MESHES(Mesh_Spark),cam\Entity, p\Animation\Direction#, 0, p\No#)
 		Create_Spark.tSpark(p,p\Objects\Entity,MESHES(Mesh_Spark),cam\Entity, p\Animation\Direction#, 0, p\No#)
+		
+;		Create_PlayerAfterImage.tAfterImage(p,p\Objects\Mesh,p\Objects\Entity,1000,000,000,255,0,0,1,1,True,0,1)
 
 		Player_ActuallyFall(p)
 
 		Player_ActuallyJump(p)
 
-		If (Not(Player_IsPlayable(p) and Input\Hold\ActionDrift)) Then p\Action=ACTION_COMMON
+		If (Not(Player_IsPlayable(p) And Input\Hold\ActionDrift)) Then p\Action=ACTION_COMMON
 
-		If (Player_IsPlayable(p) and Input\Hold\Left) Then p\DriftDirection=-1
-		If (Player_IsPlayable(p) and Input\Hold\Right) Then p\DriftDirection=1
+		If (Player_IsPlayable(p) And Input\Hold\Left) Then p\DriftDirection=-1
+		If (Player_IsPlayable(p) And Input\Hold\Right) Then p\DriftDirection=1
 
 		If p\SpeedLength# < 0.05 Then p\Action=ACTION_COMMON
-
-	End Function
+		
+End Function
 
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Fwd(p.tPlayer)
+Function Player_Action_Fwd(p.tPlayer)
 
 		Player_ResetAirRestrictionStuff(p)
 
-		If p\SpeedLength# < 0.5 and p\GoDestination=False Then p\Action=ACTION_JUMPFALL
+		If p\SpeedLength# < 0.5 And p\GoDestination=False Then p\Action=ACTION_JUMPFALL
 
 		Player_JumpActions(p)
 
 		Player_ActuallyLand(p)
 
-	End Function
+End Function
 
-	; =========================================================================================================
-	; =========================================================================================================
-
-	Function Player_Action_Up(p.tPlayer)
+Function Player_Action_PostHom(p.tPlayer)
 
 		Player_ResetAirRestrictionStuff(p)
 
-		If p\SpeedLength# < 0.5 and p\Motion\Speed\y# < -0.5 and p\GoDestination=False Then p\Action=ACTION_JUMPFALL
+		If   p\JumpMayRiseTimer=0 Or  p\Motion\Speed\y# < -1 Then p\Action=ACTION_JUMPFALL
 
 		Player_JumpActions(p)
 
 		Player_ActuallyLand(p)
 
-	End Function
-
+End Function
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_JumpDash_Initiate(p.tPlayer)
+Function Player_Action_Up(p.tPlayer)
+
+		Player_ResetAirRestrictionStuff(p)
+		
+		If p\SpeedLength# < 0.5 And p\Motion\Speed\y# < -0.5 And p\GoDestination=False Then p\Action=ACTION_JUMPFALL
+
+		Player_JumpActions(p)
+
+		Player_ActuallyLand(p)
+
+End Function
+
+; =========================================================================================================
+; =========================================================================================================
+
+Function Player_Action_JumpDash_Initiate(p.tPlayer)
 		If p\JumpDashedOnce=0 Then
 			p\JumpDashedOnce=1
 			Player_PlayJumpActionVoice(p)
 			p\Action=ACTION_JUMPDASH
 			If p\No#=1 Then EmitSmartSound(Sound_HomingAttack,p\Objects\Entity)
 			p\JumpDashTimer=0.35*secs#
-			Player_SetSpeed(p,(p\Physics\JUMPDASH_SPEED#+1.3),true)
+			Player_SetSpeed(p,(p\Physics\JUMPDASH_SPEED#+1.3),True)
 			Player_FollowerHolding_EveryoneJumpDashes(p)
 		EndIf
 	End Function
 
-	Function Player_Action_JumpDash_Initiate_Generic(p.tPlayer)
+Function Player_Action_JumpDash_Initiate_Generic(p.tPlayer)
 		p\Action=ACTION_JUMPDASH
 		p\JumpDashTimer=0.35*secs#
-		Player_SetSpeed(p,(p\Physics\JUMPDASH_SPEED#+1.3),true)
-	End Function
+		Player_SetSpeed(p,(p\Physics\JUMPDASH_SPEED#+1.3),True)
+End Function
 
-	Function Player_Action_JumpDash(p.tPlayer)
+Function Player_Action_JumpDash(p.tPlayer)
 
-		Player_SetSpeedYUpDown(p,0.5,p\JumpActionRestrictTimer)
+	Player_SetSpeedY(p,0)
 	
 		If (Not(p\JumpDashTimer>0)) Then p\Action=ACTION_JUMPFALL
 
 		Player_ActuallyLand(p)
 
-	End Function
+End Function
 
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Homing(p.tPlayer)
+Function Player_Action_Homing(p.tPlayer)
 
-		If (Not(p\HomingTimer>0)) and p\Flags\Targeter=0 Then p\Action=ACTION_FALL
+		If (Not(p\HomingTimer>0)) And p\Flags\Targeter=0 Then p\Action=ACTION_FALL
 
 		Select p\Character
 			Case CHAR_AMY: ParticleTemplate_Call(p\Particle, PARTICLE_PLAYER_FLOWER, p\Objects\Entity)
@@ -277,43 +337,38 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Fly_Initiate(p.tPlayer)
+Function Player_Action_Fly_Initiate(p.tPlayer)
 		Player_PlayJumpActionVoice(p)
 		p\Action=ACTION_FLY
 		If p\No#=1 Then EmitSmartSound(Sound_FlyStart,p\Objects\Entity)
 		If Not(p\FlyTimer>0) Then p\FlyTimer=7*secs#
 		If p\LevitatedOnce=0 Then p\FlyDistanceLimit=p\Objects\Position\y# : p\LevitatedOnce=1
-		If p\Character=CHAR_CHA Then Player_SetSpeedY(p,abs(p\Physics\BUZZFLYFALL_SPEED#*2))
+		If p\Character=CHAR_CHA Then Player_SetSpeedY(p,Abs(p\Physics\BUZZFLYFALL_SPEED#*2))
 	End Function
 
-	Function Player_Action_Fly(p.tPlayer)
+Function Player_Action_Fly(p.tPlayer)
 
 		Player_ActuallyLand(p)
 
 		If Not(p\JumpActionRestrictTimer>0) Then
-			If Player_IsPlayable(p) and Input\Pressed\ActionJump Then
-				If p\Objects\Position\y#>p\FlyDistanceLimit+130 Then
-					Player_SetSpeedY(p,0)
-				Else
-					Player_SetSpeedY(p,p\Physics\FLY_SPEED#*2.3)
-				EndIf
+			If Player_IsPlayable(p) And Input\Hold\ActionJump Then
+				Player_FlyHeight(p)
 			Else
 				Select p\Character
-					Case CHAR_CHA: Player_SetSpeedY(p,p\Physics\BUZZFLYFALL_SPEED#,true)
-					Default: Player_SetSpeedY(p,-p\Physics\FLYDOWN_SPEED#,true)
+					Case CHAR_CHA: Player_SetSpeedY(p,p\Physics\BUZZFLYFALL_SPEED#,True)
+					Default: Player_SetSpeedY(p,-p\Physics\FLYDOWN_SPEED#,True)
 				End Select
 			EndIf
 		EndIf
 
 		If (Not(p\FlyTimer>0)) Then p\Action=ACTION_FALL
 
-		If p\No#=1 and Menu\ChaoGarden=0 and Player_IsPlayable(p) Then
+		If p\No#=1 And Menu\ChaoGarden=0 And Player_IsPlayable(p) Then
 			If Input\Pressed\ActionSkill1 Then
 				Select p\Character
-					Case CHAR_TAI:
-						Player_Action_Drop_Initiate(p)
+						
 					Case CHAR_CRE:
-						If (Not(Game\CheeseTimer>0)) and (Not(p\CheeseRestrictTimer>0)) Then Player_Action_Drop_Initiate(p)
+						If (Not(p\ThrowTimer>0)) And (Not(p\CheeseRestrictTimer>0)) Then Player_Action_Drop_Initiate(p)
 					Case CHAR_CHA:
 						Player_Action_Sprint_Initiate(p)
 					Case CHAR_EGR:
@@ -327,29 +382,38 @@
 						Player_Action_Drop_Initiate(p)
 				End Select
 			EndIf
-		EndIf
+			
+				Select p\Character
+					Case CHAR_TAI
+						If Input\Hold\ActionSkill1 Then
+							p\FlyingSwipe=1
+						Else
+							p\FlyingSwipe=0
+						EndIf
+				End Select 
+			EndIf 				
 
 	End Function
 
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Glide_Initiate(p.tPlayer)
+Function Player_Action_Glide_Initiate(p.tPlayer)
 		If (Not(p\GlideRestartTimer>0)) Then
 			Player_PlayJumpActionVoice(p)
 			p\Action=ACTION_GLIDE
 			If p\No#=1 Then EmitSmartSound(Sound_GlideStart,p\Objects\Entity)
-			Player_SetSpeed(p,p\Physics\GLIDE_SPEED#,true)
-			Player_SetSpeedY(p,0,true)
+			Player_SetSpeed(p,p\Physics\GLIDE_SPEED#,True)
+			Player_SetSpeedY(p,0,True)
 		EndIf
 	End Function
 
-	Function Player_Action_Glide(p.tPlayer)
+Function Player_Action_Glide(p.tPlayer)
 
 		Player_ActuallyLand(p)
 
-		If p\No#=1 and (Not(Player_IsPlayable(p) and Input\Hold\ActionJump)) Then
-			Player_SetSpeed(p,1.25,true)
+		If p\No#=1 And (Not(Player_IsPlayable(p) And Input\Hold\ActionJump)) Then
+			Player_SetSpeed(p,1.25,True)
 			p\GlideRestartTimer=0.12*secs#/2.0
 			p\Action=ACTION_JUMPFALL
 		EndIf
@@ -361,7 +425,7 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_DoubleJump_Initiate(p.tPlayer,wallkick=false)
+Function Player_Action_DoubleJump_Initiate(p.tPlayer,wallkick=False)
 		If p\JumpDashedOnce=0 Then
 			p\JumpDashedOnce=1
 			Player_PlayJumpActionVoice(p)
@@ -396,7 +460,7 @@
 		EndIf
 	End Function
 
-	Function Player_Action_DoubleJump_Initiate_Generic(p.tPlayer,wallkick=false)
+Function Player_Action_DoubleJump_Initiate_Generic(p.tPlayer,wallkick=False)
 		p\DoubleJump=0
 		p\DoubleJumpTimer=0.105*secs#
 		p\Action = ACTION_DOUBLEJUMP
@@ -406,7 +470,7 @@
 		p\Motion\Align\x# = 0.0 : p\Motion\Align\y# = 1.0 : p\Motion\Align\z# = 0.0
 	End Function
 
-	Function Player_Action_DoubleJump(p.tPlayer)
+Function Player_Action_DoubleJump(p.tPlayer)
 
 		Select p\Character
 			Case CHAR_AMY: ParticleTemplate_Call(p\Particle, PARTICLE_PLAYER_FLOWER, p\Objects\Entity)
@@ -436,7 +500,7 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Levitate_Initiate(p.tPlayer)
+Function Player_Action_Levitate_Initiate(p.tPlayer)
 		If p\LevitatedOnce=0 Or p\LevitationTimer>0 Then
 			Player_PlayJumpActionVoice(p)
 			p\Action=ACTION_LEVITATE
@@ -446,26 +510,38 @@
 		EndIf
 	End Function
 
-	Function Player_Action_Levitate(p.tPlayer)
+Function Player_Action_Levitate(p.tPlayer)
 
 		Player_ActuallyLand(p)
 		
-		Player_SetSpeed(p,p\Physics\LEVITATION_SPEED#,true)
+		Player_SetSpeed(p,p\Physics\LEVITATION_SPEED#,True)
 
 		If Not(p\JumpActionRestrictTimer>0) Then Player_SetSpeedY(p,0)
 
 		If (Not(p\LevitationTimer>0)) Then p\Action=ACTION_JUMPFALL
 
-		If p\No#=1 and (Not(Player_IsPlayable(p) and Input\Hold\ActionJump)) Then p\Action=ACTION_JUMPFALL : p\LevitationTimer=p\LevitationTimer-0.12*secs#
+		If p\No#=1 And (Not(Player_IsPlayable(p) And Input\Hold\ActionJump)) Then p\Action=ACTION_JUMPFALL : p\LevitationTimer=p\LevitationTimer-0.12*secs#
 
 		Player_SkillActions2(p)
 
 	End Function
-
+Function Player_Action_ChaosSnap_Initiate(p.tPlayer)
+	If Game\Gameplay\GaugeEnergy<100 Or Game\ChaosControlTimer>0 Then Return
+	Player_PlayAttackVoice(p)
+	Gameplay_SetGaugeEnergy(0)
+	Game\ChaosSnapTimer=9*secs#
+	EmitSmartSound(Sound_ChaosBoost,p\Objects\Entity)
+	PostEffect_Create_FadeIn(0.04, 255, 25, 25)
+End Function 
 	; =========================================================================================================
 	; =========================================================================================================
-
-	Function Player_Action_Stomp_Initiate(p.tPlayer, bounce=false)
+Function Player_Action_ChaosControl_Initiate(p.tPlayer)
+	If Game\Gameplay\GaugeEnergy<100 Or Game\ChaosSnapTimer>0 Then Return
+	Gameplay_SetGaugeEnergy(0)
+	Game\ChaosControlTimer=5*secs#
+	EmitSmartSound(Sound_ChaosControl,p\Objects\Entity)
+End Function 
+Function Player_Action_Stomp_Initiate(p.tPlayer, bounce=False)
 		p\Action = ACTION_STOMP
 		If bounce Then
 			If p\Bouncing<3 Then p\Bouncing=p\Bouncing+1
@@ -477,8 +553,8 @@
 		p\Motion\Speed\y# = p\Physics\STOMPFALL_SPEED#
 	End Function
 
-	Function Player_Action_Stomp_Initiate_Rival(p.tPlayer, bounce=false)
-		If (Not(p\Action=ACTION_HOP Or p\Action=ACTION_JUMP)) and p\Motion\Ground Then Player_ActuallyJump(p,true)
+Function Player_Action_Stomp_Initiate_Rival(p.tPlayer, bounce=False)
+		If (Not(p\Action=ACTION_HOP Or p\Action=ACTION_JUMP)) And p\Motion\Ground Then Player_ActuallyJump(p,True)
 		p\Action = ACTION_STOMP
 		If bounce Then
 			If p\Bouncing<3 Then p\Bouncing=p\Bouncing+1
@@ -489,17 +565,19 @@
 		p\Motion\Speed\y# = p\Physics\STOMPFALL_SPEED#
 	End Function
 
-	Function Player_Action_Bounce_Initiate(p.tPlayer)
+Function Player_Action_Bounce_Initiate(p.tPlayer)
+		If p\BouncesDone<3 Then p\BouncesDone=p\BouncesDone+1
 		If p\No#=1 Then p\Channel_GroundLand=EmitSmartSound(Sound_Bounce2,p\Objects\Entity)
 		p\ForceJumpTimer=0.05*secs#
+		p\UpFromBouncing=1
 	End Function
 
-	Function Player_Action_StompSaver(p.tPlayer)
-		If abs(p\StompSaver#-p\Objects\Position\y#) < 1 Then
+Function Player_Action_StompSaver(p.tPlayer)
+		If Abs(p\StompSaver#-p\Objects\Position\y#) < 1 Then
 			p\StompSaverTimer=p\StompSaverTimer+timervalue#
 			If p\StompSaverTimer>2*secs# Then
 				p\Flags\Targeter=0
-				Player_ActuallyJump(p,true)
+				Player_ActuallyJump(p,True)
 			EndIf
 		Else
 			p\StompSaverTimer=0
@@ -507,17 +585,25 @@
 		p\StompSaver#=p\Objects\Position\y#
 	End Function
 
-	Function Player_Action_Stomp(p.tPlayer)
+Function Player_Action_Stomp(p.tPlayer)
 
 		Player_Action_StompSaver(p)
-
+		
+		If Input\Hold\ActionRoll=True Then p\Bouncing=1 Else p\Bouncing=0
+		
 		If p\Motion\Ground Then
-			p\StompBounceTimer=0.55*secs#
+			;p\StompBounceTimer=0.55*secs#
 			If p\Bouncing=0 Then
 				If p\No#=1 Then p\Channel_GroundLand=EmitSmartSound(Sound_StompGround,p\Objects\Entity)
 				Player_Land(p)
 			Else
-				Player_Action_Bounce_Initiate(p)
+				Select p\Character
+					Case CHAR_SON
+						If Not((p\Collision\GroundType=COLLISION_WORLD_POLYGON_RAIL)) Then  Player_Action_Bounce_Initiate(p)
+					Default
+						If p\No#=1 Then p\Channel_GroundLand=EmitSmartSound(Sound_StompGround,p\Objects\Entity)
+						Player_Land(p)
+				End Select 
 			EndIf
 			ParticleTemplate_Call(p\SmokeParticle, PARTICLE_PLAYER_AFTERJUMP, p\Objects\Mesh, 1+p\ScaleFactor#+0.25, 0, 0, p\RealCharacter, 2)
 			p\Flags\Targeter=0
@@ -535,7 +621,7 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Hurt(p.tPlayer)
+Function Player_Action_Hurt(p.tPlayer)
 
 		Player_SetSpeed(p,-0.311)
 
@@ -550,22 +636,22 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Die(p.tPlayer)
+Function Player_Action_Die(p.tPlayer)
 
 		Player_SetSpeed(p,0)
 
 		If p\Motion\Ground=False Then p\Motion\Speed\y# = p\Physics\DIEFALL_SPEED#
 
-		If (Not(p\DieTimer>0.1*secs#)) and Menu\ExitedAStage=0 Then Player_DieSpawn(p)
+		If (Not(p\DieTimer>0.1*secs#)) And Menu\ExitedAStage=0 Then Player_DieSpawn(p)
 
 	End Function
 
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Float(p.tPlayer)
+Function Player_Action_Float(p.tPlayer)
 
-		If Not(p\JumpActionRestrictTimer>0) Then Player_SetSpeedY(p,p\Physics\FLOATFALL_SPEED#,true)
+		If Not(p\JumpActionRestrictTimer>0) Then Player_SetSpeedY(p,p\Physics\FLOATFALL_SPEED#,True)
 
 		Player_ActuallyLand(p)
 
@@ -578,7 +664,7 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_SlowGlide_Initiate(p.tPlayer)
+Function Player_Action_SlowGlide_Initiate(p.tPlayer)
 		If (Not(p\GlideRestartTimer>0)) Then
 			Player_PlayJumpActionVoice(p)
 			If Not(p\JumpActionRestrictTimer>0) Then Player_SetSpeedY(p,0.135)
@@ -591,26 +677,26 @@
 					Case CHAR_TIA: EmitSmartSound(Sound_Parachute,p\Objects\Entity)
 				End Select
 			EndIf
-			Player_SetSpeed(p,p\Physics\GLIDE_SPEED#*0.66,true)
+			Player_SetSpeed(p,p\Physics\GLIDE_SPEED#*0.66,True)
 			If p\Character=CHAR_VEC Then p\CreateGumBallTimer=0.11*secs# : p\ThrowABomb=0
 		EndIf
 	End Function
 
-	Function Player_Action_SlowGlide(p.tPlayer)
+Function Player_Action_SlowGlide(p.tPlayer)
 
-		Player_SetSpeedY(p,-0.3,true)
+		Player_SetSpeedY(p,-0.3,True)
 
 		Player_ActuallyLand(p)
 
-		If p\No#=1 and (Not(Player_IsPlayable(p) and Input\Hold\ActionJump)) Then
-			Player_SetSpeed(p,1.25,true)
+		If p\No#=1 And (Not(Player_IsPlayable(p) And Input\Hold\ActionJump)) Then
+			Player_SetSpeed(p,1.25,True)
 			p\GlideRestartTimer=0.12*secs#/2.0
 			p\Action=ACTION_JUMPFALL
 		EndIf
 
 		If Not(p\JumpActionRestrictTimer>0) Then Player_SetSpeedY(p,p\Physics\GLIDEFALL_SPEED#)
 
-		If p\Character=CHAR_VEC and (Not(p\CreateGumBallTimer>0)) and p\ThrowABomb=0 Then
+		If p\Character=CHAR_VEC And (Not(p\CreateGumBallTimer>0)) And p\ThrowABomb=0 Then
 			Object_Bomb_Create.tBomb(p, EntityX(p\Objects\Gum,1), EntityY(p\Objects\Gum,1), EntityZ(p\Objects\Gum,1), 0, p\Animation\Direction#-180, 0, BOMB_GUM, 1)
 			p\ThrowABomb=1
 		EndIf
@@ -620,71 +706,115 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Sprint_Initiate(p.tPlayer, limit=1)
+Function Player_Action_Sprint_Initiate(p.tPlayer, limit=1)
 		If p\Motion\Ground Or p\AirKickOnce<limit Then
 			Player_PlayAttackVoice(p)
 			p\Action=ACTION_SPRINT
-			EmitSmartSound(Sound_Dash,p\Objects\Entity)
+			
 			Select p\Character
 				Case CHAR_SON,CHAR_SHA,CHAR_MIG,CHAR_ESP,CHAR_MET,CHAR_MT3,CHAR_EME,CHAR_PRS,CHAR_GME:
+					EmitSmartSound(Sound_Dash,p\Objects\Entity)
 					p\JumpDashTimer=0.567*secs#
 					Player_SetSpeedY(p,-0.75)
+					
+				Case CHAR_TAI
+					EmitSmartSound(Sound_Swipe,p\Objects\Entity)
+					p\JumpDashTimer=0.65*secs#
 				Default:
+					EmitSmartSound(Sound_Dash,p\Objects\Entity)
 					p\JumpDashTimer=0.4834*secs#
 			End Select
 			If p\Motion\Ground=False Then p\AirKickOnce=p\AirKickOnce+1
 			p\ThrowABomb=0
 		EndIf
 	End Function
-
-	Function Player_Action_Sprint(p.tPlayer)
+Function Player_Action_Panel(p.tPlayer)
+	
+	Player_ResetAirRestrictionStuff(p)
+	
+	If p\Action=ACTION_PANEL2 Then 
+		If p\PanelStayTimer>0 Then
+			PositionEntity p\Objects\Entity, p\PanelX#, p\PanelY#, p\PanelZ#
+		Else
+			Player_SetSpeedY(p,0)
+			Game\CamLock=0
+			p\Action=ACTION_FALL
+			
+		EndIf 
+		
+		
+	EndIf 
+	
+	
+	
+	
+End Function
+Function Player_Action_Sprint(p.tPlayer)
 
 		Select p\Character
 			Case CHAR_SON,CHAR_SHA,CHAR_MIG,CHAR_EME,CHAR_PRS:
-				If p\Motion\Ground=False Then Player_SetSpeedYUpDownDiff(p,0.75,-1.75)
-				Player_SetSpeed(p,p\Physics\SPRINT_SPEED#,true)
+				;If p\Motion\Ground=False Then Player_SetSpeedYUpDownDiff(p,0.75,-1.75)
+				Player_SetSpeed(p,p\Physics\SPRINT_SPEED#,True)
 			Case CHAR_BEA,CHAR_HON:
 				If p\Motion\Ground=False Then Player_SetSpeedYUpDownDiff(p,1.125,0.5)
-				Player_SetSpeed(p,p\Physics\SPRINT_SPEED#*0.5,true)
+				Player_SetSpeed(p,p\Physics\SPRINT_SPEED#*0.5,True)
+			Case CHAR_TAI
+				If p\Motion\Ground=False Then Player_SetSpeedYUpDown(p,0.05)
+				Player_SetSpeed(p,1)
 			Default:
 				If p\Motion\Ground=False Then Player_SetSpeedYUpDown(p,0.05)
-				Player_SetSpeed(p,p\Physics\SPRINT_SPEED#,true)
+				Player_SetSpeed(p,p\Physics\SPRINT_SPEED#,True)
 		End Select
 
 		Select p\Character
 			Case CHAR_MET,CHAR_MT3:
-				If Player_FrameCheck(p,4,true) and p\ThrowABomb<1 Then p\ThrowABomb=1
+				If Player_FrameCheck(p,4,True) And p\ThrowABomb<1 Then p\ThrowABomb=1
 				If p\ThrowABomb=1 Then
 					p\ThrowABomb=2
 					EmitSmartSound(Sound_SpearShoot,p\Objects\Entity)
 					Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#+2.3, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_SHOCK)
 				EndIf
+			Case CHAR_TAI
+				
 		End Select
 
-		If (Not(p\JumpDashTimer>0)) and p\Flags\Targeter=0 Then
-			Player_SetSpeed(p,p\SpeedLength#*0.55)
-			If p\Motion\Ground=False Then p\Action=ACTION_FULLFALL Else p\Action=ACTION_COMMON
-		EndIf
+		Select p\Character
+			Case CHAR_TAI
+				If (Not(p\JumpDashTimer>0)) And p\Flags\Targeter=0 Then
+				If p\Motion\Ground=False Then p\Action=ACTION_FALL Else p\Action=ACTION_COMMON
+				EndIf
+			Default
+				If (Not(p\JumpDashTimer>0)) And p\Flags\Targeter=0 Then
+				Player_SetSpeed(p,p\SpeedLength#*0.55)
+				If p\Motion\Ground=False Then p\Action=ACTION_FULLFALL Else p\Action=ACTION_COMMON
+				EndIf
+		End Select 
+		
+		If Not(p\Character=CHAR_TAI) Then Player_ActuallyJump(p)
 
-		Player_ActuallyJump(p)
-
-		If abs(p\Rotation#)>30 and Player_CanWallKick(p) Then Player_ActuallyLand(p)
+		If Abs(p\Rotation#)>30 And Player_CanWallKick(p) Then Player_ActuallyLand(p)
 
 	End Function
 
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Grind(p.tPlayer)
-     
+Function Player_Action_Grind(p.tPlayer)
+     	
+		Create_Spark.tSpark(p,p\Objects\Entity,MESHES(Mesh_GrindSpark),cam\Entity, p\Animation\Direction#, 2, p\No#)
+		Create_Spark.tSpark(p,p\Objects\Entity,MESHES(Mesh_GrindSpark),cam\Entity, p\Animation\Direction#, 2, p\No#)
+		Create_Spark.tSpark(p,p\Objects\Entity,MESHES(Mesh_GrindSpark),cam\Entity, p\Animation\Direction#, 2, p\No#)
+		
 		p\Motion\Speed\y# = -0.5
-
+		
+		If p\Collision\GroundType = COLLISION_WORLD_POLYGON Then p\Action=ACTION_COMMON
+		
 		Player_ActuallyJump(p)
 
 		Player_ActuallyFall(p)
 
 		If p\GrindTurn=0 Then p\GrindTurn=1
-		If ( (p\GrindTurn=1 and Player_IsPlayable(p) and Input\Hold\ActionRoll) Or (p\GrindTurn=2 and (Not(Player_IsPlayable(p) and Input\Hold\ActionRoll))) ) and (Not(p\GrindTurnRestrictTimer>0)) Then
+		If ( (p\GrindTurn=1 And Player_IsPlayable(p) And Input\Hold\ActionRoll) Or (p\GrindTurn=2 And (Not(Player_IsPlayable(p) And Input\Hold\ActionRoll))) ) And (Not(p\GrindTurnRestrictTimer>0)) Then
 			Select p\GrindTurn
 				Case 1: p\GrindTurn=2
 				Case 2: p\GrindTurn=1
@@ -693,19 +823,19 @@
 			p\GrindTurnRestrictTimer=0.35*secs#
 			EmitSmartSound(Sound_GrindStart,p\Objects\Entity)
 		EndIf			
-
+		
 	End Function
 
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Climb_Initiate(p.tPlayer)
+Function Player_Action_Climb_Initiate(p.tPlayer)
 		Player_SetSpeed(p,0.15)
 		Player_SetSpeedY(p,0)
 		p\Action=ACTION_CLIMB
 	End Function
 
-	Function Player_Action_Climb(p.tPlayer)
+Function Player_Action_Climb(p.tPlayer)
 
 		Player_ActuallyFall(p)
 
@@ -717,40 +847,40 @@
 
 		Player_ActuallyJump(p)
 
-		If abs(p\Rotation#)<17.5 Then p\Action=ACTION_COMMON
+		If Abs(p\Rotation#)<17.5 Then p\Action=ACTION_COMMON
 
-		If p\AirBegTooFar Then Player_ActuallyJump(p,true,true) : p\AirBegGround=False
+		If p\AirBegTooFar Then Player_ActuallyJump(p,True,True) : p\AirBegGround=False
 
 	End Function
 
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Bumped_Initiate(p.tPlayer)
-		If p\HasVehicle=0 and (Not(p\Action=ACTION_SKYDIVE)) Then
+Function Player_Action_Bumped_Initiate(p.tPlayer)
+		If p\HasVehicle=0 And (Not(p\Action=ACTION_SKYDIVE)) Then
 			p\Action = ACTION_BUMPED : p\BumpedTimer=0.5*secs#
 		EndIf
 	End Function
 
-	Function Player_Action_BumpedJump_Initiate(p.tPlayer)
-		If p\HasVehicle=0 and (Not(p\Action=ACTION_SKYDIVE)) Then
+Function Player_Action_BumpedJump_Initiate(p.tPlayer)
+		If p\HasVehicle=0 And (Not(p\Action=ACTION_SKYDIVE)) Then
 			p\JumpTimer=0
 			p\Action=ACTION_JUMP : p\JumpMayRiseTimer=1.5*secs#
 		EndIf
 	End Function
 
-	Function Player_Action_BumpedBounce_Initiate(p.tPlayer, speed#=2, cloud=0)
+Function Player_Action_BumpedBounce_Initiate(p.tPlayer, speed#=2, cloud=0)
 		Player_ConvertGroundToAir(p) : p\Motion\Ground = False
 		Player_SetSpeedY(p,speed#)
 		If Not cloud Then
 			If p\No#=1 Then EmitSmartSound(Sound_Ninja,p\Objects\Entity)
-		ElseIf p\HasVehicle=0 and (Not(p\Action=ACTION_SKYDIVE)) Then
+		ElseIf p\HasVehicle=0 And (Not(p\Action=ACTION_SKYDIVE)) Then
 			p\Action=ACTION_BUMPED
 		EndIf
 		p\BumpedTimer=2*secs# : p\BumpedCloudTimer=p\BumpedTimer
 	End Function
 
-	Function Player_Action_Bumped(p.tPlayer)
+Function Player_Action_Bumped(p.tPlayer)
 
 		If p\BumpedCloudTimer>0 Then
 			If p\Motion\Ground Then
@@ -769,7 +899,7 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Hover_Initiate(p.tPlayer)
+Function Player_Action_Hover_Initiate(p.tPlayer)
 		Player_PlayJumpActionVoice(p)
 		If p\HoveredOnce=0 Then
 			Player_SetSpeedY(p,-p\Physics\HOVERFALL_SPEED#*2.15)
@@ -778,7 +908,7 @@
 		p\Action=ACTION_HOVER
 	End Function
 				
-	Function Player_Action_Hover(p.tPlayer)
+Function Player_Action_Hover(p.tPlayer)
 
 		Player_ActuallyLand(p)
 
@@ -787,18 +917,18 @@
 				Player_SkillActions(p)
 		End Select
 		
-		Player_SetSpeed(p,p\Physics\HOVER_SPEED#,true)
+		Player_SetSpeed(p,p\Physics\HOVER_SPEED#,True)
 
-		If Not(p\JumpActionRestrictTimer>0) Then Player_SetSpeedY(p,p\Physics\HOVERFALL_SPEED#*0.3455,true)
+		If Not(p\JumpActionRestrictTimer>0) Then Player_SetSpeedY(p,p\Physics\HOVERFALL_SPEED#*0.3455,True)
 
-		If p\No#=1 and (Not(Player_IsPlayable(p) and Input\Hold\ActionJump)) Then p\Action=ACTION_JUMPFALL
+		If p\No#=1 And (Not(Player_IsPlayable(p) And Input\Hold\ActionJump)) Then p\Action=ACTION_JUMPFALL
 
 	End Function
 
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Grabbed(p.tPlayer)
+Function Player_Action_Grabbed(p.tPlayer)
 
 		p\WasGrabbed=1
 		p\WasGrabbedTimer=1.275*secs#
@@ -817,20 +947,20 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Throw_Initiate(p.tPlayer,throwtype=1,limit=2)
+Function Player_Action_Throw_Initiate(p.tPlayer,throwtype=1,limit=2)
 		Select p\Character
-			Case CHAR_CRE: If throwtype=1 and (Not( (Not(Game\CheeseTimer>0)) and (Not(p\CheeseRestrictTimer>0)) )) Then Return
-			Case CHAR_BIG: If throwtype=1 and (Not( (Not(Game\FroggyTimer>0)) and (Not(p\CheeseRestrictTimer>0)) )) Then Return
-			Case CHAR_MAR,CHAR_WAV: If (Not(p\BoomerangAway=0)) and throwtype=2 Then Return
+			;Case CHAR_CRE: If (Not( (Not(Game\CheeseTimer>0)) And (Not(p\CheeseRestrictTimer>0)) )) Then Return
+			Case CHAR_BIG: If throwtype=1 And (Not( (Not(Game\FroggyTimer>0)) And (Not(p\CheeseRestrictTimer>0)) )) Then Return
+			Case CHAR_MAR,CHAR_WAV: If (Not(p\BoomerangAway=0)) And throwtype=2 Then Return
 			Case CHAR_BLA: If p\Underwater Then Return
-			Case CHAR_KNU: If throwtype=1 and p\Underwater Then Return
+			Case CHAR_KNU: If throwtype=1 And p\Underwater Then Return
 		End Select
-		If (Not(p\ThrowTimer>0)) and p\BombThrown<limit Then
+		If (Not(p\ThrowTimer>0)) And p\BombThrown<limit Then
 			p\Action=ACTION_THROW
 			Select p\Character
 				Case CHAR_HBO,CHAR_MPH,CHAR_INF: p\ThrowTimer=0.577*secs#
 				Case CHAR_KNU: If throwtype=1 Then p\ThrowTimer=0.577*secs# Else p\ThrowTimer=0.37*secs#
-				Case CHAR_CHO,CHAR_BLA,CHAR_STO,CHAR_SON: If throwtype=2 Then p\ThrowTimer=0.577*secs# Else p\ThrowTimer=0.37*secs#
+				Case CHAR_CHO,CHAR_BLA,CHAR_STO: If throwtype=2 Then p\ThrowTimer=0.577*secs# Else p\ThrowTimer=0.37*secs#
 				Default: p\ThrowTimer=0.37*secs#
 			End Select
 			p\ThrowABomb=0
@@ -839,13 +969,14 @@
 			If p\Motion\Ground=False Then p\BombThrown=p\BombThrown+1
 			Select p\Character
 				Case CHAR_NAC,CHAR_COM: EmitSmartSound(Sound_Shotgun1,p\Objects\Entity)
+				Case CHAR_CRE:If p\ThrowType=2 Then EmitSmartSound(Sound_Dive,p\Objects\Entity)
 			End Select
 		EndIf
 	End Function
 
-	Function Player_Action_Drop_Initiate(p.tPlayer,throwtype=1,limit=4)
-		If (Not(p\ThrowTimer>0)) and p\BombThrown<limit Then
-			p\ThrowTimer=0.37*secs#
+Function Player_Action_Drop_Initiate(p.tPlayer,throwtype=1,limit=4)
+		If (Not(p\ThrowTimer>0)) And p\BombThrown<limit Then
+			p\ThrowTimer=0.37*secs# 
 			Player_PlayAttackVoice(p)
 			p\ThrowType=throwtype
 			Select p\Character
@@ -859,7 +990,10 @@
 						Case 3: Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#+5, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_CHEESE, 0)
 					End Select
 				Case CHAR_TAI:
-					Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#-3, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_RING, -1)
+					Select p\ThrowType
+						Case 1: Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#-3, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_RING, -1)
+						Case 2: 	p\BoomerangAway=1 : Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#+0.6, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_RINGBOOMERANG, 1)
+					End Select 
 				Case CHAR_ROU:
 					Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#-3, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_HEART, -1)
 				Case CHAR_CHA:
@@ -869,7 +1003,7 @@
 		EndIf
 	End Function
 
-	Function Player_Action_Throw(p.tPlayer)
+Function Player_Action_Throw(p.tPlayer)
 
 		If p\Motion\Ground Then
 			Player_ActuallyJump(p)
@@ -877,21 +1011,20 @@
 			Player_SetSpeedYUpDown(p,0.05)
 		EndIf
 
-		If Player_FrameCheck(p,4,true) and p\ThrowABomb<1 Then p\ThrowABomb=1
+		If Player_FrameCheck(p,5,True) And p\ThrowABomb<1 Then p\ThrowABomb=1
 		If p\ThrowABomb=1 Then
 			p\ThrowABomb=2
 			Select p\Character
 				Case CHAR_TAI,CHAR_BAR,CHAR_MPH: EmitSmartSound(Sound_Throw,p\Objects\Entity)
 				Case CHAR_ROU,CHAR_BEA: EmitSmartSound(Sound_BatBomb,p\Objects\Entity)
 				Case CHAR_CHA: EmitSmartSound(Sound_Flower,p\Objects\Entity)
-				Case CHAR_MKN,CHAR_GME: EmitSmartSound(Sound_EnemyCannon,p\Objects\Entity)
+				Case CHAR_MKN,CHAR_EGR,CHAR_GME: EmitSmartSound(Sound_EnemyCannon,p\Objects\Entity)
 				Case CHAR_SIL: ParticleTemplate_Call(p\Particle, PARTICLE_PLAYER_PSYCHOGLOW, p\Objects\Mesh, 0, 0, 1) : EmitSmartSound(Sound_PsychoThrow,p\Objects\Entity)
 				Case CHAR_CHO:
 					Select p\ThrowType
 					Case 1: EmitSmartSound(Sound_SpearShoot,p\Objects\Entity)
 					Case 2: EmitSmartSound(Sound_Bounce,p\Objects\Entity)
 					End Select
-				Case CHAR_SON: EmitSmartSound(Sound_Wind,p\Objects\Entity)
 				Case CHAR_SHA: 
 					Select p\ThrowType
 					Case 1: EmitSmartSound(Sound_SpearShoot,p\Objects\Entity)
@@ -929,7 +1062,7 @@
 				Case CHAR_INF: ParticleTemplate_Call(p\Particle, PARTICLE_PLAYER_PSYCHOGLOW, p\Objects\Mesh, 0, 0, 1, 0, 1) : EmitSmartSound(Sound_Ruby1+Rand(1,6)-1,p\Objects\Entity)
 			End Select
 			Select p\Character
-				Case CHAR_MKN,CHAR_GME:
+				Case CHAR_MKN,CHAR_GME,CHAR_EGR:
 					Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_ROCKET)
 				Case CHAR_MPH:
 					Object_Bomb_Create5(p, EntityX(p\Objects\HandL,1), EntityY(p\Objects\HandL,1), EntityZ(p\Objects\HandL,1), 0, p\Animation\Direction#-180, 0, BOMB_MINION)
@@ -959,23 +1092,19 @@
 						Case 1: Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_SPEARWATER)
 						Case 2: Object_Bomb_Create5(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_BLOB)
 					End Select
-				Case CHAR_SON:
-					Select p\ThrowType
-						Case 1: Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_WIND)
-						Case 2: Object_Bomb_Create5(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180+360, 0, BOMB_HURRICANE)
-					End Select
 				Case CHAR_CHA:
 					Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#+5, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_FLOWER, 0)
 				Case CHAR_CRE:
-					Select p\ThrowType
-						Case 1: Game\CheeseTimer=0.5*secs# : p\CheeseAttackedCount=p\CheeseAttackedCount+1
-						Case 2: Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#+0.53, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_TYPHOON)
-						Case 3: Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_CHEESE)
-					End Select
+					Game\CheeseTimer=0.5*secs# : p\CheeseAttackedCount=p\CheeseAttackedCount+1
 				Case CHAR_TAI:
-					Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#+5, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_RING, 0)
-					Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#+5, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_RING, -0.25)
-					Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#+5, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_RING, +0.25)
+					Select p\ThrowType
+						Case 1
+							Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#+5, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_RING, 0)
+							Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#+5, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_RING, -0.25)
+							Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#+5, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_RING, +0.25)
+						Case 2
+							p\BoomerangAway=1 : Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#+0.6, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_RINGBOOMERANG, 1)
+					End Select 				
 				Case CHAR_ROU:
 					Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#+5, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_HEART, 0)
 					Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#+5, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_HEART, -0.25)
@@ -1054,35 +1183,53 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_LightDash(p.tPlayer)
+Function Player_Action_LightDash(p.tPlayer)
 
 		If (Not(p\LightDashTimer>0)) Or (Not(p\RingDashStopTimer>0)) Then
 			p\Action=ACTION_JUMPFALL
 			Player_SetSpeed(p,2.3)
 		EndIf
 
-	End Function
-
+End Function
+Function Player_Action_LightAttack_Initiate(p.tPlayer)
+	
+	If p\AroundEnemyTimer>0 And Game\Gameplay\GaugeEnergy=100  Then 
+		p\Action=ACTION_LIGHTATTACK : Gameplay_SetGaugeEnergy(0) : p\LightAttackTimer=1*secs#
+		Player_PlayAttackVoice(p)
+	EndIf 
+	
+End Function
+Function Player_Action_LightAttack(p.tPlayer)
+	;lCreate_AfterImage.tAfterImage(p\Objects\Mesh,p\Objects\Mesh,500,255,255,255,3,0,1,p\Animation\Animation,True,False)
+	
+	If p\LightAttackHits>10 Or (Not(p\LightAttackTimer>0)) Then
+		p\LightAttackHits=0
+		p\Action=ACTION_JUMPFALL
+		Player_SetSpeed(p,1)
+	EndIf
+	
+End Function
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Shoot_Initiate(p.tPlayer,mode=1)
-		If (Not(p\ShootCooldownTimer>0)) and p\BombThrown<8 Then
+Function Player_Action_Shoot_Initiate(p.tPlayer,mode=1)
+	If (Not(p\ShootCooldownTimer>0)) And p\BombThrown<8 Then
+		p\HasShotOnce=0
 			Select mode
-				Case 1: Player_SetSpeed(p,0.5,true)
-				Case 2: Player_SetSpeed(p,0.25,true)
+				Case 1: Player_SetSpeed(p,0.5,True)
+				Case 2: Player_SetSpeed(p,0.25,True)
 			End Select
 			If (Not(p\Action=ACTION_TORNADO)) Then
 				Player_PlayAttackVoice(p)
 				If p\Action=ACTION_HOVER Or p\Action=ACTION_FLY Then p\Action=ACTION_SHOOTHOVER Else p\Action=ACTION_SHOOT
-				If p\Motion\Ground=False and (p\Character=CHAR_EGR) Then p\BombThrown=p\BombThrown+1
+				If p\Motion\Ground=False And (p\Character=CHAR_EGR) Then p\BombThrown=p\BombThrown+1
 			Else
 				p\TornadoShoot=1
 			EndIf
 		EndIf
 	End Function
 
-	Function Player_Action_Shoot(p.tPlayer)
+Function Player_Action_Shoot(p.tPlayer)
 
 		If p\Motion\Ground Then
 			Player_ActuallyJump(p)
@@ -1090,23 +1237,44 @@
 			Player_JumpActions(p)
 			Player_ActuallyLand(p)
 		EndIf
-
-		If (Not(Animating(p\Objects\Mesh))) Then
-			If p\Motion\Ground Then
-				p\Action=ACTION_COMMON
-			Else
-				p\Action=ACTION_JUMPFALL
-			EndIf
-			Player_Action_Shoot_Shot(p)
-		EndIf
+		
+		Select p\Character
+			Case CHAR_TAI
+				If p\Motion\Ground=False Then Player_SetSpeedY(p,0)
+		End Select 
+		
+		Select p\Character
+			Case CHAR_TAI
+				
+				If Player_FrameCheck(p,6) And p\HasShotOnce=0 Then 
+					Player_Action_Shoot_Shot(p) : p\HasShotOnce=1
+				EndIf 
+				If (Not(Animating(p\Objects\Mesh))) Then
+					
+					If p\Motion\Ground Then
+						p\Action=ACTION_COMMON
+					Else
+						p\Action=ACTION_JUMPFALL
+					EndIf
+				EndIf 
+			Default
+				If (Not(Animating(p\Objects\Mesh))) Then
+					If p\Motion\Ground Then
+						p\Action=ACTION_COMMON
+					Else
+						p\Action=ACTION_JUMPFALL
+					EndIf
+					Player_Action_Shoot_Shot(p)
+				EndIf
+		End Select 
 
 	End Function
 
-	Function Player_Action_Shoot_AimBegin(p.tPlayer)
+Function Player_Action_Shoot_AimBegin(p.tPlayer)
 		If p\Aiming=0 Then p\Aiming=1 : p\JustStartedAimingTimer=0.25*secs#
 	End Function
 
-	Function Player_Action_Shoot_Shot(p.tPlayer)
+Function Player_Action_Shoot_Shot(p.tPlayer)
 		Select p\Character
 			Case CHAR_GAM,CHAR_EGG,CHAR_CHW,CHAR_TMH: Player_Action_Shoot_AimShot(p)
 			Case CHAR_BET: Player_Action_Shoot_AimlessAimShot(p)
@@ -1114,30 +1282,37 @@
 		End Select
 	End Function
 
-	Function Player_Action_Shoot_NormalShot(p.tPlayer)
+Function Player_Action_Shoot_NormalShot(p.tPlayer)
 		Select p\Character
 			Case CHAR_EGR:
 				Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_ORB, -1)
 				Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_ORB)
 				Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_ORB, 1)
+			Case CHAR_TAI
+				Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_CANNONSHOT)
+				
 			Default:
 				Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_SHOT)
 		End Select
-		p\ShootCooldownTimer=0.05*secs#
+		Select p\Character
+			Case CHAR_TAI : 	p\ShootCooldownTimer=0.5*secs#
+				
+			Default	: p\ShootCooldownTimer=0.05*secs#
+		End Select
 		EmitSmartSound(Sound_EnemyShot,p\Objects\Entity)
 		p\ForceShotWalkTimer=0.24*secs#
 	End Function
 
-	Function Player_Action_Shoot_AimShot(p.tPlayer)
-		If Player_IsPlayable(p) and p\Aiming=2 and (Not(p\JustStartedAimingTimer>0)) Then
-			foundtargetonce=false
+Function Player_Action_Shoot_AimShot(p.tPlayer)
+		If Player_IsPlayable(p) And p\Aiming=2 And (Not(p\JustStartedAimingTimer>0)) Then
+			foundtargetonce=False
 			For o.tObject = Each tObject
 				If o\AimedAt=1 Then
 					If foundtargetonce Then
 						If EntityDistance(o\Entity,p\Objects\Entity)<EntityDistance(p\Objects\ScannerTarget\Entity,p\Objects\Entity) Then p\Objects\ScannerTarget=o
 					Else
 						p\Objects\ScannerTarget=o
-						foundtargetonce=true
+						foundtargetonce=True
 					EndIf
 				EndIf
 			Next
@@ -1147,7 +1322,7 @@
 					Object_Bomb_Create.tBomb(p, EntityX(p\Objects\Extra2,1), EntityY(p\Objects\Extra2,1), EntityZ(p\Objects\Extra2,1), 0, p\Animation\Direction#-180, 0, BOMB_BULLET3, 0, True, p\Objects\ScannerTarget\Position\x#, p\Objects\ScannerTarget\Position\y#, p\Objects\ScannerTarget\Position\z#)
 				Default:
 					If (Not(p\Action=ACTION_TORNADO)) Then
-					Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_BULLET3, 0, True, p\Objects\ScannerTarget\Position\x#, p\Objects\ScannerTarget\Position\y#, p\Objects\ScannerTarget\Position\z#)
+						Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_BULLET3, 0, True, p\Objects\ScannerTarget\Position\x#, p\Objects\ScannerTarget\Position\y#, p\Objects\ScannerTarget\Position\z#)
 					Else
 					Object_Bomb_Create.tBomb(p, EntityX(p\Objects\VehicleShoot,1), EntityY(p\Objects\VehicleShoot,1), EntityZ(p\Objects\VehicleShoot,1), 0, p\Animation\Direction#-180, 0, BOMB_BULLET3, 0, True, p\Objects\ScannerTarget\Position\x#, p\Objects\ScannerTarget\Position\y#, p\Objects\ScannerTarget\Position\z#)
 					EndIf
@@ -1172,7 +1347,7 @@
 		p\ForceShotWalkTimer=0.24*secs#
 	End Function
 
-	Function Player_Action_Shoot_AimlessAimShot(p.tPlayer)
+Function Player_Action_Shoot_AimlessAimShot(p.tPlayer)
 		Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_BULLET3)
 		Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandL,1), EntityY(p\Objects\HandL,1), EntityZ(p\Objects\HandL,1), 0, p\Animation\Direction#-180, 0, BOMB_BULLET3)
 		p\ShootCooldownTimer=0.09*secs#
@@ -1182,202 +1357,214 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-
-	Function Player_Action_Punch_Initiate(p.tPlayer,limit=1)
-		If p\AirKickOnce<limit Then
-			Player_PlayAttackVoice(p)
-			If p\Motion\Ground Then
-				p\Action=ACTION_PUNCH
-				p\PunchTimer=1.28*secs#
-				p\PunchRestrictTimer=0.4*secs#
-				Select p\Character
-					Case CHAR_SON,CHAR_SHA,CHAR_NAC,CHAR_JET,CHAR_PRS,CHAR_INF: EmitSmartSound(Sound_SpinKick,p\Objects\Entity)
-					Case CHAR_BIG: EmitSmartSound(Sound_PunchBig,p\Objects\Entity)
-					Case CHAR_VEC: p\ThrowABomb=0 : EmitSmartSound(Sound_Punch,p\Objects\Entity)
-					Case CHAR_SIL,CHAR_MPH: EmitSmartSound(Sound_PsychoDash,p\Objects\Entity)
-					Case CHAR_MET,CHAR_MT3: EmitSmartSound(Sound_DashElectro,p\Objects\Entity)
-					Case CHAR_EME,CHAR_GME:
-						Select p\CharacterMode
+Function Player_Action_Punch_Initiate(p.tPlayer,limit=1)
+	If p\AirKickOnce<limit Then
+		Player_PlayAttackVoice(p)
+		If p\Motion\Ground Then
+			p\Action=ACTION_PUNCH
+			p\PunchTimer=1.28*secs#
+			Select p\Character
+				Case CHAR_SHA
+					p\PunchRestrictTimer=0.4*secs#
+				Default
+					p\PunchRestrictTimer=0.4*secs#
+			End Select 
+			Select p\Character
+				Case CHAR_SON,CHAR_NAC,CHAR_JET,CHAR_PRS,CHAR_INF: EmitSmartSound(Sound_SpinKick,p\Objects\Entity)
+				Case CHAR_BIG: EmitSmartSound(Sound_PunchBig,p\Objects\Entity)
+				Case CHAR_VEC: p\ThrowABomb=0 : EmitSmartSound(Sound_Punch,p\Objects\Entity)
+				Case CHAR_SIL,CHAR_MPH: EmitSmartSound(Sound_PsychoDash,p\Objects\Entity)
+				Case CHAR_MET,CHAR_MT3: EmitSmartSound(Sound_DashElectro,p\Objects\Entity)
+				Case CHAR_EME,CHAR_GME:
+					Select p\CharacterMode
 						Case CHAR_SON,CHAR_ESP: EmitSmartSound(Sound_SpinKick,p\Objects\Entity)
 						Default: EmitSmartSound(Sound_Punch,p\Objects\Entity)
-						End Select
-					Case CHAR_EGG: EmitSmartSound(Sound_Sting,p\Objects\Entity) : EmitSmartSound(Sound_Punch,p\Objects\Entity)
-					Case CHAR_TMH: EmitSmartSound(Sound_EnemyCannon,p\Objects\Entity) : EmitSmartSound(Sound_Punch,p\Objects\Entity)
-					Case CHAR_AMY: EmitSmartSound(Sound_Hammer,p\Objects\Entity)
-					Default: EmitSmartSound(Sound_Punch,p\Objects\Entity)
-				End Select
-				Select p\Character
-					Case CHAR_SIL,CHAR_MET,CHAR_MPH,CHAR_MT3: p\JumpDashTimer=0.25*secs# : p\PunchNumber=4
-					Case CHAR_SON,CHAR_SHA,CHAR_NAC,CHAR_JET,CHAR_BIG,CHAR_VEC,CHAR_EGG,CHAR_PRS,CHAR_TMH,CHAR_AMY,CHAR_INF: p\PunchNumber=1
-					Default:
-						If Not(p\PunchTimer>0) Then
-							p\PunchNumber=1
-						Else
-							p\PunchNumber=p\PunchNumber+1
-							Select p\Character
-								Case CHAR_ROU,CHAR_OME,CHAR_MIG,CHAR_HON,CHAR_SHD,CHAR_TIA,CHAR_ESP:
-									If p\PunchNumber>2 Then p\PunchNumber=1
-								Case CHAR_EME,CHAR_GME:
-									Select p\CharacterMode
+					End Select
+				Case CHAR_EGG: EmitSmartSound(Sound_Sting,p\Objects\Entity) : EmitSmartSound(Sound_Punch,p\Objects\Entity)
+				Case CHAR_TMH: EmitSmartSound(Sound_EnemyCannon,p\Objects\Entity) : EmitSmartSound(Sound_Punch,p\Objects\Entity)
+				Case CHAR_AMY: EmitSmartSound(Sound_Hammer,p\Objects\Entity)
+				Default: EmitSmartSound(Sound_Punch,p\Objects\Entity)
+			End Select
+			Select p\Character
+				Case CHAR_SIL,CHAR_MET,CHAR_MPH,CHAR_MT3: p\JumpDashTimer=0.25*secs# : p\PunchNumber=4
+				Case CHAR_SON,CHAR_NAC,CHAR_JET,CHAR_BIG,CHAR_VEC,CHAR_EGG,CHAR_PRS,CHAR_TMH,CHAR_AMY,CHAR_INF: p\PunchNumber=1
+				Case CHAR_SHA
+					
+					p\PunchNumber=p\PunchNumber+1
+					If p\PunchNumber>3 Then p\PunchNumber=1
+				Default:
+					If Not(p\PunchTimer>0) Then
+						p\PunchNumber=1
+					Else
+						p\PunchNumber=p\PunchNumber+1
+						Select p\Character
+							Case CHAR_ROU,CHAR_OME,CHAR_MIG,CHAR_HON,CHAR_SHD,CHAR_TIA,CHAR_ESP:
+								If p\PunchNumber>2 Then p\PunchNumber=1
+							Case CHAR_EME,CHAR_GME:
+								Select p\CharacterMode
 									Case CHAR_SON,CHAR_ESP: p\PunchNumber=1
 									Default: If p\PunchNumber>2 Then p\PunchNumber=1
-									End Select
-								Default:
-									If p\PunchNumber>3 Then p\PunchNumber=1
-							End Select
-							If p\PunchNumber=3 and (p\Character=CHAR_STO Or p\Character=CHAR_TIK) Then EmitSmartSound(Sound_Slap,p\Objects\Entity)
-						EndIf
-				End Select
-			Else
-				p\Action=ACTION_THRUST
-				Select p\Character
-					Case CHAR_BIG: EmitSmartSound(Sound_PunchBig,p\Objects\Entity)
-					Case CHAR_VEC: EmitSmartSound(Sound_Punch,p\Objects\Entity) : EmitSmartSound(Sound_Dash,p\Objects\Entity)
-					Case CHAR_SIL,CHAR_MPH: EmitSmartSound(Sound_PsychoDash,p\Objects\Entity)
-					Case CHAR_MET,CHAR_MT3: EmitSmartSound(Sound_DashElectro,p\Objects\Entity)
-					Default:
-						EmitSmartSound(Sound_Punch,p\Objects\Entity)
-						Select p\Character
-							Case CHAR_STO,CHAR_TIK: EmitSmartSound(Sound_Slap,p\Objects\Entity)
+								End Select
+							Default:
+								If p\PunchNumber>3 Then p\PunchNumber=1
 						End Select
-				End Select
-				Select p\Character
-					Case CHAR_SIL,CHAR_MET,CHAR_MPH,CHAR_MT3: p\JumpDashTimer=0.25*secs# : p\PunchNumber=4
-					Case CHAR_CHO: p\PunchNumber=3
-					Default: p\PunchNumber=1
-				End Select
-			EndIf
-			If p\Motion\Ground=False Then p\AirKickOnce=p\AirKickOnce+1
-		EndIf
-	End Function
-
-	Function Player_Action_Punch(p.tPlayer)
-
-		Select p\Action
-			Case ACTION_PUNCH:
-				Player_ActuallyFall(p)
-				Player_ActuallyJump(p)
-				If (Not(p\PunchRestrictTimer>0)) Then Player_SkillActions(p)
-			Case ACTION_THRUST:
-				Player_ActuallyLand(p)
-		End Select
-
-		Select p\Character
-			Case CHAR_SON,CHAR_SHA,CHAR_NAC,CHAR_PRS,CHAR_INF:
-				Player_SetSpeed(p,0.357,true)
-			Case CHAR_VEC:
-				If p\Motion\Ground Then
-					Player_SetSpeed(p,0.8*p\Physics\UNDERWATERTRIGGER#,true)
-				Else
-					Player_SetSpeed(p,1.6*p\Physics\UNDERWATERTRIGGER#,true)
-				EndIf
-			Case CHAR_SIL,CHAR_MET,CHAR_MPH,CHAR_MT3:
-				Player_SetSpeed(p,p\Physics\JUMPDASH_SPEED#*1.5,true)
-			Case CHAR_JET:
-				Player_SetSpeed(p,0.444,true)
-			Case CHAR_EME,CHAR_GME:
-				Select p\CharacterMode
-				Case CHAR_SON,CHAR_ESP:
-					Player_SetSpeed(p,0.357,true)
-				Default:
-					If p\Motion\Ground and p\PunchNumber=3 Then
-						Player_SetSpeed(p,1.3*p\Physics\UNDERWATERTRIGGER#,true)
-					Else
-						Player_SetSpeed(p,0.8*p\Physics\UNDERWATERTRIGGER#,true)
+						If p\PunchNumber=3 And (p\Character=CHAR_STO Or p\Character=CHAR_TIK) Then EmitSmartSound(Sound_Slap,p\Objects\Entity)
 					EndIf
-				End Select
-			Default:
-				If p\Motion\Ground and p\PunchNumber=3 Then
-					Player_SetSpeed(p,1.3*p\Physics\UNDERWATERTRIGGER#,true)
-				Else
-					Player_SetSpeed(p,0.8*p\Physics\UNDERWATERTRIGGER#,true)
-				EndIf
-		End Select
-
-		If ((Not(Animating(p\Objects\Mesh))) Or (p\PunchNumber=4 and (Not(p\JumpDashTimer>0)))) and p\Flags\Targeter=0 Then
-			If p\Motion\Ground Then
-				p\Action=ACTION_COMMON
-			Else
-				Select p\Character
-					Case CHAR_VEC,CHAR_SIL,CHAR_MET,CHAR_MPH,CHAR_JET,CHAR_MT3: p\Action=ACTION_JUMPFALL
-					Default: p\Action=ACTION_FALL
 			End Select
-			EndIf
-
+		Else
+			p\Action=ACTION_THRUST
 			Select p\Character
-				Case CHAR_KNU,CHAR_BAR,CHAR_MKN,CHAR_COM:
-					If p\PunchNumber=3 Then EmitSmartSound(Sound_KnuxStomp,p\Objects\Entity)
-				Case CHAR_SHD:
-					Select p\PunchNumber
+				Case CHAR_BIG: EmitSmartSound(Sound_PunchBig,p\Objects\Entity)
+				Case CHAR_VEC: EmitSmartSound(Sound_Punch,p\Objects\Entity) : EmitSmartSound(Sound_Dash,p\Objects\Entity)
+				Case CHAR_SIL,CHAR_MPH: EmitSmartSound(Sound_PsychoDash,p\Objects\Entity)
+				Case CHAR_MET,CHAR_MT3: EmitSmartSound(Sound_DashElectro,p\Objects\Entity)
+				Default:
+					EmitSmartSound(Sound_Punch,p\Objects\Entity)
+					Select p\Character
+						Case CHAR_STO,CHAR_TIK: EmitSmartSound(Sound_Slap,p\Objects\Entity)
+					End Select
+			End Select
+			Select p\Character
+				Case CHAR_SIL,CHAR_MET,CHAR_MPH,CHAR_MT3: p\JumpDashTimer=0.25*secs# : p\PunchNumber=4
+				Case CHAR_CHO: p\PunchNumber=3
+				Default: p\PunchNumber=1
+			End Select
+		EndIf
+		If p\Motion\Ground=False Then p\AirKickOnce=p\AirKickOnce+1
+	EndIf
+End Function
+
+Function Player_Action_Punch(p.tPlayer)
+	
+	Select p\Action
+		Case ACTION_PUNCH:
+			Player_ActuallyFall(p)
+			Player_ActuallyJump(p)
+			If (Not(p\PunchRestrictTimer>0)) Then Player_SkillActions(p)
+		Case ACTION_THRUST:
+			Player_ActuallyLand(p)
+	End Select
+	
+	Select p\Character
+		Case CHAR_SON,CHAR_NAC,CHAR_PRS,CHAR_INF:
+			Player_SetSpeed(p,0.357,True)
+		Case CHAR_VEC:
+			If p\Motion\Ground Then
+				Player_SetSpeed(p,0.8*p\Physics\UNDERWATERTRIGGER#,True)
+			Else
+				Player_SetSpeed(p,1.6*p\Physics\UNDERWATERTRIGGER#,True)
+			EndIf
+		Case CHAR_SIL,CHAR_MET,CHAR_MPH,CHAR_MT3:
+			Player_SetSpeed(p,p\Physics\JUMPDASH_SPEED#*1.5,True)
+		Case CHAR_JET:
+			Player_SetSpeed(p,0.444,True)
+		Case CHAR_SHA
+			Player_SetSpeed(p,0.125,True)
+		Case CHAR_EME,CHAR_GME:
+			Select p\CharacterMode
+				Case CHAR_SON,CHAR_ESP:
+					Player_SetSpeed(p,0.357,True)
+				Default:
+					If p\Motion\Ground And p\PunchNumber=3 Then
+						Player_SetSpeed(p,1.3*p\Physics\UNDERWATERTRIGGER#,True)
+					Else
+						Player_SetSpeed(p,0.8*p\Physics\UNDERWATERTRIGGER#,True)
+					EndIf
+			End Select
+		Default:
+			If p\Motion\Ground And p\PunchNumber=3 Then
+				Player_SetSpeed(p,1.3*p\Physics\UNDERWATERTRIGGER#,True)
+			Else
+				Player_SetSpeed(p,0.8*p\Physics\UNDERWATERTRIGGER#,True)
+			EndIf
+	End Select
+	
+	If ((Not(Animating(p\Objects\Mesh))) Or (p\PunchNumber=4 And (Not(p\JumpDashTimer>0)))) And p\Flags\Targeter=0 Then
+		If p\Motion\Ground Then
+			p\Action=ACTION_COMMON
+			p\PunchWindowTimer=0.3*secs#
+		Else
+			Select p\Character
+				Case CHAR_VEC,CHAR_SIL,CHAR_MET,CHAR_MPH,CHAR_JET,CHAR_MT3: p\Action=ACTION_JUMPFALL
+				Default: p\Action=ACTION_FALL
+			End Select
+		EndIf
+		
+		Select p\Character
+			Case CHAR_KNU,CHAR_BAR,CHAR_MKN,CHAR_COM:
+				If p\PunchNumber=3 Then EmitSmartSound(Sound_KnuxStomp,p\Objects\Entity)
+			Case CHAR_SHD:
+				Select p\PunchNumber
 					Case 1: Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_HANDBLADE)
 					Case 2: Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandL,1), EntityY(p\Objects\HandL,1), EntityZ(p\Objects\HandL,1), 0, p\Animation\Direction#-180, 0, BOMB_HANDBLADE)
-					End Select
-				Case CHAR_SIL,CHAR_MET,CHAR_MPH,CHAR_MT3:
-					Player_SetSpeed(p,p\SpeedLength#*0.75)
-				Case CHAR_JET:
-					Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_HURRICANE)
-				Case CHAR_AMY:
-					EmitSmartSound(Sound_Grab,p\Objects\Entity)
-			End Select
-		EndIf
-
-		Select p\Character
-			Case CHAR_CHO:
-				If (Not(p\ChaosStretchSpawnerTimer>0)) Then
-					p\ChaosStretchSpawnerTimer=0.02*secs#
-					Select p\PunchNumber
-						Case 1:
-						Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_PUNCH)
-						Case 2:
-						Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandL,1), EntityY(p\Objects\HandL,1), EntityZ(p\Objects\HandL,1), 0, p\Animation\Direction#-180, 0, BOMB_PUNCH)
-						Case 3:
-						Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_PUNCH)
-						Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandL,1), EntityY(p\Objects\HandL,1), EntityZ(p\Objects\HandL,1), 0, p\Animation\Direction#-180, 0, BOMB_PUNCH)
-					End Select
-				EndIf
-			Case CHAR_AMY:
-				If (Not(p\ChaosStretchSpawnerTimer>0)) Then
-					p\ChaosStretchSpawnerTimer=0.02*secs#
-					Object_Bomb_Create.tBomb(p, EntityX(p\Objects\Extra,1), EntityY(p\Objects\Extra,1), EntityZ(p\Objects\Extra,1), 0, p\Animation\Direction#-180, 0, BOMB_PUNCH)
-				EndIf
-				ParticleTemplate_Call(p\Particle, PARTICLE_PLAYER_HEARTS, p\Objects\Extra)
-			Case CHAR_HBO:
-				Select p\PunchNumber
-					Case 1,2:
-						If Player_FrameCheck(p,5) Then
-							ParticleTemplate_Call(p\Particle, PARTICLE_PLAYER_BOMB, p\Objects\Extra) : EmitSmartSound(Sound_Explode,p\Objects\Entity)
-						EndIf
-					Case 3:
-						If Player_FrameCheck(p,3) Or Player_FrameCheck(p,5) Or Player_FrameCheck(p,7) Then
-							ParticleTemplate_Call(p\Particle, PARTICLE_PLAYER_BOMB, p\Objects\Extra) : EmitSmartSound(Sound_Explode,p\Objects\Entity)
-						EndIf
 				End Select
-			Case CHAR_VEC:
-				If Player_FrameCheck(p,4,true) and p\ThrowABomb<1 Then p\ThrowABomb=1
-				If p\ThrowABomb=1 and p\Flags\Targeter=0 Then
-					p\ThrowABomb=2
-					EmitSmartSound(Sound_GlideStart2,p\Objects\Entity)
-					EmitSmartSound(Sound_Gum,p\Objects\Entity)
-					Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#+4, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_GUM)
-				EndIf
-			Case CHAR_SIL,CHAR_MPH:
-				Player_SetSpeedY(p,0)
-			Case CHAR_EGG,CHAR_TMH:
-				If (Not(p\ChaosStretchSpawnerTimer>0)) Then
-					p\ChaosStretchSpawnerTimer=0.02*secs#
-					Object_Bomb_Create.tBomb(p, EntityX(p\Objects\Extra2,1), EntityY(p\Objects\Extra2,1), EntityZ(p\Objects\Extra2,1), 0, p\Animation\Direction#-180, 0, BOMB_PUNCH)
-				EndIf
-			Case CHAR_MET,CHAR_MT3:
-				Player_SetSpeedY(p,0)
-				Player_ActuallyJump(p)
+			Case CHAR_SIL,CHAR_MET,CHAR_MPH,CHAR_MT3:
+				Player_SetSpeed(p,p\SpeedLength#*0.75)
+			Case CHAR_JET:
+				Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_HURRICANE)
+			Case CHAR_AMY:
+				EmitSmartSound(Sound_Grab,p\Objects\Entity)
 		End Select
+	EndIf
+	
+	Select p\Character
+		Case CHAR_CHO:
+			If (Not(p\ChaosStretchSpawnerTimer>0)) Then
+				p\ChaosStretchSpawnerTimer=0.02*secs#
+				Select p\PunchNumber
+					Case 1:
+						Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_PUNCH)
+					Case 2:
+						Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandL,1), EntityY(p\Objects\HandL,1), EntityZ(p\Objects\HandL,1), 0, p\Animation\Direction#-180, 0, BOMB_PUNCH)
+					Case 3:
+						Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_PUNCH)
+						Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandL,1), EntityY(p\Objects\HandL,1), EntityZ(p\Objects\HandL,1), 0, p\Animation\Direction#-180, 0, BOMB_PUNCH)
+				End Select
+			EndIf
+		Case CHAR_AMY:
+			If (Not(p\ChaosStretchSpawnerTimer>0)) Then
+				p\ChaosStretchSpawnerTimer=0.02*secs#
+				Object_Bomb_Create.tBomb(p, EntityX(p\Objects\Extra,1), EntityY(p\Objects\Extra,1), EntityZ(p\Objects\Extra,1), 0, p\Animation\Direction#-180, 0, BOMB_PUNCH)
+			EndIf
+			ParticleTemplate_Call(p\Particle, PARTICLE_PLAYER_HEARTS, p\Objects\Extra)
+		Case CHAR_HBO:
+			Select p\PunchNumber
+				Case 1,2:
+					If Player_FrameCheck(p,5) Then
+						ParticleTemplate_Call(p\Particle, PARTICLE_PLAYER_BOMB, p\Objects\Extra) : EmitSmartSound(Sound_Explode,p\Objects\Entity)
+					EndIf
+				Case 3:
+					If Player_FrameCheck(p,3) Or Player_FrameCheck(p,5) Or Player_FrameCheck(p,7) Then
+						ParticleTemplate_Call(p\Particle, PARTICLE_PLAYER_BOMB, p\Objects\Extra) : EmitSmartSound(Sound_Explode,p\Objects\Entity)
+					EndIf
+			End Select
+		Case CHAR_VEC:
+			If Player_FrameCheck(p,4,True) And p\ThrowABomb<1 Then p\ThrowABomb=1
+			If p\ThrowABomb=1 And p\Flags\Targeter=0 Then
+				p\ThrowABomb=2
+				EmitSmartSound(Sound_GlideStart2,p\Objects\Entity)
+				EmitSmartSound(Sound_Gum,p\Objects\Entity)
+				Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#+4, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_GUM)
+			EndIf
+		Case CHAR_SIL,CHAR_MPH:
+			Player_SetSpeedY(p,0)
+		Case CHAR_EGG,CHAR_TMH:
+			If (Not(p\ChaosStretchSpawnerTimer>0)) Then
+				p\ChaosStretchSpawnerTimer=0.02*secs#
+				Object_Bomb_Create.tBomb(p, EntityX(p\Objects\Extra2,1), EntityY(p\Objects\Extra2,1), EntityZ(p\Objects\Extra2,1), 0, p\Animation\Direction#-180, 0, BOMB_PUNCH)
+			EndIf
+		Case CHAR_MET,CHAR_MT3:
+			Player_SetSpeedY(p,0)
+			Player_ActuallyJump(p)
+	End Select
+	
+End Function
 
-	End Function
 
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Swipe_Initiate(p.tPlayer, limit=1)
+Function Player_Action_Swipe_Initiate(p.tPlayer, limit=1)
 		If p\Motion\Ground Or p\AirKickOnce<limit Then
 			Player_PlayAttackVoice(p)
 			p\Action=ACTION_SWIPE
@@ -1387,12 +1574,14 @@
 				Case CHAR_WAV: EmitSmartSound(Sound_Wrench,p\Objects\Entity)
 				Case CHAR_MET: Player_CreateRazer.tRazer(p,p\Objects\Mesh,0.8875,2)
 				Case CHAR_MT3: Player_CreateRazer.tRazer(p,p\Objects\Mesh,0.8875,3)
+				Case CHAR_TAI
+					If p\Motion\Ground=False Then Player_SetSpeedY(p,0)
 			End Select
 			If p\Motion\Ground=False Then p\AirKickOnce=p\AirKickOnce+1
 		EndIf
 	End Function
 
-	Function Player_Action_Swipe(p.tPlayer)
+Function Player_Action_Swipe(p.tPlayer)
 
 		If p\Motion\Ground Then Player_ActuallyJump(p)
 
@@ -1406,22 +1595,23 @@
 				Case CHAR_EME,CHAR_GME: If p\CharacterMode=CHAR_TAI Or p\CharacterMode=CHAR_RAY Then EmitSmartSound(Sound_Swipe,p\Objects\Entity)
 			End Select
 		EndIf
-
+		
 		Select p\Character
 			Case CHAR_TAI,CHAR_RAY,CHAR_TDL: Player_CreateRazer.tRazer(p,p\Objects\Mesh,0.45,1)
 			Case CHAR_AMY: ParticleTemplate_Call(p\Particle, PARTICLE_PLAYER_HEARTS, p\Objects\Entity)
 			Case CHAR_EME,CHAR_GME: If p\CharacterMode=CHAR_TAI Or p\CharacterMode=CHAR_RAY Then Player_CreateRazer.tRazer(p,p\Objects\Mesh,0.45,1)
 		End Select
 
-		i = false
+		i = False
 		If Player_IsPlayable(p) Then
 			Select p\Character
-				Case CHAR_TAI,CHAR_TDL: If Not(Input\Hold\ActionSkill2) Then i = true
-				Case CHAR_MET,CHAR_MT3: If Not(Input\Hold\ActionSkill3) Then i = true
-				Default: If Not(Input\Hold\ActionSkill1) Then i = true
+				Case CHAR_TAI: If (Not(Input\Hold\ActionSkill1)) Or (p\Motion\Ground=False And (Not(Animating(p\Objects\Mesh)))) Then i = True
+				Case CHAR_TDL: If Not(Input\Hold\ActionSkill2) Then i = True
+				Case CHAR_MET,CHAR_MT3: If Not(Input\Hold\ActionSkill3) Then i = True
+				Default: If Not(Input\Hold\ActionSkill1) Then i = True
 			End Select
 		EndIf
-		If i and (Not(p\SpecialSpinTimer>0)) and p\Flags\Targeter=0 Then
+		If i And (Not(p\SpecialSpinTimer>0)) And p\Flags\Targeter=0 Then
 			If p\Motion\Ground Then p\Action=ACTION_COMMON Else p\Action=ACTION_FALL
 		EndIf
 
@@ -1430,33 +1620,33 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Uppercut_Initiate(p.tPlayer)
+Function Player_Action_Uppercut_Initiate(p.tPlayer)
 		If p\Motion\Ground Then
 			Player_PlayAttackVoice(p)
 			p\Motion\Ground=False
 			p\Action=ACTION_UPPERCUT
 			EmitSmartSound(Sound_Punch,p\Objects\Entity)
-			Player_SetSpeed(p,0.5*p\Physics\UNDERWATERTRIGGER#,true)
+			Player_SetSpeed(p,0.5*p\Physics\UNDERWATERTRIGGER#,True)
 			Player_SetSpeedY(p,1.222*p\Physics\UNDERWATERTRIGGER#)
 		EndIf
 	End Function
 
-	Function Player_Action_Uppercut(p.tPlayer)
+Function Player_Action_Uppercut(p.tPlayer)
 
-		If Animating(p\Objects\Mesh)=False and p\Flags\Targeter=0 Then p\Action=ACTION_FALL
+		If Animating(p\Objects\Mesh)=False And p\Flags\Targeter=0 Then p\Action=ACTION_FALL
 
 	End Function
 
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Claw_Initiate(p.tPlayer)
+Function Player_Action_Claw_Initiate(p.tPlayer)
 		Player_PlayAttackVoice(p)
 		p\Action=ACTION_CLAW
 		p\SpecialSpinTimer=0.5*secs#
 	End Function
 
-	Function Player_Action_Claw(p.tPlayer)
+Function Player_Action_Claw(p.tPlayer)
 
 		If p\Motion\Ground Then
 			Player_ActuallyJump(p)
@@ -1464,8 +1654,8 @@
 			Player_SetSpeedY(p,-0.3*p\Physics\UNDERWATERTRIGGER#)
 		EndIf
 
-		If (Not(Player_IsPlayable(p) and Input\Hold\ActionSkill1)) Then
-			If (Not(p\SpecialSpinTimer>0)) and p\Flags\Targeter=0 Then
+		If (Not(Player_IsPlayable(p) And Input\Hold\ActionSkill1)) Then
+			If (Not(p\SpecialSpinTimer>0)) And p\Flags\Targeter=0 Then
 				If p\Motion\Ground Then p\Action=ACTION_COMMON Else p\Action=ACTION_FALL
 			EndIf
 		EndIf
@@ -1484,7 +1674,7 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_FullFall(p.tPlayer)
+Function Player_Action_FullFall(p.tPlayer)
 
 		Player_ActuallyJump(p)
 
@@ -1497,32 +1687,32 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Flutter_Initiate(p.tPlayer)
+Function Player_Action_Flutter_Initiate(p.tPlayer)
 		If (Not(p\GlideRestartTimer>0)) Then
 		If p\LevitatedOnce=0 Or p\GlideTimer>0 Then
 			Player_PlayJumpActionVoice(p)
-			If p\No#=1 and p\Character=CHAR_HON Then EmitSmartSound(Sound_GlideStart,p\Objects\Entity)
+			If p\No#=1 And p\Character=CHAR_HON Then EmitSmartSound(Sound_GlideStart,p\Objects\Entity)
 			p\Action=ACTION_FLUTTER
 			If p\LevitatedOnce=0 Then p\GlideTimer=2.24*secs# : p\LevitatedOnce=1 : Player_SetSpeedY(p,1.05632)
 			p\GlideStartTimer=2.24*secs#
 			Select p\Character
-				Case CHAR_MAR: Player_SetSpeed(p,p\SpeedLength#-0.2,true)
-				Case CHAR_HON: Player_SetSpeed(p,2.25,true)
+				Case CHAR_MAR: Player_SetSpeed(p,p\SpeedLength#-0.2,True)
+				Case CHAR_HON: Player_SetSpeed(p,2.25,True)
 			End Select
-			Player_SetSpeedY(p,0.32,true)
+			Player_SetSpeedY(p,0.32,True)
 			Player_FollowerHolding_EveryoneJumpDashes(p)
 		EndIf
 		EndIf
 	End Function
 
-	Function Player_Action_Flutter(p.tPlayer)
+Function Player_Action_Flutter(p.tPlayer)
 
 		Player_ActuallyLand(p)
 
-		If p\GlideStartTimer<1.868*secs# and ((p\No#=1 and (Not(Player_IsPlayable(p) and Input\Hold\ActionJump))) Or (Not(p\GlideTimer>0))) Then
+		If p\GlideStartTimer<1.868*secs# And ((p\No#=1 And (Not(Player_IsPlayable(p) And Input\Hold\ActionJump))) Or (Not(p\GlideTimer>0))) Then
 			Select p\Character
-				Case CHAR_HON: Player_SetSpeed(p,1.85,true)
-				Default: Player_SetSpeed(p,1.25,true)
+				Case CHAR_HON: Player_SetSpeed(p,1.85,True)
+				Default: Player_SetSpeed(p,1.25,True)
 			End Select
 			p\GlideRestartTimer=0.08*secs#/2.0
 			p\Action=ACTION_JUMPFALL
@@ -1530,11 +1720,11 @@
 
 		If (Not(p\JumpActionRestrictTimer>0)) Then
 			If p\GlideStartTimer>1.68*secs# Then
-				Player_SetSpeedY(p,p\Physics\FLUTTERFALL_SPEED#,true)
+				Player_SetSpeedY(p,p\Physics\FLUTTERFALL_SPEED#,True)
 			ElseIf p\GlideStartTimer>1.28*secs# Then
-				Player_SetSpeedY(p,p\Physics\FLUTTERFALL_SPEED#*1.5,true)
+				Player_SetSpeedY(p,p\Physics\FLUTTERFALL_SPEED#*1.5,True)
 			Else
-				Player_SetSpeedY(p,p\Physics\FLUTTERFALL_SPEED#*2,true)
+				Player_SetSpeedY(p,p\Physics\FLUTTERFALL_SPEED#*2,True)
 			EndIf
 		EndIf
 
@@ -1543,8 +1733,8 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Buoy_Initiate(p.tPlayer)
-		If (Not(p\Action=ACTION_BUOY)) and (Not(p\WasInBuoyTimer>0)) and p\AirBegTooFar=False Then
+Function Player_Action_Buoy_Initiate(p.tPlayer)
+		If (Not(p\Action=ACTION_BUOY)) And (Not(p\WasInBuoyTimer>0)) And p\AirBegTooFar=False Then
 			Player_PlayAttackVoice(p)
 			p\Action=ACTION_BUOY
 			Player_ConvertGroundToAir(p)
@@ -1554,7 +1744,7 @@
 		EndIf
 	End Function
 
-	Function Player_Action_Buoy(p.tPlayer)
+Function Player_Action_Buoy(p.tPlayer)
 
 		Player_ActuallyJump(p)
 
@@ -1579,7 +1769,7 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Psycho_Initiate(p.tPlayer)
+Function Player_Action_Psycho_Initiate(p.tPlayer)
 		Select p\Character
 			Case CHAR_SIL:
 				Select p\Psychokinesis
@@ -1592,7 +1782,7 @@
 						If Not(p\Action=ACTION_LEVITATE) Then p\Action=ACTION_PSYCHO : p\ThrowType=1
 					EndIf
 				Case 1:
-					If p\SpeedLength#>0 and Game\Gameplay\PsychoBombCount>0 Then
+					If p\SpeedLength#>0 And Game\Gameplay\PsychoBombCount>0 Then
 						If (Not(p\PsychoChargeTimer>0)) Then
 							Player_PlayAttackVoice(p)
 							Game\Gameplay\PsychoBombCount=0
@@ -1624,7 +1814,7 @@
 		End Select
 	End Function
 
-	Function Player_Action_Psycho(p.tPlayer)
+Function Player_Action_Psycho(p.tPlayer)
 
 		If p\Motion\Ground Then
 			Player_Action_Common(p)
@@ -1641,18 +1831,18 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Turn_Initiate(p.tPlayer)
-		If p\Motion\Ground=False and (Not(p\InvisibilityRestrictTimer>0)) and p\BombThrown<1 Then
+Function Player_Action_Turn_Initiate(p.tPlayer)
+		If p\Motion\Ground=False And (Not(p\InvisibilityRestrictTimer>0)) And p\BombThrown<1 Then
 			p\Action=ACTION_TURN
 			If p\Motion\Ground=False Then p\BombThrown=p\BombThrown+1
 		EndIf
 	End Function
 
-	Function Player_Action_Turn(p.tPlayer)
+Function Player_Action_Turn(p.tPlayer)
 
 		Player_Action_Fall(p)
 
-		Player_SetSpeedY(p,-0.1,true)
+		Player_SetSpeedY(p,-0.1,True)
 
 		If Not(Animating(p\Objects\Mesh)) Then
 			Select p\Character
@@ -1691,43 +1881,43 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Soar_Initiate(p.tPlayer)
+Function Player_Action_Soar_Initiate(p.tPlayer)
 		If (Not(p\GlideRestartTimer>0)) Then
 			Player_PlayJumpActionVoice(p)
 			p\Action=ACTION_SOAR
 			If p\No#=1 Then EmitSmartSound(Sound_GlideStart,p\Objects\Entity)
-			Player_SetSpeed(p,p\Physics\GLIDE_SPEED#*0.875,true)
-			Player_SetSpeedY(p,0,true)
+			Player_SetSpeed(p,p\Physics\GLIDE_SPEED#*0.875,True)
+			Player_SetSpeedY(p,0,True)
 			If Not(p\SoarTimer>0) Then p\SoarTimer=6*secs#
 		EndIf
 	End Function
 
-	Function Player_Action_Soar(p.tPlayer)
+Function Player_Action_Soar(p.tPlayer)
 
 		Player_ActuallyLand(p)
 
-		If p\No#=1 and (Not(Player_IsPlayable(p) and Input\Hold\ActionJump)) Then
-			Player_SetSpeed(p,1.25,true)
+		If p\No#=1 And (Not(Player_IsPlayable(p) And Input\Hold\ActionJump)) Then
+			Player_SetSpeed(p,1.25,True)
 			p\GlideRestartTimer=0.14*secs#/2.0
 			If p\Motion\Ground Then Player_ConvertGroundToAir(p) : p\Motion\Ground=False
 			p\Action=ACTION_JUMPFALL
 		EndIf
 
 		If p\No#=1 And (Not(p\SoarTimer>0)) Then
-			Player_SetSpeed(p,1.25,true)
+			Player_SetSpeed(p,1.25,True)
 			p\Action=ACTION_FALL
 		EndIf
 
-		If (Not(p\JumpActionRestrictTimer>0)) and (Not(p\JustSoaredTimer>0)) Then Player_SetSpeedY(p,p\Physics\GLIDEFALL_SPEED#)
+		If (Not(p\JumpActionRestrictTimer>0)) And (Not(p\JustSoaredTimer>0)) Then Player_SetSpeedY(p,p\Physics\GLIDEFALL_SPEED#)
 
-		If p\No#=1 and Player_IsPlayable(p) and Input\Pressed\ActionSkill2 and (Not(p\Action=ACTION_SOARFLAP)) and (Not(p\JustSoaredTimer>0)) and p\Motion\Ground=False Then
+		If p\No#=1 And Player_IsPlayable(p) And Input\Pressed\ActionSkill2 And (Not(p\Action=ACTION_SOARFLAP)) And (Not(p\JustSoaredTimer>0)) And p\Motion\Ground=False Then
 			p\Action=ACTION_SOARFLAP
 			p\Objects\ForthRotation# = 0
 		EndIf
 
 	End Function
 
-	Function Player_Action_SoarFlap(p.tPlayer)
+Function Player_Action_SoarFlap(p.tPlayer)
 
 		Player_Action_Soar(p)
 
@@ -1749,7 +1939,7 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Carry(p.tPlayer)
+Function Player_Action_Carry(p.tPlayer)
 
 		Player_ActuallyJump(p)
 
@@ -1765,7 +1955,7 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Dive_Initiate(p.tPlayer)
+Function Player_Action_Dive_Initiate(p.tPlayer)
 		If p\JumpDashedOnce=0 Then
 			p\JumpDashedOnce=1
 			Player_PlayJumpActionVoice(p)
@@ -1773,12 +1963,12 @@
 			p\DoubleJump=0
 			If p\No#=1 Then EmitSmartSound(Sound_Dive,p\Objects\Entity)
 			p\DoubleJumpTimer=0.775*secs#
-			Player_SetSpeed(p,(p\Physics\JUMPDASH_SPEED#-0.235),true)
+			Player_SetSpeed(p,(p\Physics\JUMPDASH_SPEED#-0.235),True)
 			Player_FollowerHolding_EveryoneDoubleJumps(p)
 		EndIf
 	End Function
 
-	Function Player_Action_Dive(p.tPlayer)
+Function Player_Action_Dive(p.tPlayer)
 
 		Select p\DoubleJump
 			Case 0:
@@ -1796,7 +1986,7 @@
 				Player_SetSpeedY(p,-1.85)
 		End Select
 	
-		If (Not(p\DoubleJumpTimer>0)) and p\DoubleJump=1 Then p\Action=ACTION_JUMPFALL
+		If (Not(p\DoubleJumpTimer>0)) And p\DoubleJump=1 Then p\Action=ACTION_JUMPFALL
 
 		Player_ActuallyLand(p)
 
@@ -1805,24 +1995,24 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Sleet_Initiate(p.tPlayer)
-		If p\JumpDashedOnce=0 and (Not(p\GlideRestartTimer>0)) Then
+Function Player_Action_Sleet_Initiate(p.tPlayer)
+		If p\JumpDashedOnce=0 And (Not(p\GlideRestartTimer>0)) Then
 			p\JumpDashedOnce=1
 			Player_PlayJumpActionVoice(p)
 			p\Action=ACTION_SLEET
 			p\GlideTimer=0.625*secs#
 			If p\No#=1 Then EmitSmartSound(Sound_GlideStart3,p\Objects\Entity)
-			Player_SetSpeed(p,p\Physics\GLIDE_SPEED#*1.5,true)
-			Player_SetSpeedY(p,0,true)
+			Player_SetSpeed(p,p\Physics\GLIDE_SPEED#*1.5,True)
+			Player_SetSpeedY(p,0,True)
 		EndIf
 	End Function
 
-	Function Player_Action_Sleet(p.tPlayer)
+Function Player_Action_Sleet(p.tPlayer)
 
 		Player_ActuallyLand(p)
 
-		If (p\No#=1 and (Not(Player_IsPlayable(p) and Input\Hold\ActionJump))) Or (Not(p\GlideTimer>0)) Then
-			Player_SetSpeed(p,1.25,true)
+		If (p\No#=1 And (Not(Player_IsPlayable(p) And Input\Hold\ActionJump))) Or (Not(p\GlideTimer>0)) Then
+			Player_SetSpeed(p,1.25,True)
 			p\GlideRestartTimer=0.12*secs#/2.0
 			p\Action=ACTION_JUMPFALL
 		EndIf
@@ -1834,7 +2024,7 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Cannon(p.tPlayer)
+Function Player_Action_Cannon(p.tPlayer)
 
 		PositionEntity p\Objects\Entity, p\CannonX#, p\CannonY#, p\CannonZ#
 
@@ -1843,7 +2033,7 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Spirit_Initiate(p.tPlayer)
+Function Player_Action_Spirit_Initiate(p.tPlayer)
 		If Not(p\ShootCooldownTimer>0) Then
 			Player_ConvertGroundToAir(p)
 			p\Motion\Ground = False
@@ -1854,7 +2044,7 @@
 		EndIf
 	End Function
 
-	Function Player_Action_Spirit(p.tPlayer)
+Function Player_Action_Spirit(p.tPlayer)
 
 		p\SpiritualChange=1
 
@@ -1862,7 +2052,7 @@
 
 		Player_SetSpeedYUpDownDiff(p,0.5,0.05)
 
-		If (Not(p\GlideTimer>0)) Or (Not(Player_IsPlayable(p) and Input\Hold\ActionSkill2)) Then
+		If (Not(p\GlideTimer>0)) Or (Not(Player_IsPlayable(p) And Input\Hold\ActionSkill2)) Then
 			p\Action=ACTION_FALL
 			EmitSmartSound(Sound_Spirit,p\Objects\Entity)
 			p\ShootCooldownTimer=4.85*secs#
@@ -1873,7 +2063,7 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_CarryThrown(p.tPlayer)
+Function Player_Action_CarryThrown(p.tPlayer)
 
 		If p\ObjPickUp=0 Then p\Action=ACTION_FALL
 
@@ -1884,9 +2074,9 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_CarryJump(p.tPlayer)
+Function Player_Action_CarryJump(p.tPlayer)
 
-		If (Player_IsPlayable(p) and Input\Hold\ActionJump=False And p\Motion\Speed\y#>p\Physics\JUMP_STRENGTH_VARIABLE#) Then
+		If (Player_IsPlayable(p) And Input\Hold\ActionJump=False And p\Motion\Speed\y#>p\Physics\JUMP_STRENGTH_VARIABLE#) Then
 			p\Motion\Speed\y# = p\Physics\JUMP_STRENGTH_VARIABLE#
 		End If
 
@@ -1897,7 +2087,7 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_ShakeTree(p.tPlayer)
+Function Player_Action_ShakeTree(p.tPlayer)
 
 		If p\Motion\Ground=False Then p\Action=ACTION_FALL : p\ObjPickUp=0
 
@@ -1914,7 +2104,7 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Hold(p.tPlayer)
+Function Player_Action_Hold(p.tPlayer)
 
 		p\IsHoldingTimer=0.5*secs#
 
@@ -1931,9 +2121,9 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Board_GrindTurn(p.tPlayer)
+Function Player_Action_Board_GrindTurn(p.tPlayer)
 		If p\GrindTurn=0 Then p\GrindTurn=1
-		If ( (p\GrindTurn=1 and Player_IsPlayable(p) and Input\Hold\ActionRoll) Or (p\GrindTurn=2 and (Not(Player_IsPlayable(p) and Input\Hold\ActionRoll))) ) and (Not(p\GrindTurnRestrictTimer>0)) Then
+		If ( (p\GrindTurn=1 And Player_IsPlayable(p) And Input\Hold\ActionRoll) Or (p\GrindTurn=2 And (Not(Player_IsPlayable(p) And Input\Hold\ActionRoll))) ) And (Not(p\GrindTurnRestrictTimer>0)) Then
 			Select p\GrindTurn
 				Case 1: p\GrindTurn=2
 				Case 2: p\GrindTurn=1
@@ -1944,7 +2134,7 @@
 		EndIf
 	End Function
 
-	Function Player_Action_Board_GetGrounded(p.tPlayer)
+Function Player_Action_Board_GetGrounded(p.tPlayer)
 		If (Not(p\ForceJumpTimer>0)) Then
 			If Game\Vehicle=8 Then
 				level#=p\Objects\Position\y#
@@ -1974,17 +2164,17 @@
 		EndIf
 	End Function
 
-	Function Player_Action_Board(p.tPlayer)
+Function Player_Action_Board(p.tPlayer)
 
 		If Not(p\CantJumpTimer>0) Then Player_ActuallyJump(p)
 
 		Player_Action_Board_GetGrounded(p)
 
-		Player_Action_Board_GrindTurn(p)
+		;Player_Action_Board_GrindTurn(p)
 
-		If Player_IsPlayable(p) and Input\Pressed\ActionDrift Then
+		If Player_IsPlayable(p) And Input\Pressed\ActionDrift Then
 			p\Action=ACTION_BOARDDRIFT
-			Player_SetSpeed(p,p\Physics\SPINDASH_SPEED#-0.4,true)
+			Player_SetSpeed(p,p\Physics\SPINDASH_SPEED#-0.4,True)
 		EndIf
 
 	End Function
@@ -1992,24 +2182,24 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_BoardJump(p.tPlayer)
+Function Player_Action_BoardJump(p.tPlayer)
 
 		Player_Action_BoardTrick_Initiate(p)
 
-		If (Player_IsPlayable(p) and Input\Hold\ActionJump=False And p\Motion\Speed\y#>p\Physics\JUMP_STRENGTH_VARIABLE#) Then
+		If (Player_IsPlayable(p) And Input\Hold\ActionJump=False And p\Motion\Speed\y#>p\Physics\JUMP_STRENGTH_VARIABLE#) Then
 			p\Motion\Speed\y# = p\Physics\JUMP_STRENGTH_VARIABLE#
 		End If
 
 		Player_ActuallyLand(p)
 
-		If (Not(Player_IsPlayable(p) and Input\Hold\ActionJump)) and p\JumpTimer>0.93*secs# Then
+		If (Not(Player_IsPlayable(p) And Input\Hold\ActionJump)) And p\JumpTimer>0.93*secs# Then
 			p\Action=ACTION_BOARDFALL
 		EndIf
 
 		Player_Action_Board_GrindTurn(p)
 
 		If Game\Vehicle=8 Then
-			If (Not(p\ForceJumpTimer>0)) and p\Objects\Position\y#<Game\Stage\Properties\WaterLevel+1 Then p\Action=ACTION_BOARD
+			If (Not(p\ForceJumpTimer>0)) And p\Objects\Position\y#<Game\Stage\Properties\WaterLevel+1 Then p\Action=ACTION_BOARD
 		EndIf
 
 	End Function
@@ -2017,7 +2207,7 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_BoardDrift(p.tPlayer)
+Function Player_Action_BoardDrift(p.tPlayer)
         
 		Create_Spark.tSpark(p,p\Objects\Entity,MESHES(Mesh_Spark),cam\Entity, p\Animation\Direction#, 0, p\No#)
 		Create_Spark.tSpark(p,p\Objects\Entity,MESHES(Mesh_Spark),cam\Entity, p\Animation\Direction#, 0, p\No#)
@@ -2027,7 +2217,7 @@
 
 		If Not(p\CantJumpTimer>0) Then Player_ActuallyJump(p)
 
-		If (Not(Player_IsPlayable(p) and Input\Hold\ActionDrift)) Then p\Action=ACTION_BOARD
+		If (Not(Player_IsPlayable(p) And Input\Hold\ActionDrift)) Then p\Action=ACTION_BOARD
 
 		If p\DriftDirection=0 Then
 			Select(Rand(1,2))
@@ -2036,8 +2226,8 @@
 			End Select
 		EndIf
 
-		If (Player_IsPlayable(p) and Input\Hold\Left) Then p\DriftDirection=-1
-		If (Player_IsPlayable(p) and Input\Hold\Right) Then p\DriftDirection=1
+		If (Player_IsPlayable(p) And Input\Hold\Left) Then p\DriftDirection=-1
+		If (Player_IsPlayable(p) And Input\Hold\Right) Then p\DriftDirection=1
 
 		Player_Action_Board_GrindTurn(p)
 
@@ -2046,16 +2236,16 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_BoardFall(p.tPlayer)
+Function Player_Action_BoardFall(p.tPlayer)
 
 		Player_Action_BoardTrick_Initiate(p)
 
 		Player_ActuallyLand(p)
 
-		Player_Action_Board_GrindTurn(p)
+		;Player_Action_Board_GrindTurn(p)
 
 		If Game\Vehicle=8 Then
-			If (Not(p\ForceJumpTimer>0)) and p\Objects\Position\y#<Game\Stage\Properties\WaterLevel+1 Then p\Action=ACTION_BOARD
+			If (Not(p\ForceJumpTimer>0)) And p\Objects\Position\y#<Game\Stage\Properties\WaterLevel+1 Then p\Action=ACTION_BOARD
 		EndIf
 
 	End Function
@@ -2063,13 +2253,13 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_BoardTrick_Initiate(p.tPlayer)
+Function Player_Action_BoardTrick_Initiate(p.tPlayer)
 		If p\No#=1 Then
-		If Input\Pressed\ActionSkill2 and ((Not(p\Action=ACTION_BOARDTRICK)) Or p\Physics\TRICK_ANGLE#<180) and p\TrickCounter<5 Then
+		If Input\Pressed\ActionSkill2 And ((Not(p\Action=ACTION_BOARDTRICK)) Or p\Physics\TRICK_ANGLE#<180) And p\TrickCounter<5 Then
 			Gameplay_AddScore(50)
 			p\TrickTimer=0.625*secs#
 			For ppp.tPlayer = Each tPlayer
-				If ppp\No#>0 and (ppp\Action=ACTION_BOARDTRICK Or ppp\Action=ACTION_BOARDFALL Or ppp\Action=ACTION_BOARDJUMP) Then
+				If ppp\No#>0 And (ppp\Action=ACTION_BOARDTRICK Or ppp\Action=ACTION_BOARDFALL Or ppp\Action=ACTION_BOARDJUMP) Then
 					ppp\Physics\TRICK_ANGLE#=360
 					ppp\Action=ACTION_BOARDTRICK
 				EndIf
@@ -2080,7 +2270,7 @@
 		EndIf
 	End Function
 
-	Function Player_Action_BoardTrick(p.tPlayer)
+Function Player_Action_BoardTrick(p.tPlayer)
 
 		If p\Physics\TRICK_ANGLE#<=0 Then p\Action=ACTION_BOARDFALL
 
@@ -2091,12 +2281,12 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Transform(p.tPlayer)
+Function Player_Action_Transform(p.tPlayer)
 
 		Player_SetSpeed(p,0)
 		Player_SetSpeedY(p,0)
 
-		If (Not(p\JumpMayRiseTimer>0)) and p\No#=1 Then
+		If (Not(p\JumpMayRiseTimer>0)) And p\No#=1 Then
 			EmitSmartSound(Sound_GoSuper,p\Objects\Entity)
 			Game\SuperForm=Game\SuperForm+1
 			For ee.tEmerald=Each tEmerald : Remove_Emerald(ee) : Next
@@ -2109,7 +2299,7 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_RivalDie(p.tPlayer)
+Function Player_Action_RivalDie(p.tPlayer)
 
 		Player_SetSpeed(p,0)
 
@@ -2120,8 +2310,8 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Gatling_Initiate(p.tPlayer)
-		If (p\Motion\Ground Or p\Character=CHAR_TIA) and (Not(p\ShootCooldownTimer>0)) Then
+Function Player_Action_Gatling_Initiate(p.tPlayer)
+		If (p\Motion\Ground Or p\Character=CHAR_TIA) And (Not(p\ShootCooldownTimer>0)) Then
 			Player_PlayAttackVoice(p)
 			p\Action=ACTION_GATLING
 			p\PunchTimer=0.2*secs#
@@ -2130,7 +2320,7 @@
 		EndIf
 	End Function
 
-	Function Player_Action_Gatling(p.tPlayer)
+Function Player_Action_Gatling(p.tPlayer)
 
 		Select p\Character
 			Case CHAR_TIA:
@@ -2158,7 +2348,7 @@
 			EndIf
 		EndIf
 
-		If (((Not(Input\Hold\ActionSkill3)) and (Not(p\Character=CHAR_TIA))) Or ((Not(Input\Hold\ActionSkill1)) and (p\Character=CHAR_TIA))) Or (Not(p\PunchNumber<10)) Then
+		If (((Not(Input\Hold\ActionSkill3)) And (Not(p\Character=CHAR_TIA))) Or ((Not(Input\Hold\ActionSkill1)) And (p\Character=CHAR_TIA))) Or (Not(p\PunchNumber<10)) Then
 			p\PunchTimer=0
 			If p\Motion\Ground Then p\Action=ACTION_COMMON Else p\Action=ACTION_JUMPFALL
 			Select p\Character
@@ -2171,13 +2361,13 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_ShootHover(p.tPlayer)
+Function Player_Action_ShootHover(p.tPlayer)
 
 		Player_ActuallyLand(p)
 		
-		Player_SetSpeed(p,p\Physics\HOVER_SPEED#,true)
+		Player_SetSpeed(p,p\Physics\HOVER_SPEED#,True)
 
-		If Not(p\JumpActionRestrictTimer>0) Then Player_SetSpeedY(p,p\Physics\HOVERFALL_SPEED#*0.3455,true)
+		If Not(p\JumpActionRestrictTimer>0) Then Player_SetSpeedY(p,p\Physics\HOVERFALL_SPEED#*0.3455,True)
 
 		If (Not(Animating(p\Objects\Mesh))) Then
 			Select p\Character
@@ -2192,28 +2382,16 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Skydive(p.tPlayer)
+Function Player_Action_Skydive(p.tPlayer)
 
 		Player_ActuallyLand(p)
 
 		If p\Motion\Ground=False Then
 			If Input\Hold\ActionRoll Then
-				Player_SetSpeedYAlways(p,p\Physics\SKYDIVE_SPEED#*2,true)
+				Player_SetSpeedYAlways(p,p\Physics\SKYDIVE_SPEED#*2,True)
 			Else
-				Player_SetSpeedYAlways(p,p\Physics\SKYDIVE_SPEED#,true)
+				Player_SetSpeedYAlways(p,p\Physics\SKYDIVE_SPEED#,True)
 			EndIf
-		EndIf
-
-		If (Not(Game\CamLock>0)) and p\No#=1 Then
-			Game\CamLock2=0.1*secs#
-			cam\Lock\PreviousPos=cam\Lock\Pos
-			cam\Lock\Pos=0
-			cam\Lock\Immediate=0
-			cam\Lock\Rotation\x#=85 : cam\Lock\Rotation\y#=p\Animation\Direction#+180 : cam\Lock\Rotation\z#=0
-			If cam\Lock\Rotation\y#>=360 Then cam\Lock\Rotation\y#=cam\Lock\Rotation\y#-360
-			If cam\Lock\Rotation\y#<0 Then cam\Lock\Rotation\y#=cam\Lock\Rotation\y#+360
-			cam\Lock\Zoom#=30+CAMERA_CONTROL_SIZEFACTOR#*p\ScaleFactor#*0.5
-			cam\Lock\Speed#=5
 		EndIf
 
 	End Function
@@ -2221,23 +2399,23 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Glider(p.tPlayer)
+Function Player_Action_Glider(p.tPlayer)
 
-		If p\No#=1 and (Not(Game\ControlLock>0)) Then Player_ActuallyLand(p)
+		If p\No#=1 And (Not(Game\ControlLock>0)) Then Player_ActuallyLand(p)
 
 		If p\Motion\Ground=False Then
 			If Input\Hold\ActionJump Then
-				Player_SetSpeedYAlways(p,-12.5*0.020322*p\Physics\SKYDIVE_SPEED#*2,true)
+				Player_SetSpeedYAlways(p,-12.5*0.020322*p\Physics\SKYDIVE_SPEED#*2,True)
 			ElseIf Input\Hold\ActionRoll Then
-				Player_SetSpeedYAlways(p,14*0.020322*p\Physics\SKYDIVE_SPEED#*2,true)
+				Player_SetSpeedYAlways(p,14*0.020322*p\Physics\SKYDIVE_SPEED#*2,True)
 			Else
-				Player_SetSpeedYAlways(p,0.020322*p\Physics\SKYDIVE_SPEED#,true)
+				Player_SetSpeedYAlways(p,0.020322*p\Physics\SKYDIVE_SPEED#,True)
 			EndIf
 		Else
 			If Input\Hold\ActionJump Then
 				Player_ConvertGroundToAir(p)
 				p\Motion\Ground = False
-				Player_SetSpeedYAlways(p,-10*0.020322*p\Physics\SKYDIVE_SPEED#*2,true)
+				Player_SetSpeedYAlways(p,-10*0.020322*p\Physics\SKYDIVE_SPEED#*2,True)
 			EndIf
 		EndIf
 
@@ -2246,17 +2424,17 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Freeze_Initiate(p.tPlayer)
-		If Game\Vehicle=0 and Game\Invinc=0 Then
+Function Player_Action_Freeze_Initiate(p.tPlayer)
+		If Game\Vehicle=0 And Game\Invinc=0 Then
 			EmitSmartSound(Sound_Bounce,p\Objects\Entity)
 			p\Action=ACTION_FREEZE
 			Player_CreateRazer.tRazer(p,p\Objects\Mesh,1,4,1+0.5*p\ScaleFactor#,1+0.5*p\ScaleFactor#,1+0.5*p\ScaleFactor#,p\WasGrabbedTimer)
 		EndIf
 	End Function
 
-	Function Player_Action_Freeze_Initiate2(p.tPlayer)
+Function Player_Action_Freeze_Initiate2(p.tPlayer)
 		If (Not(Game\Shield=OBJTYPE_BSHIELD Or p\Character=CHAR_MAR Or p\Character=CHAR_BAR)) Then
-			If (Not(p\WasGrabbedTimer>0)) and Game\Invinc=0 Then
+			If (Not(p\WasGrabbedTimer>0)) And Game\Invinc=0 Then
 				Player_ConvertGroundToAir(p) : p\Motion\Ground = False
 				If Game\MachLock>0 Then
 					Player_SetSpeed(p,0.5)
@@ -2270,7 +2448,7 @@
 		EndIf
 	End Function
 
-	Function Player_Action_Freeze(p.tPlayer)
+Function Player_Action_Freeze(p.tPlayer)
 
 		Game\ControlLock=0.2*secs#
 
@@ -2281,7 +2459,7 @@
 			If p\WasGrabbedTimer<1.0*secs# Then Player_SetSpeed(p,0)
 		EndIf
 
-		If Game\MachLock>0 and Menu\Stage<0 Then p\Animation\Direction#=180
+		If Game\MachLock>0 And Menu\Stage<0 Then p\Animation\Direction#=180
 
 		If Not(p\WasGrabbedTimer>0) Then
 			If p\Motion\Ground Then p\Action=ACTION_COMMON Else p\Action=ACTION_FALL
@@ -2292,8 +2470,8 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Hookshot_Initiate(p.tPlayer, limit=2)
-		If (Not(p\ThrowTimer>0)) and p\BombThrown<limit Then
+Function Player_Action_Hookshot_Initiate(p.tPlayer, limit=2)
+		If (Not(p\ThrowTimer>0)) And p\BombThrown<limit Then
 			p\Action=ACTION_HOOKSHOT
 			p\ThrowTimer=0.37*secs# : p\ThrowABomb=0
 			Player_PlayAttackVoice(p)
@@ -2302,9 +2480,9 @@
 		EndIf
 	End Function
 
-	Function Player_Action_Hookshot(p.tPlayer)
+Function Player_Action_Hookshot(p.tPlayer)
 
-		If Player_FrameCheck(p,4,true) and p\ThrowABomb<1 Then p\ThrowABomb=1
+		If Player_FrameCheck(p,4,True) And p\ThrowABomb<1 Then p\ThrowABomb=1
 		If p\ThrowABomb=1 Then
 			p\ThrowABomb=2
 			EmitSmartSound(Sound_PunchBig,p\Objects\Entity)
@@ -2316,7 +2494,7 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Sink(p.tPlayer)
+Function Player_Action_Sink(p.tPlayer)
 
 		Game\ControlLock=0.1*secs#
 
@@ -2329,7 +2507,7 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Car(p.tPlayer)
+Function Player_Action_Car(p.tPlayer)
 
 		If p\Action=ACTION_CARFALL Then
 			Player_ActuallyLand(p)
@@ -2340,9 +2518,9 @@
 				If (Not(p\ForceJumpTimer>0)) Then p\Action=ACTION_CARFALL
 			EndIf
 
-			If Player_IsPlayable(p) and p\Motion\Ground and Input\Pressed\ActionDrift Then
+			If Player_IsPlayable(p) And p\Motion\Ground And Input\Pressed\ActionDrift Then
 				p\Action=ACTION_CARDRIFT
-				Player_SetSpeed(p,p\Physics\SPINDASH_SPEED#-0.4,true)
+				Player_SetSpeed(p,p\Physics\SPINDASH_SPEED#-0.4,True)
 			EndIf
 		EndIf
 
@@ -2351,17 +2529,17 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_CarDrift(p.tPlayer)
+Function Player_Action_CarDrift(p.tPlayer)
         
 		Create_Spark.tSpark(p,p\Objects\Entity,MESHES(Mesh_Spark),cam\Entity, p\Animation\Direction#, 0, p\No#)
 		Create_Spark.tSpark(p,p\Objects\Entity,MESHES(Mesh_Spark),cam\Entity, p\Animation\Direction#, 0, p\No#)
 		Create_Spark.tSpark(p,p\Objects\Entity,MESHES(Mesh_Spark),cam\Entity, p\Animation\Direction#, 0, p\No#)
 
-		If p\Motion\Ground=False and (Not(p\ForceJumpTimer>0)) Then p\Action=ACTION_CARFALL
+		If p\Motion\Ground=False And (Not(p\ForceJumpTimer>0)) Then p\Action=ACTION_CARFALL
 
 		Player_ActuallyJump(p)
 
-		If (Not(Player_IsPlayable(p) and Input\Hold\ActionDrift)) Then p\Action=ACTION_CAR
+		If (Not(Player_IsPlayable(p) And Input\Hold\ActionDrift)) Then p\Action=ACTION_CAR
 
 		If p\DriftDirection=0 Then
 			Select(Rand(1,2))
@@ -2370,15 +2548,15 @@
 			End Select
 		EndIf
 
-		If (Player_IsPlayable(p) and Input\Hold\Left) Then p\DriftDirection=-1
-		If (Player_IsPlayable(p) and Input\Hold\Right) Then p\DriftDirection=1
+		If (Player_IsPlayable(p) And Input\Hold\Left) Then p\DriftDirection=-1
+		If (Player_IsPlayable(p) And Input\Hold\Right) Then p\DriftDirection=1
 
 	End Function
 
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_BellyFlop_Initiate(p.tPlayer)
+Function Player_Action_BellyFlop_Initiate(p.tPlayer)
 		If p\BombThrown<3 Then
 			p\Action = ACTION_BELLYFLOP
 			p\StompSaverTimer=0 : p\StompSaver#=p\Objects\Position\y#
@@ -2396,7 +2574,7 @@
 		EndIf
 	End Function
 
-	Function Player_Action_BellyFlop(p.tPlayer)
+Function Player_Action_BellyFlop(p.tPlayer)
 
 		Player_Action_StompSaver(p)
 
@@ -2411,7 +2589,7 @@
 			p\Motion\Speed\y# = 2.0
 			ParticleTemplate_Call(p\SmokeParticle, PARTICLE_PLAYER_AFTERJUMP, p\Objects\Mesh, 1+p\ScaleFactor#+5, 0, 0, p\RealCharacter, 2)
 			p\Flags\Targeter=0
-			For i=1 to 4
+			For i=1 To 4
 			Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_BELLYFLOP)
 			Next
 		EndIf
@@ -2431,8 +2609,8 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Puddle_Initiate(p.tPlayer)
-		If (Not(p\InvisibilityRestrictTimer>0)) and p\BombThrown<1 Then
+Function Player_Action_Puddle_Initiate(p.tPlayer)
+		If (Not(p\InvisibilityRestrictTimer>0)) And p\BombThrown<1 Then
 			p\Action=ACTION_PUDDLE
 			If p\Motion\Ground=False Then p\BombThrown=p\BombThrown+1
 			p\Invisibility=1 : p\InvisibilityTimer=10*secs#
@@ -2440,7 +2618,7 @@
 		EndIf
 	End Function
 
-	Function Player_Action_Puddle(p.tPlayer)
+Function Player_Action_Puddle(p.tPlayer)
 
 		ParticleTemplate_Call(p\SmokeParticle, PARTICLE_CHAO_SWIM, p\Objects\Mesh, 0.2, 0, 2.2, 0, 0, 0.125)
 
@@ -2453,7 +2631,7 @@
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function Player_Action_Tornado(p.tPlayer)
+Function Player_Action_Tornado(p.tPlayer)
 	If p\No#=1 Then
 		If Game\Victory<>0 Then
 			Player_SetSpeedYAlways(p,0)
@@ -2477,7 +2655,7 @@
 				Player_SetSpeedYAlways(p,0.5)
 			EndIf
 
-			If Input\Pressed\ActionSkill2 and (Not(p\TornadoChangeTimer>0)) Then
+			If Input\Pressed\ActionSkill2 And (Not(p\TornadoChangeTimer>0)) Then
 				p\TornadoChangeTimer=0.5*secs#
 				If (Not(Game\Vehicle=7)) Then Game\Vehicle=7 Else Game\Vehicle=6
 				PostEffect_Create_FadeIn(0.04, 255, 255, 255)
@@ -2497,7 +2675,7 @@
 				EndIf
 			EndIf
 
-			If Game\Vehicle=7 and p\TornadoShoot=1 Then
+			If Game\Vehicle=7 And p\TornadoShoot=1 Then
 				p\TornadoShoot=0
 				Player_Action_Shoot_AimShot(p)
 				If Rand(1,8)=1 Then Player_PlayAttackVoice(p)
@@ -2510,3 +2688,5 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
+;~IDEal Editor Parameters:
+;~C#Blitz3D

@@ -43,7 +43,7 @@ Function Player_UpdateTrails()
 				t\tdz[i] = (VertexZ(t\surface,i-2) - VertexZ(t\surface,i))/trail_update#
 				t\alpha=1.0-Float(i)/30.0
 				If t\alpha<0 Then t\alpha=0
-				VertexColor t\surface,i,255,255,255,t\alpha
+				VertexColor t\surface,i,0,0,255,t\alpha
 			Next
 		End If
 
@@ -102,7 +102,7 @@ End Function
 Function Player_FreeTrails(p.tPlayer,id)
 
 	For t.tTrail=Each tTrail
-		If t\char=p\RealCharacter and t\id=id Then
+		If t\char=p\RealCharacter And t\id=id Then
 			FreeEntity t\mesh
 			Delete t
 		EndIf
@@ -195,7 +195,7 @@ End Function
 Function Player_FreeLongTrails(p.tPlayer,id)
 
 	For trail.tLongTrail=Each tLongTrail
-		If trail\char=p\RealCharacter and trail\id=id Then
+		If trail\char=p\RealCharacter And trail\id=id Then
 			FreeEntity trail\mesh
 			Delete trail
 		EndIf
@@ -358,7 +358,7 @@ Field Owner.tPlayer
 Field BelongsToPlayer
 End Type
 
-Function Player_CreateRazer.tRazer(p.tPlayer,entity,alphastart#,mode,scalex#=1,scaley#=1,scalez#=1,timer#=0,belongstoplayer=true)
+Function Player_CreateRazer.tRazer(p.tPlayer,entity,alphastart#,mode,scalex#=1,scaley#=1,scalez#=1,timer#=0,belongstoplayer=True)
 	Select mode
 		Case 4,5,6,7:
 		Case 8:
@@ -458,7 +458,7 @@ Function Player_UpdateRazer(rz.tRazer, d.tDeltaTime)
 	i=False
 	Select rz\Mode
 		Case 1,5,6,7,8: If rz\Alpha# < 0 Then i=True
-		Case 2,3: If rz\Mode<>1 and (Not(rz\Owner\Action=ACTION_SWIPE)) Then i=True
+		Case 2,3: If rz\Mode<>1 And (Not(rz\Owner\Action=ACTION_SWIPE)) Then i=True
 		Case 4: If (Not(rz\Timer>0)) Then i=True
 	End Select
 
@@ -476,7 +476,7 @@ Function Player_RubyCubes(p.tPlayer,alpha#=0.65,amount=5,mode=5)
 		p\RubyCubesTimer=p\RubyCubesTimer-timervalue#
 	Else
 		p\RubyCubesTimer=0.1*secs#
-		For i=1 to amount
+		For i=1 To amount
 			Player_CreateRazer.tRazer(p,p\Objects\Mesh,alpha#,mode)
 		Next
 	EndIf
@@ -487,7 +487,7 @@ Function Bomb_RubyCubes(p.tPlayer,b.tBomb)
 		b\RubyCubesTimer=b\RubyCubesTimer-timervalue#
 	Else
 		b\RubyCubesTimer=0.025*secs#
-		For i=1 to 5
+		For i=1 To 5
 			Player_CreateRazer.tRazer(p,b\Pivot,0.8,6)
 		Next
 	EndIf
@@ -605,6 +605,11 @@ Function Create_Spark.tSpark(p.tPlayer, entity, mesh, camera, yaw#, mode#=0, no#
 			sp\XR# = 0
 			sp\YR# = Rnd(-15,15)
 			sp\ZR# = Rnd(0,15)
+		Case 2:
+			RotateEntity sp\Entity, 0, Yaw#+90, EntityRoll#(entity)
+			sp\XR# = Rnd(0,180)
+			sp\YR# = Rnd(-30,30)
+			sp\ZR# = Rnd(0,30)
 	End Select
 
 	sp\timer = MilliSecs()+220
@@ -632,6 +637,8 @@ Function Update_Spark(sp.tSpark, p.tPlayer, d.tDeltaTime)
 	
 	If sp\Mode = 0 Then
 		If sp\No#=p\No# Then EntityColor(sp\Entity,Interface_Circle_R[InterfaceChar(p\RealCharacter)], Interface_Circle_G[InterfaceChar(p\RealCharacter)], Interface_Circle_B[InterfaceChar(p\RealCharacter)])
+	ElseIf sp\Mode=2 Then
+		AlignToVector(sp\Entity, p\Animation\Align\x#, p\Animation\Align\y#, p\Animation\Align\z#, 2)
 	Else
 		EntityColor(sp\Entity,255, 203, 061)
 		AlignToVector(sp\Entity, p\Animation\Align\x#, p\Animation\Align\y#, p\Animation\Align\z#, 2)
@@ -700,13 +707,13 @@ End Function
 
 Function Create_Emerald.tEmerald(p.tPlayer)
 
-	ee.tEmerald=new tEmerald
+	ee.tEmerald=New tEmerald
 
 	ee\Pivot=CreatePivot()
 
 	PositionEntity(ee\Pivot,p\Objects\Position\x#,p\Objects\Position\y#,p\Objects\Position\z#)
 
-	For i=1 to 7
+	For i=1 To 7
 		Select p\Character
 			Case CHAR_BLA,CHAR_MAR,CHAR_TIA: ee\Mesh[i]=CopyEntity(MESHES(Mesh_Sol), ee\Pivot)
 			Default: ee\Mesh[i]=CopyEntity(MESHES(Mesh_Emerald), ee\Pivot)
@@ -737,7 +744,7 @@ Function Update_Emerald(ee.tEmerald, p.tPlayer, d.tDeltaTime)
 	PositionEntity(ee\Mesh[6], -2.5*ee\PosMultiplier#, 0.0, -5.2*ee\PosMultiplier#)
 	PositionEntity(ee\Mesh[7], +2.5*ee\PosMultiplier#, 0.0, -5.2*ee\PosMultiplier#)
 
-	For i=1 to 7 : 	TurnEntity(ee\Mesh[i], 0, -1*d\Delta, 0) : Next
+	For i=1 To 7 : 	TurnEntity(ee\Mesh[i], 0, -1*d\Delta, 0) : Next
 
 	TurnEntity(ee\Pivot, 0, 5*d\Delta, 0)
 
@@ -746,6 +753,6 @@ Function Update_Emerald(ee.tEmerald, p.tPlayer, d.tDeltaTime)
 End Function
 
 Function Remove_Emerald(ee.tEmerald)
-	For i=1 to 7 : FreeEntity(ee\Mesh[i]) : Next
+	For i=1 To 7 : FreeEntity(ee\Mesh[i]) : Next
 	Delete ee
 End Function

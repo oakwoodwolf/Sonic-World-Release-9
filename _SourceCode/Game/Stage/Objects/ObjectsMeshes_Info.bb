@@ -14,7 +14,9 @@
 
 	; Player parts
 	Global Mesh_Spark	= cm : cm=cm+1
+	Global Mesh_GrindSpark	= cm : cm=cm+1
 	Global Mesh_JumpBall	= cm : cm=cm+1
+	Global Mesh_BoostBarrier		= cm : cm=cm+1
 	Global Mesh_Stomp	= cm : cm=cm+1
 	Global Mesh_StompTrail	= cm : cm=cm+1
 	Global Mesh_Forth	= cm : cm=cm+1
@@ -90,9 +92,10 @@
 	Global Mesh_Locker		= cm : cm=cm+1
 	Global Mesh_Locker2		= cm : cm=cm+1
 	Global Mesh_Ring		= cm : cm=cm+1
-	Global Mesh_SpewRing		= cm : cm=cm+1
 	Global Mesh_RedRing		= cm : cm=cm+1
-	Global Mesh_SpewRedRing		= cm : cm=cm+1
+	Global Mesh_SpewRing		= cm : cm=cm+1
+	Global Mesh_Shard		= cm : cm=cm+1
+	Global Mesh_SpewShard		= cm : cm=cm+1
 
 	; Enemy missiles
 	Global Mesh_EnemyMissile_BuzzMissile1	= cm : cm=cm+1
@@ -122,6 +125,8 @@
 	Global Mesh_EnemyMissile_ExplosionMissile= cm : cm=cm+1
 	Global Mesh_EnemyMissile_FCannonMissile	= cm : cm=cm+1
 	Global Mesh_EnemyMissile_BomberMissile	= cm : cm=cm+1
+	
+	Global Mesh_CannonShot	= cm : cm=cm+1
 
 	; Chaos drives
 	Global Mesh_Drive1	= cm : cm=cm+1
@@ -154,9 +159,11 @@
 	Global Mesh_Balloon4		= cm : cm=cm+1
 	Global Mesh_BoxCage		= cm : cm=cm+1
 	Global Mesh_BoxIron		= cm : cm=cm+1
+	Global Mesh_BoxYellow		= cm : cm=cm+1
 	Global Mesh_BoxMetal		= cm : cm=cm+1
 	Global Mesh_BoxWooden		= cm : cm=cm+1
 	Global Mesh_BoxLightOn		= cm : cm=cm+1
+	Global Mesh_BoxLight		= cm : cm=cm+1
 	Global Mesh_BoxLightOff		= cm : cm=cm+1
 	Global Mesh_BoxTnt		= cm : cm=cm+1
 	Global Mesh_BoxNitro		= cm : cm=cm+1
@@ -174,13 +181,23 @@
 	Global Mesh_TriangleBumper	= cm : cm=cm+1
 	Global Mesh_Paddle		= cm : cm=cm+1
 	Global Mesh_Paddle2		= cm : cm=cm+1
+	Global Mesh_StageVisual1	= cm : cm=cm+1
+	Global Mesh_StageVisual2	= cm : cm=cm+1
+	Global Mesh_StageVisual3	= cm : cm=cm+1
+	Global Mesh_StageVisual4	= cm : cm=cm+1
+	Global Mesh_StageVisual5	= cm : cm=cm+1
 	Global Mesh_Checkpoint		= cm : cm=cm+1
+	Global Mesh_CheckpointB		= cm : cm=cm+1
 	Global Mesh_CheckpointX		= cm : cm=cm+1
 	Global Mesh_Checkpoint2		= cm : cm=cm+1
+	Global Mesh_Checkpoint2B		= cm : cm=cm+1
 	Global Mesh_Checkpoint2X	= cm : cm=cm+1
 	Global Mesh_Checkpoint3		= cm : cm=cm+1
+	Global Mesh_Checkpoint3B		= cm : cm=cm+1
 	Global Mesh_Checkpoint3X	= cm : cm=cm+1
 	Global Mesh_DashPanel		= cm : cm=cm+1
+	Global Mesh_JumpPanel		= cm : cm=cm+1
+	Global Mesh_JumpPanel2		= cm : cm=cm+1
 	Global Mesh_DashPanelPads	= cm : cm=cm+1
 	Global Mesh_DashRamp		= cm : cm=cm+1
 	Global Mesh_DashRampPads	= cm : cm=cm+1
@@ -205,6 +222,7 @@
 	Global Mesh_BRing20		= cm : cm=cm+1
 	Global Mesh_Life		= cm : cm=cm+1
 	Global Mesh_GoalRing		= cm : cm=cm+1
+	Global Mesh_GoalRuby		= cm : cm=cm+1
 	Global Mesh_EmeraldGoal		= cm : cm=cm+1
 	Global Mesh_SpikeBall		= cm : cm=cm+1
 	Global Mesh_SpikeBallCube	= cm : cm=cm+1
@@ -225,6 +243,8 @@
 	Global Mesh_SpikeCylinder	= cm : cm=cm+1
 	Global Mesh_SpikeCylinderCube= cm : cm=cm+1
 	Global Mesh_Spring		= cm : cm=cm+1
+	Global Mesh_SpringIce		= cm : cm=cm+1
+	Global Mesh_SpringThorn		= cm : cm=cm+1
 	Global Mesh_BSpring		= cm : cm=cm+1
 	Global Mesh_SpringX		= cm : cm=cm+1
 	Global Mesh_SpringTrap	= cm : cm=cm+1
@@ -335,6 +355,7 @@
 	Global Mesh_Flicky2		= cm : cm=cm+1
 	Global Mesh_Flicky3		= cm : cm=cm+1
 	Global Mesh_Flicky4		= cm : cm=cm+1
+	Global Mesh_FlickyS		= cm : cm=cm+1
 	Global Mesh_Capsule		= cm : cm=cm+1
 	Global Mesh_WispBlack		= cm : cm=cm+1
 	Global Mesh_WispBlue		= cm : cm=cm+1
@@ -491,6 +512,8 @@
 	Global Mesh_Enemy_PawnGun		= cm : cm=cm+1
 	Global Mesh_Enemy_PawnSword		= cm : cm=cm+1
 	Global Mesh_Enemy_PawnShield	= cm : cm=cm+1
+	Global Mesh_Enemy_Searcher	= cm : cm=cm+1
+	Global Mesh_Enemy_EggHunter	= cm : cm=cm+1
 	Global Mesh_Enemy_Pawn			= cm : cm=cm+1
 	Global Mesh_Enemy_Grabber		= cm : cm=cm+1
 	Global Mesh_Enemy_Beetle		= cm : cm=cm+1
@@ -502,6 +525,7 @@
 	Global Mesh_Enemy_Hornet		= cm : cm=cm+1
 	Global Mesh_Enemy_HunterShield	= cm : cm=cm+1
 	Global Mesh_Enemy_Hunter		= cm : cm=cm+1
+	Global Mesh_Enemy_Gunner		= cm : cm=cm+1
 	Global Mesh_Enemy_Rhino			= cm : cm=cm+1
 	Global Mesh_Enemy_RhinoSpikes	= cm : cm=cm+1
 	Global Mesh_Enemy_Jaws			= cm : cm=cm+1
@@ -627,3 +651,5 @@
 ;----------------------------------------------------------------------------------------------------------------------
 ;----------------------------------------------------------------------------------------------------------------------
 ;----------------------------------------------------------------------------------------------------------------------
+;~IDEal Editor Parameters:
+;~C#Blitz3D

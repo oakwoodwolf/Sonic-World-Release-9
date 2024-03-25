@@ -1,13 +1,13 @@
-Dim PARTICLETEXTURES(101)
+Dim PARTICLETEXTURES(106)
 
 Function LoadParticleTexture(particletextureno, path$, mode = 0, blend = 1)
-	PARTICLETEXTURES(ParticleTextureno) = LoadTexture(path$, mode)
-	TextureBlend PARTICLETEXTURES(ParticleTextureno), blend
+	PARTICLETEXTURES(particletextureno) = LoadTexture(path$, mode)
+	TextureBlend PARTICLETEXTURES(particletextureno), blend
 End Function
 
 Function LoadParticleAnimTexture(particletextureno, path$, mode, blend, w, h, maxframes)
-	PARTICLETEXTURES(ParticleTextureno) = LoadAnimTexture(path$, mode, w, h, 0, maxframes)
-	TextureBlend PARTICLETEXTURES(ParticleTextureno), blend
+	PARTICLETEXTURES(particletextureno) = LoadAnimTexture(path$, mode, w, h, 0, maxframes)
+	TextureBlend PARTICLETEXTURES(particletextureno), blend
 End Function
 
 ;---------------------------------------------------------------------------------
@@ -49,6 +49,7 @@ Global ParticleTexture_Super1 = i		: LoadParticleAnimTexture(i, "Textures\super1
 Global ParticleTexture_Super2 = i		: LoadParticleAnimTexture(i, "Textures\super2.png", 2, 1, 128, 128, 4) : i=i+1
 Global ParticleTexture_Hyper1 = i		: LoadParticleAnimTexture(i, "Textures\hyper1.png", 2, 1, 128, 128, 4) : i=i+1
 Global ParticleTexture_Hyper2 = i		: LoadParticleAnimTexture(i, "Textures\hyper2.png", 2, 1, 128, 128, 4) : i=i+1
+Global ParticleTexture_ShotDespawn = i		: LoadParticleAnimTexture(i, "Textures\ShotDespawn.png", 2, 1, 128, 128, 4) : i=i+1
 Global ParticleTexture_WaterSplash1 = i	: LoadParticleTexture(i, "Textures\WaterSplash1.png", 2, 1) : i=i+1
 Global ParticleTexture_WaterSplash2 = i	: LoadParticleTexture(i, "Textures\WaterSplash2.png", 2, 1) : i=i+1
 Global ParticleTexture_WaterSplash3 = i	: LoadParticleTexture(i, "Textures\WaterSplash3.png", 2, 1) : i=i+1
@@ -81,6 +82,10 @@ Global ParticleTexture_RRing1 = i		: LoadParticleTexture(i, "Textures\RRing1.png
 Global ParticleTexture_RRing2 = i		: LoadParticleTexture(i, "Textures\RRing2.png", 4) : i=i+1
 Global ParticleTexture_RRing3 = i		: LoadParticleTexture(i, "Textures\RRing3.png", 4) : i=i+1
 Global ParticleTexture_RRing4 = i		: LoadParticleTexture(i, "Textures\RRing4.png", 4) : i=i+1
+Global ParticleTexture_Shard1 = i		: LoadParticleTexture(i, "Textures\Shard1.png", 4) : i=i+1
+Global ParticleTexture_Shard2 = i		: LoadParticleTexture(i, "Textures\Shard2.png", 4) : i=i+1
+Global ParticleTexture_Shard3 = i		: LoadParticleTexture(i, "Textures\Shard3.png", 4) : i=i+1
+Global ParticleTexture_Shard4 = i		: LoadParticleTexture(i, "Textures\Shard4.png", 4) : i=i+1
 Global ParticleTexture_Bubble = i		: LoadParticleTexture(i, "Textures\Bubble.png", 2, 1) : i=i+1
 Global ParticleTexture_Drop = i			: LoadParticleTexture(i, "Textures\Drop.png", 2, 1) : i=i+1
 Global ParticleTexture_Curse1 = i		: LoadParticleTexture(i, "Textures\Curse1.png", 2, 1) : i=i+1
@@ -143,7 +148,7 @@ Global ParticleTexture_AlienBloodEx = i		: LoadParticleTexture(i, "Textures\Alie
 	End Function
 
 	Function ParticleTemplate_Delete(pt.tParticleTemplate)
-		For i=0 to 5 : FreeEmitter pt\Template[i] : Next
+		For i=0 To 5 : FreeEmitter pt\Template[i] : Next
 		FreeEmitter pt\Pivot
 		FreeEntity pt\Pivot
 		Delete pt\Pos
@@ -196,6 +201,7 @@ Global ParticleTexture_AlienBloodEx = i		: LoadParticleTexture(i, "Textures\Alie
 	Global PARTICLE_PLAYER_INVISIBILITY	= pm : pm=pm+1
 	Global PARTICLE_PLAYER_INVINCIBILITY	= pm : pm=pm+1
 	Global PARTICLE_PLAYER_SUPER		= pm : pm=pm+1
+	Global PARTICLE_PLAYER_SHOTDESPAWN		= pm : pm=pm+1
 	Global PARTICLE_PLAYER_SUPERAURA	= pm : pm=pm+1
 	Global PARTICLE_PLAYER_HYPERAURA	= pm : pm=pm+1
 	Global PARTICLE_PLAYER_WATERSPLASH	= pm : pm=pm+1
@@ -214,6 +220,7 @@ Global ParticleTexture_AlienBloodEx = i		: LoadParticleTexture(i, "Textures\Alie
 	Global PARTICLE_PLAYER_BUBBLEBREATHE= pm : pm=pm+1
 	Global PARTICLE_OBJECT_RING		= pm : pm=pm+1
 	Global PARTICLE_OBJECT_REDRING		= pm : pm=pm+1
+	Global PARTICLE_OBJECT_SHARD		= pm : pm=pm+1
 	Global PARTICLE_OBJECT_BUBBLES		= pm : pm=pm+1
 	Global PARTICLE_OBJECT_BUBBLE		= pm : pm=pm+1
 	Global PARTICLE_OBJECT_DROP			= pm : pm=pm+1
@@ -273,7 +280,7 @@ Function ParticleTemplate_CreateParticle(pt.tParticleTemplate)
 	;============================================================================================
 	;============================================================================================
 	Case PARTICLE_PLAYER_CHARACTERDUST:
-		For i=0 to 2
+		For i=0 To 2
 		pt\Template[i] = CreateTemplate()
 		SetTemplateEmitterBlend(pt\Template[i], 1)
 		SetTemplateInterval(pt\Template[i], 1)
@@ -496,7 +503,7 @@ Function ParticleTemplate_CreateParticle(pt.tParticleTemplate)
 		pt\Template[0] = CreateTemplate()
 		SetTemplateEmitterBlend(pt\Template[0], 1)
 		SetTemplateInterval(pt\Template[0], 1)
-		If Game\Others\FPS>=30 Then
+		If Game\Others\Fps>=30 Then
 			SetTemplateParticlesPerInterval(pt\Template[0], 8)
 		Else
 			SetTemplateParticlesPerInterval(pt\Template[0], 4)
@@ -531,7 +538,7 @@ Function ParticleTemplate_CreateParticle(pt.tParticleTemplate)
 		pt\Template[0] = CreateTemplate()
 		SetTemplateEmitterBlend(pt\Template[0], 1)
 		SetTemplateInterval(pt\Template[0], 1)
-		If Game\Others\FPS>=30 Then
+		If Game\Others\Fps>=30 Then
 			SetTemplateParticlesPerInterval(pt\Template[0], 8)
 		Else
 			SetTemplateParticlesPerInterval(pt\Template[0], 4)
@@ -560,7 +567,7 @@ Function ParticleTemplate_CreateParticle(pt.tParticleTemplate)
 		pt\Template[0] = CreateTemplate()
 		SetTemplateEmitterBlend(pt\Template[0], 1)
 		SetTemplateInterval(pt\Template[0], 1)
-		If Game\Others\FPS>=30 Then
+		If Game\Others\Fps>=30 Then
 			SetTemplateParticlesPerInterval(pt\Template[0], 8)
 		Else
 			SetTemplateParticlesPerInterval(pt\Template[0], 4)
@@ -583,6 +590,7 @@ Function ParticleTemplate_CreateParticle(pt.tParticleTemplate)
 		SetTemplateAlphaVel(pt\Template[0], True)
 		SetTemplateMaxParticles(pt\Template[0],1)
 		SetEmitter(pt\Pivot,pt\Template[0])
+		
 	;============================================================================================
 	;============================================================================================
 	Case PARTICLE_PLAYER_SUPERAURA:
@@ -604,6 +612,21 @@ Function ParticleTemplate_CreateParticle(pt.tParticleTemplate)
 			Case 2: SetTemplateLoadedTexture(pt\Template[0], (ParticleTexture_FireEx))
 			End Select
 		End Select
+		SetTemplateOffset(pt\Template[0], -(1.52+1.25*pt\Size#), (1.52+1.25*pt\Size#), -(1.52+1.25*pt\Size#), (1.52+1.25*pt\Size#), -(1.52+1.25*pt\Size#), (1.52+1.25*pt\Size#))
+		SetTemplateAlpha(pt\Template[0], 0.04)
+		SetTemplateAlphaVel(pt\Template[0], True)
+		SetTemplateSize(pt\Template[0], 5, 5, 1.9, 1.9)
+		SetTemplateSizeVel(pt\Template[0], -.2, 0, 1)
+		SetEmitter(pt\Pivot, pt\Template[0])
+		
+	Case PARTICLE_PLAYER_SHOTDESPAWN:
+		pt\Template[0] = CreateTemplate()
+		SetTemplateEmitterBlend(pt\Template[0], 3)
+		SetTemplateInterval(pt\Template[0], 1)
+		SetTemplateParticlesPerInterval(pt\Template[0], 1)
+		SetTemplateEmitterLifeTime(pt\Template[0], 3)
+		SetTemplateParticleLifeTime(pt\Template[0], 10, 20)
+		SetTemplateLoadedAnimTexture(pt\Template[0], (ParticleTexture_ShotDespawn), 4, 0.00075)
 		SetTemplateOffset(pt\Template[0], -(1.52+1.25*pt\Size#), (1.52+1.25*pt\Size#), -(1.52+1.25*pt\Size#), (1.52+1.25*pt\Size#), -(1.52+1.25*pt\Size#), (1.52+1.25*pt\Size#))
 		SetTemplateAlpha(pt\Template[0], 0.04)
 		SetTemplateAlphaVel(pt\Template[0], True)
@@ -1028,7 +1051,7 @@ Function ParticleTemplate_CreateParticle(pt.tParticleTemplate)
 	;============================================================================================
 	;============================================================================================
 	Case PARTICLE_OBJECT_RING:
-		For i=0 to 2
+		For i=0 To 2
 		pt\Template[i] = CreateTemplate()
 		SetTemplateEmitterBlend(pt\Template[i], 1)
 		SetTemplateInterval(pt\Template[i], 1)
@@ -1056,11 +1079,9 @@ Function ParticleTemplate_CreateParticle(pt.tParticleTemplate)
 		SetTemplateAlphaVel(pt\Template[i], True)
 		SetTemplateMaxParticles(pt\Template[i],1)
 		SetEmitter(pt\Pivot,pt\Template[i])
-		Next
-	;============================================================================================
-	;============================================================================================
-	Case PARTICLE_OBJECT_REDRING:
-		For i=0 to 2
+	Next
+Case PARTICLE_OBJECT_REDRING:
+	For i=0 To 2
 		pt\Template[i] = CreateTemplate()
 		SetTemplateEmitterBlend(pt\Template[i], 1)
 		SetTemplateInterval(pt\Template[i], 1)
@@ -1068,10 +1089,42 @@ Function ParticleTemplate_CreateParticle(pt.tParticleTemplate)
 		SetTemplateEmitterLifeTime(pt\Template[i], 1)
 		SetTemplateParticleLifeTime(pt\Template[i], 5, 15)
 		Select(Rand(1,4))
-		Case 1: SetTemplateLoadedTexture(pt\Template[i], (ParticleTexture_RRing1))
-		Case 2: SetTemplateLoadedTexture(pt\Template[i], (ParticleTexture_RRing2))
-		Case 3: SetTemplateLoadedTexture(pt\Template[i], (ParticleTexture_RRing3))
-		Case 4: SetTemplateLoadedTexture(pt\Template[i], (ParticleTexture_RRing4))
+			Case 1: SetTemplateLoadedTexture(pt\Template[i], (ParticleTexture_RRing1))
+			Case 2: SetTemplateLoadedTexture(pt\Template[i], (ParticleTexture_RRing2))
+			Case 3: SetTemplateLoadedTexture(pt\Template[i], (ParticleTexture_RRing3))
+			Case 4: SetTemplateLoadedTexture(pt\Template[i], (ParticleTexture_RRing4))
+		End Select
+		Select(Rand(1,5))
+			Case 1: SetTemplateOffset(pt\Template[i], -(3-0.6)*pt\Size#, (3-0.6)*pt\Size#, -(2-0.6)*pt\Size#, (2.00-0.6)*pt\Size#, -(3-0.6)*pt\Size#, (3-0.6)*pt\Size#)
+			Case 2: SetTemplateOffset(pt\Template[i], -(3-0.6)*pt\Size#, (3-0.6)*pt\Size#, -(2-0.6)*pt\Size#, (2.25-0.6)*pt\Size#, -(3-0.6)*pt\Size#, (3-0.6)*pt\Size#)
+			Case 3: SetTemplateOffset(pt\Template[i], -(3-0.6)*pt\Size#, (3-0.6)*pt\Size#, -(2-0.6)*pt\Size#, (2.50-0.6)*pt\Size#, -(3-0.6)*pt\Size#, (3-0.6)*pt\Size#)
+			Case 4: SetTemplateOffset(pt\Template[i], -(3-0.6)*pt\Size#, (3-0.6)*pt\Size#, -(2-0.6)*pt\Size#, (2.50-0.6)*pt\Size#, -(3-0.6)*pt\Size#, (3-0.6)*pt\Size#)
+			Case 5: SetTemplateOffset(pt\Template[i], -(3-0.6)*pt\Size#, (3-0.6)*pt\Size#, -(2-0.6)*pt\Size#, (2.75-0.6)*pt\Size#, -(3-0.6)*pt\Size#, (3-0.6)*pt\Size#)
+		End Select
+		SetTemplateVelocity(pt\Template[i], -.1, .1, -.1, .1, -.1, .1)
+		SetTemplateRotation(pt\Template[i], -1.5, 1.5)
+		SetTemplateGravity(pt\Template[i], .02)
+		SetTemplateSize(pt\Template[i], 0.58*pt\Size#, 0.58*pt\Size#, .5*pt\Size#, 2*pt\Size#)
+		SetTemplateFloor(pt\Template[i], -5, .45)
+		SetTemplateAlphaVel(pt\Template[i], True)
+		SetTemplateMaxParticles(pt\Template[i],1)
+		SetEmitter(pt\Pivot,pt\Template[i])
+	Next
+	;============================================================================================
+	;============================================================================================
+	Case PARTICLE_OBJECT_SHARD:
+		For i=0 To 2
+		pt\Template[i] = CreateTemplate()
+		SetTemplateEmitterBlend(pt\Template[i], 1)
+		SetTemplateInterval(pt\Template[i], 1)
+		SetTemplateParticlesPerInterval(pt\Template[i], 8)
+		SetTemplateEmitterLifeTime(pt\Template[i], 1)
+		SetTemplateParticleLifeTime(pt\Template[i], 5, 15)
+		Select(Rand(1,4))
+		Case 1: SetTemplateLoadedTexture(pt\Template[i], (ParticleTexture_Shard1))
+		Case 2: SetTemplateLoadedTexture(pt\Template[i], (ParticleTexture_Shard2))
+		Case 3: SetTemplateLoadedTexture(pt\Template[i], (ParticleTexture_Shard3))
+		Case 4: SetTemplateLoadedTexture(pt\Template[i], (ParticleTexture_Shard4))
 		End Select
 		Select(Rand(1,5))
 		Case 1: SetTemplateOffset(pt\Template[i], -(3-0.6)*pt\Size#, (3-0.6)*pt\Size#, -(2-0.6)*pt\Size#, (2.00-0.6)*pt\Size#, -(3-0.6)*pt\Size#, (3-0.6)*pt\Size#)
@@ -1516,7 +1569,7 @@ Function ParticleTemplate_CreateParticle(pt.tParticleTemplate)
 	;============================================================================================
 	;============================================================================================
 	Case PARTICLE_OBJECT_FLAMYBLOOD:
-		For i=0 to 5
+		For i=0 To 5
 		pt\Template[i] = CreateTemplate()
 		SetTemplateEmitterBlend(pt\Template[i], 1)
 		SetTemplateInterval(pt\Template[i], 1)
@@ -1537,7 +1590,7 @@ Function ParticleTemplate_CreateParticle(pt.tParticleTemplate)
 	;============================================================================================
 	;============================================================================================
 	Case PARTICLE_OBJECT_ALIENBLOOD:
-		For i=0 to 5
+		For i=0 To 5
 		pt\Template[i] = CreateTemplate()
 		SetTemplateEmitterBlend(pt\Template[i], 1)
 		SetTemplateInterval(pt\Template[i], 1)
@@ -1710,7 +1763,7 @@ Function ParticleTemplate_CreateParticle(pt.tParticleTemplate)
 	;============================================================================================
 	;============================================================================================
 	Case PARTICLE_OBJECT_WINDTUNNEL:
-		For i=0 to 5
+		For i=0 To 5
 		pt\Template[i] = CreateTemplate()
 		SetTemplateEmitterBlend(pt\Template[i], 3)
 		SetTemplateInterval(pt\Template[i], 1)
@@ -2293,3 +2346,5 @@ Function ParticleTemplate_CreateParticle(pt.tParticleTemplate)
 	End Select
 
 End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

@@ -111,9 +111,10 @@
 					If EMBLEMS1(Menu\MissionNo,Menu\Stage)=0 Then EMBLEMS1(Menu\MissionNo,Menu\Stage)=1 : Menu\EmblemsGot=Menu\EmblemsGot+1
 					If Game\Rank=1 And EMBLEMS2(Menu\MissionNo,Menu\Stage)=0 Then EMBLEMS2(Menu\MissionNo,Menu\Stage)=1 : Menu\EmblemsGot=Menu\EmblemsGot+1
 				ElseIf Menu\Stage<0 Then
-					If UNLOCKEDEMERALDS[abs(Menu\Stage)]=0 Then Menu\EmblemsGot=Menu\Stage
+					If UNLOCKEDEMERALDS[Abs(Menu\Stage)]=0 Then Menu\EmblemsGot=Menu\Stage
 				EndIf
-
+				
+				If REDRING1(Menu\Stage)=1 And REDRING2(Menu\Stage)=1 And REDRING3(Menu\Stage)=1 And REDRING4(Menu\Stage)=1 And REDRING5(Menu\Stage)=1 Then ALLREDRING(Menu\Stage)=1 
 				SaveGame_Emblems(Menu\Stage)
 			Else;!!!
 				Menu\EmblemsGot=0
@@ -132,13 +133,13 @@
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
 
-	Function Interface_Render_Result(p.tPlayer,d.tDeltatime,chaorace=false)
+	Function Interface_Render_Result(p.tPlayer,d.tDeltaTime,chaorace=False)
 
 		If Game\Interface\ResultOrder=-1 Then
 			Game\Interface\ResultTimer=0
 			Game\Interface\ResultOrder=0
 			Game\Interface\ResultOrder2=0
-			For i=0 to 4 : Game\Interface\ResultBoxAlpha#[i]=0 : Next
+			For i=0 To 4 : Game\Interface\ResultBoxAlpha#[i]=0 : Next
 			Game\Interface\ResultTitlePosition#=0
 		EndIf
 
@@ -146,7 +147,7 @@
 
 		If Input\Pressed\Start Or Input\Pressed\ActionJump Then Game\Interface\ResultOrder2=-1
 
-		If chaorace=false Then
+		If chaorace=False Then
 			Interface_Render_Result_Stage(p,d)
 		Else
 			Interface_Render_Result_ChaoRace(p,d)
@@ -157,7 +158,7 @@
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
 
-	Function Interface_Render_Result_Stage(p.tPlayer,d.tDeltatime)
+	Function Interface_Render_Result_Stage(p.tPlayer,d.tDeltaTime)
 
 		If Game\Interface\ResultOrder<7 Then ;!
 
@@ -427,7 +428,7 @@
 				End Select
 			Case 6: ; WAIT UP
 				If Game\Interface\ResultOrder2=-1 Or (Not(ChannelPlaying(Game\Channel_Result))) Then
-					If Game\ResultRingsForBank>0 and Game\Cheater=0 Then
+					If Game\ResultRingsForBank>0 And Game\Cheater=0 Then
 						Game\Interface\ResultOrder=7
 					Else
 						Game\Interface\ResultTimer=1.5*secs#
@@ -453,7 +454,7 @@
 							Game\Interface\ResultOrder2=3
 						EndIf
 					Case 3:
-						If Game\ResultRingsForBank>0 and Menu\Wallet<99999 Then
+						If Game\ResultRingsForBank>0 And Menu\Wallet<99999 Then
 							Game\ResultRingsForBank=Game\ResultRingsForBank-1
 							Menu\Wallet=Menu\Wallet+1
 						Else
@@ -482,9 +483,9 @@
 				EndIf
 		End Select
 
-		If Game\Cheater=1 and Menu\ChaoGarden=0 Then
+		If Game\Cheater=1 And Menu\ChaoGarden=0 Then
 			DrawRealText("YOU CHEATED", GAME_WINDOW_W/2, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#, (Interface_TextControls_2), 1)
-			DrawRealText("YOUR RECORDS WILL NOT BE SAVED", GAME_WINDOW_W/2, GAME_WINDOW_H/2+150*GAME_WINDOW_SCALE#, (Interface_TextControls_2), 1)
+			DrawRealText("YOUR CHILDREN WILL NOT BE SAVED", GAME_WINDOW_W/2, GAME_WINDOW_H/2+150*GAME_WINDOW_SCALE#, (Interface_TextControls_2), 1)
 		EndIf
 
 		If Menu\Settings\ControlTips#=1 Then
@@ -500,7 +501,7 @@
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
 
-	Function Interface_Render_Result_ChaoRace(p.tPlayer,d.tDeltatime)
+	Function Interface_Render_Result_ChaoRace(p.tPlayer,d.tDeltaTime)
 
 		If Game\Interface\ResultOrder<7 Then ;!
 
@@ -676,7 +677,7 @@
 							Game\Interface\ResultOrder2=3
 						EndIf
 					Case 3:
-						If Game\ResultRingsForBank>0 and Menu\Wallet<99999 Then
+						If Game\ResultRingsForBank>0 And Menu\Wallet<99999 Then
 							Game\ResultRingsForBank=Game\ResultRingsForBank-1
 							Menu\Wallet=Menu\Wallet+1
 						Else
@@ -713,3 +714,5 @@
 		EndIf
 
 	End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

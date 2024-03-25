@@ -5,21 +5,22 @@
 	; --- Collisions constants ---
 	Const COLLISION_NONE						=	0
 	Const COLLISION_PLAYER						=	1
-	Const COLLISION_OBJECT						=	2
-	Const COLLISION_OBJECT2						=	3
-	Const COLLISION_OBJECT_GOTHRU				=	4
-	Const COLLISION_OBJECT2_GOTHRU				=	5
-	Const COLLISION_CAMERA						=	6
-	Const COLLISION_WORLD_POLYGON				=	7
-	Const COLLISION_WORLD_POLYGON_DEATH			=	8
-	Const COLLISION_WORLD_POLYGON_DEATH_GOTHRU	=	9
-	Const COLLISION_WORLD_POLYGON_HURT			=	10
-	Const COLLISION_WORLD_POLYGON_RAIL			=	11
-	Const COLLISION_WORLD_POLYGON_BLOCK			=	12
-	Const COLLISION_WORLD_POLYGON_PINBALL		=	13
-	Const COLLISION_WORLD_POLYGON_ICE			=	14
-	Const COLLISION_WORLD_POLYGON_BOUNCE		=	15
-	Const COLLISION_WORLD_POLYGON_SLOW			=	16
+	Const COLLISION_PLAYER_RAIL						=	2
+	Const COLLISION_OBJECT						=	3
+	Const COLLISION_OBJECT2						=	4
+	Const COLLISION_OBJECT_GOTHRU				=	5
+	Const COLLISION_OBJECT2_GOTHRU				=	6
+	Const COLLISION_CAMERA						=	7
+	Const COLLISION_WORLD_POLYGON				=	8
+	Const COLLISION_WORLD_POLYGON_DEATH			=	9
+	Const COLLISION_WORLD_POLYGON_DEATH_GOTHRU	=	10
+	Const COLLISION_WORLD_POLYGON_HURT			=	11
+	Const COLLISION_WORLD_POLYGON_RAIL			=	12
+	Const COLLISION_WORLD_POLYGON_BLOCK			=	13
+	Const COLLISION_WORLD_POLYGON_PINBALL		=	14
+	Const COLLISION_WORLD_POLYGON_ICE			=	15
+	Const COLLISION_WORLD_POLYGON_BOUNCE		=	16
+	Const COLLISION_WORLD_POLYGON_SLOW			=	17
 
 	Type MeshStructure
 		Field Entity
@@ -49,7 +50,7 @@
 
 Dim water_texture(8,13)
 Dim water_bump_texture(8)
-For h=1 to 8
+For h=1 To 8
 	Select h
 		Case 1: watertype$="water"
 		Case 2: watertype$="lava"
@@ -64,7 +65,7 @@ For h=1 to 8
 		Case 6: j=1
 		Default: j=13
 	End Select
-	For i=1 to j
+	For i=1 To j
 		water_texture(h,i) = LoadTexture("Textures\"+watertype$+"\"+i+".png",1+256)
 		Select h
 			Case 2,7: ScaleTexture water_texture(h,i), 250,250
@@ -83,7 +84,7 @@ Next
 
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
-	Function Game_Stage_Start()
+Function Game_Stage_Start()
 	SetFont LilFont
 
 		; gamepad sensitivity
@@ -102,28 +103,48 @@ Next
 		Game_Stage_UpdateProgressBar("Loading interface", 0)
 		If Menu\Stage<>0 Then
 			If Menu\ChaoGarden=0 Then
-				For x=INTERFACE_MENUTOTAL+1 to INTERFACE_STAGETOTAL : LoadSmartImage(x) : Next
+				For x=INTERFACE_MENUTOTAL+1 To INTERFACE_STAGETOTAL : LoadSmartImage(x) : Next
 			Else
-				For x=INTERFACE_BLACKMARKETTOTAL+1 to INTERFACE_CHAOGARDENTOTAL : LoadSmartImage(x) : Next
+				For x=INTERFACE_BLACKMARKETTOTAL+1 To INTERFACE_CHAOGARDENTOTAL : LoadSmartImage(x) : Next
 			EndIf
 		Else
-			For x=INTERFACE_ALWAYSTOTAL+1 to INTERFACE_MENUTOTAL : LoadSmartImage(x) : Next
+			For x=INTERFACE_ALWAYSTOTAL+1 To INTERFACE_MENUTOTAL : LoadSmartImage(x) : Next
 		EndIf
 
 		; Sound loading
 		Game_Stage_UpdateProgressBar("Loading sounds", 0)
 		If Menu\Stage<>0 Then
-			For x=SOUNDS_RESULTSTOTAL+1 to SOUNDS_STAGETOTAL : LoadSmartSound(x) : Next
+			For x=SOUNDS_RESULTSTOTAL+1 To SOUNDS_STAGETOTAL : LoadSmartSound(x) : Next
 		Else
-			For x=SOUNDS_MENUMUSICTOTAL+1 to SOUNDS_MENUTOTAL : LoadSmartSound(x) : Next
+			For x=SOUNDS_MENUMUSICTOTAL+1 To SOUNDS_MENUTOTAL : LoadSmartSound(x) : Next
 		EndIf
-
+		
+		
+		
+		
+		
 		; Reset values
 		Game_Stage_UpdateProgressBar("Resetting all values", 0)
 		OBJECT_VIEWDISTANCE_IDCOUNT#=0
 		OBJECT_VIEWDISTANCE_LARGESTIDCOUNT#=0
 		Game\Cheater=0 : Game\CheaterChangedCharacter=0
 		Player_ResetOutGameValues()
+		
+		
+		
+		Game\Stage\Properties\Fog = 0
+		Game\Stage\Properties\FogR = 0
+		Game\Stage\Properties\FogG = 0 
+		Game\Stage\Properties\FogB  = 0
+		Game\Stage\Properties\FogNearDist = 0
+		Game\Stage\Properties\FogFarDist = 0
+		
+		Game\Stage\Properties\FilterOn = 0
+		Game\Stage\Properties\FilterIntesity = 0 	
+		Game\Stage\Properties\FilterR = 0
+		Game\Stage\Properties\FilterG  = 0
+		Game\Stage\Properties\FilterB  = 0
+		
 		Game\Stage\Properties\Water=0
 		Game\Stage\Properties\WaterType=1
 		Game\Stage\Properties\WaterLevel = -99999
@@ -138,6 +159,8 @@ Next
 		Game\Stage\Properties\AmbientSnow = 0
 		Game\Stage\Properties\AmbientVoid = 0
 		Game\Stage\Properties\AmbientWind = 0
+		Game\Stage\Properties\RingMissionAmount=200
+		Game\Stage\Properties\EnemyMissionAmount=10
 		Game\Stage\Properties\AmbientParticle = ParticleTemplate_Create.tParticleTemplate()
 		Game\Leader=1
 		Game\NewLeader=1
@@ -146,8 +169,8 @@ Next
 		CAMERA_DISTANCE_NEAR# = CAMERA_ZOOMVALUE#
 		CAMERA_DISTANCE_FAR# = CAMERA_ZOOMVALUE#
 		Game\Interface\DebugPlacerOn=0
-		If Menu\Settings\DisablePlants#=0 Or (Menu\Settings\DisablePlants#=1 and Menu\ChaoGarden=0) Then Menu\Settings\RealDisablePlants#=0 Else Menu\Settings\RealDisablePlants#=1
-		For i=1 to 5 : MonitorIcon(i)\Draw=False : MonitorIcon(i)\Timer=0 : Next
+		If Menu\Settings\DisablePlants#=0 Or (Menu\Settings\DisablePlants#=1 And Menu\ChaoGarden=0) Then Menu\Settings\RealDisablePlants#=0 Else Menu\Settings\RealDisablePlants#=1
+		For i=1 To 5 : MonitorIcon(i)\Draw=False : MonitorIcon(i)\Timer=0 : Next
 		Game\ResultRings=0
 		Game\ResultRingsForBank=0
 		Game\ResultEnemies=0
@@ -161,8 +184,8 @@ Next
 		Game\WholeVehicle=0
 
 		; Decide music
-		If Menu\Stage<>0 and Menu\ChaoGarden=0 Then
-			If Menu\Members>2 and Menu\Team>0 Then
+		If Menu\Stage<>0 And Menu\ChaoGarden=0 Then
+			If Menu\Members>2 And Menu\Team>0 Then
 				Select Menu\Team
 					Case TEAM_SONIC,TEAM_ROSE,TEAM_CHAOTIX,TEAM_SOL,TEAM_OLDIES,TEAM_RELIC:
 						Game\Stage\Properties\MusicType=1
@@ -182,7 +205,7 @@ Next
 		EndIf
 
 		; Menu music
-		If (Not(Menu\Stage<>0)) and Menu\ChaoGarden=0 Then
+		If (Not(Menu\Stage<>0)) And Menu\ChaoGarden=0 Then
 			Game_Stage_UpdateProgressBar("Loading menu music", 0)
 			LoadMenuMusic()
 			Delay(75)
@@ -221,51 +244,34 @@ Next
 
 		; Character models
 		Game_Stage_UpdateProgressBar("Loading player models", 0)
-		For i=1 to 3
+		For i=1 To 3
 			If Menu\Members>i-1 Then
 				LoadCharacterMesh(Menu\Character[i],0)
 				Game\CharacterMesh[i]=CopyEntity(CharacterMesh)
 				DeleteCharacterMesh()
 
-				If IsCharMod(Menu\Character[i]) Then
-					If CharModHasSuper(Menu\Character[i]) Then
+				Select Menu\Character[i]
+					Case CHAR_SON,CHAR_TAI,CHAR_KNU,CHAR_SHA,CHAR_SIL,CHAR_BLA:
 						LoadCharacterMesh(Menu\Character[i],0,1)
-					Else
-						LoadCharacterMesh(Menu\Character[i],0,0)
-					EndIf
-				Else
-					If Player_HasSuperModel(Menu\Character[i]) Then
-						LoadCharacterMesh(Menu\Character[i],0,1)
-					Else
-						LoadCharacterMesh(Menu\Character[i],0,0)
-					EndIf
-				EndIf
+					Default:
+						If IsCharMod(Menu\Character[i]) Then
+							If CharModHasSuper(Menu\Character[i]) Then
+								LoadCharacterMesh(Menu\Character[i],0,1)
+							Else
+								LoadCharacterMesh(Menu\Character[i],0,0)
+							EndIf
+						Else
+							LoadCharacterMesh(Menu\Character[i],0,0)
+						EndIf
+				End Select
 				Game\SuperCharacterMesh[i]=CopyEntity(CharacterMesh)
-				DeleteCharacterMesh()
-
-				If IsCharMod(Menu\Character[i]) Then
-					If CharModHasHyper(Menu\Character[i]) Then
-						LoadCharacterMesh(Menu\Character[i],0,2)
-					ElseIf CharModHasSuper(Menu\Character[i]) Then
-						LoadCharacterMesh(Menu\Character[i],0,1)
-					Else
-						LoadCharacterMesh(Menu\Character[i],0,0)
-					EndIf
-				Else
-					If Player_HasSuperModel(Menu\Character[i]) Then
-						LoadCharacterMesh(Menu\Character[i],0,2)
-					Else
-						LoadCharacterMesh(Menu\Character[i],0,0)
-					EndIf
-				EndIf
-				Game\HyperCharacterMesh[i]=CopyEntity(CharacterMesh)
 				DeleteCharacterMesh()
 			Else
 				Game\CharacterMesh[i]=CopyEntity(MESHES(Mesh_Empty))
 				Game\SuperCharacterMesh[i]=CopyEntity(MESHES(Mesh_Empty))
-				Game\HyperCharacterMesh[i]=CopyEntity(MESHES(Mesh_Empty))
 			EndIf
 		Next
+
 
 		; Create root entity for all the stage entities
 		Game\Stage\Root 			= CreatePivot()
@@ -280,11 +286,16 @@ Next
 		cam.tCamera = Camera_Create()
 		
 		; Parse up Stage.xml file and retrieve root node. Find out if any parse errors ocurred while loading
-		; and if so, stop the game.
+		; and if so, stop the game. See if there is a mission specific xml file, and load that instead of stage.xml
 		Game_Stage_UpdateProgressBar("Parsing stage XML", 0)
 		Select Menu\Stage
 			Case 0: RootNode = xmlLoad(Path$+"menustage.dat")
-			Default: RootNode = xmlLoad(Path$+"Stage.xml")
+			Default
+				If Not(FileType(Path$+"Stagem"+Menu\MissionNo+".xml")=1) Then 
+					RootNode = xmlLoad(Path$+"Stage.xml")
+				Else
+					RootNode = xmlLoad(Path$+"Stagem"+Menu\MissionNo+".xml")
+				EndIf 
 		End Select
 		If (xmlErrorCount()>0) Then RuntimeError("Game_Update_Stage() -> [Start] Error loading stage '"+Game\Stage\List\Folder$+"' xml. Parse error.")
 
@@ -343,6 +354,28 @@ Next
 								EndIf
 							Case "death"
 								Game\Stage\Properties\DeathLevel = xmlNodeAttributeValueGet(InformationChildNode, "level")
+							Case "ring"
+								Game\Stage\Properties\RingMissionAmount = xmlNodeAttributeValueGet(InformationChildNode, "amount")
+							Case "enemy"
+								Game\Stage\Properties\EnemyMissionAmount = xmlNodeAttributeValueGet(InformationChildNode, "amount")
+							Case "fog"
+								Game\Stage\Properties\Fog = xmlNodeAttributeValueGet(InformationChildNode, "on")
+								If Game\Stage\Properties\Fog = 1 Then 
+									Game\Stage\Properties\FogR = xmlNodeAttributeValueGet(InformationChildNode, "r")
+									Game\Stage\Properties\FogG = xmlNodeAttributeValueGet(InformationChildNode, "g")
+									Game\Stage\Properties\FogB = xmlNodeAttributeValueGet(InformationChildNode, "b")
+									Game\Stage\Properties\FogNearDist = xmlNodeAttributeValueGet(InformationChildNode, "near")
+									Game\Stage\Properties\FogFarDist = xmlNodeAttributeValueGet(InformationChildNode, "far")
+								EndIf 
+							Case "filter"
+								Game\Stage\Properties\FilterOn = xmlNodeAttributeValueGet(InformationChildNode, "on")
+								If Game\Stage\Properties\FilterOn=1 Then
+									Game\Stage\Properties\FilterIntesity = xmlNodeAttributeValueGet(InformationChildNode, "intensity")	
+									Game\Stage\Properties\FilterR = xmlNodeAttributeValueGet(InformationChildNode, "r")
+									Game\Stage\Properties\FilterG = xmlNodeAttributeValueGet(InformationChildNode, "g")
+									Game\Stage\Properties\FilterB = xmlNodeAttributeValueGet(InformationChildNode, "b")
+								EndIf 
+
 							Case "alarm"
 								Game\Stage\Properties\AmbientAlarm = xmlNodeAttributeValueGet(InformationChildNode, "on")
 								If Game\Stage\Properties\AmbientAlarm=1 Then LoadSmartSound(Sound_AmbientAlarm)
@@ -408,7 +441,7 @@ Next
 									EntityFX(Game\Stage\Properties\Sun, 1+8+32)
 									EntityOrder(Game\Stage\Properties\Sun, 1)
 
-									If Menu\ChaoGarden=1 and Menu\Stage=999 Then
+									If Menu\ChaoGarden=1 And Menu\Stage=999 Then
 									Game\Stage\Properties\SunMoon = LoadMesh("Textures/Earth/SunMoon.b3d")
 									ScaleEntity(Game\Stage\Properties\SunMoon, 2.5, 2.5, 2.5)
 									EntityColor(Game\Stage\Properties\SunMoon, 255, 255, 255)
@@ -420,19 +453,19 @@ Next
 								EndIf
 
 								Game\Stage\Properties\SunPos = New tVector
-								Game\Stage\Properties\SunPos\X#=0
-								Game\Stage\Properties\SunPos\Y#=0
-								Game\Stage\Properties\SunPos\Z#=0
-								Game\Stage\Properties\SunPos\X# = xmlNodeAttributeValueGet(InformationChildNode, "x")
-								Game\Stage\Properties\SunPos\Y# = xmlNodeAttributeValueGet(InformationChildNode, "y")
-								Game\Stage\Properties\SunPos\Z# = xmlNodeAttributeValueGet(InformationChildNode, "z")
-								PositionEntity(Game\Stage\Properties\Sun, Game\Stage\Properties\SunPos\X#, Game\Stage\Properties\SunPos\Y#, Game\Stage\Properties\SunPos\Z#, 1)
-								If Menu\ChaoGarden=1 and Menu\Stage=999 Then PositionEntity(Game\Stage\Properties\SunMoon, Game\Stage\Properties\SunPos\X#, Game\Stage\Properties\SunPos\Y#, Game\Stage\Properties\SunPos\Z#, 1)
+								Game\Stage\Properties\SunPos\x#=0
+								Game\Stage\Properties\SunPos\y#=0
+								Game\Stage\Properties\SunPos\z#=0
+								Game\Stage\Properties\SunPos\x# = xmlNodeAttributeValueGet(InformationChildNode, "x")
+								Game\Stage\Properties\SunPos\y# = xmlNodeAttributeValueGet(InformationChildNode, "y")
+								Game\Stage\Properties\SunPos\z# = xmlNodeAttributeValueGet(InformationChildNode, "z")
+								PositionEntity(Game\Stage\Properties\Sun, Game\Stage\Properties\SunPos\x#, Game\Stage\Properties\SunPos\y#, Game\Stage\Properties\SunPos\z#, 1)
+								If Menu\ChaoGarden=1 And Menu\Stage=999 Then PositionEntity(Game\Stage\Properties\SunMoon, Game\Stage\Properties\SunPos\x#, Game\Stage\Properties\SunPos\y#, Game\Stage\Properties\SunPos\z#, 1)
 
 								Scale# = xmlNodeAttributeValueGet(InformationChildNode, "scale")
 								If Scale#<>0 Then
 									ScaleEntity(Game\Stage\Properties\Sun, Scale#, Scale#, Scale#)
-									If Menu\ChaoGarden=1 and Menu\Stage=999 Then ScaleEntity(Game\Stage\Properties\SunMoon, Scale#, Scale#, Scale#)
+									If Menu\ChaoGarden=1 And Menu\Stage=999 Then ScaleEntity(Game\Stage\Properties\SunMoon, Scale#, Scale#, Scale#)
 								EndIf
 
 								Game\Stage\Properties\SunRays = xmlNodeAttributeValueGet(InformationChildNode, "sunrays")
@@ -454,7 +487,7 @@ Next
 						
 						; Find out wich kind of scene entity it is.
 						Select xmlNodeNameGet$(SceneChildNode)
-							Case "mesh","animmesh","hurtmesh","deathmesh","railmesh","blockmesh","pinballmesh","rollmesh","icemesh","bouncemesh","slowmesh"
+							Case "mesh","animmesh","randommesh","hurtmesh","deathmesh","railmesh","blockmesh","pinballmesh","rollmesh","icemesh","bouncemesh","slowmesh"
 								; Retrieve mesh properties information
 								MeshFilename$	= xmlNodeAttributeValueGet(SceneChildNode, "filename") 
 								MeshVisible	= xmlNodeAttributeValueGet(SceneChildNode, "visible")
@@ -473,6 +506,12 @@ Next
 									Case "animmesh":
 										m\Entity = LoadAnimMesh(Path$+MeshFilename$, Game\Stage\Root)
 										Animate(m\Entity,1)
+									Case "randommesh":
+										Select Rand(1,2)
+												
+											Case 1 m\Entity = LoadMesh(Path$+MeshFilename$+"1", Game\Stage\Root)
+											Case 2 m\Entity = LoadMesh(Path$+MeshFilename$+"2", Game\Stage\Root)
+										End Select 
 									Default:
 										m\Entity = LoadMesh(Path$+MeshFilename$, Game\Stage\Root)
 								End Select
@@ -549,7 +588,7 @@ Next
 												EndIf
 
 												SceneAttributesBumpTex = xmlNodeFind("bump", SceneAttributes)
-												If SceneAttributesBumpTex<>0 and Menu\Settings\BumpMaps#>0 Then
+												If SceneAttributesBumpTex<>0 And Menu\Settings\BumpMaps#>0 Then
 													EntityTexture(m\Entity, m\DiffuseTexture[1], 0, 1)
 													bumptex=LoadTexture(Path$+xmlNodeAttributeValueGet(SceneAttributesBumpTex, "texture"), 9)
 													If bumptex<>0 Then
@@ -652,7 +691,11 @@ Next
 										p1.tPlayer = Player_Create(1)
 										ch.tCheese = Object_Cheese_Create.tCheese()
 										f.tFroggy = Object_Froggy_Create.tFroggy()
-										Player_Spawn(Game\Gameplay\CheckX#,Game\Gameplay\CheckY#,Game\Gameplay\CheckZ#,Game\Gameplay\CheckDirection#)
+										Select Menu\RestartMode
+											Case 0 : Player_Spawn(Game\Gameplay\CheckX#,Game\Gameplay\CheckY#,Game\Gameplay\CheckZ#,Game\Gameplay\CheckDirection#)
+											Case 1 : Player_Spawn(Menu\RestartX#,Menu\RestartY#,Menu\RestartZ#,Game\Gameplay\CheckDirection#)
+										End Select 
+										
 
 										If Menu\Mission=MISSION_ESCAPE# Then CreateSprinkler(xmlNodeAttributeValueGet(ScenePlayerPosition, "chaser"))
 									;======================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
@@ -675,7 +718,7 @@ Next
 										GetAttribute(ATTRIB_POSITION, SceneChildNode)
 										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 
-										If Game\RivalAmount<3 and Menu\Mission=MISSION_RIVAL# Then CreateObject()
+										If Game\RivalAmount<3 And Menu\Mission=MISSION_RIVAL# Then CreateObject()
 
 									;======================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
 
@@ -684,15 +727,35 @@ Next
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Ring", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_RING
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
-
+										GetAttribute(ATTRIB_POWER, SceneChildNode)
 										CreateObject()
 
 									;======================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
-
+									Case "redring"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Red Star Ring", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_REDRING
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_POWER, SceneChildNode)
+										
+										CreateObject()
 									Case "spring","spring1","spring2","spring3","spring4"
 										; Update progress bar
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Spring", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_SPRING
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
+										GetAttribute(ATTRIB_POWER, SceneChildNode)
+										GetAttribute(ATTRIB_LOCK, SceneChildNode)
+										GetAttribute(ATTRIB_CAM, SceneChildNode)
+										GetAttribute(ATTRIB_DESTINATION, SceneChildNode)
+										
+										CreateObject()
+										
+									Case "icespring"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Ice Spring", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_SPRINGICE
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
 										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										GetAttribute(ATTRIB_POWER, SceneChildNode)
@@ -714,11 +777,60 @@ Next
 										GetAttribute(ATTRIB_DESTINATION, SceneChildNode)
 
 										CreateObject()
-
+									Case "jumppanel"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Jump Panel", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_PANEL1
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
+										GetAttribute(ATTRIB_POWER, SceneChildNode)
+										GetAttribute(ATTRIB_LOCK, SceneChildNode)
+										GetAttribute(ATTRIB_CAM, SceneChildNode)
+										GetAttribute(ATTRIB_DESTINATION, SceneChildNode)
+										
+										CreateObject()
+										
+									Case "jumppanel2"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+":  Jump Panel", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_PANEL2
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
+										GetAttribute(ATTRIB_POWER, SceneChildNode)
+										GetAttribute(ATTRIB_LOCK, SceneChildNode)
+										GetAttribute(ATTRIB_CAM, SceneChildNode)
+										GetAttribute(ATTRIB_DESTINATION, SceneChildNode)
+										
+										CreateObject()
+										
+									Case "ijumppanel2"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+":  Jump Panel", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_PANEL2
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
+										GetAttribute(ATTRIB_POWER, SceneChildNode)
+										GetAttribute(ATTRIB_LOCK, SceneChildNode)
+										GetAttribute(ATTRIB_CAM, SceneChildNode)
+										GetAttribute(ATTRIB_DESTINATION, SceneChildNode)
+										
+										CreateObject(1)
 									Case "springx"
 										; Update progress bar
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Spring", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_SPRINGX
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
+										GetAttribute(ATTRIB_POWER, SceneChildNode)
+										GetAttribute(ATTRIB_LOCK, SceneChildNode)
+										GetAttribute(ATTRIB_CAM, SceneChildNode)
+										GetAttribute(ATTRIB_DESTINATION, SceneChildNode)
+										
+										CreateObject()
+									Case "springthorn"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Thorn Spring", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_SPRINGTHORN
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
 										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										GetAttribute(ATTRIB_POWER, SceneChildNode)
@@ -1024,7 +1136,7 @@ Next
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Rings Item Capsule", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_RINGS
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
-										
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										CreateObject(0)
 
 									Case "life","1up","alife","a1up","blast","ablast"
@@ -1032,7 +1144,7 @@ Next
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Life Item Capsule", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_LIFE
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
-										
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										CreateObject(0)
 
 									Case "trap","eggmanmonitor","atrap","aeggmanmonitor"
@@ -1040,7 +1152,7 @@ Next
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Trap Item Capsule", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_TRAP
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
-										
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										CreateObject(0)
 
 									Case "invinc","invincibility","ainvinc","ainvincibility"
@@ -1048,7 +1160,7 @@ Next
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Invincibility Item Capsule", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_INVINC
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
-										
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										CreateObject(0)
 
 									Case "shoes","speedshoes","ashoes","aspeedshoes"
@@ -1056,7 +1168,7 @@ Next
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Speed Shoes Item Capsule", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_SHOES
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
-										
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										CreateObject(0)
 
 									Case "shield","nshield","normalshield","gshield","greenshield","ashield"
@@ -1064,7 +1176,7 @@ Next
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Normal Shield Item Capsule", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_NSHIELD
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
-										
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										CreateObject(0)
 
 									Case "fshield","flameshield","rshield","redshield","afshield"
@@ -1072,7 +1184,7 @@ Next
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Flame Shield Item Capsule", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_FSHIELD
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
-										
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										CreateObject(0)
 
 									Case "bshield","bubbleshield","blueshield","abshield"
@@ -1080,7 +1192,7 @@ Next
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Bubble Shield Item Capsule", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_BSHIELD
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
-										
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										CreateObject(0)
 
 									Case "tshield","thundershield","wshield","whiteshield","atshield"
@@ -1088,7 +1200,7 @@ Next
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Thunder Shield Item Capsule", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_TSHIELD
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
-										
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										CreateObject(0)
 
 									Case "eshield","earthshield","yshield","yellowshield","aeshield"
@@ -1096,7 +1208,7 @@ Next
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Earth Shield Item Capsule", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_ESHIELD
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
-										
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										CreateObject(0)
 
 									Case "bomb","bombmonitor","abomb"
@@ -1104,7 +1216,7 @@ Next
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Bomb Item Capsule", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_BOMB
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
-										
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										CreateObject(0)
 
 									Case "board","boardmonitor","aboard"
@@ -1112,7 +1224,7 @@ Next
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Board Item Capsule", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_BOARD
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
-										
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										CreateObject(0)
 
 									Case "glider","glidermonitor","aglider"
@@ -1120,7 +1232,7 @@ Next
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Glider Item Capsule", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_GLIDER
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
-										
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										CreateObject(0)
 
 									Case "car","carmonitor","acar"
@@ -1128,7 +1240,7 @@ Next
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Car Item Capsule", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_CAR
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
-										
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										CreateObject(0)
 
 									Case "bike","bikemonitor","abike"
@@ -1136,7 +1248,7 @@ Next
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Bike Item Capsule", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_BIKE
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
-										
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										CreateObject(0)
 
 									Case "bobsleigh","bobsleighmonitor","abobsleigh"
@@ -1144,7 +1256,7 @@ Next
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Bobsleigh Item Capsule", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_BOBSLEIGH
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
-										
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										CreateObject(0)
 
 									Case "tornado","tornadomonitor","atornado"
@@ -1152,7 +1264,7 @@ Next
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Tornado Item Capsule", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_TORNADO
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
-										
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										CreateObject(0)
 
 									Case "cyclone","cyclonemonitor","acyclone"
@@ -1160,7 +1272,7 @@ Next
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Cyclone Item Capsule", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_CYCLONE
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
-										
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										CreateObject(0)
 
 									Case "kart","kartmonitor","akart"
@@ -1168,7 +1280,7 @@ Next
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Kart Item Capsule", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_KART
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
-										
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										CreateObject(0)
 
 									Case "wings","wingsmonitor","awings"
@@ -1176,7 +1288,7 @@ Next
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Wings Item Capsule", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_WINGS
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
-										
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										CreateObject(0)
 
 									;======================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
@@ -1488,10 +1600,21 @@ Next
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
 
 										Select Menu\Mission
-											Case MISSION_RIVAL#,MISSION_CARNIVAL#,MISSION_BOSS#,MISSION_CAPSULE#:
+											Case MISSION_RIVAL#,MISSION_CARNIVAL#,MISSION_BOSS#
 											Default: CreateObject()
 										End Select
-
+										
+									Case "warpring"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Warp Ring", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_WARPRING
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_TELEPORTER, SceneChildNode)
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
+										;GetAttribute(ATTRIB_MISC, SceneChildNode)
+										GetAttribute(ATTRIB_POWER, SceneChildNode)
+										CreateObject()
+										
 									Case "goal2","goalring2"
 										; Update progress bar
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Goal Ring", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
@@ -1500,7 +1623,7 @@ Next
 										GetAttribute(ATTRIB_SWITCHOBJ, SceneChildNode)
 
 										Select Menu\Mission
-											Case MISSION_RIVAL#,MISSION_CARNIVAL#,MISSION_BOSS#,MISSION_CAPSULE#:
+											Case MISSION_RIVAL#,MISSION_CARNIVAL#,MISSION_BOSS#:
 											Default: CreateObject()
 										End Select
 
@@ -1512,7 +1635,7 @@ Next
 										GetAttribute(ATTRIB_TELEPORTER, SceneChildNode)
 
 										Select Menu\Mission
-											Case MISSION_RIVAL#,MISSION_CARNIVAL#,MISSION_BOSS#,MISSION_CAPSULE#:
+											Case MISSION_RIVAL#,MISSION_CARNIVAL#,MISSION_BOSS#:
 											Default: CreateObject(1)
 										End Select
 
@@ -1525,7 +1648,7 @@ Next
 										GetAttribute(ATTRIB_TELEPORTER, SceneChildNode)
 
 										Select Menu\Mission
-											Case MISSION_RIVAL#,MISSION_CARNIVAL#,MISSION_BOSS#,MISSION_CAPSULE#:
+											Case MISSION_RIVAL#,MISSION_CARNIVAL#,MISSION_BOSS#:
 											Default: CreateObject(1)
 										End Select
 
@@ -1608,6 +1731,33 @@ Next
 										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										
 										CreateObject(0)
+										
+									Case "vbox"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Vanish Box", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_BOXYELLOW
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
+										
+										CreateObject(0)
+										
+									Case "mybox"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Vanish Box", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_BOXYELLOW
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
+										
+										CreateObject(2)
+										
+									Case "bybox"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Vanish Box", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_BOXYELLOW
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
+										
+										CreateObject(1)
 
 									Case "ibox","ironbox","boxi"
 										; Update progress bar
@@ -2160,6 +2310,40 @@ Next
 										GetAttribute(ATTRIB_CARNIVAL, SceneChildNode)
 										
 										CreateObject()
+										
+									Case "gunr"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Egg Gunner", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_GUNNER
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
+										GetAttribute(ATTRIB_SWITCHOBJ, SceneChildNode)
+										GetAttribute(ATTRIB_CARNIVAL, SceneChildNode)
+										
+										CreateObject()
+										
+									Case "srch1"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Egg Searcher", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_SEARCHER
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
+										GetAttribute(ATTRIB_SWITCHOBJ, SceneChildNode)
+										GetAttribute(ATTRIB_CARNIVAL, SceneChildNode)
+										
+										CreateObject()
+										
+									Case "srch2"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Egg Hunter", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_EGGHUNTER
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
+										GetAttribute(ATTRIB_SWITCHOBJ, SceneChildNode)
+										GetAttribute(ATTRIB_CARNIVAL, SceneChildNode)
+										
+										CreateObject()
+										
 
 									Case "beetle1","gunbeetle","gunbeetle1","beetle","gunb","gunb1","gunbg"
 										; Update progress bar
@@ -3101,10 +3285,10 @@ Next
 
 									;======================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
 
-									Case "redring","rring","starring","redstarring"
+									Case "shard"
 										; Update progress bar
-										Game_Stage_UpdateProgressBar("Loading object n."+j+": Red Star Ring", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
-										TempAttribute\ObjectNo=OBJTYPE_REDRING
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Emerald Shard", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_SHARD
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
 										
 										CreateObject()
@@ -3189,7 +3373,7 @@ Next
 										TempAttribute\ObjectNo=OBJTYPE_OMOCHAO
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
 										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
-
+										GetAttribute(ATTRIB_OMOVOICE, SceneChildNode)
 										CreateObject()
 
 									;======================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
@@ -3270,16 +3454,17 @@ Next
 										
 										CreateObject()
 
-									Case "fplat","fplatform","fallingplatform","plat","platform"
+									Case "fplat"
 										; Update progress bar
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Falling Platform", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
 										TempAttribute\ObjectNo=OBJTYPE_FPLAT
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
 										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
-										GetAttribute(ATTRIB_POWER, SceneChildNode)
-										GetAttribute(ATTRIB_DESTINATION, SceneChildNode)
+										
 										
 										CreateObject()
+										
+										
 
 									;======================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
 
@@ -3443,7 +3628,7 @@ Next
 										TempAttribute\ObjectNo=OBJTYPE_HINT
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
 										GetAttribute(ATTRIB_HINT, SceneChildNode)
-
+										GetAttribute(ATTRIB_POWER, SceneChildNode)
 										CreateObject()
 
 									Case "counter5","counter"
@@ -3700,7 +3885,102 @@ Next
 										GetAttribute(ATTRIB_POWER, SceneChildNode)
 										
 										CreateObject()
-
+										
+									Case "visual1"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Stage Visual", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_STAGEVISUAL1
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_POWER, SceneChildNode)
+										
+										CreateObject()
+										
+									Case "visual2"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Stage Visual", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_STAGEVISUAL2
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_POWER, SceneChildNode)
+										
+										CreateObject()
+										
+									Case "visual3"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Stage Visual", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_STAGEVISUAL3
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_POWER, SceneChildNode)
+										
+										CreateObject()
+										
+									Case "visual4"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Stage Visual", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_STAGEVISUAL4
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_POWER, SceneChildNode)
+										
+										CreateObject()
+										
+									Case "visual5"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Stage Visual", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_STAGEVISUAL5
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_POWER, SceneChildNode)
+										
+										CreateObject()
+										
+										
+										
+										
+										
+										
+									Case "nvisual1"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Stage Visual", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_STAGEVISUAL1
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_POWER, SceneChildNode)
+										
+										CreateObject(1)
+										
+									Case "nvisual2"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Stage Visual", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_STAGEVISUAL2
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_POWER, SceneChildNode)
+										
+										CreateObject(1)
+										
+									Case "nvisual3"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Stage Visual", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_STAGEVISUAL3
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_POWER, SceneChildNode)
+										
+										CreateObject(1)
+										
+									Case "nvisual4"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Stage Visual", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_STAGEVISUAL4
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_POWER, SceneChildNode)
+										
+										CreateObject(1)
+										
+									Case "nvisual5"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Stage Visual", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_STAGEVISUAL5
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_POWER, SceneChildNode)
+										
+										CreateObject(1)
+										
 									Case "helicopter"
 										; Update progress bar
 										Game_Stage_UpdateProgressBar("Loading object n."+j+": Helicopter", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
@@ -3843,7 +4123,7 @@ Next
 										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
 										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
 										
-										If Menu\Mission=MISSION_CAPSULE# Then CreateObject()
+										CreateObject()
 
 									;======================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
 
@@ -4530,7 +4810,7 @@ Next
 					Player_Spawn(Game\Gameplay\CheckX#,Game\Gameplay\CheckY#,Game\Gameplay\CheckZ#,Game\Gameplay\CheckDirection#)
 				EndIf
 				GetShallExplodeInventory()
-				For i=1 to CHAOCOUNT : Object_CreateChao(i) : Next
+				For i=1 To CHAOCOUNT : Object_CreateChao(i) : Next
 				CHAOFIRSTTIMER(1)=1
 				If Menu\SaveChaoName=1 Then
 					For cc.tChaoManager=Each tChaoManager
@@ -4554,9 +4834,9 @@ Next
 		EndIf
 
 		; Determine ideal time and score
-		Menu_Stage_LoadMissions(Menu\Stage, true)
+		Menu_Stage_LoadMissions(Menu\Stage, True)
 		h#=0
-		For i=1 to Menu\Members
+		For i=1 To Menu\Members
 			h2#=GetCharSpeed#(Menu\Character[i])
 			If h2#>h# Then h#=h2#
 		Next
@@ -4572,7 +4852,7 @@ Next
 		End Select
 
 		; Create special stage
-		If Menu\ChaoGarden=0 and Menu\Stage<0 Then
+		If Menu\ChaoGarden=0 And Menu\Stage<0 Then
 			Game_Stage_UpdateProgressBar("Creating special stage", 1)
 			CreateSpecialStageContent_Floor(Path$)
 		EndIf
@@ -4617,7 +4897,7 @@ Next
 		EndIf
 
 		; Clear unnecessary meshes
-		For x = MESHES_ALWAYSTOTAL+1 to MESHES_PLANTSTOTAL : FreeSmartEntity(x) : Next
+		For x = MESHES_ALWAYSTOTAL+1 To MESHES_PLANTSTOTAL : FreeSmartEntity(x) : Next
 
 		DeltaTime_Reset(Game\DeltaTime)
 		Game\State = GAME_STATE_STEP
@@ -4635,6 +4915,8 @@ Next
 		Collisions(COLLISION_PLAYER, COLLISION_PLAYER, 2, 2)
 		Collisions(COLLISION_PLAYER, COLLISION_OBJECT, 2, 2)
 		Collisions(COLLISION_PLAYER, COLLISION_OBJECT2, 2, 2)
+		
+
 
 		Collisions(COLLISION_CAMERA, COLLISION_WORLD_POLYGON, 2, 2)
 		Collisions(COLLISION_CAMERA, COLLISION_WORLD_POLYGON_DEATH, 2, 2)
@@ -4715,36 +4997,48 @@ Next
 
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
-	Function Game_Stage_UpdateProgressBar(Message$, t#)
-
-		ClsColor(0,0,0)
-		Cls
-
-		StartDraw()
-
-		If Menu\Stage<>0 Then
-
-			; Draw black ground
-			DrawImageEx(INTERFACE(Interface_Black), GAME_WINDOW_W/2, GAME_WINDOW_H/2)
-
-			; Draw title card
-			Menu\TitleCardTimer=0
-			DrawTitleCardStuff()
-
-			; Calculate percentage
-			Progression = Int(t#*196.0)
-
-			; Draw message at center
-			Color(255, 255, 255)
-			If Menu\Settings\Debug#=1 Then Text(GAME_WINDOW_W-100-130, GAME_WINDOW_H-40+10-50, Message$)
-			Rect(GAME_WINDOW_W-100-130, GAME_WINDOW_H-25+10-50, 200, 50, False)
-			Rect(GAME_WINDOW_W-98-130, GAME_WINDOW_H-23+10-50, Progression, 46, True)
-
-		EndIf
-
-		EndDraw()
-
+Function Game_Stage_UpdateProgressBar(Message$, t#)
+	
+		;ClsColor(0,0,0)
+	Cls
+	
+	StartDraw()
+	
+	If Menu\Stage<>0 Then
+		
+		; Draw black ground
+		DrawImageEx(INTERFACE(Interface_Black), GAME_WINDOW_W/2, GAME_WINDOW_H/2)
+		
+		; Draw title card
+		Menu\TitleCardTimer=0
+		DrawTitleCardStuff()
+		
+		; Calculate percentage
+		Progression = Int((t#*196.0)*2)
+		
+		; Draw message at center
+		
+		
+		
+		Color(255,255,255)
+		If Menu\Settings\Debug#=1 Then 
+				;Text(GAME_WINDOW_W-100-130, GAME_WINDOW_H-40+10-80, Message$)
+			DrawRealText(Message$, 10*GAME_WINDOW_SCALE#, GAME_WINDOW_H-45*GAME_WINDOW_SCALE#, (Interface_Text_2))
+			
+		EndIf 
+		Color(255, 255, 255)
+			;Color(Menu_ReturnCardColor(1,Menu\Character[1]),Menu_ReturnCardColor(2,Menu\Character[1]),Menu_ReturnCardColor(3,Menu\Character[1]))
+		Rect(10*GAME_WINDOW_SCALE#, GAME_WINDOW_H-35*GAME_WINDOW_SCALE#, 396, 50, False)
+		Rect(10*GAME_WINDOW_SCALE#, GAME_WINDOW_H-35*GAME_WINDOW_SCALE#, Progression, 46, True)
+		
+	EndIf
+	
+	EndDraw()
+	
 		; Flip
-		VWait : Flip(GAME_WINDOW_VSYNC)
+	VWait : Flip(GAME_WINDOW_VSYNC)
+	
+End Function
 
-	End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

@@ -93,18 +93,18 @@ Function InitializeGraphicsWindow(width%=1336, height%=768, depth%=32, mode%=2)
 			GAME_WINDOW_SCALE# = Float(GAME_WINDOW_W)/768.0
 			GAME_WINDOW_SCALE2#=GAME_WINDOW_SCALE#*0.70
 			graphicsscale# = (Float(GAME_WINDOW_W)/Float(GAME_WINDOW_H))
-			If abs(graphicsscale#-1366.0/768.0)<1 Then
-				If abs(GAME_WINDOW_W-1366.0)<1 Then
+			If Abs(graphicsscale#-1366.0/768.0)<1 Then
+				If Abs(GAME_WINDOW_W-1366.0)<1 Then
 					Menu\Settings\Resolution#=6
-				ElseIf abs(GAME_WINDOW_W-1600.0)<1 Then
+				ElseIf Abs(GAME_WINDOW_W-1600.0)<1 Then
 					Menu\Settings\Resolution#=9
-				ElseIf abs(GAME_WINDOW_W-1920.0)<1 Then
-					If abs(GAME_WINDOW_H-1080.0)<1 Then
+				ElseIf Abs(GAME_WINDOW_W-1920.0)<1 Then
+					If Abs(GAME_WINDOW_H-1080.0)<1 Then
 						Menu\Settings\Resolution#=11
-					ElseIf abs(GAME_WINDOW_H-1200.0)<1 Then
+					ElseIf Abs(GAME_WINDOW_H-1200.0)<1 Then
 						Menu\Settings\Resolution#=12
 					EndIf
-				ElseIf abs(GAME_WINDOW_W-1536.0)<1 Then
+				ElseIf Abs(GAME_WINDOW_W-1536.0)<1 Then
 					Menu\Settings\Resolution#=6
 				Else
 					Menu\Settings\Resolution#=2

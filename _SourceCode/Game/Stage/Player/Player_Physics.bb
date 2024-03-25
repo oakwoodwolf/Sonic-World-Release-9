@@ -1,8 +1,10 @@
-
 Function GetCharSpeed#(char)
+	
+	;stage check
 	If Menu\Stage<0 Then
 		Return 6.0
 	Else
+		;checks character and returns speed
 		Select char
 			Case CHAR_SON:
 				Return 6.0
@@ -19,9 +21,11 @@ Function GetCharSpeed#(char)
 			Case CHAR_BIG,CHAR_HBO,CHAR_GAM,CHAR_EGG,CHAR_BET,CHAR_CHW,CHAR_TMH:
 				Return 3.0
 			Default:
+				;checks to see if mod character and returns speed
 				If IsCharMod(char) Then
 					Return (MODCHARS_SPEED#(char-CHAR_MOD1+1))
 				Else
+					;defaults to 6
 					Return 6.0
 				EndIf
 		End Select
@@ -97,7 +101,6 @@ End Function
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 Function Player_Physics(p.tPlayer, d.tDeltaTime)
 
 	p\Physics\MOTION_CEILING# = -0.65
@@ -157,15 +160,17 @@ Function Player_Physics(p.tPlayer, d.tDeltaTime)
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	If p\Motion\Ground and p\SpeedLength#>0 Then
+	If p\Motion\Ground And p\SpeedLength#>0 Then
 		p\Physics\COMMON_GROUNDTENSION# = -0.705252525
 	Else
 		p\Physics\COMMON_GROUNDTENSION# = 0.0
 	EndIf
+;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	Select p\Action
-		Case ACTION_BOARD,ACTION_BOARDJUMP,ACTION_BOARDFALL,ACTION_BOARDTRICK,ACTION_SKYDIVE,ACTION_GLIDER:
+		Case ACTION_BOARD,ACTION_BOARDJUMP,ACTION_BOARDFALL,ACTION_BOARDTRICK
 			If Game\Vehicle=8 Then
 				p\Physics\TURNING_SHARPNESS# = 18.05+1.025*(p\SpeedLength#/6.0)
 			Else
@@ -177,15 +182,13 @@ Function Player_Physics(p.tPlayer, d.tDeltaTime)
 			Else
 				p\Physics\TURNING_SHARPNESS# = 18.05+1.025*(p\SpeedLength#/6.0)
 			EndIf
-		Case ACTION_TORNADO:
-			p\Physics\TURNING_SHARPNESS# = 38.05+1.025*(p\SpeedLength#/6.0)
 		Default:
-			If p\SpeedLength#>2.675 Then
-				p\Physics\TURNING_SHARPNESS# = 0.025+0.575*(p\SpeedLength#/6.0)
-			ElseIf p\SpeedLength#>0.5 Then
-				p\Physics\TURNING_SHARPNESS# = 4.25
+			If p\SpeedLength#>2.75 Then
+				p\Physics\TURNING_SHARPNESS# = 1.025				;+0.275*(p\SpeedLength#/12.0) ;0.025+0.575*(p\SpeedLength#/6.0)
+			ElseIf p\SpeedLength#>1.2 Then
+				p\Physics\TURNING_SHARPNESS# =0.96				;1.75 ;4.25
 			Else
-				p\Physics\TURNING_SHARPNESS# = 3.075
+				p\Physics\TURNING_SHARPNESS# = 0.66				 ;3.075
 			EndIf
 			If p\IceFloorTimer>0 Or p\InkFloorTimer>0 Then p\Physics\TURNING_SHARPNESS#=p\Physics\TURNING_SHARPNESS#+11.3
 	End Select
@@ -194,11 +197,7 @@ Function Player_Physics(p.tPlayer, d.tDeltaTime)
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If p\Action=ACTION_ROLL Or p\Action=ACTION_BUMPED Or ((p\Action=ACTION_BOARD Or p\Action=ACTION_BOARDDRIFT) and (Not(Game\Vehicle=8))) Then p\Physics\Rolling=True Else p\Physics\Rolling=False
-
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	If p\Action=ACTION_ROLL Or ((p\Action=ACTION_BOARD Or p\Action=ACTION_BOARDDRIFT) And (Not(Game\Vehicle=8))) Then p\Physics\Rolling=True Else p\Physics\Rolling=False
 
 If Menu\Stage<0 Or Game\ControlLock>0 Or p\Action=ACTION_UP Or p\Action=ACTION_FWD Or p\Action=ACTION_HOMING Or p\Action=ACTION_STOMP Or p\Action=ACTION_FLOAT Or p\Action=ACTION_GRIND Or p\HasVehicle>0 Then
 	p\Flags\DisallowCustomPhysics=True
@@ -213,41 +212,37 @@ EndIf
 Select p\Action
 	Case ACTION_ROLL,ACTION_CHARGE:
 		p\Physics\COMMON_XZACCELERATION# = 0.001
-	Case ACTION_DRIFT,ACTION_BOARDDRIFT,ACTION_BUMPED,ACTION_CARDRIFT:
+	Case ACTION_DRIFT,ACTION_BOARDDRIFT,ACTION_CARDRIFT:
 		p\Physics\COMMON_XZACCELERATION# = 0.0257
 	Default:
 		Select p\Action
 			Case ACTION_GLIDE:
-				If (Game\SpeedShoes=1 and Player_IsPlayable(p)) Then
+				If (Game\SpeedShoes=1 And Player_IsPlayable(p)) Then
 					p\Physics\COMMON_XZACCELERATION# = 0.091
 				Else
 					p\Physics\COMMON_XZACCELERATION# = 0.061
 				EndIf
 			Case ACTION_SOAR,ACTION_SOARFLAP:
-				If (Game\SpeedShoes=1 and Player_IsPlayable(p)) Then
+				If (Game\SpeedShoes=1 And Player_IsPlayable(p)) Then
 					p\Physics\COMMON_XZACCELERATION# = 0.081
 				Else
 					p\Physics\COMMON_XZACCELERATION# = 0.081
 				EndIf
 			Case ACTION_FLUTTER:
-				If (Game\SpeedShoes=1 and Player_IsPlayable(p)) Then
+				If (Game\SpeedShoes=1 And Player_IsPlayable(p)) Then
 					p\Physics\COMMON_XZACCELERATION# = 0.645*0.091
 				Else
 					p\Physics\COMMON_XZACCELERATION# = 0.645*0.061
 				EndIf
 			Case ACTION_FLY:
-				If (Game\SpeedShoes=1 and Player_IsPlayable(p)) Then
+				If (Game\SpeedShoes=1 And Player_IsPlayable(p)) Or (Game\Gameplay\GaugeEnergy=100 And p\Character=Tails) Then
 					p\Physics\COMMON_XZACCELERATION# = 0.05875+0.015*(p\SpeedLength#/6.0)
 				Else
 					p\Physics\COMMON_XZACCELERATION# = 0.031875+0.02*(p\SpeedLength#/6.0)
 				EndIf
 			Case ACTION_CAR,ACTION_CARFALL,ACTION_CARDRIFT:
-				If Game\Vehicle=4 Or Game\Vehicle=9 Then
-					If Game\Vehicle=4 Then
-						p\Physics\COMMON_XZACCELERATION# = 0.05375+0.05*(p\SpeedLength#/6.0)
-					Else
-						p\Physics\COMMON_XZACCELERATION# = 0.05375+0.07*(p\SpeedLength#/6.0)
-					EndIf
+				If Game\Vehicle=4 Then
+					p\Physics\COMMON_XZACCELERATION# = 0.05375+0.05*(p\SpeedLength#/6.0)
 					If Input\Hold\ActionRoll Then p\Physics\COMMON_XZACCELERATION#=1.325*p\Physics\COMMON_XZACCELERATION#
 				Else
 					p\Physics\COMMON_XZACCELERATION# = 0.05375+0.03*(p\SpeedLength#/6.0)
@@ -260,7 +255,7 @@ Select p\Action
 					p\Physics\COMMON_XZACCELERATION# = 0.03875+0.03*(p\SpeedLength#/6.0)
 				EndIf
 			Default:
-				If (Game\SpeedShoes=1 and Player_IsPlayable(p)) Then
+				If (Game\SpeedShoes=1 And Player_IsPlayable(p)) Then
 					If p\Motion\Ground Then
 						p\Physics\COMMON_XZACCELERATION# = 0.05375+0.03*(p\SpeedLength#/6.0)
 					Else
@@ -283,12 +278,16 @@ End Select
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Select p\Action
-	Case ACTION_ROLL,ACTION_DRIFT,ACTION_BOARDDRIFT,ACTION_BUMPED,ACTION_CARDRIFT:
+	Case ACTION_ROLL,ACTION_DRIFT,ACTION_BOARDDRIFT,ACTION_CARDRIFT:
 		p\Physics\COMMON_XZDECELERATION# = 0.0095*(p\Physics\UNDERWATERTRIGGER#+1.5)/2.0
 	Case ACTION_PUNCH,ACTION_UPPERCUT,ACTION_THROW,ACTION_PSYCHO,ACTION_GATLING,ACTION_HOOKSHOT:
 		p\Physics\COMMON_XZDECELERATION# = 0.055*(p\Physics\UNDERWATERTRIGGER#)
 	Default:
-		p\Physics\COMMON_XZDECELERATION# = 0.021875+0.03*(p\SpeedLength#/6.0)
+		If p\Motion\Ground=True Then
+			p\Physics\COMMON_XZDECELERATION# = 0.021875+0.03*(p\SpeedLength#/4.0)
+		Else
+			p\Physics\COMMON_XZDECELERATION# = 0.021875+0.03*(p\SpeedLength#/6.0)
+		EndIf 
 		p\Physics\COMMON_XZDECELERATION# = (p\Physics\COMMON_XZDECELERATION#) * (p\Physics\UNDERWATERTRIGGER#) * (p\Physics\ICETRIGGER2#)
 End Select
 
@@ -330,17 +329,22 @@ If p\Motion\Ground Then
 		Case ACTION_CLAW:
 			p\Physics\COMMON_XZTOPSPEED# = 1.1
 		Case ACTION_SWIPE:
-			p\Physics\COMMON_XZTOPSPEED# = 1.52
+			Select p\Character
+				Case CHAR_TAI
+					If (Game\SpeedShoes=1 And Player_IsPlayable(p)) Then
+						p\Physics\COMMON_XZTOPSPEED# = 6.94825
+					Else
+						p\Physics\COMMON_XZTOPSPEED# = GetCharSpeed#(p\RealCharacter)
+					EndIf
+				Default
+					p\Physics\COMMON_XZTOPSPEED# = 1.52
+			End Select 
 		Case ACTION_SHAKETREE:
 			p\Physics\COMMON_XZTOPSPEED# = 0
 		Case ACTION_CARRY:
-			If Menu\ChaoGarden=0 Then
-				p\Physics\COMMON_XZTOPSPEED# = 1.25
-			Else
-				p\Physics\COMMON_XZTOPSPEED# = 1.0
-			EndIf
+			p\Physics\COMMON_XZTOPSPEED# = 1.00
 		Case ACTION_SOAR:
-			If (Game\SpeedShoes=1 and Player_IsPlayable(p)) Then
+			If (Game\SpeedShoes=1 And Player_IsPlayable(p)) Then
 				p\Physics\COMMON_XZTOPSPEED# = 3.142
 			Else
 				p\Physics\COMMON_XZTOPSPEED# = 1.642
@@ -359,8 +363,6 @@ If p\Motion\Ground Then
 		Case ACTION_CAR,ACTION_CARDRIFT:
 			If Game\Vehicle=4 Then
 				If Input\Hold\ActionRoll Then p\Physics\COMMON_XZTOPSPEED# = 6.375 Else p\Physics\COMMON_XZTOPSPEED# = 3.625
-			ElseIf Game\Vehicle=9 Then
-				If Input\Hold\ActionRoll Then p\Physics\COMMON_XZTOPSPEED# = 6.575 Else p\Physics\COMMON_XZTOPSPEED# = 3.825
 			Else
 				If Input\Hold\ActionRoll Then p\Physics\COMMON_XZTOPSPEED# = 6.25 Else p\Physics\COMMON_XZTOPSPEED# = 3.125
 			EndIf
@@ -369,7 +371,7 @@ If p\Motion\Ground Then
 		Case ACTION_TORNADO:
 			If p\HasVehicle=7 Then p\Physics\COMMON_XZTOPSPEED#=6.5 Else p\Physics\COMMON_XZTOPSPEED#=4.5
 		Default:
-			If (Game\SpeedShoes=1 and Player_IsPlayable(p)) Then
+			If (Game\SpeedShoes=1 And Player_IsPlayable(p)) Then
 				p\Physics\COMMON_XZTOPSPEED# = 6.94825
 			Else
 				p\Physics\COMMON_XZTOPSPEED# = GetCharSpeed#(p\RealCharacter)
@@ -381,13 +383,13 @@ Else
 		Case ACTION_ROLL:
 			p\Physics\COMMON_XZTOPSPEED# = 6.5
 		Case ACTION_FLY,ACTION_SOARFLAP:
-			If (Game\SpeedShoes=1 and Player_IsPlayable(p)) Then
+			If (Game\SpeedShoes=1 And Player_IsPlayable(p)) Or (Game\Gameplay\GaugeEnergy=100 And p\Character=Tails)  Then
 				p\Physics\COMMON_XZTOPSPEED# = 5.04
 			Else
 				p\Physics\COMMON_XZTOPSPEED# = 3.04
 			EndIf
 		Case ACTION_GLIDE,ACTION_FLUTTER,ACTION_SOAR,ACTION_SLEET:
-			If (Game\SpeedShoes=1 and Player_IsPlayable(p)) Then
+			If (Game\SpeedShoes=1 And Player_IsPlayable(p)) Then
 				p\Physics\COMMON_XZTOPSPEED# = 4.142
 			Else
 				p\Physics\COMMON_XZTOPSPEED# = 2.642
@@ -406,15 +408,20 @@ Else
 		Case ACTION_CLAW:
 			p\Physics\COMMON_XZTOPSPEED# = 1.1
 		Case ACTION_SWIPE:
-			p\Physics\COMMON_XZTOPSPEED# = 1.24
+			Select p\Character
+				Case CHAR_TAI
+					If (Game\SpeedShoes=1 And Player_IsPlayable(p)) Then
+						p\Physics\COMMON_XZTOPSPEED# = 6.46575
+					Else
+						p\Physics\COMMON_XZTOPSPEED# = 5.756876
+					EndIf
+				Default
+					p\Physics\COMMON_XZTOPSPEED# = 1.24
+			End Select
 		Case ACTION_BUOY:
 			p\Physics\COMMON_XZTOPSPEED# = 1.44
-		Case ACTION_CARRYJUMP,ACTION_CARRYTHROWN:
-			If Menu\ChaoGarden=0 Then
-				p\Physics\COMMON_XZTOPSPEED# = 1.25
-			Else
-				p\Physics\COMMON_XZTOPSPEED# = 1.0
-			EndIf
+		Case ACTION_CARRYJUMP:
+			p\Physics\COMMON_XZTOPSPEED# = 1.00
 		Case ACTION_BUMPED:
 			p\Physics\COMMON_XZTOPSPEED# = 5.05
 		Case ACTION_BOARDJUMP,ACTION_BOARDFALL,ACTION_BOARDTRICK,ACTION_SKYDIVE,ACTION_GLIDER:
@@ -429,15 +436,13 @@ Else
 		Case ACTION_CARFALL:
 			If Game\Vehicle=4 Then
 				If Input\Hold\ActionRoll Then p\Physics\COMMON_XZTOPSPEED# = 6.375 Else p\Physics\COMMON_XZTOPSPEED# = 3.625
-			ElseIf Game\Vehicle=9 Then
-				If Input\Hold\ActionRoll Then p\Physics\COMMON_XZTOPSPEED# = 6.575 Else p\Physics\COMMON_XZTOPSPEED# = 3.825
 			Else
 				If Input\Hold\ActionRoll Then p\Physics\COMMON_XZTOPSPEED# = 6.25 Else p\Physics\COMMON_XZTOPSPEED# = 3.125
 			EndIf
 		Case ACTION_TORNADO:
 			If p\HasVehicle=7 Then p\Physics\COMMON_XZTOPSPEED#=6.5 Else p\Physics\COMMON_XZTOPSPEED#=4.5
 		Default:
-			If (Game\SpeedShoes=1 and Player_IsPlayable(p)) Then
+			If (Game\SpeedShoes=1 And Player_IsPlayable(p)) Then
 				p\Physics\COMMON_XZTOPSPEED# = 6.46575
 			Else
 				p\Physics\COMMON_XZTOPSPEED# = 5.756876
@@ -457,10 +462,10 @@ p\Physics\COMMON_XZMAXSPEED# = p\Physics\COMMON_XZTOPSPEED#
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If (Game\MachLock>0 and (Not(Game\MachLockDisabler>0)) and Game\CinemaMode=0 and (Not(p\Action=ACTION_DEBUG Or p\Action=ACTION_FREEZE))) Then
-	p\Physics\COMMON_XZMINSPEED#=4.5
+If (Game\MachLock>0 And (Not(Game\MachLockDisabler>0)) And Game\CinemaMode=0 And (Not(p\Action=ACTION_DEBUG Or p\Action=ACTION_FREEZE))) Then
+	If Input\Hold\Down Then p\Physics\COMMON_XZMINSPEED#=2.5 Else p\Physics\COMMON_XZMINSPEED#=4.5
 ElseIf p\BumpedTimer>0 Then
-	If EntityPitch(p\Objects\Mesh)>-5 and (Not(p\BumpedCloudTimer>0)) Then p\Physics\COMMON_XZMINSPEED#=1.12 Else p\Physics\COMMON_XZMINSPEED# = 0
+	If EntityPitch(p\Objects\Mesh)>-5 And (Not(p\BumpedCloudTimer>0)) Then p\Physics\COMMON_XZMINSPEED#=1.12 Else p\Physics\COMMON_XZMINSPEED# = 0
 Else
 	Select p\Action
 		Case ACTION_DRIFT:
@@ -477,6 +482,11 @@ Else
 			p\Physics\COMMON_XZMINSPEED# = 0.468
 		Case ACTION_SLEET:
 			p\Physics\COMMON_XZMINSPEED# = 1.8
+			
+		Case ACTION_BOOST,ACTION_BOOSTFALL:
+			p\Physics\COMMON_XZMINSPEED# = 4.5
+
+			
 		Case ACTION_BOARD,ACTION_BOARDJUMP,ACTION_BOARDDRIFT,ACTION_BOARDFALL,ACTION_BOARDTRICK:
 			If Game\Victory=0 Then
 				If Game\Vehicle=8 Then
@@ -496,7 +506,7 @@ Else
 		Case ACTION_CAR,ACTION_CARFALL,ACTION_CARDRIFT:
 			If Game\Victory=0 Then
 				If Input\Hold\ActionRoll Then
-					If Game\Vehicle=4 Or Game\Vehicle=9 Then p\Physics\COMMON_XZMINSPEED# = 1.875 Else p\Physics\COMMON_XZMINSPEED# = 1.25
+					If Game\Vehicle=4 Then p\Physics\COMMON_XZMINSPEED# = 1.875 Else p\Physics\COMMON_XZMINSPEED# = 1.25
 				Else
 					p\Physics\COMMON_XZMINSPEED# = 0
 				EndIf
@@ -520,33 +530,13 @@ EndIf
 
 p\Physics\JUMPDASH_SPEED# = (0.95+1.4*(p\SpeedLength#/6.0))*(p\Physics\UNDERWATERTRIGGER#+p\Physics\UNDERWATERTRIGGERZ#)
 
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 p\Physics\FLYDOWN_SPEED# = 0.353101*(p\Physics\UNDERWATERTRIGGER#)
-
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 p\Physics\SKYDIVE_SPEED# = -1.5*0.9*(p\Physics\UNDERWATERTRIGGER#)
 
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 p\Physics\LEVITATION_SPEED# = (1.2)*(p\Physics\UNDERWATERTRIGGER#)
 
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 p\Physics\FLY_SPEED# = (0.54335+0.015*(p\SpeedLength#/6.0))*(p\Physics\UNDERWATERTRIGGER#+p\Physics\UNDERWATERTRIGGERX#)
-
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Select p\Action
 	Case ACTION_BUMPED:
@@ -595,21 +585,9 @@ EndIf
 
 p\Physics\COMMON_SKIDDINGFACTOR# = 0.05*p\Physics\ICETRIGGER2#
 
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 p\Physics\GLIDEFALL_SPEED# = -0.33*(p\Physics\UNDERWATERTRIGGER#+p\Physics\UNDERWATERTRIGGERX#)
 
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 p\Physics\FLUTTERFALL_SPEED# = -0.2*(p\Physics\UNDERWATERTRIGGER#+p\Physics\UNDERWATERTRIGGERX#)
-
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If (Game\SpeedShoes=0 Or (Not(Player_IsPlayable(p)))) Then
 	p\Physics\GLIDE_SPEED# = 1.79
@@ -625,17 +603,13 @@ p\Physics\GLIDE_SPEED#=p\Physics\GLIDE_SPEED#*(p\Physics\UNDERWATERTRIGGER#+p\Ph
 
 p\Physics\JUMP_STRENGTH_SPECIFIC# = (1.18+GetCharJumpStrength#(p\RealCharacter)*0.1)
 
-If (Game\SuperForm>0 and Player_IsPlayable(p)) Then p\Physics\JUMP_STRENGTH_SPECIFIC#=p\Physics\JUMP_STRENGTH_SPECIFIC#*1.15
+If (Game\SuperForm>0 And Player_IsPlayable(p)) Then p\Physics\JUMP_STRENGTH_SPECIFIC#=p\Physics\JUMP_STRENGTH_SPECIFIC#*1.15
 
 If p\StompBounceTimer>0 Then
 	p\Physics\JUMP_STRENGTH#=p\Physics\JUMP_STRENGTH_SPECIFIC#*(p\Physics\UNDERWATERTRIGGER#+p\Physics\UNDERWATERTRIGGERT#)+0.5
 Else
 	p\Physics\JUMP_STRENGTH#=p\Physics\JUMP_STRENGTH_SPECIFIC#*(p\Physics\UNDERWATERTRIGGER#+p\Physics\UNDERWATERTRIGGERT#)
 EndIf
-
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 p\Physics\JUMP_STRENGTH_VARIABLE# = 1*(p\Physics\UNDERWATERTRIGGER#+p\Physics\UNDERWATERTRIGGERT#)
 
@@ -645,61 +619,26 @@ p\Physics\JUMP_STRENGTH_VARIABLE# = 1*(p\Physics\UNDERWATERTRIGGER#+p\Physics\UN
 
 p\Physics\STOMPFALL_SPEED#=-5*(p\Physics\UNDERWATERTRIGGER#)
 
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 p\Physics\FLOATFALL_SPEED#=-0.9113*(p\Physics\UNDERWATERTRIGGER#)
-
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 p\Physics\DIEFALL_SPEED# = -1*p\Physics\UNDERWATERTRIGGER#
 
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 Select p\GrindTurn
-	Case 1: p\Physics\GRIND_SPEED#=2*p\Physics\UNDERWATERTRIGGER#
-	Case 2: p\Physics\GRIND_SPEED#=4*p\Physics\UNDERWATERTRIGGER#
+	Case 1: p\Physics\GRIND_SPEED#=3.5*p\Physics\UNDERWATERTRIGGER#
+	Case 2: p\Physics\GRIND_SPEED#=5*p\Physics\UNDERWATERTRIGGER#
 End Select
-
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 p\Physics\BUZZFLYFALL_SPEED# = -0.15*p\Physics\UNDERWATERTRIGGER#
 
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 p\Physics\SLOWGLIDE_SPEED# = 1.74*p\Physics\UNDERWATERTRIGGER#
-
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 p\Physics\CLIMB_SPEED# = 1.1012
 
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 p\Physics\HOVER_SPEED# = 1.1*p\Physics\UNDERWATERTRIGGER#
+
 p\Physics\HOVERFALL_SPEED# = -0.46*p\Physics\UNDERWATERTRIGGER#
 
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 p\Physics\SPRINT_SPEED# = 3.08*p\Physics\UNDERWATERTRIGGER#
-
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 p\Physics\BOUNCE_SPEED# = 2*(p\Physics\UNDERWATERTRIGGER#+p\Physics\UNDERWATERTRIGGERY#)
 
@@ -751,8 +690,6 @@ Else
 	If p\Physics\SLOWTRIGGER#<1 Then p\Physics\SLOWTRIGGER#=p\Physics\SLOWTRIGGER#+0.25*d\Delta Else p\Physics\SLOWTRIGGER#=1
 EndIf
 
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

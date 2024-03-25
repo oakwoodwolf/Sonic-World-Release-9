@@ -13,6 +13,7 @@ Type tGame_Interface
 	Field	FlashCheckTimerTimer
 	Field	RingStolenTimer
 	Field	CinemaAllowUpdate
+	Field	ShowRedRingTimer
 
 	; point values
 	Field	Points
@@ -70,6 +71,7 @@ Type tGame_Interface
 	Field DebugCollision
 	Field DebugAmountAxis
 	Field DebugHadD
+	Field DebugIDMode
 	Field DebugSpawnedObj
 	Field DebugFileTime
 	Field DebugSavedTimer
@@ -95,61 +97,192 @@ End Type
 
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
-
-	Function Interface_TrickPointsCounter(p.tPlayer, d.tDeltaTime, movedown#=0)
+Function DrawSpinnerStuff()
+	SetColor(Menu_ReturnCardColor(1,Menu\Character[1]),Menu_ReturnCardColor(2,Menu\Character[1]),Menu_ReturnCardColor(3,Menu\Character[1]))
 	
-			If Game\Interface\PointsTimer>5.0*secs# And Game\Interface\PointsTimer<6.0*secs# Then
-				If Game\Interface\t_x#<0 Then Game\Interface\t_x#=Game\Interface\t_x#+5*d\Delta
-				If Game\Interface\t_x#>0 Then Game\Interface\t_x#=0
-			ElseIf Game\Interface\PointsTimer>1.0*secs# And Game\Interface\PointsTimer<2.0*secs# Then
-				Game\Interface\t_x#=Game\Interface\t_x#+5*d\Delta
-				Game\Interface\point_fade#=Game\Interface\point_fade#-0.075*d\Delta
-			ElseIf Game\Interface\PointsTimer>6.0*secs# Then
-				Game\Interface\t_x#=-88
-				Game\Interface\point_fade#=1.0
-			ElseIf Game\Interface\PointsTimer<1.0*secs# Then
-				Game\Interface\point_fade#=0.0
-			EndIf	
+	SetAlpha(Abs(1-Menu\TitleCardTimer/secs#)*0.5)
+	Select inmenu
+		Case False: SetScale(GAME_WINDOW_SCALE#*Min#(1.85,Abs((Menu\TitleCardTimer/secs#))*2+0.4), GAME_WINDOW_SCALE#*Min#(1.85,Abs((Menu\TitleCardTimer/secs#))*2+0.4))
+		Case True: SetScale(GAME_WINDOW_SCALE#*Min#(2.0,Abs((Menu\TitleCardTimer/secs#))*2+0.4), GAME_WINDOW_SCALE#*Min#(2.0,Abs((Menu\TitleCardTimer/secs#))*2+0.4))
+	End Select
+	DrawImageEx(INTERFACE(Interface_Spinner), GAME_WINDOW_W/2+80*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-40*GAME_WINDOW_SCALE#)
+	SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
+	SetAlpha(1.0)
+	
+	SetAlpha(Abs(1-Menu\TitleCardTimer/secs#))
+	SetScale(GAME_WINDOW_SCALE#*Min#(1.0,Abs(1-(Menu\TitleCardTimer/secs#))+0.4), GAME_WINDOW_SCALE#*Min#(1.0,Abs(1-(Menu\TitleCardTimer/secs#))+0.4))
+	DrawImageEx(INTERFACE(Interface_Spinner), GAME_WINDOW_W/2+80*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-40*GAME_WINDOW_SCALE#)
+	SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
+	SetAlpha(1.0)
+End Function 
+Function DrawHeroesSpinner1()
+	SetColor(Menu_ReturnCardColor(1,Menu\Character[1]),Menu_ReturnCardColor(2,Menu\Character[1]),Menu_ReturnCardColor(3,Menu\Character[1]))
+	
+	SetAlpha(Abs(1-Menu\TitleCardTimer/secs#)*0.5)
+	Select inmenu
+		Case False: SetScale(GAME_WINDOW_SCALE#*Min#(1.85,Abs((Menu\TitleCardTimer/secs#))*2+0.4), GAME_WINDOW_SCALE#*Min#(1.85,Abs((Menu\TitleCardTimer/secs#))*2+0.4))
+		Case True: SetScale(GAME_WINDOW_SCALE#*Min#(2.0,Abs((Menu\TitleCardTimer/secs#))*2+0.4), GAME_WINDOW_SCALE#*Min#(2.0,Abs((Menu\TitleCardTimer/secs#))*2+0.4))
+	End Select
+	DrawImageEx(INTERFACE(Interface_Spinner1), GAME_WINDOW_W/2+80*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-40*GAME_WINDOW_SCALE#)
+	SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
+	SetAlpha(1.0)
+	
+	SetAlpha(Abs(1-Menu\TitleCardTimer/secs#))
+	SetScale(GAME_WINDOW_SCALE#*Min#(1.0,Abs(1-(Menu\TitleCardTimer/secs#))+0.4), GAME_WINDOW_SCALE#*Min#(1.0,Abs(1-(Menu\TitleCardTimer/secs#))+0.4))
+	DrawImageEx(INTERFACE(Interface_Spinner1), GAME_WINDOW_W/2+80*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-40*GAME_WINDOW_SCALE#)
+	SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
+	SetAlpha(1.0)
+End Function 
+Function DrawHeroesSpinner2()
+	SetColor(Menu_ReturnCardColor(1,Menu\Character[2]),Menu_ReturnCardColor(2,Menu\Character[2]),Menu_ReturnCardColor(3,Menu\Character[2]))
+	
+	SetAlpha(Abs(1-Menu\TitleCardTimer/secs#)*0.5)
+	Select inmenu
+		Case False: SetScale(GAME_WINDOW_SCALE#*Min#(1.85,Abs((Menu\TitleCardTimer/secs#))*2+0.4), GAME_WINDOW_SCALE#*Min#(1.85,Abs((Menu\TitleCardTimer/secs#))*2+0.4))
+		Case True: SetScale(GAME_WINDOW_SCALE#*Min#(2.0,Abs((Menu\TitleCardTimer/secs#))*2+0.4), GAME_WINDOW_SCALE#*Min#(2.0,Abs((Menu\TitleCardTimer/secs#))*2+0.4))
+	End Select
+	DrawImageEx(INTERFACE(Interface_Spinner2), GAME_WINDOW_W/2+80*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-40*GAME_WINDOW_SCALE#)
+	SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
+	SetAlpha(1.0)
+	
+	SetAlpha(Abs(1-Menu\TitleCardTimer/secs#))
+	SetScale(GAME_WINDOW_SCALE#*Min#(1.0,Abs(1-(Menu\TitleCardTimer/secs#))+0.4), GAME_WINDOW_SCALE#*Min#(1.0,Abs(1-(Menu\TitleCardTimer/secs#))+0.4))
+	DrawImageEx(INTERFACE(Interface_Spinner2), GAME_WINDOW_W/2+80*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-40*GAME_WINDOW_SCALE#)
+	SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
+	SetAlpha(1.0)
+End Function 
+Function DrawHeroesSpinner3()
+	SetColor(Menu_ReturnCardColor(1,Menu\Character[3]),Menu_ReturnCardColor(2,Menu\Character[spinnerno]),Menu_ReturnCardColor(3,Menu\Character[3]))
+	
+	SetAlpha(Abs(1-Menu\TitleCardTimer/secs#)*0.5)
+	Select inmenu
+		Case False: SetScale(GAME_WINDOW_SCALE#*Min#(1.85,Abs((Menu\TitleCardTimer/secs#))*2+0.4), GAME_WINDOW_SCALE#*Min#(1.85,Abs((Menu\TitleCardTimer/secs#))*2+0.4))
+		Case True: SetScale(GAME_WINDOW_SCALE#*Min#(2.0,Abs((Menu\TitleCardTimer/secs#))*2+0.4), GAME_WINDOW_SCALE#*Min#(2.0,Abs((Menu\TitleCardTimer/secs#))*2+0.4))
+	End Select
+	DrawImageEx(INTERFACE(Interface_Spinner3), GAME_WINDOW_W/2+80*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-40*GAME_WINDOW_SCALE#)
+	SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
+	SetAlpha(1.0)
+	
+	SetAlpha(Abs(1-Menu\TitleCardTimer/secs#))
+	SetScale(GAME_WINDOW_SCALE#*Min#(1.0,Abs(1-(Menu\TitleCardTimer/secs#))+0.4), GAME_WINDOW_SCALE#*Min#(1.0,Abs(1-(Menu\TitleCardTimer/secs#))+0.4))
+	DrawImageEx(INTERFACE(Interface_Spinner3), GAME_WINDOW_W/2+80*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-40*GAME_WINDOW_SCALE#)
+	SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
+	SetAlpha(1.0)
+End Function 
+
+Function Interface_TrickPointsCounter(p.tPlayer, d.tDeltaTime, movedown#=0)
+	
+	If Game\Interface\PointsTimer>5.0*secs# And Game\Interface\PointsTimer<6.0*secs# Then
+		If Game\Interface\t_x#<0 Then Game\Interface\t_x#=Game\Interface\t_x#+5*d\Delta
+		If Game\Interface\t_x#>0 Then Game\Interface\t_x#=0
+	ElseIf Game\Interface\PointsTimer>1.0*secs# And Game\Interface\PointsTimer<2.0*secs# Then
+		Game\Interface\t_x#=Game\Interface\t_x#+5*d\Delta
+		Game\Interface\point_fade#=Game\Interface\point_fade#-0.075*d\Delta
+	ElseIf Game\Interface\PointsTimer>6.0*secs# Then
+		Game\Interface\t_x#=-88
+		Game\Interface\point_fade#=1.0
+	ElseIf Game\Interface\PointsTimer<1.0*secs# Then
+		Game\Interface\point_fade#=0.0
+	EndIf	
+	
+	If (Game\Interface\PointsTimer>1.0*secs# And Game\Interface\PointsTimer<=6.0*secs#) Then
+		If Game\Interface\PointsTimer>4.0*secs# And Game\Interface\PointsTimer<6.0*secs# Then
+			SetColor(220,220,220)
+			DrawBetterNumber(Game\Interface\Points, GAME_WINDOW_W/2, (66+Game\Interface\thisheight#+Game\Interface\t_y#+movedown#)*GAME_WINDOW_SCALE#)
+		Else
+			If Game\Interface\PointsCommentGiven=0 Then
+				Select Rand(1,26)
+					Case 1:Game\Interface\PointsComment$="Good"    	: Game\Interface\point_r=000	: Game\Interface\point_g=255	: Game\Interface\point_b=000
+					Case 2:Game\Interface\PointsComment$="Great!"   	: Game\Interface\point_r=255	: Game\Interface\point_g=055	: Game\Interface\point_b=255
+					Case 3:Game\Interface\PointsComment$="Awesome!"	    : Game\Interface\point_r=055	: Game\Interface\point_g=125	: Game\Interface\point_b=255
+					Case 4:Game\Interface\PointsComment$="Outstanding!"	: Game\Interface\point_r=255	: Game\Interface\point_g=055	: Game\Interface\point_b=255
+					Case 5:Game\Interface\PointsComment$="Amazing!" 	: Game\Interface\point_r=255	: Game\Interface\point_g=205	: Game\Interface\point_b=000
+					Case 6:Game\Interface\PointsComment$="Radical!"   	: Game\Interface\point_r=255	: Game\Interface\point_g=000	: Game\Interface\point_b=000
+					Case 7:Game\Interface\PointsComment$="Extreme!"   	: Game\Interface\point_r=255	: Game\Interface\point_g=255	: Game\Interface\point_b=000
+					Case 8:Game\Interface\PointsComment$="Perfect!"   	: Game\Interface\point_r=055	: Game\Interface\point_g=125	: Game\Interface\point_b=255
+					Case 9:Game\Interface\PointsComment$="Skadoosh!"    : Game\Interface\point_r=255	: Game\Interface\point_g=000	: Game\Interface\point_b=192
+					Case 10:Game\Interface\PointsComment$="Cool!"   	: Game\Interface\point_r=255	: Game\Interface\point_g=255	: Game\Interface\point_b=000
+					Case 11:Game\Interface\PointsComment$="Groovy!"   	: Game\Interface\point_r=055	: Game\Interface\point_g=125	: Game\Interface\point_b=255
+					Case 12:Game\Interface\PointsComment$="Tight!"   	: Game\Interface\point_r=123	: Game\Interface\point_g=000	: Game\Interface\point_b=255
+					Case 13:Game\Interface\PointsComment$="Sweet!"   	: Game\Interface\point_r=123	: Game\Interface\point_g=123	: Game\Interface\point_b=255
+					Case 14:Game\Interface\PointsComment$="Nice!"   	: Game\Interface\point_r=000	: Game\Interface\point_g=000	: Game\Interface\point_b=255
+					Case 15:Game\Interface\PointsComment$="Unreal!"   	: Game\Interface\point_r=200	: Game\Interface\point_g=000	: Game\Interface\point_b=000
+					Case 16:Game\Interface\PointsComment$="Incredible!" : Game\Interface\point_r=200	: Game\Interface\point_g=255	: Game\Interface\point_b=000
+					Case 17:Game\Interface\PointsComment$="Beautiful!"  : Game\Interface\point_r=000	: Game\Interface\point_g=255	: Game\Interface\point_b=200
+					Case 18:Game\Interface\PointsComment$="Spectacular!": Game\Interface\point_r=255	: Game\Interface\point_g=000	: Game\Interface\point_b=000
+					Case 19:Game\Interface\PointsComment$="Wonderful!"  : Game\Interface\point_r=000	: Game\Interface\point_g=255	: Game\Interface\point_b=000
+					Case 20:Game\Interface\PointsComment$="Woah!"       : Game\Interface\point_r=000	: Game\Interface\point_g=255	: Game\Interface\point_b=255
+					Case 21:Game\Interface\PointsComment$="Kaboom!"     : Game\Interface\point_r=255	: Game\Interface\point_g=180	: Game\Interface\point_b=000
+					Case 22:Game\Interface\PointsComment$="Hell Yeah!"  : Game\Interface\point_r=255	: Game\Interface\point_g=000	: Game\Interface\point_b=123
+					Case 23:Game\Interface\PointsComment$="Astonishing!": Game\Interface\point_r=123	: Game\Interface\point_g=000	: Game\Interface\point_b=255
+					Case 24:Game\Interface\PointsComment$="Stunning!"   : Game\Interface\point_r=255	: Game\Interface\point_g=000	: Game\Interface\point_b=255
+					Case 25:Game\Interface\PointsComment$="Impressive!" : Game\Interface\point_r=255	: Game\Interface\point_g=069	: Game\Interface\point_b=000
+					Case 26:Game\Interface\PointsComment$="Breathtaking": Game\Interface\point_r=255	: Game\Interface\point_g=145	: Game\Interface\point_b=075
+				End Select
+				Game\Interface\PointsCommentGiven=1
+			EndIf
+			If Game\Interface\PointsChain<=15 Then SetColor(Game\Interface\point_r,Game\Interface\point_g,Game\Interface\point_b)
+			If Game\Interface\PointsChain>15 Then SetColor(Rand(155,255),Rand(155,255),Rand(155,255))
+			SetAlpha(Game\Interface\point_fade#)
+			If Game\Interface\PointsChain>=3 Then DrawRealText(Game\Interface\PointsComment$, GAME_WINDOW_W/2, (66+Game\Interface\thisheight#+Game\Interface\t_y#+movedown#)*GAME_WINDOW_SCALE#, (Interface_TextControls_2), 1)
+			SetColor(255,255,255) : SetAlpha(1.0)
+		EndIf
+	Else
+		If Game\Interface\PointsTimer<1.0*secs# Then Game\Interface\PointsChain=0
+	EndIf	
+	
+End Function
+Function Interface_CheckNumbers(d.tDeltaTime)
+	If Game\Interface\FlashCheckTimerTimer>0 Then
+		For p.tPlayer = Each tPlayer
+			DrawRealText(Int(Game\CheckSpeed)+" MPH", GAME_WINDOW_W/2-50*GAME_WINDOW_SCALE#, GAME_WINDOW_H-50*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+		Next
+		Game\Interface\FlashCheckTimerTimer=Game\Interface\FlashCheckTimerTimer-timervalue#
+		If Game\Interface\FlashCheckTimerTimer<0.8*secs# Or (Game\Interface\FlashCheckTimerTimer>1*secs# And Game\Interface\FlashCheckTimerTimer<1.2*secs#) Or (Game\Interface\FlashCheckTimerTimer>1.4*secs# And Game\Interface\FlashCheckTimerTimer<1.6*secs#) Or (Game\Interface\FlashCheckTimerTimer>1.8*secs# And Game\Interface\FlashCheckTimerTimer<2*secs#) Then
+			SetColor(220,220,220)
 			
-			If (Game\Interface\PointsTimer>1.0*secs# And Game\Interface\PointsTimer<=6.0*secs#) Then
-				If Game\Interface\PointsTimer>4.0*secs# And Game\Interface\PointsTimer<6.0*secs# Then
-					SetColor(220,220,220)
-					DrawBetterNumber(Game\Interface\Points, (38+Game\Interface\t_x#)*GAME_WINDOW_SCALE#, (96+Game\Interface\thisheight#+Game\Interface\t_y#+movedown#)*GAME_WINDOW_SCALE#)
+			If Game\HasCheckSounded=0 Then	
+				If Game\Interface\FlashCheckTimerTimer<0.8*secs# Then
+					PlaySmartSound(Sound_CheckEnd) : Game\HasCheckSounded=1
 				Else
-					If Game\Interface\PointsCommentGiven=0 Then
-						Select Rand(1,7)
-							Case 1:Game\Interface\PointsComment$="Cool!"	: Game\Interface\point_r=35	: Game\Interface\point_g=35	: Game\Interface\point_b=255
-							Case 2:Game\Interface\PointsComment$="Groovy"	: Game\Interface\point_r=255	: Game\Interface\point_g=0	: Game\Interface\point_b=160
-							Case 3:Game\Interface\PointsComment$="Radical!"	: Game\Interface\point_r=255	: Game\Interface\point_g=10	: Game\Interface\point_b=10
-							Case 4:Game\Interface\PointsComment$="Amazing"	: Game\Interface\point_r=255	: Game\Interface\point_g=255	: Game\Interface\point_b=12
-							Case 5:Game\Interface\PointsComment$="Tight!"	: Game\Interface\point_r=44	: Game\Interface\point_g=255	: Game\Interface\point_b=0
-							Case 6:Game\Interface\PointsComment$="Sweet"	: Game\Interface\point_r=44	: Game\Interface\point_g=255	: Game\Interface\point_b=255
-							Case 7:Game\Interface\PointsComment$="Nice"	: Game\Interface\point_r=255	: Game\Interface\point_g=255	: Game\Interface\point_b=255
-						End Select
-						Game\Interface\PointsCommentGiven=1
-					EndIf
-					If Game\Interface\PointsChain<=15 Then SetColor(Game\Interface\point_r,Game\Interface\point_g,Game\Interface\point_b)
-					If Game\Interface\PointsChain>15 Then SetColor(Rand(155,255),Rand(155,255),Rand(155,255))
-					SetAlpha(Game\Interface\point_fade#)
-					If Game\Interface\PointsChain>=5 Then DrawRealText(Game\Interface\PointsComment$, (67.5+Game\Interface\t_x#)*GAME_WINDOW_SCALE#, (96+Game\Interface\thisheight#+Game\Interface\t_y#+movedown#)*GAME_WINDOW_SCALE#, (Interface_TextControls_2), 1)
-					SetColor(255,255,255) : SetAlpha(1.0)
+					PlaySmartSound(Sound_CheckFlash) : Game\HasCheckSounded=1
 				EndIf
-			Else
-				If Game\Interface\PointsTimer<1.0*secs# Then Game\Interface\PointsChain=0
-			EndIf	
-
-	End Function
-
+			EndIf 
+			DrawImageEx(INTERFACE(Interface_Numbers), GAME_WINDOW_W/2-14*GAME_WINDOW_SCALE#, GAME_WINDOW_H-70*GAME_WINDOW_SCALE#, 10)
+			DrawImageEx(INTERFACE(Interface_Numbers), GAME_WINDOW_W/2+36*GAME_WINDOW_SCALE#, GAME_WINDOW_H-70*GAME_WINDOW_SCALE#, 10)
+			DrawNumber((Game\Gameplay\CheckTime/60000), GAME_WINDOW_W/2-50*GAME_WINDOW_SCALE#, GAME_WINDOW_H-70*GAME_WINDOW_SCALE#, 2)
+			DrawNumber((Game\Gameplay\CheckTime/1000) Mod 60, GAME_WINDOW_W/2, GAME_WINDOW_H-70*GAME_WINDOW_SCALE#, 2)
+			DrawNumber((Game\Gameplay\CheckTime/10) Mod 60, GAME_WINDOW_W/2+50*GAME_WINDOW_SCALE#, GAME_WINDOW_H-70*GAME_WINDOW_SCALE#, 2)
+			
+			SetColor(255,255,255)
+		Else
+			Game\HasCheckSounded=0
+		EndIf
+	EndIf
+End Function
+Function Interface_Gauge(p.tPlayer,d.tDeltaTime)
+	If Game\Gameplay\GaugeEnergy<100 Then
+		SetCustomColor ARGB(1, 70,70,255), ARGB(1, 70,70,255), ARGB(1, 60,225,255), ARGB(1, 60,225,255)
+		DrawRect(50*GAME_WINDOW_SCALE#, GAME_WINDOW_H-35*GAME_WINDOW_SCALE#, (Game\Gameplay\GaugeEnergy)*2.13/1.5, 10, 1)
+		SetCustomColor ARGB(1, 255,255,255), ARGB(1, 255,255,255), ARGB(1, 255,255,255), ARGB(1, 255,255,255)
+		DrawImageEx(INTERFACE(Interface_Gauge), 125*GAME_WINDOW_SCALE#, GAME_WINDOW_H-125*GAME_WINDOW_SCALE#, 15)
+	Else
+		SetCustomColor ARGB(1, 160,225,255), ARGB(1, 160,225,255), ARGB(1, 60,225,255), ARGB(1, 60,225,255)
+		DrawRect(50*GAME_WINDOW_SCALE#, GAME_WINDOW_H-35*GAME_WINDOW_SCALE#, (Game\Gameplay\GaugeEnergy)*2.13/1.5, 10, 1)
+		SetCustomColor ARGB(1, 255,255,255), ARGB(1, 255,255,255), ARGB(1, 255,255,255), ARGB(1, 255,255,255)
+		DrawImageEx(INTERFACE(Interface_Gauge), 125*GAME_WINDOW_SCALE#, GAME_WINDOW_H-125*GAME_WINDOW_SCALE#, 15)
+	EndIf 
+End Function
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
-	Function Interface_Render(p.tPlayer,d.tDeltatime)
+Function Interface_Render(p.tPlayer,d.tDeltaTime)
 		StartDraw()
 		SetBlend(FI_ALPHABLEND)
 		SetAlpha(1.0)
 		SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
 		SetColor(255, 255, 255)
 
-		If Game\Victory>0 and Menu\ChaoGarden=0 Then
+		If Game\Victory>0 And Menu\ChaoGarden=0 Then
 			Interface_Render_Result(p,d)
 		Else
 			Interface_Render_Stage(p,d)
@@ -160,20 +293,20 @@ End Type
 
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
-	Function Interface_Render_Stage(p.tPlayer,d.tDeltatime)
+Function Interface_Render_Stage(p.tPlayer,d.tDeltaTime)
 
-		If Menu\Settings\Debug#=1 and KeyDown(KEY_F4) Then
+		If Menu\Settings\Debug#=1 And KeyDown(KEY_F4) Then
 			Interface_Render_Cheats()
 		Else
 			If Game\CinemaMode=0 Then
 				If Game\Interface\DebugPlacerOn=0 Then
 					If Game\Interface\HideInterface=0 Then Interface_Render_Stage_Stage(p,d)
 				Else
-					If Input\Pressed\Change Then Game\Interface\HideInterface=abs(Game\Interface\HideInterface-1)
+					If Input\Pressed\Change Then Game\Interface\HideInterface=Abs(Game\Interface\HideInterface-1)
 					If Game\Interface\HideInterface=0 Then Interface_Render_Stage_Debug(p)
 				EndIf
 			Else
-				If Input\Pressed\Change Then Game\Interface\HideInterface=abs(Game\Interface\HideInterface-1)
+				If Input\Pressed\Change Then Game\Interface\HideInterface=Abs(Game\Interface\HideInterface-1)
 				If Game\Interface\HideInterface=0 Then Interface_Render_Stage_Cinema(p)
 			EndIf
 		EndIf
@@ -183,16 +316,16 @@ End Type
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
 
-	Function Interface_Render_Stage_Cinema(p.tPlayer)
+Function Interface_Render_Stage_Cinema(p.tPlayer)
 
-		DrawRealText("CINEMA MODE", 0+12*GAME_WINDOW_SCALE#, 27.5*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 0, 0, 36, 81, 143)
+	DrawRealText("Capture Mode", 0+12*GAME_WINDOW_SCALE#, 27.5*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 0, 0, 36, 81, 143)
 
 		DrawSmartKey_MovementGeneral((30)*GAME_WINDOW_SCALE#, (30+30*1)*GAME_WINDOW_SCALE#)
 		DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, (30+30)*GAME_WINDOW_SCALE#, (30+30*1)*GAME_WINDOW_SCALE#)
 		DrawSmartKey(INPUT_BUTTON_ACTIONROLL, (30+60)*GAME_WINDOW_SCALE#, (30+30*1)*GAME_WINDOW_SCALE#)
 		DrawRealText("Move around", (30+60+15)*GAME_WINDOW_SCALE#, (30+30*1)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
-		DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#, true)
+		DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#, True)
 		DrawRealText("Moving speed ("+cam\CinemaSpeed#+")", (30+15)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
 		DrawImageEx(INTERFACE(Interface_Keys), (30)*GAME_WINDOW_SCALE#, (30+30*3)*GAME_WINDOW_SCALE#, 60)
@@ -200,8 +333,8 @@ End Type
 		DrawRealText("Look around", (30+15)*GAME_WINDOW_SCALE#, (30+30*3)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
 		DrawImageEx(INTERFACE(Interface_Keys), (30)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, 61)
-		DrawImageEx(INTERFACE(Interface_Keys_small), (30)*GAME_WINDOW_SCALE#-6*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, 5)
-		DrawImageEx(INTERFACE(Interface_Keys_small), (30)*GAME_WINDOW_SCALE#+3*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, 31)
+		DrawImageEx(INTERFACE(Interface_Keys_Small), (30)*GAME_WINDOW_SCALE#-6*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, 5)
+		DrawImageEx(INTERFACE(Interface_Keys_Small), (30)*GAME_WINDOW_SCALE#+3*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, 31)
 		DrawRealText("Free", (30+15)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
 		DrawSmartKey(INPUT_BUTTON_CHANGE, 30*GAME_WINDOW_SCALE#, GAME_WINDOW_H-(25)*GAME_WINDOW_SCALE#)
@@ -214,7 +347,7 @@ End Type
 
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
-	Function Interface_Render_Exit(p.tPlayer,d.tDeltatime)
+Function Interface_Render_Exit(p.tPlayer,d.tDeltaTime)
 		StartDraw()
 		SetBlend(FI_ALPHABLEND)
 		SetAlpha(1.0)
@@ -226,7 +359,7 @@ End Type
 		If CARD_PLACE#>-150 Then CARD_PLACE#=CARD_PLACE#-5*d\Delta
 		If CARD_PLACE#<-150 Then CARD_PLACE#=CARD_PLACE#+5*d\Delta
 		SetColor(0,0,0)
-			For x=-30 to 30
+			For x=-30 To 30
 			DrawImageEx(INTERFACE(Interface_Card1), GAME_WINDOW_W/2+x*24*GAME_WINDOW_SCALE#, 0-(CARD_PLACE#+90)*GAME_WINDOW_SCALE#+30*(GAME_WINDOW_SCALE#-Float(1066)/640.0)*GAME_WINDOW_SCALE2#, 1)
 			DrawImageEx(INTERFACE(Interface_Card1), GAME_WINDOW_W/2+x*24*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#+90)*GAME_WINDOW_SCALE#-30*(GAME_WINDOW_SCALE#-Float(1066)/640.0)*GAME_WINDOW_SCALE2#, 0)
 			Next
@@ -242,13 +375,80 @@ End Type
 	End Function
 
 ;===================================================================================================================================================================================
-
-	Function Interface_RingCounter(d.tDeltaTime)
+Function Interface_RedRingCounter(inpause=False)
+	If Game\Interface\ShowRedRingTimer>0 Or inpause Then
+		DrawImageEx(INTERFACE(Interface_RedRingBox), GAME_WINDOW_W-125*GAME_WINDOW_SCALE#, GAME_WINDOW_H-125*GAME_WINDOW_SCALE#, 15)
+		
+		;1
+		If REDRING1(Menu\Stage)=0 Then
+			SetAlpha(0.75)
+			SetColor(7.5,7.5,7.5)
+		Else
+			SetAlpha(1)
+			SetColor(255,255,255)
+		EndIf
+		DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W-125*GAME_WINDOW_SCALE#, GAME_WINDOW_H-35*GAME_WINDOW_SCALE#, 32)
+		
+		;2
+		If REDRING2(Menu\Stage)=0 Then
+			SetAlpha(0.75)
+			SetColor(7.5,7.5,7.5)
+		Else
+			SetAlpha(1)
+			SetColor(255,255,255)
+		EndIf
+		DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W-100*GAME_WINDOW_SCALE#, GAME_WINDOW_H-35*GAME_WINDOW_SCALE#, 32)
+		
+		;3
+		If REDRING3(Menu\Stage)=0 Then
+			SetAlpha(0.75)
+			SetColor(7.5,7.5,7.5)
+		Else
+			SetAlpha(1)
+			SetColor(255,255,255)
+		EndIf
+		DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W-75*GAME_WINDOW_SCALE#, GAME_WINDOW_H-35*GAME_WINDOW_SCALE#, 32)
+		
+		;4
+		If REDRING4(Menu\Stage)=0 Then
+			SetAlpha(0.75)
+			SetColor(7.5,7.5,7.5)
+		Else
+			SetAlpha(1)
+			SetColor(255,255,255)
+		EndIf
+		DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W-50*GAME_WINDOW_SCALE#, GAME_WINDOW_H-35*GAME_WINDOW_SCALE#, 32)
+		
+		;5
+		If REDRING5(Menu\Stage)=0 Then
+			SetAlpha(0.75)
+			SetColor(7.5,7.5,7.5)
+		Else
+			SetAlpha(1)
+			SetColor(255,255,255)
+		EndIf
+		DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W-25*GAME_WINDOW_SCALE#, GAME_WINDOW_H-35*GAME_WINDOW_SCALE#, 32)
+		
+		
+		
+		SetAlpha(1)
+		SetColor(255,255,255)
+		
+		
+		
+	EndIf 
+End Function 
+Function Interface_DrownCounter(p.tPlayer)
+	DrawImageEx(INTERFACE(Interface_Icons), 32.5*GAME_WINDOW_SCALE#, 138*GAME_WINDOW_SCALE#, 14)
+	If p\DrownValue>=0 Then DrawBetterNumber(p\DrownValue, 58*GAME_WINDOW_SCALE#, 138*GAME_WINDOW_SCALE#)
+End Function 
+Function Interface_RingCounter(d.tDeltaTime)
 		DrawImageEx(INTERFACE(Interface_Icons), 30*GAME_WINDOW_SCALE#, 66*GAME_WINDOW_SCALE#, 16)
 		If (Game\Gameplay\Rings=0 Or Game\Interface\RingStolenTimer>0) And Menu\Pause=0 Then
 			If Game\Interface\RingStolenTimer>0 Then Game\Interface\RingStolenTimer=Game\Interface\RingStolenTimer-timervalue#
 			flash=Sin#(MilliSecs() Mod 255) : SetColor(255,(255*flash)*d\Delta,(255*flash)*d\Delta)
 		EndIf
+		
 		DrawBetterNumber(Game\Gameplay\Rings, 58*GAME_WINDOW_SCALE#, 66*GAME_WINDOW_SCALE#)
 		SetColor(255,255,255)
 	End Function
@@ -266,36 +466,35 @@ Function Interface_DrawHead(x#, y#, charno)
 		DrawImageEx(INTERFACE(Interface_Heads), x#, y#, InterfaceChar(charno))
 	EndIf
 End Function
-
 Function Interface_MemberHeads(x#=0, y#=0)
-	If (x#=0 and y#=0) Then
+	If (x#=0 And y#=0) Then
 		Select Menu\Members
 			Case 3:
 				SetColor(Interface_Lives_R[InterfaceChar(pp(3)\RealCharacter)],Interface_Lives_G[InterfaceChar(pp(3)\RealCharacter)],Interface_Lives_B[InterfaceChar(pp(3)\RealCharacter)])
-				Interface_DrawHead((30-15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-(30)*GAME_WINDOW_SCALE#, pp(3)\RealCharacter-1)
+				Interface_DrawHead(55+0*GAME_WINDOW_SCALE#, 115*GAME_WINDOW_SCALE#, pp(3)\RealCharacter-1)
 				SetColor(Interface_Lives_R[InterfaceChar(pp(2)\RealCharacter)],Interface_Lives_G[InterfaceChar(pp(2)\RealCharacter)],Interface_Lives_B[InterfaceChar(pp(2)\RealCharacter)])
-				Interface_DrawHead((30+15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-(30)*GAME_WINDOW_SCALE#, pp(2)\RealCharacter-1)
+				Interface_DrawHead(55+10*GAME_WINDOW_SCALE#, 100*GAME_WINDOW_SCALE#, pp(2)\RealCharacter-1)
 				Select pp(1)\RealCharacter
 					Case CHAR_EME,CHAR_GME: SetColor(Interface_Lives_R[InterfaceChar(pp(1)\CharacterMode)],Interface_Lives_G[InterfaceChar(pp(1)\CharacterMode)],Interface_Lives_B[InterfaceChar(pp(1)\CharacterMode)])
 					Default: SetColor(Interface_Lives_R[InterfaceChar(pp(1)\RealCharacter)],Interface_Lives_G[InterfaceChar(pp(1)\RealCharacter)],Interface_Lives_B[InterfaceChar(pp(1)\RealCharacter)])
 				End Select
-				Interface_DrawHead((30)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-(30+7.5/2.0)*GAME_WINDOW_SCALE#, pp(1)\RealCharacter-1)
+				Interface_DrawHead(55-10*GAME_WINDOW_SCALE#, 100*GAME_WINDOW_SCALE#, pp(1)\RealCharacter-1)
 				SetColor(255,255,255)
 			Case 2:
 				SetColor(Interface_Lives_R[InterfaceChar(pp(2)\RealCharacter)],Interface_Lives_G[InterfaceChar(pp(2)\RealCharacter)],Interface_Lives_B[InterfaceChar(pp(2)\RealCharacter)])
-				Interface_DrawHead((30+7.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-(30)*GAME_WINDOW_SCALE#, pp(2)\RealCharacter-1)
+				Interface_DrawHead(55+7.5*GAME_WINDOW_SCALE#, 100*GAME_WINDOW_SCALE#, pp(2)\RealCharacter-1)
 				Select pp(1)\RealCharacter
 					Case CHAR_EME,CHAR_GME: SetColor(Interface_Lives_R[InterfaceChar(pp(1)\CharacterMode)],Interface_Lives_G[InterfaceChar(pp(1)\CharacterMode)],Interface_Lives_B[InterfaceChar(pp(1)\CharacterMode)])
 					Default: SetColor(Interface_Lives_R[InterfaceChar(pp(1)\RealCharacter)],Interface_Lives_G[InterfaceChar(pp(1)\RealCharacter)],Interface_Lives_B[InterfaceChar(pp(1)\RealCharacter)])
 				End Select
-				Interface_DrawHead((30-7.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-(30+7.5/2.0)*GAME_WINDOW_SCALE#, pp(1)\RealCharacter-1)
+				Interface_DrawHead(55-7.5*GAME_WINDOW_SCALE#, 100*GAME_WINDOW_SCALE#, pp(1)\RealCharacter-1)
 				SetColor(255,255,255)
 			Case 1:
 				Select pp(1)\RealCharacter
 					Case CHAR_EME,CHAR_GME: SetColor(Interface_Lives_R[InterfaceChar(pp(1)\CharacterMode)],Interface_Lives_G[InterfaceChar(pp(1)\CharacterMode)],Interface_Lives_B[InterfaceChar(pp(1)\CharacterMode)])
 					Default: SetColor(Interface_Lives_R[InterfaceChar(pp(1)\RealCharacter)],Interface_Lives_G[InterfaceChar(pp(1)\RealCharacter)],Interface_Lives_B[InterfaceChar(pp(1)\RealCharacter)])
 				End Select
-				Interface_DrawHead((30)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-(30)*GAME_WINDOW_SCALE#, pp(1)\RealCharacter-1)
+				Interface_DrawHead(30*GAME_WINDOW_SCALE#, 100*GAME_WINDOW_SCALE#, pp(1)\RealCharacter-1)
 				SetColor(255,255,255)
 		End Select
 	Else
@@ -307,7 +506,6 @@ Function Interface_MemberHeads(x#=0, y#=0)
 		SetColor(255,255,255)
 	EndIf
 End Function
-
 Function Interface_ProgressBar(inputx#, inputy#)
 	DrawImageEx(INTERFACE(Interface_ProgressBar), inputx#, inputy#)
 
@@ -315,12 +513,12 @@ Function Interface_ProgressBar(inputx#, inputy#)
 	Local gap# = ImageWidthEx#(INTERFACE(Interface_Progress))
 
 	SetCustomColor ARGB(1, 255, 255, 255), ARGB(1, 255, 255, 255), ARGB(1, 5, 5, 255), ARGB(1, 5, 5, 255)
-	For i = 0 to 80
+	For i = 0 To 80
 		If (i/80.0)<=(1.0-distancepercent#) Then DrawImageRectEx%(INTERFACE(Interface_Progress), inputx#-(gap#*40)*GAME_WINDOW_SCALE#+(gap#*0.925*i)*GAME_WINDOW_SCALE#, inputy#, gap#, ImageHeightEx#(INTERFACE(Interface_Progress)), i)
 	Next
 	SetColor(255,255,255)
 
-	SetColor(Interface_Emerald_R[abs(Menu\Stage)],Interface_Emerald_G[abs(Menu\Stage)],Interface_Emerald_B[abs(Menu\Stage)])
+	SetColor(Interface_Emerald_R[Abs(Menu\Stage)],Interface_Emerald_G[Abs(Menu\Stage)],Interface_Emerald_B[Abs(Menu\Stage)])
 	DrawImageEx(INTERFACE(Interface_Icons), inputx#+(gap#*40)*GAME_WINDOW_SCALE#, inputy#, 32)
 	SetColor(255,255,255)
 	Interface_MemberHeads(inputx#-(gap#*40)*GAME_WINDOW_SCALE#+(gap#*0.925*80*(1.0-distancepercent#))*GAME_WINDOW_SCALE#, inputy#)
@@ -328,53 +526,51 @@ End Function
 
 ;===================================================================================================================================================================================
 
-	Function Interface_Render_Stage_Stage(p.tPlayer,d.tDeltatime)
+Function Interface_Render_Stage_Stage(p.tPlayer,d.tDeltaTime)
 
 		If Menu\ChaoGarden=0 Then;!!
-
+			
+			
+			;hud backgrounds
+			DrawImageEx(INTERFACE(Interface_HudLeft), 125*GAME_WINDOW_SCALE#, 125*GAME_WINDOW_SCALE#, 15)
+			DrawImageEx(INTERFACE(Interface_HudRight), GAME_WINDOW_W-125*GAME_WINDOW_SCALE#, 125*GAME_WINDOW_SCALE#, 15)
 		DrawImageEx(INTERFACE(Interface_Icons), 30*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#, 15)
 		DrawImageEx(INTERFACE(Interface_Numbers), 94*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#, 10)
-		DrawImageEx(INTERFACE(Interface_Numbers), 144*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#, 10)
+		DrawImageEx(INTERFACE(Interface_Numbers), 144*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#, 11)
 		DrawNumber((Game\Gameplay\Time/60000), 58*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#, 2)
 		DrawNumber((Game\Gameplay\Time/1000) Mod 60, 108*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#, 2)
 		DrawNumber((Game\Gameplay\Time/10) Mod 60, 158*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#, 2)
-
+		
+		If Game\Interface\ShowRedRingTimer>0 Then Game\Interface\ShowRedRingTimer=Game\Interface\ShowRedRingTimer-timervalue#
+		
 		Interface_RingCounter(d)
+		
+		Interface_RedRingCounter()
+		
+		Interface_Gauge(p,d)
 
 		Update_Monitor_Icons(d)
 
-		If Game\Interface\FlashCheckTimerTimer>0 Then
-			Game\Interface\FlashCheckTimerTimer=Game\Interface\FlashCheckTimerTimer-timervalue#
-			If Game\Interface\FlashCheckTimerTimer<0.8*secs# Or (Game\Interface\FlashCheckTimerTimer>1*secs# and Game\Interface\FlashCheckTimerTimer<1.2*secs#) Or (Game\Interface\FlashCheckTimerTimer>1.4*secs# and Game\Interface\FlashCheckTimerTimer<1.6*secs#) Or (Game\Interface\FlashCheckTimerTimer>1.8*secs# and Game\Interface\FlashCheckTimerTimer<2*secs#) Then
-				SetColor(220,220,220)
-				DrawImageEx(INTERFACE(Interface_Numbers), GAME_WINDOW_W/2-14*GAME_WINDOW_SCALE#, GAME_WINDOW_H-70*GAME_WINDOW_SCALE#, 10)
-				DrawImageEx(INTERFACE(Interface_Numbers), GAME_WINDOW_W/2+36*GAME_WINDOW_SCALE#, GAME_WINDOW_H-70*GAME_WINDOW_SCALE#, 10)
-				DrawNumber((Game\Gameplay\CheckTime/60000), GAME_WINDOW_W/2-50*GAME_WINDOW_SCALE#, GAME_WINDOW_H-70*GAME_WINDOW_SCALE#, 2)
-				DrawNumber((Game\Gameplay\CheckTime/1000) Mod 60, GAME_WINDOW_W/2, GAME_WINDOW_H-70*GAME_WINDOW_SCALE#, 2)
-				DrawNumber((Game\Gameplay\CheckTime/10) Mod 60, GAME_WINDOW_W/2+50*GAME_WINDOW_SCALE#, GAME_WINDOW_H-70*GAME_WINDOW_SCALE#, 2)
-				SetColor(255,255,255)
-			EndIf
-		EndIf
+		Interface_CheckNumbers(d)
 
 		Update_ChaoItem_Icons(d)
 
 		DrawBetterNumber(Game\Gameplay\Score, GAME_WINDOW_W-35*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#, 0, 1)
 
-		If p\Underwater=1 and (Not(Game\Shield=OBJTYPE_BSHIELD)) Then
-			DrawImageEx(INTERFACE(Interface_Icons), 32.5*GAME_WINDOW_SCALE#, 102*GAME_WINDOW_SCALE#, 14)
-			If p\DrownValue>=0 Then DrawBetterNumber(p\DrownValue, 58*GAME_WINDOW_SCALE#, 102*GAME_WINDOW_SCALE#)
+		If p\Underwater=1 And (Not(Game\Shield=OBJTYPE_BSHIELD)) Then
+			Interface_DrownCounter(p)
 			Interface_TrickPointsCounter(p, d, 36)
 		Else
 			Interface_TrickPointsCounter(p, d)
 		EndIf
 
 		Interface_MemberHeads()
-		SetColor(Interface_Lives_R[InterfaceChar(pp(1)\RealCharacter)],Interface_Lives_G[InterfaceChar(pp(1)\RealCharacter)],Interface_Lives_B[InterfaceChar(pp(1)\RealCharacter)])
-		If Menu\Members>1 Then
-			DrawBetterNumber(Game\Gameplay\Lives, 67.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-30*GAME_WINDOW_SCALE#)
+		If Menu\Settings\Theme#=11 Or Menu\Settings\Theme#=13 Then
+			SetColor(255,255,255)
 		Else
-			DrawBetterNumber(Game\Gameplay\Lives, 58*GAME_WINDOW_SCALE#, GAME_WINDOW_H-30*GAME_WINDOW_SCALE#)
-		EndIf
+			SetColor(Interface_Lives_R[InterfaceChar(pp(1)\RealCharacter)],Interface_Lives_G[InterfaceChar(pp(1)\RealCharacter)],Interface_Lives_B[InterfaceChar(pp(1)\RealCharacter)])
+		EndIf 
+		DrawBetterNumber(Game\Gameplay\Lives, 58*GAME_WINDOW_SCALE#, 102*GAME_WINDOW_SCALE#)
 		SetColor(255,255,255)
 
 		If Game\Interface\ChaoItemCount>0 Then movemissioncounterup#=25.0*GAME_WINDOW_SCALE#*Game\Interface\ChaoIconSpread# Else movemissioncounterup#=0
@@ -387,7 +583,7 @@ End Function
 			DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W-30*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissiontimecounterup#-30*GAME_WINDOW_SCALE#, 15)
 			If (Game\LimitTime-Game\Gameplay\Time)<5*secs# Then flash=Sin#(MilliSecs() Mod 255) : SetColor(255,(255*flash)*d\Delta,(255*flash)*d\Delta)
 			DrawImageEx(INTERFACE(Interface_Numbers), GAME_WINDOW_W-94*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissiontimecounterup#-30*GAME_WINDOW_SCALE#, 10)
-			DrawImageEx(INTERFACE(Interface_Numbers), GAME_WINDOW_W-144*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissiontimecounterup#-30*GAME_WINDOW_SCALE#, 10)
+			DrawImageEx(INTERFACE(Interface_Numbers), GAME_WINDOW_W-144*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissiontimecounterup#-30*GAME_WINDOW_SCALE#, 11)
 			If Game\Gameplay\Time<Game\LimitTime Then
 				DrawNumber(((Game\LimitTime-Game\Gameplay\Time)/60000), GAME_WINDOW_W-180*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissiontimecounterup#-30*GAME_WINDOW_SCALE#, 2)
 				DrawNumber(((Game\LimitTime-Game\Gameplay\Time)/1000) Mod 60, GAME_WINDOW_W-130*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissiontimecounterup#-30*GAME_WINDOW_SCALE#, 2)
@@ -402,29 +598,29 @@ End Function
 		Select Menu\Mission
 			Case MISSION_ENEMY#:
 				DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W-30*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-30*GAME_WINDOW_SCALE#, 17)
-				DrawBetterNumber(Game\Gameplay\TotalEnemies-Game\Gameplay\Enemies, GAME_WINDOW_W-58*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-30*GAME_WINDOW_SCALE#, 0, 1)
+				DrawBetterNumber(Game\Stage\Properties\EnemyMissionAmount-Game\Gameplay\Enemies, GAME_WINDOW_W-58*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-30*GAME_WINDOW_SCALE#, 0, 1)
 			Case MISSION_RING#:
 				DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W-30*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-30*GAME_WINDOW_SCALE#, 16)
-				If Game\Gameplay\Rings<200 Then
-					DrawBetterNumber(200-Game\Gameplay\Rings, GAME_WINDOW_W-58*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-30*GAME_WINDOW_SCALE#, 0, 1)
+				If Game\Gameplay\Rings<Game\Stage\Properties\RingMissionAmount Then
+					DrawBetterNumber(Game\Stage\Properties\RingMissionAmount-Game\Gameplay\Rings, GAME_WINDOW_W-58*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-30*GAME_WINDOW_SCALE#, 0, 1)
 				Else
 					DrawBetterNumber(0, GAME_WINDOW_W-58*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-30*GAME_WINDOW_SCALE#, 0, 1)
 				EndIf
 			Case MISSION_HUNT#:
-				For i=1 to 3
-					If Game\Gameplay\RedRingDistance[i]<9 Then
-						If Game\Gameplay\RedRingTimer[i]>0 Then
-							If Game\Gameplay\RedRingBeepTimer[i]>0 Then
-								DrawImageEx(INTERFACE(Interface_Treasure_Big), GAME_WINDOW_W-30*GAME_WINDOW_SCALE#-(i-1)*37.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-30*GAME_WINDOW_SCALE#, Game\Gameplay\RedRingDistance[i])
+				For i=1 To 3
+					If Game\Gameplay\ShardDistance[i]<9 Then
+						If Game\Gameplay\ShardTimer[i]>0 Then
+							If Game\Gameplay\ShardBeepTimer[i]>0 Then
+								DrawImageEx(INTERFACE(Interface_Treasure_Big), GAME_WINDOW_W-30*GAME_WINDOW_SCALE#-(i-1)*37.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-30*GAME_WINDOW_SCALE#, Game\Gameplay\ShardDistance[i])
 							Else
-								DrawImageEx(INTERFACE(Interface_Treasure), GAME_WINDOW_W-30*GAME_WINDOW_SCALE#-(i-1)*37.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-30*GAME_WINDOW_SCALE#, Game\Gameplay\RedRingDistance[i])
+								DrawImageEx(INTERFACE(Interface_Treasure), GAME_WINDOW_W-30*GAME_WINDOW_SCALE#-(i-1)*37.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-30*GAME_WINDOW_SCALE#, Game\Gameplay\ShardDistance[i])
 							EndIf
 						Else
 							DrawImageEx(INTERFACE(Interface_Treasure), GAME_WINDOW_W-30*GAME_WINDOW_SCALE#-(i-1)*37.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-30*GAME_WINDOW_SCALE#, 0)
 						EndIf
 					EndIf
-					If Game\Gameplay\RedRingTimer[i]>0 Then Game\Gameplay\RedRingTimer[i]=Game\Gameplay\RedRingTimer[i]-timervalue#
-					If Game\Gameplay\RedRingBeepTimer[i]>0 Then Game\Gameplay\RedRingBeepTimer[i]=Game\Gameplay\RedRingBeepTimer[i]-timervalue#
+					If Game\Gameplay\ShardTimer[i]>0 Then Game\Gameplay\ShardTimer[i]=Game\Gameplay\ShardTimer[i]-timervalue#
+					If Game\Gameplay\ShardBeepTimer[i]>0 Then Game\Gameplay\ShardBeepTimer[i]=Game\Gameplay\ShardBeepTimer[i]-timervalue#
 				Next
 			Case MISSION_GOLD#:
 				DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W-30*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-30*GAME_WINDOW_SCALE#, 9)
@@ -454,13 +650,13 @@ End Function
 				For rvl=1 To Game\RivalAmount
 					SetColor(Interface_Lives_R[InterfaceChar(ppe(rvl)\RealCharacter)],Interface_Lives_G[InterfaceChar(ppe(rvl)\RealCharacter)],Interface_Lives_B[InterfaceChar(ppe(rvl)\RealCharacter)])
 					Interface_DrawHead(GAME_WINDOW_W-(30)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-(30*rvl)*GAME_WINDOW_SCALE#, ppe(rvl)\RealCharacter-1)
-					For i=1 to 5
+					For i=1 To 5
 						SetColor(15,15,15) : SetAlpha(0.375)
 						SetScale(GAME_WINDOW_SCALE#/1.25,GAME_WINDOW_SCALE#/1.25)
 						DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W-(45+i*11.25)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-(30*rvl)*GAME_WINDOW_SCALE#, 28)
 						SetScale(GAME_WINDOW_SCALE#,GAME_WINDOW_SCALE#)
 					Next
-					For i=1 to ppe(rvl)\Rival\Health
+					For i=1 To ppe(rvl)\Rival\Health
 						SetColor(Interface_Lives_R[InterfaceChar(ppe(rvl)\RealCharacter)],Interface_Lives_G[InterfaceChar(ppe(rvl)\RealCharacter)],Interface_Lives_B[InterfaceChar(ppe(rvl)\RealCharacter)]) : SetAlpha(1.0)
 						SetScale(GAME_WINDOW_SCALE#/1.5,GAME_WINDOW_SCALE#/1.5)
 						DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W-(45+i*11.25)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-(30*rvl)*GAME_WINDOW_SCALE#, 28)
@@ -470,7 +666,7 @@ End Function
 					SetColor(255,255,255)
 				Next
 			Case MISSION_FLICKY#:
-				For i=1 to 5
+				For i=1 To 5
 					j=5-i+1
 					If i<=Game\Gameplay\Flickies Then
 						DrawImageEx(INTERFACE(Interface_Flickies), GAME_WINDOW_W-30*GAME_WINDOW_SCALE#-(j-1)*35*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-35*GAME_WINDOW_SCALE#, 1)
@@ -746,7 +942,7 @@ End Function
 
 ;===================================================================================================================================================================================
 
-	Function Interface_Render_Cheats(ismenu=0)
+Function Interface_Render_Cheats(ismenu=0)
 
 		If ismenu>0 Then
 			DrawImageEx(INTERFACE(Interface_Black), GAME_WINDOW_W/2, GAME_WINDOW_H/2)
@@ -759,7 +955,7 @@ End Function
 			End Select
 		EndIf
 
-		For i=1 to 18
+		For i=1 To 18
 			Select i
 				Case 11,12,13,14,15,16,17,18:
 					DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2-000*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-4.5+i-11)*30*GAME_WINDOW_SCALE#, 61)
@@ -791,14 +987,14 @@ End Function
 				Case 1:
 					DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2-300*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-4.5+i-1)*30*GAME_WINDOW_SCALE#, button)
 				Case 11,12,13:
-					DrawImageEx(INTERFACE(Interface_Keys_small), GAME_WINDOW_W/2-000*GAME_WINDOW_SCALE#-6*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-4.5+i-11)*30*GAME_WINDOW_SCALE#, 5)
-					DrawImageEx(INTERFACE(Interface_Keys_small), GAME_WINDOW_W/2-000*GAME_WINDOW_SCALE#+3*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-4.5+i-11)*30*GAME_WINDOW_SCALE#, button)
-					DrawImageEx(INTERFACE(Interface_Keys_small), GAME_WINDOW_W/2-000*GAME_WINDOW_SCALE#+9*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-4.5+i-11)*30*GAME_WINDOW_SCALE#, button2)
+					DrawImageEx(INTERFACE(Interface_Keys_Small), GAME_WINDOW_W/2-000*GAME_WINDOW_SCALE#-6*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-4.5+i-11)*30*GAME_WINDOW_SCALE#, 5)
+					DrawImageEx(INTERFACE(Interface_Keys_Small), GAME_WINDOW_W/2-000*GAME_WINDOW_SCALE#+3*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-4.5+i-11)*30*GAME_WINDOW_SCALE#, button)
+					DrawImageEx(INTERFACE(Interface_Keys_Small), GAME_WINDOW_W/2-000*GAME_WINDOW_SCALE#+9*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-4.5+i-11)*30*GAME_WINDOW_SCALE#, button2)
 				Case 14,15,16,17,18:
 					DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2-000*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-4.5+i-11)*30*GAME_WINDOW_SCALE#, button)
 				Default:
-					DrawImageEx(INTERFACE(Interface_Keys_small), GAME_WINDOW_W/2-300*GAME_WINDOW_SCALE#-6*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-4.5+i-1)*30*GAME_WINDOW_SCALE#, 5)
-					DrawImageEx(INTERFACE(Interface_Keys_small), GAME_WINDOW_W/2-300*GAME_WINDOW_SCALE#+3*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-4.5+i-1)*30*GAME_WINDOW_SCALE#, button)
+					DrawImageEx(INTERFACE(Interface_Keys_Small), GAME_WINDOW_W/2-300*GAME_WINDOW_SCALE#-6*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-4.5+i-1)*30*GAME_WINDOW_SCALE#, 5)
+					DrawImageEx(INTERFACE(Interface_Keys_Small), GAME_WINDOW_W/2-300*GAME_WINDOW_SCALE#+3*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-4.5+i-1)*30*GAME_WINDOW_SCALE#, button)
 			End Select
 
 			Select ismenu
@@ -867,7 +1063,7 @@ End Function
 
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
-	Function DrawNumber(Number%, x, y, ZeroPadding=0, Alignment=0)
+Function DrawNumber(Number%, x, y, ZeroPadding=0, Alignment=0)
 		; Convert number to string
 		Num$ = ZeroPadding$(Str$(Number%), ZeroPadding)
 
@@ -882,7 +1078,7 @@ End Function
 
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
-	Function DrawBetterNumber(Number%, x, y, ZeroPadding=0, Alignment=0)
+Function DrawBetterNumber(Number%, x, y, ZeroPadding=0, Alignment=0)
 		If Number%>=100000000 Then
 			DrawNumber(Number%, x+2.00*GAME_WINDOW_SCALE#-22.5*Alignment*GAME_WINDOW_SCALE#, y, ZeroPadding, Alignment)
 		ElseIf Number%>=10000000 Then
@@ -906,8 +1102,8 @@ End Function
 
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
-	Function DrawRealText(text$,inputx#,inputy#,font,alignment=0,end#=0,r=255,g=255,b=255,smaller#=0)
-		textLength = Len(text$)
+Function DrawRealText(Text$,inputx#,inputy#,font,alignment=0,End#=0,r=255,g=255,b=255,smaller#=0)
+		textLength = Len(Text$)
 
 		letterSpacing#=1
 
@@ -942,7 +1138,7 @@ End Function
 
 		TotalWidth#=0
 
-		For draworder=0 to draworderlimit
+		For draworder=0 To draworderlimit
 			x#=inputx# : y#=inputy#
 			Select alignment
 			Case 1: x#=x#-(TotalWidth#/2)*GAME_WINDOW_SCALE#
@@ -951,10 +1147,10 @@ End Function
 
 			WidthSoFar#=0
 			HeightSoFar#=0
-			currentPosition#=-DrawRealText_ReturnLetterWidth(Asc(Mid$(text$,1,1)))/2
+			currentPosition#=-DrawRealText_ReturnLetterWidth(Asc(Mid$(Text$,1,1)))/2
 
 			For letterNumber = 1 To textLength
-				letter$ = Mid$(text$,letterNumber,1)
+				letter$ = Mid$(Text$,letterNumber,1)
 
 				character = Asc(letter$)
 				letterWidth#=DrawRealText_ReturnLetterWidth(character)
@@ -971,7 +1167,7 @@ End Function
 						currentPosition#=widthSoFar#+sizeMultiplier#*letterSpacing#+sizeMultiplier#*letterWidth#/2
 						DrawRealText_DrawText draworder, font, x#+currentPosition#*GAME_WINDOW_SCALE#, y#+HeightSoFar#*GAME_WINDOW_SCALE#, character, r, g, b
 						WidthSoFar#=currentPosition#+sizeMultiplier#*letterWidth#/2
-						If center=false and end#<>0 and letter$=" " and (x#+WidthSoFar#*GAME_WINDOW_SCALE#-0>end-0 Or x#+WidthSoFar#*GAME_WINDOW_SCALE#-1>end-1 Or x#+WidthSoFar#*GAME_WINDOW_SCALE#-2>end-2 Or x#+WidthSoFar#*GAME_WINDOW_SCALE#-3>end-3 Or x#+WidthSoFar#*GAME_WINDOW_SCALE#-4>end-4 Or x#+WidthSoFar#*GAME_WINDOW_SCALE#-5>end-5) Then
+						If center=False And End#<>0 And letter$=" " And (x#+WidthSoFar#*GAME_WINDOW_SCALE#-0>End-0 Or x#+WidthSoFar#*GAME_WINDOW_SCALE#-1>End-1 Or x#+WidthSoFar#*GAME_WINDOW_SCALE#-2>End-2 Or x#+WidthSoFar#*GAME_WINDOW_SCALE#-3>End-3 Or x#+WidthSoFar#*GAME_WINDOW_SCALE#-4>End-4 Or x#+WidthSoFar#*GAME_WINDOW_SCALE#-5>End-5) Then
 							HeightSoFar#=HeightSoFar#+sizeMultiplier#*(14/2)*5
 							WidthSoFar=0
 						EndIf
@@ -985,7 +1181,7 @@ End Function
 
 	;____________________________________________________________________________________________________________________________________________
 
-	Function DrawRealText_DrawText(draworder, font, x#, y#, character, r, g, b)
+Function DrawRealText_DrawText(draworder, font, x#, y#, character, r, g, b)
 		Select font
 			Case (Interface_Text_1):
 				Select draworder
@@ -1034,7 +1230,7 @@ End Function
 
 	;____________________________________________________________________________________________________________________________________________
 
-	Function DrawRealText_ReturnLetterWidth(character)
+Function DrawRealText_ReturnLetterWidth(character)
 		Select character
 			Case Asc("!"),Asc("I"),Asc("i"),Asc("l"):				letterWidth#=6
 			Case Asc("'"),Asc(","),Asc("1"):					letterWidth#=7
@@ -1066,43 +1262,34 @@ End Function
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Function DrawTitleCardStuff(inmenu=false)
+Function DrawTitleCardStuff(inmenu=False)
 
-	SetColor(Menu_ReturnCardColor(1,Menu\Character[1]),Menu_ReturnCardColor(2,Menu\Character[1]),Menu_ReturnCardColor(3,Menu\Character[1]))
-
-	SetAlpha(abs(1-Menu\TitleCardTimer/secs#)*0.5)
-	Select inmenu
-		Case false: SetScale(GAME_WINDOW_SCALE#*Min#(1.85,abs((Menu\TitleCardTimer/secs#))*2+0.4), GAME_WINDOW_SCALE#*Min#(1.85,abs((Menu\TitleCardTimer/secs#))*2+0.4))
-		Case true: SetScale(GAME_WINDOW_SCALE#*Min#(2.0,abs((Menu\TitleCardTimer/secs#))*2+0.4), GAME_WINDOW_SCALE#*Min#(2.0,abs((Menu\TitleCardTimer/secs#))*2+0.4))
-	End Select
-	DrawImageEx(INTERFACE(Interface_Spinner), GAME_WINDOW_W/2+80*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-40*GAME_WINDOW_SCALE#)
-	SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
-	SetAlpha(1.0)
-
-	SetAlpha(abs(1-Menu\TitleCardTimer/secs#))
-	SetScale(GAME_WINDOW_SCALE#*Min#(1.0,abs(1-(Menu\TitleCardTimer/secs#))+0.4), GAME_WINDOW_SCALE#*Min#(1.0,abs(1-(Menu\TitleCardTimer/secs#))+0.4))
-	DrawImageEx(INTERFACE(Interface_Spinner), GAME_WINDOW_W/2+80*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-40*GAME_WINDOW_SCALE#)
-	SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
-	SetAlpha(1.0)
-
+	
+	
+	If Menu\Settings\Theme#=5 And Menu\Members=3 Then
+		DrawHeroesSpinner1() : DrawHeroesSpinner2() : DrawHeroesSpinner3()
+	Else
+		DrawSpinnerStuff()
+	EndIf 
+	
 	Select Menu\ChaoGarden
 		Case 0:
 			SetColor(Menu_ReturnCardColor(1,Menu\Character[1]),Menu_ReturnCardColor(2,Menu\Character[1]),Menu_ReturnCardColor(3,Menu\Character[1]))
-			For x=-15 to 15 : DrawImageEx(INTERFACE(Interface_Card2), (80-200*Menu\TitleCardTimer/secs#)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+x*24*GAME_WINDOW_SCALE#) : Next
+			For x=-15 To 15 : DrawImageEx(INTERFACE(Interface_Card2), (80-200*Menu\TitleCardTimer/secs#)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+x*24*GAME_WINDOW_SCALE#) : Next
 		Case 1:
 			SetColor(35,241,253)
-			For x=-15 to 15 : DrawImageEx(INTERFACE(Interface_Card3), (80-200*Menu\TitleCardTimer/secs#)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+x*24*GAME_WINDOW_SCALE#) : Next
+			For x=-15 To 15 : DrawImageEx(INTERFACE(Interface_Card3), (80-200*Menu\TitleCardTimer/secs#)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+x*24*GAME_WINDOW_SCALE#) : Next
 	End Select
 	SetColor(255,255,255)
 
 	Select inmenu
-		Case false: Menu_UpdateStageNames(Menu\Stage)
-		Case true: Menu_UpdateStageNames(Menu\SelectedStage)
+		Case False: Menu_UpdateStageNames(Menu\Stage)
+		Case True: Menu_UpdateStageNames(Menu\SelectedStage)
 	End Select
 
 	Select Menu\ChaoGarden
 		Case 0:
-			If Menu\MarathonMode=1 and Menu\MarathonGotSpecial=0 Then
+			If Menu\MarathonMode=1 And Menu\MarathonGotSpecial=0 Then
 				DrawRealText("Stage "+Menu\MarathonStage, (80-200*Menu\TitleCardTimer/secs#)*GAME_WINDOW_SCALE#-63*GAME_WINDOW_SCALE#, 20*GAME_WINDOW_SCALE#, (Interface_Text_3))
 			EndIf
 			DrawRealText(Menu\StageName$, GAME_WINDOW_W/2, GAME_WINDOW_H/2-(50+200*Menu\TitleCardTimer/secs#)*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 1, 0, 63, 63, 63)
@@ -1124,3 +1311,5 @@ End Function
 Function ARGB(Alpha#, Red, Green, Blue)
 	Return (Int(Alpha*255) Shl 24) Or (Red Shl 16)  Or (Green Shl 8)  Or Blue	
 End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

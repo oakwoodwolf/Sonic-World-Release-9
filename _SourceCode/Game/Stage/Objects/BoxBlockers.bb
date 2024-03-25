@@ -103,9 +103,9 @@
 						If o\HasEntityX Then PositionEntity o\EntityX, o\k\Position\x#, o\k\Position\y#-2.2/2+o\k\BoxSize#/i#, o\k\Position\z#
 					Else
 						Select o\ObjType
-							Case OBJTYPE_REDRING:
+							Case OBJTYPE_SHARD:
 								PositionEntity o\Entity, o\k\Position\x#, o\k\Position\y#-2.2+o\k\BoxSize#/2, o\k\Position\z#
-								If o\InView=False and (Not(o\k\ObjType=OBJTYPE_BOXCAGE Or o\k\ObjType=OBJTYPE_BOXLIGHT)) Then o\Treasure\BoxShouldHide=True
+								If o\InView=False And (Not(o\k\ObjType=OBJTYPE_BOXCAGE Or o\k\ObjType=OBJTYPE_BOXLIGHT)) Then o\Treasure\BoxShouldHide=True
 							Case OBJTYPE_SWITCH,OBJTYPE_SWITCHBASE:
 								PositionEntity o\Entity, o\k\Position\x#, o\k\Position\y#-0.5, o\k\Position\z#
 								PositionEntity o\Entity2, o\k\Position\x#, o\k\Position\y#-0.5, o\k\Position\z#

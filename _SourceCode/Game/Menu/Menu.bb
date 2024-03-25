@@ -109,6 +109,11 @@ Type tMenu
 	Field CreditsTimer
 	Field TitleState
 	Field TitleStateValues#[4]
+	
+	Field RestartMode
+	Field RestartX#
+	Field RestartY#
+	Field RestartZ#
 
 	Field FrozenMenuSaverTimer
 
@@ -159,6 +164,7 @@ Type tMenu
 	Field MissionInfo2$
 	Field ConvoName$
 	Field Convo$
+	Field MissionDescription$
 
 	Field CharacterRow
 	Field AndAnyone
@@ -178,6 +184,8 @@ Type tMenu
 	Field ButtonState1
 	Field ButtonSize2#
 	Field ButtonState2
+	
+	Field DebugTag$
 
 	Field WentToChaoMenu
 	Field BlackMarketBuyCategory
@@ -304,12 +312,12 @@ Menu\Settings = New tMenu_Settings
 	Const MENU_TRANSPORTER_STADIUM#		= 5
 	Const MENU_TRANSPORTER_RACEEXIT#	= 6
 	Const MENU_TRANSPORTER_RACES#		= 7
-	Const MENU_TRANSPORTER_KARATEEXIT#	= 8
-	Const MENU_TRANSPORTER_DIFFICULTY#	= 9
+	Const Menu_Transporter_KarateExit#	= 8
+	Const Menu_Transporter_Difficulty#	= 9
 
-	Const MENU_PRINCIPAL_MAIN#		= 0
-	Const MENU_PRINCIPAL_LESSONS#		= 1
-	Const MENU_PRINCIPAL_EXITREAL#		= 2
+	Const Menu_Principal_Main#		= 0
+	Const Menu_Principal_Lessons#		= 1
+	Const Menu_Principal_ExitReal#		= 2
 
 	Global CARD_PLACE# = 80*GAME_WINDOW_SCALE#
 	Global CARD_PLACE_TARGET# = 0
@@ -333,8 +341,10 @@ Menu\Settings = New tMenu_Settings
 	Global MISSION_FLICKY#	= 11
 	Global MISSION_DECLINE#	= 12
 	Global MISSION_ESCAPE#	= 13
-	Global MISSION_CAPSULE#	= 14
+	Global MISSION_ENCORE#	= 14
 	Global MISSIONCOUNT#	= 14
 
 Const BUTTON_SCALESPEED#=0.0030*5
 Const BUTTON_SCALELIMIT#=0.25
+;~IDEal Editor Parameters:
+;~C#Blitz3D

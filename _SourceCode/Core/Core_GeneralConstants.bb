@@ -197,13 +197,13 @@
 	BUTTONS[84]=KEY_GAMEPAD_R_PLUS
 
 	Function RETURN_BUTTON_FROM_KEY(input)
-		For i=1 to 84
-			If BUTTONS[i]=input Return i
+		For i=1 To 84
+			If BUTTONS[i]=Input Return i
 		Next
 	End Function
 
 	Function RETURN_KEY_FROM_BUTTONS(input)
-		Select input
+		Select Input
 			Case 1: Return KEY_A
 			Case 2: Return KEY_B
 			Case 3: Return KEY_C

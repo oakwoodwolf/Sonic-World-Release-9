@@ -2,7 +2,7 @@
 Const DEBUGMENU_MAIN# = 0
 
 Const DEBUGMENU_CHOOSE# = 1
-Const DEBUGMENU_CHOOSE_RINGS# = 11
+Const DEBUGMENU_CHOOSE_COLLECTIBLES# = 11
 Const DEBUGMENU_CHOOSE_TRANSLATORS# = 12
 Const DEBUGMENU_CHOOSE_TRANSLATORS_2# = 121
 Const DEBUGMENU_CHOOSE_TRANSLATORS_3# = 122
@@ -22,6 +22,7 @@ Const DEBUGMENU_CHOOSE_TREES# = 20
 Const DEBUGMENU_CHOOSE_TREES_2# = 201
 Const DEBUGMENU_CHOOSE_VISUALS# = 21
 Const DEBUGMENU_CHOOSE_VISUALS_2# = 211
+Const DEBUGMENU_CHOOSE_VISUALS_3# = 212
 Const DEBUGMENU_CHOOSE_CHAO# = 22
 
 Const DEBUGMENU_ATTRIBUTES# = 2
@@ -42,10 +43,30 @@ Const DEBUGMENU_ATTRIBUTES_TELEPORTER# = 64
 Const DEBUGMENU_ATTRIBUTES_DESTINATION# = 65
 
 Const DEBUGMENU_PLACE# = 3
-
+Function UpdateDebugTag()
+Select Game\Interface\DebugMenu
+	Case 51 : Menu\DebugTag$=" : POSITION"
+	Case 52 : Menu\DebugTag$=" : ROTATION"
+	Case 53 : Menu\DebugTag$=" : POWER"
+	Case 54 : Menu\DebugTag$=" : LOCKS"
+	Case 55 : Menu\DebugTag$=" : CAM POSITION"
+	Case 56 : Menu\DebugTag$=" : CAM ROTATION"
+	Case 57 : Menu\DebugTag$=" : CAM ZOOM"
+	Case 58 : Menu\DebugTag$=" : CAM SPEED"
+End Select 
+End Function 
 Function Interface_Render_Stage_Debug(p.tPlayer)
-
-	DrawRealText("DEBUG MODE", 0+12*GAME_WINDOW_SCALE#, 27.5*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 0, 0, 36, 81, 143)
+	If (KeyHit(KEY_ESCAPE)) Then End 
+	
+	UpdateDebugTag()
+	
+	For i=1 To 4
+		If KeyHit(Key_+i) Then
+			Game\Interface\DebugMenu=49+i
+		EndIf 
+	Next 
+	
+	DrawRealText("DEBUG MODE"+Menu\DebugTag$, 0+12*GAME_WINDOW_SCALE#, 27.5*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 0, 0, 36, 81, 143)
 
 	Select Game\Interface\DebugMenu
 		Case DEBUGMENU_MAIN#:
@@ -87,12 +108,12 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 				Game\Interface\DebugMenuOption=1
 			EndIf
 
-			If Input\Pressed\ActionSkill2 and TempAttribute\hasd#=1 Then
+			If Input\Pressed\ActionSkill2 And TempAttribute\hasd#=1 Then
 				PositionEntity p\Objects\Entity, TempAttribute\dx#, TempAttribute\dy#, TempAttribute\dz#
 			EndIf
 		Case DEBUGMENU_CHOOSE#:
 			DrawArrow(GAME_WINDOW_W-(200+15)*GAME_WINDOW_SCALE#, (40+20*Game\Interface\DebugMenuOption)*GAME_WINDOW_SCALE#)
-			DrawRealText("Rings", GAME_WINDOW_W-(200)*GAME_WINDOW_SCALE#, (40+20*1)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Collectibles", GAME_WINDOW_W-(200)*GAME_WINDOW_SCALE#, (40+20*1)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 			DrawRealText("Translators", GAME_WINDOW_W-(200)*GAME_WINDOW_SCALE#, (40+20*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 			DrawRealText("Monitors", GAME_WINDOW_W-(200)*GAME_WINDOW_SCALE#, (40+20*3)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 			DrawRealText("Boxes", GAME_WINDOW_W-(200)*GAME_WINDOW_SCALE#, (40+20*4)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
@@ -132,10 +153,10 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 				Game\Interface\DebugMenu=DEBUGMENU_MAIN#
 				Game\Interface\DebugMenuOption=1
 			EndIf
-		Case DEBUGMENU_CHOOSE_RINGS#:
+		Case DEBUGMENU_CHOOSE_COLLECTIBLES#:
 			DrawArrow(GAME_WINDOW_W-(200+43+15)*GAME_WINDOW_SCALE#, (40+20*Game\Interface\DebugMenuOption)*GAME_WINDOW_SCALE#)
 			DrawRealText("Ring", GAME_WINDOW_W-(200+43)*GAME_WINDOW_SCALE#, (40+20*1)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Red Ring", GAME_WINDOW_W-(200+43)*GAME_WINDOW_SCALE#, (40+20*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Emerald Shard", GAME_WINDOW_W-(200+43)*GAME_WINDOW_SCALE#, (40+20*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 			DrawRealText("Goal", GAME_WINDOW_W-(200+43)*GAME_WINDOW_SCALE#, (40+20*3)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 			DrawRealText("Goal switch", GAME_WINDOW_W-(200+43)*GAME_WINDOW_SCALE#, (40+20*4)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 			DrawRealText("Goal prog.", GAME_WINDOW_W-(200+43)*GAME_WINDOW_SCALE#, (40+20*5)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
@@ -158,7 +179,7 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 				PlaySmartSound(Sound_MenuAccept)
 				Select Game\Interface\DebugMenuOption
 					Case 1: Game\Interface\DebugNewObj = OBJTYPE_RING
-					Case 2: Game\Interface\DebugNewObj = OBJTYPE_REDRING
+					Case 2: Game\Interface\DebugNewObj = OBJTYPE_SHARD
 					Case 3: Game\Interface\DebugNewObj = OBJTYPE_GOAL
 					Case 4: Game\Interface\DebugNewObj = OBJTYPE_GOAL2
 					Case 5: Game\Interface\DebugNewObj = OBJTYPE_GOAL+1000
@@ -180,30 +201,31 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 			DrawRealText("Spring", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*-1)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 			DrawRealText("Big Spring", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*0)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 			DrawRealText("Air Spring", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*1)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Dash Pad", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Dash Ramp", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*3)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Dash Hoop", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*4)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Trick Hoop", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*5)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Accelerator", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*6)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Locker", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*7)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Forcer", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*8)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Node", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*9)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Fan", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*10)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Big Fan", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*11)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Big Fan low", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*12)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Bumpers", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*13)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Cannon", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*14)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Transferers", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*15)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Ice Spring", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Dash Pad", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*3)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Dash Ramp", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*4)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Dash Hoop", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*5)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Trick Hoop", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*6)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Accelerator", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*7)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Locker", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*8)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Forcer", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*9)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Node", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*10)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Fan", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*11)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Big Fan", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*12)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Big Fan low", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*13)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Bumpers", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*14)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Cannon", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*15)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Transferers", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*16)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
 			If Input\Pressed\Down Then
 				PlaySmartSound(Sound_MenuMove)
 				Game\Interface\DebugMenuOption=Game\Interface\DebugMenuOption+1
-				If Game\Interface\DebugMenuOption>17 Then Game\Interface\DebugMenuOption=1
+				If Game\Interface\DebugMenuOption>18 Then Game\Interface\DebugMenuOption=1
 			EndIf
 			If Input\Pressed\Up Then
 				PlaySmartSound(Sound_MenuMove)
 				Game\Interface\DebugMenuOption=Game\Interface\DebugMenuOption-1
-				If Game\Interface\DebugMenuOption<1 Then Game\Interface\DebugMenuOption=17
+				If Game\Interface\DebugMenuOption<1 Then Game\Interface\DebugMenuOption=18
 			EndIf
 
 			If Input\Pressed\ActionJump Or Input\Pressed\Start Then
@@ -212,29 +234,30 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 					Case 1: Game\Interface\DebugNewObj = OBJTYPE_SPRING
 					Case 2: Game\Interface\DebugNewObj = OBJTYPE_BSPRING
 					Case 3: Game\Interface\DebugNewObj = OBJTYPE_SPRINGX
-					Case 4: Game\Interface\DebugNewObj = OBJTYPE_PAD
-					Case 5: Game\Interface\DebugNewObj = OBJTYPE_RAMP
-					Case 6: Game\Interface\DebugNewObj = OBJTYPE_HOOP
-					Case 7: Game\Interface\DebugNewObj = OBJTYPE_THOOP
-					Case 8: Game\Interface\DebugNewObj = OBJTYPE_ACCEL
-					Case 9: Game\Interface\DebugNewObj = OBJTYPE_LOCKER
-					Case 10: Game\Interface\DebugNewObj = OBJTYPE_FORCER
-					Case 11: Game\Interface\DebugNewObj = OBJTYPE_NODE
-					Case 12: Game\Interface\DebugNewObj = OBJTYPE_FAN
-					Case 13: Game\Interface\DebugNewObj = OBJTYPE_BFAN
-					Case 14: Game\Interface\DebugNewObj = OBJTYPE_BFANLOW
-					Case 15: Game\Interface\DebugNewObj = 0
-					Case 16: Game\Interface\DebugNewObj = OBJTYPE_CANNON
-					Case 17: Game\Interface\DebugNewObj = 0
+					Case 4: Game\Interface\DebugNewObj = OBJTYPE_SPRINGICE
+					Case 5: Game\Interface\DebugNewObj = OBJTYPE_PAD
+					Case 6: Game\Interface\DebugNewObj = OBJTYPE_RAMP
+					Case 7: Game\Interface\DebugNewObj = OBJTYPE_HOOP
+					Case 8: Game\Interface\DebugNewObj = OBJTYPE_THOOP
+					Case 9: Game\Interface\DebugNewObj = OBJTYPE_ACCEL
+					Case 10: Game\Interface\DebugNewObj = OBJTYPE_LOCKER
+					Case 11: Game\Interface\DebugNewObj = OBJTYPE_FORCER
+					Case 12: Game\Interface\DebugNewObj = OBJTYPE_NODE
+					Case 13: Game\Interface\DebugNewObj = OBJTYPE_FAN
+					Case 14: Game\Interface\DebugNewObj = OBJTYPE_BFAN
+					Case 15: Game\Interface\DebugNewObj = OBJTYPE_BFANLOW
+					Case 16: Game\Interface\DebugNewObj = 0
+					Case 17: Game\Interface\DebugNewObj = OBJTYPE_CANNON
+					Case 18: Game\Interface\DebugNewObj = 0
 				End Select
 				Select Game\Interface\DebugMenuOption
-					Case 9,10,12,13,14:
+					Case 10,11,13,14,15:
 						Game\Interface\DebugMenu=Game\Interface\DebugMenu*10+1
 						Game\Interface\DebugMenuOption=1
-					Case 15:
+					Case 16:
 						Game\Interface\DebugMenu=Game\Interface\DebugMenu*10+2
 						Game\Interface\DebugMenuOption=1
-					Case 17:
+					Case 18:
 						Game\Interface\DebugMenu=Game\Interface\DebugMenu*10+3
 						Game\Interface\DebugMenuOption=1
 					Default:
@@ -348,16 +371,18 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 			DrawRealText("Rocket", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 			DrawRealText("Elevator", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*3)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 			DrawRealText("Handle", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*4)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-
+			DrawRealText("Ground Jump Panel", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*5)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Wall Jump Panel", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*6)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			
 			If Input\Pressed\Down Then
 				PlaySmartSound(Sound_MenuMove)
 				Game\Interface\DebugMenuOption=Game\Interface\DebugMenuOption+1
-				If Game\Interface\DebugMenuOption>6 Then Game\Interface\DebugMenuOption=1
+				If Game\Interface\DebugMenuOption>8 Then Game\Interface\DebugMenuOption=1
 			EndIf
 			If Input\Pressed\Up Then
 				PlaySmartSound(Sound_MenuMove)
 				Game\Interface\DebugMenuOption=Game\Interface\DebugMenuOption-1
-				If Game\Interface\DebugMenuOption<1 Then Game\Interface\DebugMenuOption=6
+				If Game\Interface\DebugMenuOption<1 Then Game\Interface\DebugMenuOption=8
 			EndIf
 
 			If Input\Pressed\ActionJump Or Input\Pressed\Start Then
@@ -369,6 +394,8 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 					Case 4: Game\Interface\DebugNewObj = OBJTYPE_ROCKET
 					Case 5: Game\Interface\DebugNewObj = OBJTYPE_ELEVATOR
 					Case 6: Game\Interface\DebugNewObj = OBJTYPE_HANDLE
+					Case 7: Game\Interface\DebugNewObj = OBJTYPE_PANEL1
+					Case 8: Game\Interface\DebugNewObj = OBJTYPE_PANEL2
 				End Select
 				Game\Interface\DebugMenu=0
 				Game\Interface\DebugMenuOption=1
@@ -485,20 +512,21 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 			DrawRealText("Metal", GAME_WINDOW_W-(200)*GAME_WINDOW_SCALE#, (40+20*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 			DrawRealText("Iron", GAME_WINDOW_W-(200)*GAME_WINDOW_SCALE#, (40+20*3)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 			DrawRealText("Cage", GAME_WINDOW_W-(200)*GAME_WINDOW_SCALE#, (40+20*4)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Light", GAME_WINDOW_W-(200)*GAME_WINDOW_SCALE#, (40+20*5)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Explosive", GAME_WINDOW_W-(200)*GAME_WINDOW_SCALE#, (40+20*6)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Nitro", GAME_WINDOW_W-(200)*GAME_WINDOW_SCALE#, (40+20*7)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Float", GAME_WINDOW_W-(200)*GAME_WINDOW_SCALE#, (40+20*8)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Vanish", GAME_WINDOW_W-(200)*GAME_WINDOW_SCALE#, (40+20*5)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Light", GAME_WINDOW_W-(200)*GAME_WINDOW_SCALE#, (40+20*6)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Explosive", GAME_WINDOW_W-(200)*GAME_WINDOW_SCALE#, (40+20*7)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Nitro", GAME_WINDOW_W-(200)*GAME_WINDOW_SCALE#, (40+20*8)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Float", GAME_WINDOW_W-(200)*GAME_WINDOW_SCALE#, (40+20*9)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
 			If Input\Pressed\Down Then
 				PlaySmartSound(Sound_MenuMove)
 				Game\Interface\DebugMenuOption=Game\Interface\DebugMenuOption+1
-				If Game\Interface\DebugMenuOption>8 Then Game\Interface\DebugMenuOption=1
+				If Game\Interface\DebugMenuOption>9 Then Game\Interface\DebugMenuOption=1
 			EndIf
 			If Input\Pressed\Up Then
 				PlaySmartSound(Sound_MenuMove)
 				Game\Interface\DebugMenuOption=Game\Interface\DebugMenuOption-1
-				If Game\Interface\DebugMenuOption<1 Then Game\Interface\DebugMenuOption=8
+				If Game\Interface\DebugMenuOption<1 Then Game\Interface\DebugMenuOption=9
 			EndIf
 
 			If Input\Pressed\ActionJump Or Input\Pressed\Start Then
@@ -508,10 +536,11 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 					Case 2: Game\Interface\DebugNewObj = OBJTYPE_BOXMETAL
 					Case 3: Game\Interface\DebugNewObj = OBJTYPE_BOXIRON
 					Case 4: Game\Interface\DebugNewObj = OBJTYPE_BOXCAGE
-					Case 5: Game\Interface\DebugNewObj = OBJTYPE_BOXLIGHT
-					Case 6: Game\Interface\DebugNewObj = OBJTYPE_BOXTNT
-					Case 7: Game\Interface\DebugNewObj = OBJTYPE_BOXNITRO
-					Case 8: Game\Interface\DebugNewObj = OBJTYPE_BOXFLOAT
+					Case 5: Game\Interface\DebugNewObj = OBJTYPE_BOXYELLOW
+					Case 6: Game\Interface\DebugNewObj = OBJTYPE_BOXLIGHT
+					Case 7: Game\Interface\DebugNewObj = OBJTYPE_BOXTNT
+					Case 8: Game\Interface\DebugNewObj = OBJTYPE_BOXNITRO
+					Case 9: Game\Interface\DebugNewObj = OBJTYPE_BOXFLOAT
 				End Select
 				Game\Interface\DebugMenu=Game\Interface\DebugMenu*10+1
 				Game\Interface\DebugMenuOption=1
@@ -698,11 +727,15 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 					DrawRealText("Hornet with 3", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*9)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 					DrawRealText("Hornet with 6", GAME_WINDOW_W-(225)*GAME_WINDOW_SCALE#, (40+20*10)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 				Case 9:
-					DrawRealText("Aero Cannon", GAME_WINDOW_W-(235)*GAME_WINDOW_SCALE#, (40+20*-1)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-					DrawRealText("Chaser", GAME_WINDOW_W-(235)*GAME_WINDOW_SCALE#, (40+20*0)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-					DrawRealText("Fighter", GAME_WINDOW_W-(235)*GAME_WINDOW_SCALE#, (40+20*1)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-					DrawRealText("Typhoon", GAME_WINDOW_W-(235)*GAME_WINDOW_SCALE#, (40+20*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-					DrawRealText("Typhoon blizzard", GAME_WINDOW_W-(235)*GAME_WINDOW_SCALE#, (40+20*3)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+					DrawRealText("Egg Gunner", GAME_WINDOW_W-(235)*GAME_WINDOW_SCALE#, (40+20*-1)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+					DrawRealText("Egg Searcher", GAME_WINDOW_W-(235)*GAME_WINDOW_SCALE#, (40+20*0)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+					DrawRealText("Egg Hunter", GAME_WINDOW_W-(235)*GAME_WINDOW_SCALE#, (40+20*1)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+					DrawRealText("Aero Cannon", GAME_WINDOW_W-(235)*GAME_WINDOW_SCALE#, (40+20*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+					DrawRealText("Chaser", GAME_WINDOW_W-(235)*GAME_WINDOW_SCALE#, (40+20*3)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+					DrawRealText("Fighter", GAME_WINDOW_W-(235)*GAME_WINDOW_SCALE#, (40+20*4)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+					DrawRealText("Typhoon", GAME_WINDOW_W-(235)*GAME_WINDOW_SCALE#, (40+20*5)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+					DrawRealText("Typhoon blizzard", GAME_WINDOW_W-(235)*GAME_WINDOW_SCALE#, (40+20*6)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+					
 				Case 10:
 					DrawRealText("Boo", GAME_WINDOW_W-(282.5)*GAME_WINDOW_SCALE#, (40+20*-1)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 					DrawRealText("Boo scare", GAME_WINDOW_W-(282.5)*GAME_WINDOW_SCALE#, (40+20*0)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
@@ -741,7 +774,7 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 					Case 6: If Game\Interface\DebugMenuOption>13 Then Game\Interface\DebugMenuOption=1
 					Case 7: If Game\Interface\DebugMenuOption>12 Then Game\Interface\DebugMenuOption=1
 					Case 8: If Game\Interface\DebugMenuOption>12 Then Game\Interface\DebugMenuOption=1
-					Case 9: If Game\Interface\DebugMenuOption>5 Then Game\Interface\DebugMenuOption=1
+					Case 9: If Game\Interface\DebugMenuOption>8 Then Game\Interface\DebugMenuOption=1
 					Case 10: If Game\Interface\DebugMenuOption>15 Then Game\Interface\DebugMenuOption=1
 					Case 11: If Game\Interface\DebugMenuOption>7 Then Game\Interface\DebugMenuOption=1
 				End Select
@@ -758,7 +791,7 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 					Case 6: If Game\Interface\DebugMenuOption<1 Then Game\Interface\DebugMenuOption=13
 					Case 7: If Game\Interface\DebugMenuOption<1 Then Game\Interface\DebugMenuOption=12
 					Case 8: If Game\Interface\DebugMenuOption<1 Then Game\Interface\DebugMenuOption=12
-					Case 9: If Game\Interface\DebugMenuOption<1 Then Game\Interface\DebugMenuOption=5
+					Case 9: If Game\Interface\DebugMenuOption<1 Then Game\Interface\DebugMenuOption=8
 					Case 10: If Game\Interface\DebugMenuOption<1 Then Game\Interface\DebugMenuOption=15
 					Case 11: If Game\Interface\DebugMenuOption<1 Then Game\Interface\DebugMenuOption=7
 				End Select
@@ -877,11 +910,15 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 						End Select
 					Case 9:
 						Select Game\Interface\DebugMenuOption
-							Case 1: Game\Interface\DebugNewObj = OBJTYPE_AEROC
-							Case 2: Game\Interface\DebugNewObj = OBJTYPE_CHASER
-							Case 3: Game\Interface\DebugNewObj = OBJTYPE_FIGHTER
-							Case 4: Game\Interface\DebugNewObj = OBJTYPE_TYPHOON
-							Case 5: Game\Interface\DebugNewObj = OBJTYPE_TYPHOONF
+							Case 1: Game\Interface\DebugNewObj = OBJTYPE_GUNNER
+							Case 2: Game\Interface\DebugNewObj = OBJTYPE_EGGHUNTER
+							Case 3: Game\Interface\DebugNewObj = OBJTYPE_SEARCHER
+							Case 4: Game\Interface\DebugNewObj = OBJTYPE_AEROC
+							Case 5: Game\Interface\DebugNewObj = OBJTYPE_CHASER
+							Case 6: Game\Interface\DebugNewObj = OBJTYPE_FIGHTER
+							Case 7: Game\Interface\DebugNewObj = OBJTYPE_TYPHOON
+							Case 8: Game\Interface\DebugNewObj = OBJTYPE_TYPHOONF
+								
 						End Select
 					Case 10:
 						Select Game\Interface\DebugMenuOption
@@ -990,18 +1027,19 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 			DrawRealText("Crystal", GAME_WINDOW_W-(230)*GAME_WINDOW_SCALE#, (40+20*10)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 			DrawRealText("Trap Spring", GAME_WINDOW_W-(230)*GAME_WINDOW_SCALE#, (40+20*11)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 			DrawRealText("Air Trap Spring", GAME_WINDOW_W-(230)*GAME_WINDOW_SCALE#, (40+20*12)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Explosion", GAME_WINDOW_W-(230)*GAME_WINDOW_SCALE#, (40+20*13)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Explosion rocket", GAME_WINDOW_W-(230)*GAME_WINDOW_SCALE#, (40+20*14)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Thorn Spring", GAME_WINDOW_W-(230)*GAME_WINDOW_SCALE#, (40+20*13)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Explosion", GAME_WINDOW_W-(230)*GAME_WINDOW_SCALE#, (40+20*14)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Explosion rocket", GAME_WINDOW_W-(230)*GAME_WINDOW_SCALE#, (40+20*15)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
 			If Input\Pressed\Down Then
 				PlaySmartSound(Sound_MenuMove)
 				Game\Interface\DebugMenuOption=Game\Interface\DebugMenuOption+1
-				If Game\Interface\DebugMenuOption>14 Then Game\Interface\DebugMenuOption=1
+				If Game\Interface\DebugMenuOption>15 Then Game\Interface\DebugMenuOption=1
 			EndIf
 			If Input\Pressed\Up Then
 				PlaySmartSound(Sound_MenuMove)
 				Game\Interface\DebugMenuOption=Game\Interface\DebugMenuOption-1
-				If Game\Interface\DebugMenuOption<1 Then Game\Interface\DebugMenuOption=14
+				If Game\Interface\DebugMenuOption<1 Then Game\Interface\DebugMenuOption=15
 			EndIf
 
 			If Input\Pressed\ActionJump Or Input\Pressed\Start Then
@@ -1019,8 +1057,9 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 					Case 10: Game\Interface\DebugNewObj = OBJTYPE_CRYSTAL
 					Case 11: Game\Interface\DebugNewObj = OBJTYPE_SPRINGTRAP
 					Case 12: Game\Interface\DebugNewObj = OBJTYPE_SPRINGTRAPX
-					Case 13: Game\Interface\DebugNewObj = OBJTYPE_EXPLOSION
-					Case 14: Game\Interface\DebugNewObj = OBJTYPE_EXPLOSION2
+					Case 13: Game\Interface\DebugNewObj = OBJTYPE_SPRINGTHORN
+					Case 14: Game\Interface\DebugNewObj = OBJTYPE_EXPLOSION
+					Case 15: Game\Interface\DebugNewObj = OBJTYPE_EXPLOSION2
 				End Select
 				Game\Interface\DebugMenu=0
 				Game\Interface\DebugMenuOption=1
@@ -1503,18 +1542,20 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 			DrawRealText("Confetti sprinkler", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 			DrawRealText("Drop sprinkler", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*3)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 			DrawRealText("Creatures", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*4)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Beach chair", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*5)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Beach parasol", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*6)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Air balloon", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*7)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Helicopter", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*8)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Rainbow", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*9)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Automobile", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*10)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Icicle 1", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*11)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Icicle 2", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*12)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Icicle big 1", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*13)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Icicle big 2", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*14)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Ice decor 1", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*15)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-			DrawRealText("Ice decor 2", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*16)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Stage Visuals", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*5)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			
+			DrawRealText("Beach chair", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*6)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Beach parasol", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*7)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Air balloon", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*8)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Helicopter", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*9)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Rainbow", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*10)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Automobile", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*11)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Icicle 1", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*12)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Icicle 2", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*13)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Icicle big 1", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*14)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Icicle big 2", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*15)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Ice decor 1", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*16)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Ice decor 2", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*17)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
 			If Input\Pressed\Down Then
 				PlaySmartSound(Sound_MenuMove)
@@ -1533,6 +1574,9 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 					Case 6:
 						Game\Interface\DebugMenuOption=1
 						Game\Interface\DebugMenu=Game\Interface\DebugMenu*10+1
+					Case 7:
+						Game\Interface\DebugMenuOption=1
+						Game\Interface\DebugMenu=Game\Interface\DebugMenu*10+2
 					Default:
 						Select Game\Interface\DebugMenuOption
 							Case 1: Game\Interface\DebugNewObj = OBJTYPE_SPRINKLER
@@ -1540,18 +1584,18 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 							Case 3: Game\Interface\DebugNewObj = OBJTYPE_SPRINKLER+1000
 							Case 4: Game\Interface\DebugNewObj = OBJTYPE_SPRINKLER+2000
 							Case 5: Game\Interface\DebugNewObj = OBJTYPE_SPRINKLER+3000
-							Case 7: Game\Interface\DebugNewObj = OBJTYPE_CHAIR
-							Case 8: Game\Interface\DebugNewObj = OBJTYPE_PARASOL
-							Case 9: Game\Interface\DebugNewObj = OBJTYPE_AIRBALLOON
-							Case 10: Game\Interface\DebugNewObj = OBJTYPE_HELICOPTER
-							Case 11: Game\Interface\DebugNewObj = OBJTYPE_RAINBOW
-							Case 12: Game\Interface\DebugNewObj = OBJTYPE_AUTO
-							Case 13: Game\Interface\DebugNewObj = OBJTYPE_ICICLE
-							Case 14: Game\Interface\DebugNewObj = OBJTYPE_ICICLE+1000
-							Case 15: Game\Interface\DebugNewObj = OBJTYPE_ICICLEBIG
-							Case 16: Game\Interface\DebugNewObj = OBJTYPE_ICICLEBIG+1000
-							Case 17: Game\Interface\DebugNewObj = OBJTYPE_ICEDECOR
-							Case 18: Game\Interface\DebugNewObj = OBJTYPE_ICEDECOR+1000
+							Case 8: Game\Interface\DebugNewObj = OBJTYPE_CHAIR
+							Case 9: Game\Interface\DebugNewObj = OBJTYPE_PARASOL
+							Case 10: Game\Interface\DebugNewObj = OBJTYPE_AIRBALLOON
+							Case 11: Game\Interface\DebugNewObj = OBJTYPE_HELICOPTER
+							Case 12: Game\Interface\DebugNewObj = OBJTYPE_RAINBOW
+							Case 13: Game\Interface\DebugNewObj = OBJTYPE_AUTO
+							Case 14: Game\Interface\DebugNewObj = OBJTYPE_ICICLE
+							Case 15: Game\Interface\DebugNewObj = OBJTYPE_ICICLE+1000
+							Case 16: Game\Interface\DebugNewObj = OBJTYPE_ICICLEBIG
+							Case 17: Game\Interface\DebugNewObj = OBJTYPE_ICICLEBIG+1000
+							Case 18: Game\Interface\DebugNewObj = OBJTYPE_ICEDECOR
+							Case 19: Game\Interface\DebugNewObj = OBJTYPE_ICEDECOR+1000
 						End Select
 						Game\Interface\DebugMenu=0
 						Game\Interface\DebugMenuOption=1
@@ -1600,22 +1644,61 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 				Game\Interface\DebugMenu=DEBUGMENU_CHOOSE_VISUALS#
 				Game\Interface\DebugNewObj=0
 			EndIf
+		Case DEBUGMENU_CHOOSE_VISUALS_3#:
+			DrawArrow(GAME_WINDOW_W-(265+15)*GAME_WINDOW_SCALE#, (40+20*Game\Interface\DebugMenuOption+20*-2)*GAME_WINDOW_SCALE#)
+			DrawRealText("Stage Visual 1", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*-1)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Stage Visual 2", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*0)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Stage Visual 3", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*1)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Stage Visual 4", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			DrawRealText("Stage Visual 5", GAME_WINDOW_W-(265)*GAME_WINDOW_SCALE#, (40+20*3)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+			
+			If Input\Pressed\Down Then
+				PlaySmartSound(Sound_MenuMove)
+				Game\Interface\DebugMenuOption=Game\Interface\DebugMenuOption+1
+				If Game\Interface\DebugMenuOption>5 Then Game\Interface\DebugMenuOption=1
+			EndIf
+			If Input\Pressed\Up Then
+				PlaySmartSound(Sound_MenuMove)
+				Game\Interface\DebugMenuOption=Game\Interface\DebugMenuOption-1
+				If Game\Interface\DebugMenuOption<1 Then Game\Interface\DebugMenuOption=5
+			EndIf
+			
+			If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+				PlaySmartSound(Sound_MenuAccept)
+				Select Game\Interface\DebugMenuOption
+					Case 1: Game\Interface\DebugNewObj = OBJTYPE_STAGEVISUAL1
+					Case 2: Game\Interface\DebugNewObj = OBJTYPE_STAGEVISUAL2
+					Case 3: Game\Interface\DebugNewObj = OBJTYPE_STAGEVISUAL3
+					Case 4: Game\Interface\DebugNewObj = OBJTYPE_STAGEVISUAL4
+					Case 5: Game\Interface\DebugNewObj = OBJTYPE_STAGEVISUAL5
+				End Select
+				Game\Interface\DebugMenu=0
+				Game\Interface\DebugMenuOption=1
+			EndIf
+			If Input\Pressed\ActionRoll Or Input\Pressed\Back Then
+				PlaySmartSound(Sound_MenuBack)
+				Game\Interface\DebugMenuOption=7
+				Game\Interface\DebugMenu=DEBUGMENU_CHOOSE_VISUALS#
+				Game\Interface\DebugNewObj=0
+			EndIf
 		Case DEBUGMENU_ATTRIBUTES#:
 			DrawArrow(GAME_WINDOW_W-(240+15)*GAME_WINDOW_SCALE#, (40-20*1+20*Game\Interface\DebugMenuOption)*GAME_WINDOW_SCALE#)
 			DrawRealText("Position", GAME_WINDOW_W-(240)*GAME_WINDOW_SCALE#, (40+20*0)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 			Select p\ObjType
-				Case OBJTYPE_RING,OBJTYPE_RINGS,OBJTYPE_LIFE,OBJTYPE_TRAP,OBJTYPE_INVINC,OBJTYPE_SHOES,OBJTYPE_NSHIELD,OBJTYPE_FSHIELD,OBJTYPE_BSHIELD,OBJTYPE_TSHIELD,OBJTYPE_ESHIELD,OBJTYPE_BOMB,OBJTYPE_BOARD,OBJTYPE_GLIDER,OBJTYPE_CAR,OBJTYPE_BIKE,OBJTYPE_BOBSLEIGH,OBJTYPE_TORNADO,OBJTYPE_CYCLONE,OBJTYPE_KART,OBJTYPE_WINGS,OBJTYPE_RINGS+1000,OBJTYPE_LIFE+1000,OBJTYPE_TRAP+1000,OBJTYPE_INVINC+1000,OBJTYPE_SHOES+1000,OBJTYPE_NSHIELD+1000,OBJTYPE_FSHIELD+1000,OBJTYPE_BSHIELD+1000,OBJTYPE_TSHIELD+1000,OBJTYPE_ESHIELD+1000,OBJTYPE_BOMB+1000,OBJTYPE_BOARD+1000,OBJTYPE_GLIDER+1000,OBJTYPE_CAR+1000,OBJTYPE_BIKE+1000,OBJTYPE_BOBSLEIGH+1000,OBJTYPE_TORNADO+1000,OBJTYPE_CYCLONE+1000,OBJTYPE_KART+1000,OBJTYPE_WINGS+1000,OBJTYPE_BALLOON,OBJTYPE_GOAL,OBJTYPE_GOAL2,OBJTYPE_GOAL+1000,OBJTYPE_GOAL2+1000,OBJTYPE_BUBBLES,OBJTYPE_REDRING,OBJTYPE_HINT,OBJTYPE_COUNTER,OBJTYPE_BELL,OBJTYPE_SPRINKLER,OBJTYPE_SPRINKLER+1000,OBJTYPE_SPRINKLER+3000,OBJTYPE_SPRINKLER+4000,OBJTYPE_BUTTERFLY,OBJTYPE_SEAGULL,OBJTYPE_SEAC,OBJTYPE_AIRBALLOON,OBJTYPE_TRIGGER_VEHICLECANCEL,OBJTYPE_TRIGGER_MACH,OBJTYPE_TRIGGER_MACHCANCEL,OBJTYPE_TRIGGER_SKYDIVE,OBJTYPE_TRIGGER_SKYDIVECANCEL,OBJTYPE_TRIGGER_WATER,OBJTYPE_CLOUD,OBJTYPE_TRIGGER_MUSIC,OBJTYPE_TRIGGER_MUSIC+1000,OBJTYPE_TRIGGER_MUSIC+2000,OBJTYPE_BOMBER2:
+				Case OBJTYPE_RING,OBJTYPE_RINGS,OBJTYPE_LIFE,OBJTYPE_TRAP,OBJTYPE_INVINC,OBJTYPE_SHOES,OBJTYPE_NSHIELD,OBJTYPE_FSHIELD,OBJTYPE_BSHIELD,OBJTYPE_TSHIELD,OBJTYPE_ESHIELD,OBJTYPE_BOMB,OBJTYPE_BOARD,OBJTYPE_GLIDER,OBJTYPE_CAR,OBJTYPE_BIKE,OBJTYPE_BOBSLEIGH,OBJTYPE_TORNADO,OBJTYPE_CYCLONE,OBJTYPE_KART,OBJTYPE_WINGS,OBJTYPE_RINGS+1000,OBJTYPE_LIFE+1000,OBJTYPE_TRAP+1000,OBJTYPE_INVINC+1000,OBJTYPE_SHOES+1000,OBJTYPE_NSHIELD+1000,OBJTYPE_FSHIELD+1000,OBJTYPE_BSHIELD+1000,OBJTYPE_TSHIELD+1000,OBJTYPE_ESHIELD+1000,OBJTYPE_BOMB+1000,OBJTYPE_BOARD+1000,OBJTYPE_GLIDER+1000,OBJTYPE_CAR+1000,OBJTYPE_BIKE+1000,OBJTYPE_BOBSLEIGH+1000,OBJTYPE_TORNADO+1000,OBJTYPE_CYCLONE+1000,OBJTYPE_KART+1000,OBJTYPE_WINGS+1000,OBJTYPE_BALLOON,OBJTYPE_GOAL,OBJTYPE_GOAL2,OBJTYPE_GOAL+1000,OBJTYPE_GOAL2+1000,OBJTYPE_BUBBLES,OBJTYPE_SHARD,OBJTYPE_HINT,OBJTYPE_COUNTER,OBJTYPE_BELL,OBJTYPE_SPRINKLER,OBJTYPE_SPRINKLER+1000,OBJTYPE_SPRINKLER+3000,OBJTYPE_SPRINKLER+4000,OBJTYPE_BUTTERFLY,OBJTYPE_SEAGULL,OBJTYPE_SEAC,OBJTYPE_AIRBALLOON,OBJTYPE_TRIGGER_VEHICLECANCEL,OBJTYPE_TRIGGER_MACH,OBJTYPE_TRIGGER_MACHCANCEL,OBJTYPE_TRIGGER_SKYDIVE,OBJTYPE_TRIGGER_SKYDIVECANCEL,OBJTYPE_TRIGGER_WATER,OBJTYPE_CLOUD,OBJTYPE_TRIGGER_MUSIC,OBJTYPE_TRIGGER_MUSIC+1000,OBJTYPE_TRIGGER_MUSIC+2000,OBJTYPE_BOMBER2:
 					SetColor(0,0,0)
 				Default:
 					SetColor(255,255,255)
 			End Select
 				DrawRealText("Rotation", GAME_WINDOW_W-(240)*GAME_WINDOW_SCALE#, (40+20*1)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 			Select p\ObjType
-				Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_CANNON,OBJTYPE_PROPELLER,OBJTYPE_PULLEY,OBJTYPE_PULLEY+1000,OBJTYPE_ROCKET,OBJTYPE_ELEVATOR:
+				Case OBJTYPE_RING,OBJTYPE_HINT,OBJTYPE_SPRING,OBJTYPE_SPRINGICE,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_CANNON,OBJTYPE_PROPELLER,OBJTYPE_PULLEY,OBJTYPE_PULLEY+1000,OBJTYPE_ROCKET,OBJTYPE_ELEVATOR:
 					SetColor(255,255,255)
 				Case OBJTYPE_TREE1,OBJTYPE_TREE2,OBJTYPE_TREE3,OBJTYPE_TREE4,OBJTYPE_TREE5,OBJTYPE_TREE6,OBJTYPE_SHRUB1,OBJTYPE_SHRUB2,OBJTYPE_SHRUB3,OBJTYPE_SHRUB4,OBJTYPE_SHRUB5,OBJTYPE_SHRUB6,OBJTYPE_BUSH1,OBJTYPE_BUSH2,OBJTYPE_BUSH3,OBJTYPE_BUSH4,OBJTYPE_BUSH5,OBJTYPE_BUSH6,OBJTYPE_BUSH7,OBJTYPE_GRASS1,OBJTYPE_GRASS2,OBJTYPE_GRASS3,OBJTYPE_GRASS4,OBJTYPE_GRASS5,OBJTYPE_GRASS6,OBJTYPE_GRASS7,OBJTYPE_GRASS8,OBJTYPE_GRASS9,OBJTYPE_GRASS10,OBJTYPE_SAKURA1,OBJTYPE_SAKURA2,OBJTYPE_SAKURA3,OBJTYPE_SAKURA4,OBJTYPE_SAKURA5,OBJTYPE_SAKURA6,OBJTYPE_PALM1,OBJTYPE_PALM2,OBJTYPE_PALM3,OBJTYPE_PALM4,OBJTYPE_WILDPALM1,OBJTYPE_WILDPALM2,OBJTYPE_WILDPALM3,OBJTYPE_WILDPALM4,OBJTYPE_WILDPALM5,OBJTYPE_WILDPALM6,OBJTYPE_FLOWER1,OBJTYPE_FLOWER2,OBJTYPE_FLOWER3,OBJTYPE_FLOWER4,OBJTYPE_FLOWER5,OBJTYPE_SNOWY1,OBJTYPE_SNOWY2,OBJTYPE_SNOWY3,OBJTYPE_SNOWY4,OBJTYPE_SNOWY5,OBJTYPE_SNOWY6,OBJTYPE_VINE1,OBJTYPE_DRYTREE1,OBJTYPE_DRYTREE2,OBJTYPE_DRYTREE3,OBJTYPE_ADABAT1,OBJTYPE_ADABAT2,OBJTYPE_ADABAT3,OBJTYPE_ADABAT4,OBJTYPE_ADABAT5:
 					SetColor(255,255,255)
 				Case OBJTYPE_AIRBALLOON,OBJTYPE_TRIGGER_WATER,OBJTYPE_TRIGGER_MUSIC,OBJTYPE_TRIGGER_MUSIC+1000,OBJTYPE_TRIGGER_MUSIC+2000,OBJTYPE_RINGGATEV,OBJTYPE_RINGGATEH,OBJTYPE_CLOUD,OBJTYPE_POLE,OBJTYPE_SWITCHWATER,OBJTYPE_SWITCHWATER+1000:
+					SetColor(255,255,255)
+				Case OBJTYPE_STAGEVISUAL1,OBJTYPE_STAGEVISUAL2,OBJTYPE_STAGEVISUAL3,OBJTYPE_STAGEVISUAL4,OBJTYPE_STAGEVISUAL5
 					SetColor(255,255,255)
 				Default:
 					SetColor(0,0,0)
@@ -1623,10 +1706,14 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 			Select p\ObjType
 				Case OBJTYPE_TREE1,OBJTYPE_TREE2,OBJTYPE_TREE3,OBJTYPE_TREE4,OBJTYPE_TREE5,OBJTYPE_TREE6,OBJTYPE_SHRUB1,OBJTYPE_SHRUB2,OBJTYPE_SHRUB3,OBJTYPE_SHRUB4,OBJTYPE_SHRUB5,OBJTYPE_SHRUB6,OBJTYPE_BUSH1,OBJTYPE_BUSH2,OBJTYPE_BUSH3,OBJTYPE_BUSH4,OBJTYPE_BUSH5,OBJTYPE_BUSH6,OBJTYPE_BUSH7,OBJTYPE_GRASS1,OBJTYPE_GRASS2,OBJTYPE_GRASS3,OBJTYPE_GRASS4,OBJTYPE_GRASS5,OBJTYPE_GRASS6,OBJTYPE_GRASS7,OBJTYPE_GRASS8,OBJTYPE_GRASS9,OBJTYPE_GRASS10,OBJTYPE_SAKURA1,OBJTYPE_SAKURA2,OBJTYPE_SAKURA3,OBJTYPE_SAKURA4,OBJTYPE_SAKURA5,OBJTYPE_SAKURA6,OBJTYPE_PALM1,OBJTYPE_PALM2,OBJTYPE_PALM3,OBJTYPE_PALM4,OBJTYPE_WILDPALM1,OBJTYPE_WILDPALM2,OBJTYPE_WILDPALM3,OBJTYPE_WILDPALM4,OBJTYPE_WILDPALM5,OBJTYPE_WILDPALM6,OBJTYPE_FLOWER1,OBJTYPE_FLOWER2,OBJTYPE_FLOWER3,OBJTYPE_FLOWER4,OBJTYPE_FLOWER5,OBJTYPE_SNOWY1,OBJTYPE_SNOWY2,OBJTYPE_SNOWY3,OBJTYPE_SNOWY4,OBJTYPE_SNOWY5,OBJTYPE_SNOWY6,OBJTYPE_VINE1,OBJTYPE_DRYTREE1,OBJTYPE_DRYTREE2,OBJTYPE_DRYTREE3,OBJTYPE_ADABAT1,OBJTYPE_ADABAT2,OBJTYPE_ADABAT3,OBJTYPE_ADABAT4,OBJTYPE_ADABAT5:
 					DrawRealText("Size", GAME_WINDOW_W-(240)*GAME_WINDOW_SCALE#, (40+20*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-				Case OBJTYPE_AIRBALLOON,OBJTYPE_TRIGGER_WATER,OBJTYPE_TRIGGER_MUSIC,OBJTYPE_TRIGGER_MUSIC+1000,OBJTYPE_TRIGGER_MUSIC+2000:
+				Case OBJTYPE_AIRBALLOON,OBJTYPE_STAGEVISUAL1,OBJTYPE_STAGEVISUAL2,OBJTYPE_STAGEVISUAL3,OBJTYPE_STAGEVISUAL4,OBJTYPE_STAGEVISUAL5,OBJTYPE_TRIGGER_WATER,OBJTYPE_TRIGGER_MUSIC,OBJTYPE_TRIGGER_MUSIC+1000,OBJTYPE_TRIGGER_MUSIC+2000:
 					DrawRealText("Size", GAME_WINDOW_W-(240)*GAME_WINDOW_SCALE#, (40+20*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 				Case OBJTYPE_RINGGATEV,OBJTYPE_RINGGATEH:
 					DrawRealText("Requirement", GAME_WINDOW_W-(240)*GAME_WINDOW_SCALE#, (40+20*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+				Case OBJTYPE_RING
+					DrawRealText("Ring Amount", GAME_WINDOW_W-(240)*GAME_WINDOW_SCALE#, (40+20*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+				Case OBJTYPE_HINT
+					DrawRealText("Hint Length", GAME_WINDOW_W-(240)*GAME_WINDOW_SCALE#, (40+20*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 				Case OBJTYPE_SWITCHWATER,OBJTYPE_SWITCHWATER+1000:
 					DrawRealText("Water Level", GAME_WINDOW_W-(240)*GAME_WINDOW_SCALE#, (40+20*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 				Default:
@@ -1634,7 +1721,7 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 			End Select
 			SetColor(255,255,255)
 			Select p\ObjType
-				Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
+				Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGICE,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
 					SetColor(255,255,255)
 				Default:
 					SetColor(0,0,0)
@@ -1675,7 +1762,7 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 				DrawRealText("Teleporter", GAME_WINDOW_W-(240)*GAME_WINDOW_SCALE#, (40+20*13)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 			SetColor(255,255,255)
 			Select p\ObjType
-				Case OBJTYPE_PROPELLER,OBJTYPE_PULLEY,OBJTYPE_PULLEY+1000,OBJTYPE_ROCKET,OBJTYPE_ELEVATOR,OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE:
+				Case OBJTYPE_PROPELLER,OBJTYPE_PULLEY,OBJTYPE_PULLEY+1000,OBJTYPE_ROCKET,OBJTYPE_ELEVATOR,OBJTYPE_SPRINGICE,OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE:
 					SetColor(255,255,255)
 				Default:
 					SetColor(0,0,0)
@@ -1703,7 +1790,7 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 				Select Game\Interface\DebugMenu
 					Case DEBUGMENU_ATTRIBUTES_CAMPOSITION#,DEBUGMENU_ATTRIBUTES_CAMROTATION#,DEBUGMENU_ATTRIBUTES_CAMZOOM#,DEBUGMENU_ATTRIBUTES_CAMSPEED#:
 						If TempAttribute\campos#=0 Or TempAttribute\campos#=10 Then TempAttribute\camx#=TempAttribute\x# : TempAttribute\camy#=TempAttribute\y# : TempAttribute\camz#=TempAttribute\z#
-						If Game\Interface\DebugMenu=DEBUGMENU_ATTRIBUTES_CAMPOSITION# Or (TempAttribute\campos#<>0 and TempAttribute\campos#<>10) Then PositionEntity p\Objects\Entity, TempAttribute\camx#, TempAttribute\camy#, TempAttribute\camz#, 1
+						If Game\Interface\DebugMenu=DEBUGMENU_ATTRIBUTES_CAMPOSITION# Or (TempAttribute\campos#<>0 And TempAttribute\campos#<>10) Then PositionEntity p\Objects\Entity, TempAttribute\camx#, TempAttribute\camy#, TempAttribute\camz#, 1
 					Case DEBUGMENU_ATTRIBUTES_AMOUNT#,DEBUGMENU_ATTRIBUTES_AMOUNTROTATION#,DEBUGMENU_ATTRIBUTES_AMOUNTSPACE#:
 						p\Objects\Mesh6=CopyEntity(p\Objects\Mesh, Game\Stage\Root)
 					Case DEBUGMENU_ATTRIBUTES_DESTINATION#:
@@ -1719,8 +1806,8 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 			If Input\Pressed\ActionDrift Then ResetTempAttribute() : PlaySmartSound(Sound_MenuMove)
 		Case DEBUGMENU_PLACE#:
 			If Not(Game\Interface\DebugSavedTimer>0) Then
-				Game\Interface\DebugSavedTimer=2*secs#
-			ElseIf Game\Interface\DebugSavedTimer>0 and Game\Interface\DebugSavedTimer<1*secs# Then
+				Game\Interface\DebugSavedTimer=1*secs#
+			ElseIf Game\Interface\DebugSavedTimer>0 And Game\Interface\DebugSavedTimer<0.5*secs# Then
 				If p\ObjType>0 Then
 					Player_Action_Debug_Save(p)
 				ElseIf p\ObjType=0 Then
@@ -1770,7 +1857,7 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 			DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, (30)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#)
 			DrawRealText("Select", (30+15)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
-			DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*3)*GAME_WINDOW_SCALE#, true)
+			DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*3)*GAME_WINDOW_SCALE#, True)
 			DrawRealText("Position", (30+15)*GAME_WINDOW_SCALE#, (30+30*3)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
 			DrawImageEx(INTERFACE(Interface_Keys), (30)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, 61)
@@ -1781,8 +1868,8 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 			End Select
 
 			DrawImageEx(INTERFACE(Interface_Keys), (30)*GAME_WINDOW_SCALE#, (30+30*5)*GAME_WINDOW_SCALE#, 61)
-			DrawImageEx(INTERFACE(Interface_Keys_small), (30)*GAME_WINDOW_SCALE#-6*GAME_WINDOW_SCALE#, (30+30*5)*GAME_WINDOW_SCALE#, 5)
-			DrawImageEx(INTERFACE(Interface_Keys_small), (30)*GAME_WINDOW_SCALE#+3*GAME_WINDOW_SCALE#, (30+30*5)*GAME_WINDOW_SCALE#, 33)
+			DrawImageEx(INTERFACE(Interface_Keys_Small), (30)*GAME_WINDOW_SCALE#-6*GAME_WINDOW_SCALE#, (30+30*5)*GAME_WINDOW_SCALE#, 5)
+			DrawImageEx(INTERFACE(Interface_Keys_Small), (30)*GAME_WINDOW_SCALE#+3*GAME_WINDOW_SCALE#, (30+30*5)*GAME_WINDOW_SCALE#, 33)
 			DrawRealText("Quit", (30+15)*GAME_WINDOW_SCALE#, (30+30*5)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
 			If TempAttribute\hasd#=1 Then
@@ -1808,7 +1895,7 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 			DrawSmartKey(INPUT_BUTTON_ACTIONROLL, (30+60)*GAME_WINDOW_SCALE#, (30+30*1)*GAME_WINDOW_SCALE#)
 			DrawRealText("Move around", (30+60+15)*GAME_WINDOW_SCALE#, (30+30*1)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
-			DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#, true)
+			DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#, True)
 			DrawRealText("Speed ("+Game\Interface\DebugSpeed#+")", (30+15)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
 			DrawSmartKey(INPUT_BUTTON_ACTIONSKILL2, (30)*GAME_WINDOW_SCALE#, (30+30*3)*GAME_WINDOW_SCALE#)
@@ -1830,7 +1917,7 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 			DrawSmartKey(INPUT_BUTTON_ACTIONDRIFT, (30)*GAME_WINDOW_SCALE#, (30+30*3)*GAME_WINDOW_SCALE#)
 			DrawRealText("Reset", (30+15)*GAME_WINDOW_SCALE#, (30+30*3)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
-			DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, true)
+			DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, True)
 			DrawRealText("Speed ("+Game\Interface\DebugSpeed#+")", (30+15)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
 			DrawSmartKey(INPUT_BUTTON_ACTIONSKILL1, (30)*GAME_WINDOW_SCALE#, (30+30*5)*GAME_WINDOW_SCALE#)
@@ -1845,7 +1932,7 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 			DrawSmartKey(INPUT_BUTTON_ACTIONDRIFT, (30)*GAME_WINDOW_SCALE#, (30+30*3)*GAME_WINDOW_SCALE#)
 			DrawRealText("Reset", (30+15)*GAME_WINDOW_SCALE#, (30+30*3)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
-			DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, true)
+			DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, True)
 			DrawRealText("Speed ("+Game\Interface\DebugSpeed2#+")", (30+15)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
 			DrawSmartKey(INPUT_BUTTON_ACTIONSKILL1, (30)*GAME_WINDOW_SCALE#, (30+30*5)*GAME_WINDOW_SCALE#)
@@ -1871,7 +1958,7 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 			DrawSmartKey(INPUT_BUTTON_ACTIONROLL, (30+60)*GAME_WINDOW_SCALE#, (30+30*1)*GAME_WINDOW_SCALE#)
 			DrawRealText("Move cam around", (30+60+15)*GAME_WINDOW_SCALE#, (30+30*1)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
-			DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#, true)
+			DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#, True)
 			DrawRealText("Speed ("+Game\Interface\DebugSpeed#+")", (30+15)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
 			DrawSmartKey(INPUT_BUTTON_ACTIONSKILL2, (30)*GAME_WINDOW_SCALE#, (30+30*3)*GAME_WINDOW_SCALE#)
@@ -1896,7 +1983,7 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 			DrawSmartKey(INPUT_BUTTON_ACTIONDRIFT, (30)*GAME_WINDOW_SCALE#, (30+30*3)*GAME_WINDOW_SCALE#)
 			DrawRealText("Reset", (30+15)*GAME_WINDOW_SCALE#, (30+30*3)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
-			DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, true)
+			DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, True)
 			DrawRealText("Speed ("+Game\Interface\DebugSpeed#+")", (30+15)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
 			DrawSmartKey(INPUT_BUTTON_ACTIONSKILL1, (30)*GAME_WINDOW_SCALE#, (30+30*5)*GAME_WINDOW_SCALE#)
@@ -1911,7 +1998,7 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 			DrawSmartKey(INPUT_BUTTON_ACTIONDRIFT, (30)*GAME_WINDOW_SCALE#, (30+30*3)*GAME_WINDOW_SCALE#)
 			DrawRealText("Reset", (30+15)*GAME_WINDOW_SCALE#, (30+30*3)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
-			DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, true)
+			DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, True)
 			DrawRealText("Speed ("+Game\Interface\DebugSpeed2#+")", (30+15)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
 			DrawSmartKey(INPUT_BUTTON_ACTIONSKILL1, (30)*GAME_WINDOW_SCALE#, (30+30*5)*GAME_WINDOW_SCALE#)
@@ -1926,7 +2013,7 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 			DrawSmartKey(INPUT_BUTTON_ACTIONDRIFT, (30)*GAME_WINDOW_SCALE#, (30+30*3)*GAME_WINDOW_SCALE#)
 			DrawRealText("Reset", (30+15)*GAME_WINDOW_SCALE#, (30+30*3)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
-			DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, true)
+			DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, True)
 			DrawRealText("Speed ("+Game\Interface\DebugSpeed2#+")", (30+15)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
 			DrawSmartKey(INPUT_BUTTON_ACTIONSKILL1, (30)*GAME_WINDOW_SCALE#, (30+30*5)*GAME_WINDOW_SCALE#)
@@ -1964,7 +2051,7 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 			DrawSmartKey(INPUT_BUTTON_ACTIONDRIFT, (30)*GAME_WINDOW_SCALE#, (30+30*3)*GAME_WINDOW_SCALE#)
 			DrawRealText("Reset", (30+15)*GAME_WINDOW_SCALE#, (30+30*3)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
-			DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, true)
+			DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, True)
 			DrawRealText("Speed ("+Game\Interface\DebugSpeed#+")", (30+15)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
 			DrawSmartKey(INPUT_BUTTON_ACTIONSKILL1, (30)*GAME_WINDOW_SCALE#, (30+30*5)*GAME_WINDOW_SCALE#)
@@ -1991,7 +2078,7 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 				Case 3: DrawRealText("Change axis (Y-axis)", (30+15)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 			End Select
 
-			DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*5)*GAME_WINDOW_SCALE#, true)
+			DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*5)*GAME_WINDOW_SCALE#, True)
 			DrawRealText("Speed ("+Game\Interface\DebugSpeed2#+")", (30+15)*GAME_WINDOW_SCALE#, (30+30*5)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
 			DrawSmartKey(INPUT_BUTTON_ACTIONSKILL1, (30)*GAME_WINDOW_SCALE#, (30+30*6)*GAME_WINDOW_SCALE#)
@@ -2041,7 +2128,7 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 			DrawSmartKey(INPUT_BUTTON_ACTIONROLL, (30+60)*GAME_WINDOW_SCALE#, (30+30*1)*GAME_WINDOW_SCALE#)
 			DrawRealText("Move around", (30+60+15)*GAME_WINDOW_SCALE#, (30+30*1)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
-			DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#, true)
+			DrawSmartKey(INPUT_BUTTON_ACTIONACT, (30)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#, True)
 			DrawRealText("Speed ("+Game\Interface\DebugSpeed#+")", (30+15)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
 			DrawSmartKey(INPUT_BUTTON_ACTIONSKILL2, (30)*GAME_WINDOW_SCALE#, (30+30*3)*GAME_WINDOW_SCALE#)
@@ -2095,7 +2182,7 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 	DrawRealText("z: "+TempAttribute\z#, 32.5*GAME_WINDOW_SCALE#+(space#*0)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-43.75*GAME_WINDOW_SCALE#+(space#*2)*GAME_WINDOW_SCALE#, (Interface_Text_1))
 
 	Select p\ObjType
-		Case OBJTYPE_RING,OBJTYPE_RINGS,OBJTYPE_LIFE,OBJTYPE_TRAP,OBJTYPE_INVINC,OBJTYPE_SHOES,OBJTYPE_NSHIELD,OBJTYPE_FSHIELD,OBJTYPE_BSHIELD,OBJTYPE_TSHIELD,OBJTYPE_ESHIELD,OBJTYPE_BOMB,OBJTYPE_BOARD,OBJTYPE_GLIDER,OBJTYPE_CAR,OBJTYPE_BIKE,OBJTYPE_BOBSLEIGH,OBJTYPE_TORNADO,OBJTYPE_CYCLONE,OBJTYPE_KART,OBJTYPE_WINGS,OBJTYPE_RINGS+1000,OBJTYPE_LIFE+1000,OBJTYPE_TRAP+1000,OBJTYPE_INVINC+1000,OBJTYPE_SHOES+1000,OBJTYPE_NSHIELD+1000,OBJTYPE_FSHIELD+1000,OBJTYPE_BSHIELD+1000,OBJTYPE_TSHIELD+1000,OBJTYPE_ESHIELD+1000,OBJTYPE_BOMB+1000,OBJTYPE_BOARD+1000,OBJTYPE_GLIDER+1000,OBJTYPE_CAR+1000,OBJTYPE_BIKE+1000,OBJTYPE_BOBSLEIGH+1000,OBJTYPE_TORNADO+1000,OBJTYPE_CYCLONE+1000,OBJTYPE_KART+1000,OBJTYPE_WINGS+1000,OBJTYPE_BALLOON,OBJTYPE_GOAL,OBJTYPE_GOAL2,OBJTYPE_GOAL+1000,OBJTYPE_GOAL2+1000,OBJTYPE_BUBBLES,OBJTYPE_REDRING,OBJTYPE_HINT,OBJTYPE_COUNTER,OBJTYPE_BELL,OBJTYPE_SPRINKLER,OBJTYPE_SPRINKLER+1000,OBJTYPE_SPRINKLER+3000,OBJTYPE_SPRINKLER+4000,OBJTYPE_BUTTERFLY,OBJTYPE_SEAGULL,OBJTYPE_SEAC,OBJTYPE_AIRBALLOON,OBJTYPE_TRIGGER_VEHICLECANCEL,OBJTYPE_TRIGGER_MACH,OBJTYPE_TRIGGER_MACHCANCEL,OBJTYPE_TRIGGER_SKYDIVE,OBJTYPE_TRIGGER_SKYDIVECANCEL,OBJTYPE_TRIGGER_WATER,OBJTYPE_CLOUD,OBJTYPE_TRIGGER_MUSIC,OBJTYPE_TRIGGER_MUSIC+1000,OBJTYPE_TRIGGER_MUSIC+2000,OBJTYPE_BOMBER2:
+		Case OBJTYPE_RING,OBJTYPE_RINGS,OBJTYPE_LIFE,OBJTYPE_TRAP,OBJTYPE_INVINC,OBJTYPE_SHOES,OBJTYPE_NSHIELD,OBJTYPE_FSHIELD,OBJTYPE_BSHIELD,OBJTYPE_TSHIELD,OBJTYPE_ESHIELD,OBJTYPE_BOMB,OBJTYPE_BOARD,OBJTYPE_GLIDER,OBJTYPE_CAR,OBJTYPE_BIKE,OBJTYPE_BOBSLEIGH,OBJTYPE_TORNADO,OBJTYPE_CYCLONE,OBJTYPE_KART,OBJTYPE_WINGS,OBJTYPE_RINGS+1000,OBJTYPE_LIFE+1000,OBJTYPE_TRAP+1000,OBJTYPE_INVINC+1000,OBJTYPE_SHOES+1000,OBJTYPE_NSHIELD+1000,OBJTYPE_FSHIELD+1000,OBJTYPE_BSHIELD+1000,OBJTYPE_TSHIELD+1000,OBJTYPE_ESHIELD+1000,OBJTYPE_BOMB+1000,OBJTYPE_BOARD+1000,OBJTYPE_GLIDER+1000,OBJTYPE_CAR+1000,OBJTYPE_BIKE+1000,OBJTYPE_BOBSLEIGH+1000,OBJTYPE_TORNADO+1000,OBJTYPE_CYCLONE+1000,OBJTYPE_KART+1000,OBJTYPE_WINGS+1000,OBJTYPE_BALLOON,OBJTYPE_GOAL,OBJTYPE_GOAL2,OBJTYPE_GOAL+1000,OBJTYPE_GOAL2+1000,OBJTYPE_BUBBLES,OBJTYPE_SHARD,OBJTYPE_HINT,OBJTYPE_COUNTER,OBJTYPE_BELL,OBJTYPE_SPRINKLER,OBJTYPE_SPRINKLER+1000,OBJTYPE_SPRINKLER+3000,OBJTYPE_SPRINKLER+4000,OBJTYPE_BUTTERFLY,OBJTYPE_SEAGULL,OBJTYPE_SEAC,OBJTYPE_AIRBALLOON,OBJTYPE_TRIGGER_VEHICLECANCEL,OBJTYPE_TRIGGER_MACH,OBJTYPE_TRIGGER_MACHCANCEL,OBJTYPE_TRIGGER_SKYDIVE,OBJTYPE_TRIGGER_SKYDIVECANCEL,OBJTYPE_TRIGGER_WATER,OBJTYPE_CLOUD,OBJTYPE_TRIGGER_MUSIC,OBJTYPE_TRIGGER_MUSIC+1000,OBJTYPE_TRIGGER_MUSIC+2000,OBJTYPE_BOMBER2:
 			SetColor(0,0,0)
 		Default:
 			SetColor(255,255,255)
@@ -2105,7 +2192,7 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 		DrawRealText("roll: "+TempAttribute\roll#, 32.5*GAME_WINDOW_SCALE#+(space#*5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-43.75*GAME_WINDOW_SCALE#+(space#*2)*GAME_WINDOW_SCALE#, (Interface_Text_1))
 
 	Select p\ObjType
-		Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_CANNON,OBJTYPE_PROPELLER,OBJTYPE_PULLEY,OBJTYPE_PULLEY+1000,OBJTYPE_ROCKET,OBJTYPE_ELEVATOR:
+		Case OBJTYPE_RING,OBJTYPE_HINT,OBJTYPE_SPRING,OBJTYPE_SPRINGICE,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTHORN,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_CANNON,OBJTYPE_PROPELLER,OBJTYPE_PULLEY,OBJTYPE_PULLEY+1000,OBJTYPE_ROCKET,OBJTYPE_ELEVATOR:
 			SetColor(255,255,255)
 		Case OBJTYPE_TREE1,OBJTYPE_TREE2,OBJTYPE_TREE3,OBJTYPE_TREE4,OBJTYPE_TREE5,OBJTYPE_TREE6,OBJTYPE_SHRUB1,OBJTYPE_SHRUB2,OBJTYPE_SHRUB3,OBJTYPE_SHRUB4,OBJTYPE_SHRUB5,OBJTYPE_SHRUB6,OBJTYPE_BUSH1,OBJTYPE_BUSH2,OBJTYPE_BUSH3,OBJTYPE_BUSH4,OBJTYPE_BUSH5,OBJTYPE_BUSH6,OBJTYPE_BUSH7,OBJTYPE_GRASS1,OBJTYPE_GRASS2,OBJTYPE_GRASS3,OBJTYPE_GRASS4,OBJTYPE_GRASS5,OBJTYPE_GRASS6,OBJTYPE_GRASS7,OBJTYPE_GRASS8,OBJTYPE_GRASS9,OBJTYPE_GRASS10,OBJTYPE_SAKURA1,OBJTYPE_SAKURA2,OBJTYPE_SAKURA3,OBJTYPE_SAKURA4,OBJTYPE_SAKURA5,OBJTYPE_SAKURA6,OBJTYPE_PALM1,OBJTYPE_PALM2,OBJTYPE_PALM3,OBJTYPE_PALM4,OBJTYPE_WILDPALM1,OBJTYPE_WILDPALM2,OBJTYPE_WILDPALM3,OBJTYPE_WILDPALM4,OBJTYPE_WILDPALM5,OBJTYPE_WILDPALM6,OBJTYPE_FLOWER1,OBJTYPE_FLOWER2,OBJTYPE_FLOWER3,OBJTYPE_FLOWER4,OBJTYPE_FLOWER5,OBJTYPE_SNOWY1,OBJTYPE_SNOWY2,OBJTYPE_SNOWY3,OBJTYPE_SNOWY4,OBJTYPE_SNOWY5,OBJTYPE_SNOWY6,OBJTYPE_VINE1,OBJTYPE_DRYTREE1,OBJTYPE_DRYTREE2,OBJTYPE_DRYTREE3,OBJTYPE_ADABAT1,OBJTYPE_ADABAT2,OBJTYPE_ADABAT3,OBJTYPE_ADABAT4,OBJTYPE_ADABAT5:
 			SetColor(255,255,255)
@@ -2114,11 +2201,13 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 		Default:
 			SetColor(0,0,0)
 	End Select
-		DrawRealText("power: "+TempAttribute\power#, 32.5*GAME_WINDOW_SCALE#+(space#*0)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-120*GAME_WINDOW_SCALE#+(space#*0)*GAME_WINDOW_SCALE#, (Interface_Text_1))
+	
+	DrawRealText("power: "+TempAttribute\power#, 32.5*GAME_WINDOW_SCALE#+(space#*0)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-120*GAME_WINDOW_SCALE#+(space#*0)*GAME_WINDOW_SCALE#, (Interface_Text_1))
+
 	SetColor(255,255,255)
 
 	Select p\ObjType
-		Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
+		Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGICE,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
 			SetColor(255,255,255)
 		Default:
 			SetColor(0,0,0)
@@ -2126,14 +2215,14 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 		Select TempAttribute\lockcontrol#
 			Case 0:
 				Select p\ObjType
-					Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
+					Case OBJTYPE_SPRING,OBJTYPE_SPRINGICEOBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
 						SetColor(255,0,0)
 					Default:
 						SetColor(0,0,0)
 				End Select
 				DrawRealText("Cntrl lock: None", 32.5*GAME_WINDOW_SCALE#+(space#*11)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-43.75*GAME_WINDOW_SCALE#+(space#*0)*GAME_WINDOW_SCALE#, (Interface_Text_1))
 				Select p\ObjType
-					Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
+					Case OBJTYPE_SPRING,OBJTYPE_SPRINGICEOBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
 						SetColor(255,255,255)
 					Default:
 						SetColor(0,0,0)
@@ -2143,18 +2232,20 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 			Case 3: DrawRealText("Cntrl lock: 3 secs", 32.5*GAME_WINDOW_SCALE#+(space#*11)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-43.75*GAME_WINDOW_SCALE#+(space#*0)*GAME_WINDOW_SCALE#, (Interface_Text_1))
 			Case 4: DrawRealText("Cntrl lock: 0.5 secs", 32.5*GAME_WINDOW_SCALE#+(space#*11)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-43.75*GAME_WINDOW_SCALE#+(space#*0)*GAME_WINDOW_SCALE#, (Interface_Text_1))
 			Case 5: DrawRealText("Cntrl lock: 2 secs", 32.5*GAME_WINDOW_SCALE#+(space#*11)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-43.75*GAME_WINDOW_SCALE#+(space#*0)*GAME_WINDOW_SCALE#, (Interface_Text_1))
+			Case 6: DrawRealText("Cntrl lock: 2D cam", 32.5*GAME_WINDOW_SCALE#+(space#*11)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-43.75*GAME_WINDOW_SCALE#+(space#*0)*GAME_WINDOW_SCALE#, (Interface_Text_1))
+
 		End Select
 		Select TempAttribute\lockcam#
 			Case 0:
 				Select p\ObjType
-					Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
+					Case OBJTYPE_SPRING,OBJTYPE_SPRINGICE,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
 						SetColor(255,0,0)
 					Default:
 						SetColor(0,0,0)
 				End Select
 				DrawRealText("Cam lock: None", 32.5*GAME_WINDOW_SCALE#+(space#*11)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-43.75*GAME_WINDOW_SCALE#+(space#*1)*GAME_WINDOW_SCALE#, (Interface_Text_1))
 				Select p\ObjType
-					Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
+					Case OBJTYPE_SPRING,OBJTYPE_SPRINGICE,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
 						SetColor(255,255,255)
 					Default:
 						SetColor(0,0,0)
@@ -2168,14 +2259,14 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 		Select TempAttribute\lockrun#
 			Case 0:
 				Select p\ObjType
-					Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
+					Case OBJTYPE_SPRING,OBJTYPE_SPRINGICE,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
 						SetColor(255,0,0)
 					Default:
 						SetColor(0,0,0)
 				End Select
 				DrawRealText("Run lock: None", 32.5*GAME_WINDOW_SCALE#+(space#*11)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-43.75*GAME_WINDOW_SCALE#+(space#*2)*GAME_WINDOW_SCALE#, (Interface_Text_1))
 				Select p\ObjType
-					Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
+					Case OBJTYPE_SPRING,OBJTYPE_SPRINGICE,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
 						SetColor(255,255,255)
 					Default:
 						SetColor(0,0,0)
@@ -2191,21 +2282,21 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 		Select TempAttribute\campos#
 			Case 0:
 				Select p\ObjType
-					Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
+					Case OBJTYPE_SPRING,OBJTYPE_SPRINGICE,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
 						SetColor(255,0,0)
 					Default:
 						SetColor(0,0,0)
 				End Select
 				DrawRealText("cpos: no", 32.5*GAME_WINDOW_SCALE#+(space#*11)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-88.75*GAME_WINDOW_SCALE#+(space#*0)*GAME_WINDOW_SCALE#, (Interface_Text_1))
 				Select p\ObjType
-					Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
+					Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGICE,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
 						SetColor(255,255,255)
 					Default:
 						SetColor(0,0,0)
 				End Select
 			Default:
 				Select p\ObjType
-					Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
+					Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGICE,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
 						SetColor(255,255,255)
 					Default:
 						SetColor(0,0,0)
@@ -2367,10 +2458,32 @@ End Function
 Function Interface_ObjectDebugTag(o.tObject, text$, extraheight#=0)
 	height# = 5+extraheight#
 	If EntityInView(o\Entity, cam\Entity) Then
-		CameraProject cam\Entity, o\Position\x#, o\Position\y#+height#, o\Position\z#
-		x = ProjectedX () - 1
-		y = ProjectedY () - 1
-		DrawRealText(text$, x, y, SmartImage(Interface_TextControls_1), 1)
+		CameraProject cam\Entity, EntityX (o\Entity), EntityY (o\Entity)+height#, EntityZ (o\Entity)
+		w = StringWidth (label$)
+		h = StringHeight (label$)
+		x = ProjectedX () - (w / 2) - 1
+		y = ProjectedY () - (h / 2) - 1
+		Color 0, 0, 0
+		Rect x, y, w + 2, h + 2, 1
+		Color 255, 255, 255
+		Text x, y, label$
+		
+		If KeyHit(Key_F) Then 
+			PlaySmartSound(Sound_MenuMove)
+				Select Game\Interface\DebugIDMode
+					Case 0 : Game\Interface\DebugIDMode=1
+					Case 1 : Game\Interface\DebugIDMode=0
+				End Select 
+		EndIf 
+		
+		Select Game\Interface\DebugIDMode
+			Case 0
+				DrawRealText(Text$, x, y, SmartImage(Interface_TextControls_1), 1)
+			Case 1
+				DrawRealText("X : "+o\Position\x#, x, y, SmartImage(Interface_TextControls_1), 1)
+				DrawRealText("Y : "+o\Position\y#, x, y+40, SmartImage(Interface_TextControls_1), 1)
+				DrawRealText("Z : "+o\Position\z#, x, y+80, SmartImage(Interface_TextControls_1), 1)
+		End Select 
 	EndIf
 End Function
 
@@ -2378,31 +2491,33 @@ End Function
 
 
 
-Function Interface_Render_Stage_Debug_DrawSquare(color, x#, y#, w, h, space#)
+Function Interface_Render_Stage_Debug_DrawSquare(Color, x#, y#, w, h, space#)
 
-	For i=1 to w
-	For j=1 to h
+	For i=1 To w
+	For j=1 To h
 		Select j
 			Case 1:
 				Select i
-					Case 1: DrawImageEx(INTERFACE(SmartImage(Interface_Debug)), x#+(i-1)*space#*GAME_WINDOW_SCALE#, y#+(j-1)*space#*GAME_WINDOW_SCALE#, 0+(color-1)*3)
-					Case w: DrawImageEx(INTERFACE(SmartImage(Interface_Debug)), x#+(i-1)*space#*GAME_WINDOW_SCALE#, y#+(j-1)*space#*GAME_WINDOW_SCALE#, 2+(color-1)*3)
-					Default: DrawImageEx(INTERFACE(SmartImage(Interface_Debug)), x#+(i-1)*space#*GAME_WINDOW_SCALE#, y#+(j-1)*space#*GAME_WINDOW_SCALE#, 1+(color-1)*3)
+					Case 1: DrawImageEx(INTERFACE(SmartImage(Interface_Debug)), x#+(i-1)*space#*GAME_WINDOW_SCALE#, y#+(j-1)*space#*GAME_WINDOW_SCALE#, 0+(Color-1)*3)
+					Case w: DrawImageEx(INTERFACE(SmartImage(Interface_Debug)), x#+(i-1)*space#*GAME_WINDOW_SCALE#, y#+(j-1)*space#*GAME_WINDOW_SCALE#, 2+(Color-1)*3)
+					Default: DrawImageEx(INTERFACE(SmartImage(Interface_Debug)), x#+(i-1)*space#*GAME_WINDOW_SCALE#, y#+(j-1)*space#*GAME_WINDOW_SCALE#, 1+(Color-1)*3)
 				End Select
 			Case h:
 				Select i
-					Case 1: DrawImageEx(INTERFACE(SmartImage(Interface_Debug)), x#+(i-1)*space#*GAME_WINDOW_SCALE#, y#+(j-1)*space#*GAME_WINDOW_SCALE#, 0+24+(color-1)*3)
-					Case w: DrawImageEx(INTERFACE(SmartImage(Interface_Debug)), x#+(i-1)*space#*GAME_WINDOW_SCALE#, y#+(j-1)*space#*GAME_WINDOW_SCALE#, 2+24+(color-1)*3)
-					Default: DrawImageEx(INTERFACE(SmartImage(Interface_Debug)), x#+(i-1)*space#*GAME_WINDOW_SCALE#, y#+(j-1)*space#*GAME_WINDOW_SCALE#, 1+24+(color-1)*3)
+					Case 1: DrawImageEx(INTERFACE(SmartImage(Interface_Debug)), x#+(i-1)*space#*GAME_WINDOW_SCALE#, y#+(j-1)*space#*GAME_WINDOW_SCALE#, 0+24+(Color-1)*3)
+					Case w: DrawImageEx(INTERFACE(SmartImage(Interface_Debug)), x#+(i-1)*space#*GAME_WINDOW_SCALE#, y#+(j-1)*space#*GAME_WINDOW_SCALE#, 2+24+(Color-1)*3)
+					Default: DrawImageEx(INTERFACE(SmartImage(Interface_Debug)), x#+(i-1)*space#*GAME_WINDOW_SCALE#, y#+(j-1)*space#*GAME_WINDOW_SCALE#, 1+24+(Color-1)*3)
 				End Select
 			Default:
 				Select i
-					Case 1: DrawImageEx(INTERFACE(SmartImage(Interface_Debug)), x#+(i-1)*space#*GAME_WINDOW_SCALE#, y#+(j-1)*space#*GAME_WINDOW_SCALE#, 0+12+(color-1)*3)
-					Case w: DrawImageEx(INTERFACE(SmartImage(Interface_Debug)), x#+(i-1)*space#*GAME_WINDOW_SCALE#, y#+(j-1)*space#*GAME_WINDOW_SCALE#, 2+12+(color-1)*3)
-					Default: DrawImageEx(INTERFACE(SmartImage(Interface_Debug)), x#+(i-1)*space#*GAME_WINDOW_SCALE#, y#+(j-1)*space#*GAME_WINDOW_SCALE#, 1+12+(color-1)*3)
+					Case 1: DrawImageEx(INTERFACE(SmartImage(Interface_Debug)), x#+(i-1)*space#*GAME_WINDOW_SCALE#, y#+(j-1)*space#*GAME_WINDOW_SCALE#, 0+12+(Color-1)*3)
+					Case w: DrawImageEx(INTERFACE(SmartImage(Interface_Debug)), x#+(i-1)*space#*GAME_WINDOW_SCALE#, y#+(j-1)*space#*GAME_WINDOW_SCALE#, 2+12+(Color-1)*3)
+					Default: DrawImageEx(INTERFACE(SmartImage(Interface_Debug)), x#+(i-1)*space#*GAME_WINDOW_SCALE#, y#+(j-1)*space#*GAME_WINDOW_SCALE#, 1+12+(Color-1)*3)
 				End Select
 		End Select
 	Next
 	Next
 
 End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

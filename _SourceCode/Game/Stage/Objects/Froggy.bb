@@ -70,7 +70,7 @@
 				EndIf
 		End Select
 
-		If f\targetp\Character=CHAR_BIG and (Menu\ChaoGarden=0 Or Menu\Stage=999) Then
+		If f\targetp\Character=CHAR_BIG And (Menu\ChaoGarden=0 Or Menu\Stage=999) Then
 			ShowEntity(f\Mesh)
 			Object_Froggy_Update_Real(f, f\targetp, d)
 			If Menu\Settings\Shadows#>0 Then Update_CircleShadow(f\ShadowCircle, f\Mesh, cam\Entity, 0)
@@ -103,7 +103,7 @@
 		EndIf
 
 		; Decide animation
-		If Game\FroggyTimer>0 and (Not(p\Flags\HomingTarget\x#=99999 and p\Flags\HomingTarget\y#=99999 and p\Flags\HomingTarget\z#=99999)) Then
+		If Game\FroggyTimer>0 And (Not(p\Flags\HomingTarget\x#=99999 And p\Flags\HomingTarget\y#=99999 And p\Flags\HomingTarget\z#=99999)) Then
 			f\Animation=3
 		ElseIf EntityDistance(p\Objects\Froggy, f\Entity)>10 Then
 			f\Animation=3
@@ -113,19 +113,19 @@
 			If p\Motion\Ground=False Then
 				f\Animation=2
 			Else
-				If p\SpeedLength#<0.01 and f\FroggyStandStillTimer>1.25*secs# Then f\Animation=1 Else f\Animation=2
+				If p\SpeedLength#<0.01 And f\FroggyStandStillTimer>1.25*secs# Then f\Animation=1 Else f\Animation=2
 			EndIf
 		EndIf
 
 		; Deal fall timer
-		If p\Motion\Ground=False Or abs(p\Rotation#)>20 Then
+		If p\Motion\Ground=False Or Abs(p\Rotation#)>20 Then
 			If f\FroggyFallTimer<1*secs# Then f\FroggyFallTimer=f\FroggyFallTimer+timervalue#
 		Else
 			f\FroggyFallTimer=0
 		EndIf
 
 		; Movement
-		If Game\FroggyTimer>0 and (Not(p\Flags\HomingTarget\x#=99999 and p\Flags\HomingTarget\y#=99999 and p\Flags\HomingTarget\z#=99999)) Then
+		If Game\FroggyTimer>0 And (Not(p\Flags\HomingTarget\x#=99999 And p\Flags\HomingTarget\y#=99999 And p\Flags\HomingTarget\z#=99999)) Then
 			If f\FrogSoundPlayed=0 Then EmitSmartSound(Sound_Frog,f\Entity) : f\FrogSoundPlayed=1
 			PositionEntity(p\Flags\HomingMesh, p\Flags\HomingTarget\x#, p\Flags\HomingTarget\y#+0.3, p\Flags\HomingTarget\z#)
 			ex# = p\Flags\HomingTarget\x# - f\Position\x#
@@ -145,13 +145,13 @@
 		Else
 			f\FrogSoundPlayed=0
 			PointEntity f\Entity, p\Objects\Froggy
-			If EntityDistance(p\Objects\Froggy, f\Entity)>=150 and f\FroggyFallTimer<0.9*secs# Then
+			If EntityDistance(p\Objects\Froggy, f\Entity)>=150 And f\FroggyFallTimer<0.9*secs# Then
 				EntityType(f\Entity,COLLISION_NONE) : PositionEntity f\Entity, p\Objects\Position\x#, p\Objects\Position\y#+1, p\Objects\Position\z#
 				PositionEntity f\Mesh, p\Objects\Position\x#, p\Objects\Position\y#+1, p\Objects\Position\z# : EntityType(f\Entity,COLLISION_OBJECT2_GOTHRU)
 				f\FroggyFallTimer=0
 				MoveEntity f\Entity, 10, 0, -10 : MoveEntity f\Mesh, 10, 0, -10
 			Else
-				If f\FroggyFallTimer>0.9*secs# and p\Underwater=0 Then
+				If f\FroggyFallTimer>0.9*secs# And p\Underwater=0 Then
 					MoveEntity f\Entity,0,(-1)*d\Delta,0
 				Else
 					MoveEntity f\Entity,0,0,0.078*p\Physics\UNDERWATERTRIGGER#*EntityDistance(p\Objects\Froggy, f\Entity)*d\Delta

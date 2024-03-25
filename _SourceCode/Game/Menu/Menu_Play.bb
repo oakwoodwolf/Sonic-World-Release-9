@@ -11,7 +11,7 @@ Function Menu_Character(option,option2)
 	Return option+(option2-1)*(6*6-1)
 End Function
 
-Function Menu_Characters_Change(choose,nosound=false,chosen=false)
+Function Menu_Characters_Change(choose,nosound=False,chosen=False)
 	If (Not(nosound)) Then PlaySmartSound(Sound_MenuMove)
 	Menu\MeshChange=1
 
@@ -25,7 +25,7 @@ Function Menu_Characters_Change(choose,nosound=false,chosen=false)
 			Select choose
 				Case 1: If Menu\Option>i*6 Then
 							Menu\Option=(i-1)*6+1
-							If chosen then Menu\Option=Menu\Option+6
+							If chosen Then Menu\Option=Menu\Option+6
 						EndIf
 				Case -1: If Menu\Option<(i-1)*6+1 Then Menu\Option=i*6
 				Case 2: If Menu\Option>6*6 Then Menu\Option=Menu\Option-6*6
@@ -36,16 +36,29 @@ Function Menu_Characters_Change(choose,nosound=false,chosen=false)
 			Select choose
 				Case 1:
 					If Menu\Settings\Mods#=0 Then
-						If Menu\Option>CHAR_NONMODPLAYABLECOUNT Then Menu\Option=1
+						If Menu\Option>3 Then Menu\Option=1
 					Else
-						If Menu\Option>CHAR_PLAYABLECOUNT Then Menu\Option=1
+						If Menu\Option>3 Then Menu\Option=1
 					EndIf
 				Case -1:
 					If Menu\Settings\Mods#=0 Then
-						If Menu\Option<1 Then Menu\Option=CHAR_NONMODPLAYABLECOUNT
+						If Menu\Option<1 Then Menu\Option=3
 					Else
-						If Menu\Option<1 Then Menu\Option=CHAR_PLAYABLECOUNT
+						If Menu\Option<1 Then Menu\Option=3
 					EndIf
+					;changemee
+;				Case 1:
+;					If Menu\Settings\Mods#=0 Then
+;						If Menu\Option>CHAR_NONMODPLAYABLECOUNT Then Menu\Option=1
+;					Else
+;						If Menu\Option>CHAR_PLAYABLECOUNT Then Menu\Option=1
+;					EndIf
+;				Case -1:
+;					If Menu\Settings\Mods#=0 Then
+;						If Menu\Option<1 Then Menu\Option=CHAR_NONMODPLAYABLECOUNT
+;					Else
+;						If Menu\Option<1 Then Menu\Option=CHAR_PLAYABLECOUNT
+;					EndIf
 			End Select
 	End Select
 End Function
@@ -57,26 +70,26 @@ Function Menu_Characters_Update()
 	Menu\ShowCards=True
 	Menu\ControlsToShow=Menu\Menu
 
-	If (Menu\Menu=MENU_CHARACTERS2#) and (Menu\Option>=6*6) Then;!!!!!
+	If (Menu\Menu=MENU_CHARACTERS2#) And (Menu\Option>=6*6) Then;!!!!!
 		SetColor(255,255,255)
 	ElseIf UNLOCKEDCHAR[Menu_Character(Menu\Option,Menu\Option2)]=1 Then;!!!!!
 		SetColor(Interface_Circle_R[InterfaceChar(Menu_Character(Menu\Option,Menu\Option2))],Interface_Circle_G[InterfaceChar(Menu_Character(Menu\Option,Menu\Option2))],Interface_Circle_B[InterfaceChar(Menu_Character(Menu\Option,Menu\Option2))])
 	Else;!!!!!
 		SetColor(0,0,0)
 	EndIf;!!!!!
-	DrawImageEx(INTERFACE(Interface_Circle), GAME_WINDOW_W/2-140*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*3+80.5)*GAME_WINDOW_SCALE#)
+	;DrawImageEx(INTERFACE(Interface_Circle), GAME_WINDOW_W/2-140*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*3+80.5)*GAME_WINDOW_SCALE#)
 	SetColor(255,255,255)
 
 	If (Not(Menu\Menu=MENU_CHARACTERS2#)) Or (Not(Menu\Option>=6*6)) Then
-		If Menu_Character(Menu\Option,Menu\Option2)>CHAR_NONMODPLAYABLECOUNT and Menu\Settings\Mods#=0 Then
+		If Menu_Character(Menu\Option,Menu\Option2)>CHAR_NONMODPLAYABLECOUNT And Menu\Settings\Mods#=0 Then
 			Menu_PrintLocked(5,Menu_Character(Menu\Option,Menu\Option2),GAME_WINDOW_W/2-220*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*3-180)*GAME_WINDOW_SCALE#, 1)
 		Else
-			Menu_CharacterMeshOnScreen_RotateControl(Menu_Character(Menu\Option,Menu\Option2))
+			;Menu_CharacterMeshOnScreen_RotateControl(Menu_Character(Menu\Option,Menu\Option2))
 			If UNLOCKEDCHAR[Menu_Character(Menu\Option,Menu\Option2)]=1 Then
 				If Menu\Menu=MENU_CHARACTERS# Then
-					Menu_DrawCharacterNames(Menu_Character(Menu\Option,Menu\Option2), GAME_WINDOW_W/2-(140)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(CARD_PLACE#*2+95.5)*GAME_WINDOW_SCALE#, true, false, true)
+					Menu_DrawCharacterNames(Menu_Character(Menu\Option,Menu\Option2), GAME_WINDOW_W/2-0*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(CARD_PLACE#*2+95.5)*GAME_WINDOW_SCALE#, True, False, True)
 				Else
-					Menu_DrawCharacterNames(Menu_Character(Menu\Option,Menu\Option2), GAME_WINDOW_W/2-(140)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(CARD_PLACE#*2+95.5)*GAME_WINDOW_SCALE#, true)
+					Menu_DrawCharacterNames(Menu_Character(Menu\Option,Menu\Option2), GAME_WINDOW_W/2-(140)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(CARD_PLACE#*2+95.5)*GAME_WINDOW_SCALE#, True)
 				EndIf
 			Else
 				Menu_PrintLocked(1,Menu_Character(Menu\Option,Menu\Option2),GAME_WINDOW_W/2-220*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*3-180)*GAME_WINDOW_SCALE#, 1)
@@ -104,10 +117,10 @@ Function Menu_Characters_Update()
 			If UNLOCKEDCHAR[Menu\Option]=1 Then found=True Else found=False
 		Else
 			If (Menu\Option>=6*6) Then
-				found=true
+				found=True
 			Else
 				char = Menu_Character(Menu\Option,Menu\Option2)
-				If char<=CHAR_NONMODPLAYABLECOUNT or Menu\Settings\Mods#=1 Then
+				If char<=CHAR_NONMODPLAYABLECOUNT Or Menu\Settings\Mods#=1 Then
 					If UNLOCKEDCHAR[char]=1 Then found=True Else found=False
 				Else
 					found=False
@@ -115,12 +128,12 @@ Function Menu_Characters_Update()
 			EndIf
 		EndIf
 
-		If Menu_WasMemberChosen() and Menu\AndAnyone=0 Then found=false
+		If Menu_WasMemberChosen() And Menu\AndAnyone=0 Then found=False
 
 		If found Then
 			PlaySmartSound(Sound_MenuAccept)
 			Menu\Transition=1
-			If Menu\Menu=MENU_CHARACTERS2# and (Menu\Option>=6*6) Then
+			If Menu\Menu=MENU_CHARACTERS2# And (Menu\Option>=6*6) Then
 				Select Menu\MemberToSelect
 					Case 1:
 						Repeat : Menu\Character[1]=Menu_RandomNonmodChar() : Until Menu_RandomNonmodChar_AcceptableAt1(Menu\Character[1])
@@ -131,7 +144,7 @@ Function Menu_Characters_Update()
 				End Select
 			Else
 				Menu\Character[Menu\MemberToSelect]=Menu_Character(Menu\Option,Menu\Option2)
-				If Menu\Character[Menu\MemberToSelect]=CHAR_TAI and Menu\CharacterMode[Menu\MemberToSelect]=1 Then Menu\Character[Menu\MemberToSelect]=900+Menu\Character[Menu\MemberToSelect]
+				If Menu\Character[Menu\MemberToSelect]=CHAR_TAI And Menu\CharacterMode[Menu\MemberToSelect]=1 Then Menu\Character[Menu\MemberToSelect]=900+Menu\Character[Menu\MemberToSelect]
 			EndIf
 			Select Menu\MemberToSelect
 				Case Menu\Members:
@@ -149,7 +162,7 @@ Function Menu_Characters_Update()
 							Menu\NewOption=-1 : Menu\NewMenu=MENU_STAGESPECIAL#
 					End Select
 				Default:
-					Repeat : Menu_Characters_Change(1,true,true) : Until (Not(Menu_WasMemberChosen(1)))
+					Repeat : Menu_Characters_Change(1,True,True) : Until (Not(Menu_WasMemberChosen(1)))
 					Menu\NewOption=Menu\Option
 					Menu\NewOption2=Menu\Option2
 					Menu\MemberToSelect=Menu\MemberToSelect+1
@@ -177,24 +190,18 @@ Function Menu_Characters_Update()
 		Menu\NewMenu=MENU_PLAY#
 	EndIf
 
-	If Input\Pressed\ActionSkill3 Then
-	If Menu_Character(Menu\Option,Menu\Option2)=CHAR_TAI Then
-		PlaySmartSound(Sound_MenuBack)
-		Menu\CharacterMode[Menu\MemberToSelect]=abs(Menu\CharacterMode[Menu\MemberToSelect]-1)
-		Menu\MeshChange=1
-	EndIf
-	EndIf
+	
 
 End Function
 
 Function Menu_Characters1_Controls(char,x#,y#,ystep#)
 	actualchar=char
-	If actualchar=CHAR_TAI and Menu\CharacterMode[Menu\MemberToSelect]=1 Then char=CHAR_EGG
+	If actualchar=CHAR_TAI And Menu\CharacterMode[Menu\MemberToSelect]=1 Then char=CHAR_EGG
 
 	i=-6
 
 	DrawRealText(CONTROLTIPS$(TIP_MOVE), x#, y#+ystep#*i*GAME_WINDOW_SCALE#, (Interface_Text_2))
-	DrawSmartKey_MovementGeneral(x#-15*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#, true)
+	DrawSmartKey_MovementGeneral(x#-15*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#, True)
 	If Menu\Members>1 Then
 		DrawRealText(CONTROLTIPS$(TIP_CHANGE), x#+62.5*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#, (Interface_Text_2))
 		DrawSmartKey_Small(INPUT_BUTTON_CHANGE, x#-15*GAME_WINDOW_SCALE#+62.5*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#)
@@ -203,8 +210,8 @@ Function Menu_Characters1_Controls(char,x#,y#,ystep#)
 
 	DrawRealText(CONTROLTIPS$(TIP_JUMP), x#, y#+ystep#*i*GAME_WINDOW_SCALE#, (Interface_Text_2))
 	DrawSmartKey_Small(INPUT_BUTTON_ACTIONJUMP, x#-15*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#)
-	If UNLOCKEDEMERALDS[7]=1 and Menu\ChaoGarden=0 Then
-		DrawSmartKey_Small(INPUT_BUTTON_ACTIONACT, x#+75*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#, true)
+	If UNLOCKEDEMERALDS[7]=1 And Menu\ChaoGarden=0 Then
+		DrawSmartKey_Small(INPUT_BUTTON_ACTIONACT, x#+75*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#, True)
 		DrawImageEx(INTERFACE(Interface_Keys_Small), x#+60*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#, 62)
 		DrawSmartKey_Small(INPUT_BUTTON_ACTIONJUMP,x#+45*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#)
 		DrawRealText(CONTROLTIPS$(TIP_SUPER), x#+90*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#, (Interface_Text_2))
@@ -239,11 +246,7 @@ Function Menu_Characters1_Controls(char,x#,y#,ystep#)
 	DrawRealText(CONTROLTIPS$(TIP_SPINDASH), x#, y#+ystep#*i*GAME_WINDOW_SCALE#, (Interface_Text_2))
 	DrawSmartKey_Small(INPUT_BUTTON_ACTIONROLL, x#-15*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#)
 
-	If Player_CanLightDash(char) and Menu\ChaoGarden=0 Then
-		DrawRealText(CONTROLTIPS$(TIP_LIGHTDASH), x#+90*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#, (Interface_Text_2))
-		DrawSmartKey_Small(INPUT_BUTTON_ACTIONACT, x#-15*GAME_WINDOW_SCALE#+90*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#, true)
-		DrawImageEx(INTERFACE(Interface_Keys_Small), x#-15*GAME_WINDOW_SCALE#+90*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#-3.5*GAME_WINDOW_SCALE#, 82)
-	EndIf
+	
 	i=i+1
 
 	DrawRealText(CONTROLTIPS$(TIP_STOMP), x#, y#+ystep#*i*GAME_WINDOW_SCALE#, (Interface_Text_2))
@@ -263,7 +266,7 @@ Function Menu_Characters1_Controls(char,x#,y#,ystep#)
 	DrawRealText(CONTROLTIPS$(TIP_DRIFT), x#, y#+ystep#*i*GAME_WINDOW_SCALE#, (Interface_Text_2))
 	DrawSmartKey_Small(INPUT_BUTTON_ACTIONDRIFT, x#-15*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#)
 
-	DrawSmartKey_Small(INPUT_BUTTON_ACTIONDRIFT, x#+75*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#)
+	DrawSmartKey_Small(INPUT_BUTTON_ACTIONROLL, x#+75*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#)
 	DrawImageEx(INTERFACE(Interface_Keys_Small), x#+60*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#, 62)
 	DrawSmartKey_Small(INPUT_BUTTON_ACTIONJUMP,x#+45*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#)
 	DrawRealText(CONTROLTIPS$(TIP_BOUNCE), x#+90*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#, (Interface_Text_2))
@@ -274,7 +277,7 @@ Function Menu_Characters1_Controls(char,x#,y#,ystep#)
 	DrawImageEx(INTERFACE(Interface_Keys_Small), x#-15*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#, 56)
 
 	DrawRealText(CONTROLTIPS$(TIP_PICKUP), x#+110*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#, (Interface_Text_2))
-	DrawSmartKey_Small(INPUT_BUTTON_ACTIONACT, x#-15*GAME_WINDOW_SCALE#+110*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#, true)
+	DrawSmartKey_Small(INPUT_BUTTON_ACTIONACT, x#-15*GAME_WINDOW_SCALE#+110*GAME_WINDOW_SCALE#, y#+ystep#*i*GAME_WINDOW_SCALE#, True)
 	i=i+1
 
 	If Menu\ChaoGarden=0 Then
@@ -303,7 +306,7 @@ Function Menu_Characters1_Controls(char,x#,y#,ystep#)
 		End Select
 
 		If Len(CONTROLTIPS$(TIP_SKILL2[char]))>0 Then
-			If actualchar=CHAR_TAI and Menu\CharacterMode[Menu\MemberToSelect]=1 Then
+			If actualchar=CHAR_TAI And Menu\CharacterMode[Menu\MemberToSelect]=1 Then
 				DrawRealText(CONTROLTIPS$(TIP_SKILL2X), x#, y#+ystep#*i*GAME_WINDOW_SCALE#, (Interface_Text_2))
 			Else
 				DrawRealText(CONTROLTIPS$(TIP_SKILL2[char]), x#, y#+ystep#*i*GAME_WINDOW_SCALE#, (Interface_Text_2))
@@ -314,7 +317,7 @@ Function Menu_Characters1_Controls(char,x#,y#,ystep#)
 		EndIf
 
 		If Len(CONTROLTIPS$(TIP_SKILL2AIR[char]))>0 Then
-			If actualchar=CHAR_TAI and Menu\CharacterMode[Menu\MemberToSelect]=1 Then
+			If actualchar=CHAR_TAI And Menu\CharacterMode[Menu\MemberToSelect]=1 Then
 				DrawRealText(CONTROLTIPS$(TIP_SKILL2X), x#, y#+ystep#*i*GAME_WINDOW_SCALE#, (Interface_Text_2))
 			Else
 				DrawRealText(CONTROLTIPS$(TIP_SKILL2AIR[char]), x#, y#+ystep#*i*GAME_WINDOW_SCALE#, (Interface_Text_2))
@@ -388,15 +391,15 @@ Function Menu_Characters1_Controls(char,x#,y#,ystep#)
 End Function
 
 Function Menu_Characters1_Update()
-	If Menu\Option>CHAR_NONMODPLAYABLECOUNT and Menu\Settings\Mods#=0 Then
-		found=false
+	If Menu\Option>CHAR_NONMODPLAYABLECOUNT And Menu\Settings\Mods#=0 Then
+		found=False
 	Else
 		If UNLOCKEDCHAR[Menu\Option]=1 Then found=True Else found=False
 	EndIf
 
 	If found Then
 		If IsCharMod(Menu\Option) Then char=MODCHARS_TYPE(Menu\Option-CHAR_NONMODPLAYABLECOUNT) Else char=Menu\Option
-		Menu_Characters1_Controls(char,(GAME_WINDOW_W/2+(BUTTON_PLACE1#-90)*GAME_WINDOW_SCALE#),(GAME_WINDOW_H/2+CONTROLINFO_START#*GAME_WINDOW_SCALE#),(CONTROLINFO_SPACE#))
+		;Menu_Characters1_Controls(char,(GAME_WINDOW_W/2+(BUTTON_PLACE1#-90)*GAME_WINDOW_SCALE#),(GAME_WINDOW_H/2+CONTROLINFO_START#*GAME_WINDOW_SCALE#),(CONTROLINFO_SPACE#))
 	Else
 		If Menu\Option>CHAR_NONMODPLAYABLECOUNT Then
 			If MODCHARS_FOUND(Menu\Option-CHAR_NONMODPLAYABLECOUNT) Then found=True Else found=False
@@ -406,13 +409,13 @@ Function Menu_Characters1_Update()
 		If found Then Menu_PrintLocked(1,Menu\Option,GAME_WINDOW_W/2+(BUTTON_PLACE1#-155)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2)
 	EndIf
 
-	If Input\Pressed\ActionSkill2 Then
-		PlaySmartSound(Sound_MenuBack)
-		Menu\Transition=1
-		Menu\NewOption2=Ceil#(Menu\Option/35.0)
-		Menu\NewOption=Menu\Option-35*(Menu\NewOption2-1)
-		Menu\NewMenu=MENU_CHARACTERS2#
-	EndIf
+	;If Input\Pressed\ActionSkill2 Then
+	;	PlaySmartSound(Sound_MenuBack)
+	;	Menu\Transition=1
+	;	Menu\NewOption2=Ceil#(Menu\Option/35.0)
+	;	Menu\NewOption=Menu\Option-35*(Menu\NewOption2-1)
+	;	Menu\NewMenu=MENU_CHARACTERS2#
+	;EndIf
 
 End Function
 
@@ -430,14 +433,14 @@ End Function
 Function Menu_Characters2_Roster(x#, y#)
 	char=Menu_Character(Menu\Option,Menu\Option2)
 	h=0
-	For j=1 to 6
-	For i=1 to 6
+	For j=1 To 6
+	For i=1 To 6
 		h=h+1
 		If Menu\Option=h Then Menu_Characters2_Roster_Chosen(x#,y#,char,i,j,h)
 		thischar=InterfaceChar(Menu_Character(h,Menu\Option2))
-		If h<6*6 and thischar<=CHAR_PLAYABLECOUNT Then
+		If h<6*6 And thischar<=CHAR_PLAYABLECOUNT Then
 			If Menu\AndAnyone=0 Or IsCharMod(thischar) Then
-				If (InterfaceChar(Menu\Character[1])=thischar and (Menu\MemberToSelect>1 Or Menu\NewMenu=MENU_STAGE# Or Menu\NewMenu=MENU_STAGE2#)) Or (InterfaceChar(Menu\Character[2])=thischar and (Menu\MemberToSelect>2 Or Menu\NewMenu=MENU_STAGE# Or Menu\NewMenu=MENU_STAGE2#)) Or (InterfaceChar(Menu\Character[3])=thischar and (Menu\NewMenu=MENU_STAGE# Or Menu\NewMenu=MENU_STAGE2#)) Or UNLOCKEDCHAR[thischar]=0 Or (IsCharMod(thischar) and Menu\Settings\Mods#=0) Then SetColor(0,0,0)
+				If (InterfaceChar(Menu\Character[1])=thischar And (Menu\MemberToSelect>1 Or Menu\NewMenu=MENU_STAGE# Or Menu\NewMenu=MENU_STAGE2#)) Or (InterfaceChar(Menu\Character[2])=thischar And (Menu\MemberToSelect>2 Or Menu\NewMenu=MENU_STAGE# Or Menu\NewMenu=MENU_STAGE2#)) Or (InterfaceChar(Menu\Character[3])=thischar And (Menu\NewMenu=MENU_STAGE# Or Menu\NewMenu=MENU_STAGE2#)) Or UNLOCKEDCHAR[thischar]=0 Or (IsCharMod(thischar) And Menu\Settings\Mods#=0) Then SetColor(0,0,0)
 			EndIf
 			If thischar<=CHAR_NONMODPLAYABLECOUNT Then
 				DrawImageEx(INTERFACE(Interface_Characters), x#+(i-1)*40*GAME_WINDOW_SCALE#, y#+(j-1)*40*GAME_WINDOW_SCALE#, thischar)
@@ -445,7 +448,7 @@ Function Menu_Characters2_Roster(x#, y#)
 				If Menu\Settings\Mods#=1 Then
 					If MODCHARS_FOUND(thischar-CHAR_NONMODPLAYABLECOUNT) Then found=True Else found=False
 				Else
-					found=false
+					found=False
 				EndIf
 				If found
 					DrawImageEx(INTERFACE(Interface_CharactersMod[thischar-CHAR_NONMODPLAYABLECOUNT]), x#+(i-1)*40*GAME_WINDOW_SCALE#, y#+(j-1)*40*GAME_WINDOW_SCALE#)
@@ -468,7 +471,7 @@ Function Menu_Characters2_Update()
 	If Input\Pressed\Up Then Menu_Characters_Change(-2)
 
 	If Input\Pressed\ActionSkill2 Then
-		If (Menu\AndAnyone=1 and (Not(IsCharMod(Menu_Character(Menu\Option,Menu\Option2))))) Or ((Not(Menu_WasMemberChosen())) and (Menu\Settings\Mods#=1 Or (Not(IsCharMod(Menu_Character(Menu\Option,Menu\Option2)))))) Then
+		If (Menu\AndAnyone=1 And (Not(IsCharMod(Menu_Character(Menu\Option,Menu\Option2))))) Or ((Not(Menu_WasMemberChosen())) And (Menu\Settings\Mods#=1 Or (Not(IsCharMod(Menu_Character(Menu\Option,Menu\Option2)))))) Then
 			PlaySmartSound(Sound_MenuBack)
 			Menu\Transition=1
 			If (Menu\Option>=6*6) Then Menu\NewOption=1 Else Menu\NewOption=Menu_Character(Menu\Option,Menu\Option2)
@@ -507,7 +510,7 @@ Function Menu_Bios_Change(choose)
 				Menu\Option=Menu\Option-1
 				If Menu\Option<1 Then Menu\Option=CHAR_NORMALCOUNT
 		End Select
-	Until ((Menu\Settings\Mods#=0 and (Not(IsCharMod(Menu\Option)))) Or (Menu\Settings\Mods#=1))
+	Until ((Menu\Settings\Mods#=0 And (Not(IsCharMod(Menu\Option)))) Or (Menu\Settings\Mods#=1))
 	Menu\MeshChange=1
 	Menu\DontReplayMusic=1
 End Function
@@ -538,7 +541,7 @@ Function Menu_Bios_Update()
 	EndIf
 
 	Menu_CharacterMeshOnScreen_RotateControl(Menu\Option,found)
-	Menu_DrawCharacterNames(Menu\Option, GAME_WINDOW_W/2-(140)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*2+95.5)*GAME_WINDOW_SCALE#, false, true, true, found)
+	Menu_DrawCharacterNames(Menu\Option, GAME_WINDOW_W/2-(140)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*2+95.5)*GAME_WINDOW_SCALE#, False, True, True, found)
 
 	Menu_UpdateBios(found)
 	DrawRealText(Menu\Bio$, GAME_WINDOW_W/2+(BUTTON_PLACE1#-100)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-55*GAME_WINDOW_SCALE#, (Interface_Text_1), 0, GAME_WINDOW_W/2+(BUTTON_PLACE1#+140)*GAME_WINDOW_SCALE#)
@@ -582,6 +585,13 @@ End Function
 ;===============================================================================================================================================================
 
 Function Menu_Stage_DrawMissionIcon(x#, y#, missionno)
+	
+	Select Menu\Menu
+		Case MENU_STAGE2#: stagenumber=(Menu\Option+Menu\OptionOrder2*4)
+		Default: stagenumber=(Menu\Option)
+	End Select
+	
+	
 	Select StageMission[missionno]
 		Case MISSION_NORMAL#:	DrawImageEx(INTERFACE(Interface_Icons), x#, y#, 23)
 		Case MISSION_ENEMY#:	DrawImageEx(INTERFACE(Interface_Icons), x#, y#, 17)
@@ -597,7 +607,12 @@ Function Menu_Stage_DrawMissionIcon(x#, y#, missionno)
 		Case MISSION_FLICKY#:	DrawImageEx(INTERFACE(Interface_Icons), x#, y#, 29)
 		Case MISSION_DECLINE#:	DrawImageEx(INTERFACE(Interface_Icons), x#, y#, 33)
 		Case MISSION_ESCAPE#:	DrawImageEx(INTERFACE(Interface_Icons), x#, y#, 34)
-		Case MISSION_CAPSULE#:	DrawImageEx(INTERFACE(Interface_Icons), x#, y#, 35)
+		Case MISSION_ENCORE#:	
+			If ALLREDRING(stagenumber)=1 Then
+				DrawImageEx(INTERFACE(Interface_Icons), x#, y#, 35)
+			Else
+				DrawImageEx(INTERFACE(Interface_Icons), x#, y#, 1)
+			EndIf 
 	End Select
 
 	If StageMissionTime[missionno]=1 Then
@@ -622,7 +637,12 @@ Function Menu_Stage_Draw_MissionSelector(x#, y#)
 End Function
 
 Function Menu_Stage_Update()
-
+	
+	Select Menu\Menu
+		Case MENU_STAGE2#: stagenumber=(Menu\Option+Menu\OptionOrder2*4)
+		Default: stagenumber=(Menu\Option)
+	End Select
+	
 	If Menu\LoadThumbnailAndMissions Then
 		Menu\LoadThumbnailAndMissions=False
 		Select Menu\Menu
@@ -649,6 +669,8 @@ Function Menu_Stage_Update()
 		Case MENU_STAGE2#: Menu_Stage2_Update()
 		Default: Menu_Stage1_Update()
 	End Select
+	
+	Menu_UpdateMissionDescription()
 
 	If Input\Pressed\ActionSkill2 Then
 		Select Menu\Menu
@@ -669,16 +691,25 @@ Function Menu_Stage_Update()
 		End Select
 	EndIf
 
-	If Input\Pressed\Right and (Menu\Menu=MENU_STAGE# Or Menu\OptionOrder=1) Then
+	If Input\Pressed\Right And (Menu\Menu=MENU_STAGE# Or Menu\OptionOrder=1) Then
+		
 		PlaySmartSound(Sound_MenuMove)
 		Menu\MissionNo=Menu\MissionNo+1
-		If Menu\MissionNo>5 Then Menu\MissionNo=1
+		If ALLREDRING(stagenumber)=1 Then
+			If Menu\MissionNo>5 Then Menu\MissionNo=1
+		Else
+			If Menu\MissionNo>4 Then Menu\MissionNo=1
+		EndIf 
 	EndIf
 
-	If Input\Pressed\Left and (Menu\Menu=MENU_STAGE# Or Menu\OptionOrder=1) Then
+	If Input\Pressed\Left And (Menu\Menu=MENU_STAGE# Or Menu\OptionOrder=1) Then
 		PlaySmartSound(Sound_MenuMove)
 		Menu\MissionNo=Menu\MissionNo-1
-		If Menu\MissionNo<1 Then Menu\MissionNo=5
+		If ALLREDRING(stagenumber)=1 Then
+			If Menu\MissionNo<1 Then Menu\MissionNo=5
+		Else
+			If Menu\MissionNo<1 Then Menu\MissionNo=4
+		EndIf 
 	EndIf
 
 	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
@@ -708,22 +739,50 @@ Function Menu_Stage_Update()
 	If Input\Pressed\ActionDrift Then Menu_Stage_RandomizeTeam()
 End Function
 
-Function Menu_Stage_RandomizeTeam(nosound=false)
+Function Menu_Stage_RandomizeTeam(nosound=False)
 	If Not nosound Then PlaySmartSound(Sound_CharacterChange)
 	Repeat : Menu\Character[1]=Menu_RandomNonmodChar() : Until Menu_RandomNonmodChar_AcceptableAt1(Menu\Character[1])
 	Repeat : Menu\Character[2]=Menu_RandomNonmodChar() : Until Menu_RandomNonmodChar_AcceptableAt2(Menu\Character[1],Menu\Character[2])
 	Repeat : Menu\Character[3]=Menu_RandomNonmodChar() : Until Menu_RandomNonmodChar_AcceptableAt3(Menu\Character[1],Menu\Character[2],Menu\Character[3])
 	Menu\Team=0
 End Function
-
+Function Menu_UpdateMissionDescription()
+	For i=0 To MISSIONCOUNT#
+		If StageMission[Menu\MissionNo]=i Then
+			Select i
+				Case 0 : Menu\MissionDescription$="Normal Run"
+				Case 1 : Menu\MissionDescription$="Destructor"
+				Case 2 : Menu\MissionDescription$="Ring Collector"
+				Case 3 : Menu\MissionDescription$="Treasure Hunter"
+				Case 4 : Menu\MissionDescription$="Gold Rush"
+				Case 5 : Menu\MissionDescription$="Stealth"
+				Case 6 : Menu\MissionDescription$="Confetti Parade"
+				Case 7 : Menu\MissionDescription$="Free Roam"
+				Case 8 : Menu\MissionDescription$="Rival Battle"
+				Case 9 : Menu\MissionDescription$="Robot Carnival"
+				Case 10 : Menu\MissionDescription$="Boss Battle"
+				Case 11 : Menu\MissionDescription$="Flickie Rescure"
+				Case 12 : Menu\MissionDescription$="Countdown"
+				Case 13 : Menu\MissionDescription$="Escape"
+				Case 14 : Menu\MissionDescription$="Encore"
+			End Select
+		EndIf
+	Next
+End Function 
 Function Menu_Stage_DrawThumbnailAndMissions(x#, y#, compressy#=0)
 	Select Menu\Menu
 		Case MENU_STAGE2#: i=Menu\Option+Menu\OptionOrder2*4
 		Default: i=Menu\Option
 	End Select
-
+	
 	If i<=StageAmount Then
-		DrawRealText("Mission:", x#, y#-compressy#, (Interface_TextControls_1), 1)
+		If Menu\MissionNo=5 Then
+			SetColor(Rand(155,255),Rand(155,255),Rand(155,255))
+		Else
+			SetColor(255,115,0)
+		EndIf
+		DrawRealText(Menu\MissionDescription$, x#, y#-compressy#, (Interface_TextControls_1), 1): 
+		SetColor(255,255,255)
 		Menu_Stage_Draw_MissionSelector(x#+(-3+Menu\MissionNo)*30*GAME_WINDOW_SCALE#, y#-compressy#*2+30*GAME_WINDOW_SCALE#)
 		Menu_Stage_DrawMissionIcon(x#-2*30*GAME_WINDOW_SCALE#, y#-compressy#*2+30*GAME_WINDOW_SCALE#, 1)
 		Menu_Stage_DrawMissionIcon(x#-1*30*GAME_WINDOW_SCALE#, y#-compressy#*2+30*GAME_WINDOW_SCALE#, 2)
@@ -742,8 +801,8 @@ End Function
 
 Function Menu_Stage2_Update()
 
-	For i=1 to 4
-	For j=1 to 3
+	For i=1 To 4
+	For j=1 To 3
 		stageno=i+(j-1)*4
 		If Menu\Option=stageno Then
 			SetScale(GAME_WINDOW_SCALE#*0.325+Menu\ButtonSize#*0.4, GAME_WINDOW_SCALE#*0.325+Menu\ButtonSize#*0.4)
@@ -757,16 +816,20 @@ Function Menu_Stage2_Update()
 		SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
 		SetColor(255,255,255)
 		If Menu\OptionOrder=0 Then
-			If j=1 and (Menu\Option)=i Then DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W/2-260*GAME_WINDOW_SCALE#+(i-1)*90*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(CARD_PLACE#*3-60)*GAME_WINDOW_SCALE#+(j-1)*70*GAME_WINDOW_SCALE#-45*GAME_WINDOW_SCALE#,20)
-			If j=3 and (Menu\Option-8)=i Then DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W/2-260*GAME_WINDOW_SCALE#+(i-1)*90*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(CARD_PLACE#*3-60)*GAME_WINDOW_SCALE#+(j-1)*70*GAME_WINDOW_SCALE#+45*GAME_WINDOW_SCALE#,21)
+			If j=1 And (Menu\Option)=i Then DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W/2-260*GAME_WINDOW_SCALE#+(i-1)*90*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(CARD_PLACE#*3-60)*GAME_WINDOW_SCALE#+(j-1)*70*GAME_WINDOW_SCALE#-45*GAME_WINDOW_SCALE#,20)
+			If j=3 And (Menu\Option-8)=i Then DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W/2-260*GAME_WINDOW_SCALE#+(i-1)*90*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(CARD_PLACE#*3-60)*GAME_WINDOW_SCALE#+(j-1)*70*GAME_WINDOW_SCALE#+45*GAME_WINDOW_SCALE#,21)
 		EndIf
 	Next
 	Next
 
 	Menu_Stage_DrawThumbnailAndMissions(GAME_WINDOW_W/2+170*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(CARD_PLACE#*3+105.5)*GAME_WINDOW_SCALE#, 5.5*GAME_WINDOW_SCALE#)
-
-	If Menu\Transition=0 Then Menu_Stage_DrawRecords_Emblems(500*GAME_WINDOW_SCALE#,-34.25*GAME_WINDOW_SCALE#)
-
+	
+	If Menu\Transition=0 Then 
+		Menu_Stage_DrawRecords_Emblems(500*GAME_WINDOW_SCALE#,-34.25*GAME_WINDOW_SCALE#)
+		If Menu\MissionNo=1 Then Menu_Stage_DrawRecords_RedRings(500*GAME_WINDOW_SCALE#,-34.25*GAME_WINDOW_SCALE#)
+		;Rank_Draw(Menu_Stage_ReturnRecordValue(5,Menu\MissionNo,(Menu\Option+Menu\OptionOrder2*4)), 500*GAME_WINDOW_SCALE#,25*GAME_WINDOW_SCALE#)
+		
+	EndIf 
 	If (Menu\Option+Menu\OptionOrder2*4)<=StageAmount Then
 		If Len(Menu\StageName$)>12 Then
 		DrawRealText(Menu\StageName$, GAME_WINDOW_W/2+280*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*2+113.75)*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 2, 0, 63, 63, 63)
@@ -777,6 +840,7 @@ Function Menu_Stage2_Update()
 
 	If Menu\OptionOrder=0 Then
 		If Input\Pressed\Right Then
+			Menu\MissionNo=1
 			PlaySmartSound(Sound_MenuMove)
 			Select Menu\Option
 				Case 1: Menu\Option=2
@@ -796,6 +860,7 @@ Function Menu_Stage2_Update()
 		EndIf
 
 		If Input\Pressed\Left Then
+			Menu\MissionNo=1
 			PlaySmartSound(Sound_MenuMove)
 			Select Menu\Option
 				Case 1: Menu\Option=4
@@ -815,6 +880,7 @@ Function Menu_Stage2_Update()
 		EndIf
 
 		If Input\Pressed\Down Then
+			Menu\MissionNo=1
 			PlaySmartSound(Sound_MenuMove)
 			Select Menu\Option
 				Case 1: Menu\Option=5
@@ -847,6 +913,7 @@ Function Menu_Stage2_Update()
 		EndIf
 
 		If Input\Pressed\Up Then
+			Menu\MissionNo=1
 			PlaySmartSound(Sound_MenuMove)
 			Select Menu\Option
 				Case 5: Menu\Option=1
@@ -859,7 +926,7 @@ Function Menu_Stage2_Update()
 				Case 12: Menu\Option=8
 				Case 1,2,3,4:
 					If StageAmount>12 Then
-						If Not(Menu\Option<=4 and Menu\OptionOrder2=0) Then
+						If Not(Menu\Option<=4 And Menu\OptionOrder2=0) Then
 							Menu\OptionOrder2=Menu\OptionOrder2-1
 						Else
 							Menu\OptionOrder2=Ceil#(StageAmount/4.0)-3
@@ -879,6 +946,7 @@ Function Menu_Stage2_Update()
 		EndIf
 
 		If Input\Pressed\ActionSkill3 Then
+			Menu\MissionNo=1
 			PlaySmartSound(Sound_MenuMove)
 			Menu\Option=Rand(1,12)
 			Menu\OptionOrder2=Rand(0,Ceil#(StageAmount/4.0)-3)
@@ -890,7 +958,7 @@ Function Menu_Stage2_Update()
 
 End Function
 
-Function Menu_Stage_DrawRecords(specialstage#=false,x#=0,y#=0)
+Function Menu_Stage_DrawRecords(specialstage#=False,x#=0,y#=0)
 	DrawRealText("RECORDS", x#+(((7*GAME_WINDOW_SCALE#)))+GAME_WINDOW_W/2-(BUTTON_PLACE1#-56)*GAME_WINDOW_SCALE#-156*GAME_WINDOW_SCALE#, y#+GAME_WINDOW_H/2-116.5*GAME_WINDOW_SCALE#+25*GAME_WINDOW_SCALE#+30*GAME_WINDOW_SCALE#, (Interface_TextRecords_2), 0) 
 	DrawImageEx(INTERFACE(Interface_Results), x#+(((7*GAME_WINDOW_SCALE#)))+GAME_WINDOW_W/2-(BUTTON_PLACE1#-56)*GAME_WINDOW_SCALE#, y#+GAME_WINDOW_H/2-85.0*GAME_WINDOW_SCALE#+25*GAME_WINDOW_SCALE#+30*GAME_WINDOW_SCALE#, 2)
 	DrawImageEx(INTERFACE(Interface_Results), x#+(((7*GAME_WINDOW_SCALE#)))+GAME_WINDOW_W/2-(BUTTON_PLACE1#-56)*GAME_WINDOW_SCALE#, y#+GAME_WINDOW_H/2-40.5*GAME_WINDOW_SCALE#+25*GAME_WINDOW_SCALE#+30*GAME_WINDOW_SCALE#, 3)
@@ -912,31 +980,31 @@ Function Menu_Stage_DrawRecords(specialstage#=false,x#=0,y#=0)
 	DrawBetterNumber(Menu_Stage_ReturnRecordValue(4,Menu\MissionNo,Menu\Option), x#+(((7*GAME_WINDOW_SCALE#)))-25*GAME_WINDOW_SCALE#*Menu_Stage_RecordZeroCharacterTester(4,Menu\MissionNo,Menu\Option)+GAME_WINDOW_W/2+151*GAME_WINDOW_SCALE#-(BUTTON_PLACE1#-56)*GAME_WINDOW_SCALE#, y#+GAME_WINDOW_H/2+8.5*GAME_WINDOW_SCALE#+20*GAME_WINDOW_SCALE#+30*GAME_WINDOW_SCALE#, 0, 1)
 	Rank_Draw(Menu_Stage_ReturnRecordValue(5,Menu\MissionNo,Menu\Option), x#+(((7*GAME_WINDOW_SCALE#)))+GAME_WINDOW_W/2-(BUTTON_PLACE1#-56)*GAME_WINDOW_SCALE#+36.295*GAME_WINDOW_SCALE#, y#+GAME_WINDOW_H/2+52.0*GAME_WINDOW_SCALE#+25*GAME_WINDOW_SCALE#+30*GAME_WINDOW_SCALE#)
 	;--------------------------------------
-	For r=1 to 3
+	For r=1 To 3
 		If Not(Menu_Stage_ReturnRecordValue(1,Menu\MissionNo,Menu\Option,r)=0) Then
 			SetColor(Interface_Lives_R[InterfaceChar(Menu_Stage_ReturnRecordValue(1,Menu\MissionNo,Menu\Option,r))],Interface_Lives_G[InterfaceChar(Menu_Stage_ReturnRecordValue(1,Menu\MissionNo,Menu\Option,r))],Interface_Lives_B[InterfaceChar(Menu_Stage_ReturnRecordValue(1,Menu\MissionNo,Menu\Option,r))])
 			Interface_DrawHead(x#+-25*GAME_WINDOW_SCALE#*(r-1)+(((7*GAME_WINDOW_SCALE#)))+150*GAME_WINDOW_SCALE#+GAME_WINDOW_W/2-(BUTTON_PLACE1#-56)*GAME_WINDOW_SCALE#, y#+11*GAME_WINDOW_SCALE#+GAME_WINDOW_H/2-96.5*GAME_WINDOW_SCALE#+25*GAME_WINDOW_SCALE#+30*GAME_WINDOW_SCALE#, Menu_Stage_ReturnRecordValue(1,Menu\MissionNo,Menu\Option,r)-1)
 		EndIf
 	Next
-	For r=1 to 3
+	For r=1 To 3
 		If Not(Menu_Stage_ReturnRecordValue(2,Menu\MissionNo,Menu\Option,r)=0) Then
 			SetColor(Interface_Lives_R[InterfaceChar(Menu_Stage_ReturnRecordValue(2,Menu\MissionNo,Menu\Option,r))],Interface_Lives_G[InterfaceChar(Menu_Stage_ReturnRecordValue(2,Menu\MissionNo,Menu\Option,r))],Interface_Lives_B[InterfaceChar(Menu_Stage_ReturnRecordValue(2,Menu\MissionNo,Menu\Option,r))])
 			Interface_DrawHead(x#+-25*GAME_WINDOW_SCALE#*(r-1)+(((7*GAME_WINDOW_SCALE#)))+150*GAME_WINDOW_SCALE#+GAME_WINDOW_W/2-(BUTTON_PLACE1#-56)*GAME_WINDOW_SCALE#, y#+11*GAME_WINDOW_SCALE#+GAME_WINDOW_H/2-73*GAME_WINDOW_SCALE#+25*GAME_WINDOW_SCALE#+30*GAME_WINDOW_SCALE#, Menu_Stage_ReturnRecordValue(2,Menu\MissionNo,Menu\Option,r)-1)
 		EndIf
 	Next
-	For r=1 to 3
+	For r=1 To 3
 		If Not(Menu_Stage_ReturnRecordValue(3,Menu\MissionNo,Menu\Option,r)=0) Then
 			SetColor(Interface_Lives_R[InterfaceChar(Menu_Stage_ReturnRecordValue(3,Menu\MissionNo,Menu\Option,r))],Interface_Lives_G[InterfaceChar(Menu_Stage_ReturnRecordValue(3,Menu\MissionNo,Menu\Option,r))],Interface_Lives_B[InterfaceChar(Menu_Stage_ReturnRecordValue(3,Menu\MissionNo,Menu\Option,r))])
 			Interface_DrawHead(x#+-25*GAME_WINDOW_SCALE#*(r-1)+(((7*GAME_WINDOW_SCALE#)))+150*GAME_WINDOW_SCALE#+GAME_WINDOW_W/2-(BUTTON_PLACE1#-56)*GAME_WINDOW_SCALE#, y#+11*GAME_WINDOW_SCALE#+GAME_WINDOW_H/2-49.5*GAME_WINDOW_SCALE#+25*GAME_WINDOW_SCALE#+30*GAME_WINDOW_SCALE#, Menu_Stage_ReturnRecordValue(3,Menu\MissionNo,Menu\Option,r)-1)
 		EndIf
 	Next
-	For r=1 to 3
+	For r=1 To 3
 		If Not(Menu_Stage_ReturnRecordValue(4,Menu\MissionNo,Menu\Option,r)=0) Then
 			SetColor(Interface_Lives_R[InterfaceChar(Menu_Stage_ReturnRecordValue(4,Menu\MissionNo,Menu\Option,r))],Interface_Lives_G[InterfaceChar(Menu_Stage_ReturnRecordValue(4,Menu\MissionNo,Menu\Option,r))],Interface_Lives_B[InterfaceChar(Menu_Stage_ReturnRecordValue(4,Menu\MissionNo,Menu\Option,r))])
 			Interface_DrawHead(x#+-25*GAME_WINDOW_SCALE#*(r-1)+(((7*GAME_WINDOW_SCALE#)))+150*GAME_WINDOW_SCALE#+GAME_WINDOW_W/2-(BUTTON_PLACE1#-56)*GAME_WINDOW_SCALE#, y#+11*GAME_WINDOW_SCALE#+GAME_WINDOW_H/2-1.5*GAME_WINDOW_SCALE#+20*GAME_WINDOW_SCALE#+30*GAME_WINDOW_SCALE#, Menu_Stage_ReturnRecordValue(4,Menu\MissionNo,Menu\Option,r)-1)
 		EndIf
 	Next
-	For r=1 to 3
+	For r=1 To 3
 		If Not(Menu_Stage_ReturnRecordValue(5,Menu\MissionNo,Menu\Option,r)=0) Then
 			SetColor(Interface_Lives_R[InterfaceChar(Menu_Stage_ReturnRecordValue(5,Menu\MissionNo,Menu\Option,r))],Interface_Lives_G[InterfaceChar(Menu_Stage_ReturnRecordValue(5,Menu\MissionNo,Menu\Option,r))],Interface_Lives_B[InterfaceChar(Menu_Stage_ReturnRecordValue(5,Menu\MissionNo,Menu\Option,r))])
 			Interface_DrawHead(x#+25*GAME_WINDOW_SCALE#*(r-1)+(((7*GAME_WINDOW_SCALE#)))+72*GAME_WINDOW_SCALE#+(GAME_WINDOW_W/2)+12*GAME_WINDOW_SCALE#-(BUTTON_PLACE1#-56)*GAME_WINDOW_SCALE#, y#+48*GAME_WINDOW_SCALE#+(GAME_WINDOW_H/2)+27*GAME_WINDOW_SCALE#+20*GAME_WINDOW_SCALE#+30*GAME_WINDOW_SCALE#, Menu_Stage_ReturnRecordValue(5,Menu\MissionNo,Menu\Option,r)-1)
@@ -944,7 +1012,72 @@ Function Menu_Stage_DrawRecords(specialstage#=false,x#=0,y#=0)
 	Next
 	SetColor(255,255,255)
 
-	If Not specialstage# Then Menu_Stage_DrawRecords_Emblems(x#,y#)
+	If Not specialstage# Then 
+		Menu_Stage_DrawRecords_Emblems(x#,y#)
+		If Menu\MissionNo=1 Then Menu_Stage_DrawRecords_RedRings(500*GAME_WINDOW_SCALE#,-60*GAME_WINDOW_SCALE#)
+	EndIf 
+End Function
+Function Menu_Stage_DrawRecords_RedRings(x#=0,y#=0)
+	Select Menu\Menu
+		Case MENU_STAGE2#: stageno=(Menu\Option+Menu\OptionOrder2*4)
+		Default: stageno=(Menu\Option)
+	End Select
+	
+	If stageno<=StageAmount Then
+		If REDRING1(stageno)=0 Then
+			SetAlpha(0.75)
+			SetColor(7.5,7.5,7.5)
+		Else
+			SetAlpha(1)
+			SetColor(255,255,255)
+		EndIf
+		DrawImageEx(INTERFACE(Interface_Icons), x#+(((7*GAME_WINDOW_SCALE#)))+(GAME_WINDOW_W/2)+12*GAME_WINDOW_SCALE#-(BUTTON_PLACE1#-56)*GAME_WINDOW_SCALE#-290*GAME_WINDOW_SCALE#, y#+(GAME_WINDOW_H/2)+27*GAME_WINDOW_SCALE#+20*GAME_WINDOW_SCALE#+30*GAME_WINDOW_SCALE#+35*GAME_WINDOW_SCALE#, 32)
+		
+		If REDRING2(stageno)=0 Then
+			SetAlpha(0.75)
+			SetColor(7.5,7.5,7.5)
+		Else
+			SetAlpha(1)
+			SetColor(255,255,255)
+		EndIf
+		DrawImageEx(INTERFACE(Interface_Icons), x#+(((7*GAME_WINDOW_SCALE#)))+(GAME_WINDOW_W/2)+12*GAME_WINDOW_SCALE#-(BUTTON_PLACE1#-56)*GAME_WINDOW_SCALE#-265*GAME_WINDOW_SCALE#, y#+(GAME_WINDOW_H/2)+27*GAME_WINDOW_SCALE#+20*GAME_WINDOW_SCALE#+30*GAME_WINDOW_SCALE#+35*GAME_WINDOW_SCALE#, 32)
+		
+		If REDRING3(stageno)=0 Then
+			SetAlpha(0.75)
+			SetColor(7.5,7.5,7.5)
+		Else
+			SetAlpha(1)
+			SetColor(255,255,255)
+		EndIf
+		DrawImageEx(INTERFACE(Interface_Icons), x#+(((7*GAME_WINDOW_SCALE#)))+(GAME_WINDOW_W/2)+12*GAME_WINDOW_SCALE#-(BUTTON_PLACE1#-56)*GAME_WINDOW_SCALE#-240*GAME_WINDOW_SCALE#, y#+(GAME_WINDOW_H/2)+27*GAME_WINDOW_SCALE#+20*GAME_WINDOW_SCALE#+30*GAME_WINDOW_SCALE#+35*GAME_WINDOW_SCALE#, 32)
+		
+		If REDRING4(stageno)=0 Then
+			SetAlpha(0.75)
+			SetColor(7.5,7.5,7.5)
+		Else
+			SetAlpha(1)
+			SetColor(255,255,255)
+		EndIf
+		DrawImageEx(INTERFACE(Interface_Icons), x#+(((7*GAME_WINDOW_SCALE#)))+(GAME_WINDOW_W/2)+12*GAME_WINDOW_SCALE#-(BUTTON_PLACE1#-56)*GAME_WINDOW_SCALE#-215*GAME_WINDOW_SCALE#, y#+(GAME_WINDOW_H/2)+27*GAME_WINDOW_SCALE#+20*GAME_WINDOW_SCALE#+30*GAME_WINDOW_SCALE#+35*GAME_WINDOW_SCALE#, 32)
+		
+		If REDRING5(stageno)=0 Then
+			SetAlpha(0.75)
+			SetColor(7.5,7.5,7.5)
+		Else
+			SetAlpha(1)
+			SetColor(255,255,255)
+		EndIf
+		DrawImageEx(INTERFACE(Interface_Icons), x#+(((7*GAME_WINDOW_SCALE#)))+(GAME_WINDOW_W/2)+12*GAME_WINDOW_SCALE#-(BUTTON_PLACE1#-56)*GAME_WINDOW_SCALE#-190*GAME_WINDOW_SCALE#, y#+(GAME_WINDOW_H/2)+27*GAME_WINDOW_SCALE#+20*GAME_WINDOW_SCALE#+30*GAME_WINDOW_SCALE#+35*GAME_WINDOW_SCALE#, 32)
+		
+		
+		SetAlpha(1)
+		SetColor(255,255,255)
+		
+		
+		
+		
+		
+	EndIf
 End Function
 
 Function Menu_Stage_DrawRecords_Emblems(x#=0,y#=0)
@@ -954,7 +1087,7 @@ Function Menu_Stage_DrawRecords_Emblems(x#=0,y#=0)
 	End Select
 
 	If stageno<=StageAmount Then
-		If EMBLEMS1(Menu\MissionNo,stageno)=0 then
+		If EMBLEMS1(Menu\MissionNo,stageno)=0 Then
 			SetAlpha(0.75)
 			SetColor(7.5,7.5,7.5)
 		Else
@@ -962,7 +1095,7 @@ Function Menu_Stage_DrawRecords_Emblems(x#=0,y#=0)
 			SetColor(255,255,255)
 		EndIf
 		DrawImageEx(INTERFACE(Interface_Icons), x#+(((7*GAME_WINDOW_SCALE#)))+(GAME_WINDOW_W/2)+12*GAME_WINDOW_SCALE#-(BUTTON_PLACE1#-56)*GAME_WINDOW_SCALE#-160*GAME_WINDOW_SCALE#, y#+(GAME_WINDOW_H/2)+27*GAME_WINDOW_SCALE#+20*GAME_WINDOW_SCALE#+30*GAME_WINDOW_SCALE#+35*GAME_WINDOW_SCALE#, 4)
-		If EMBLEMS2(Menu\MissionNo,stageno)=0 then
+		If EMBLEMS2(Menu\MissionNo,stageno)=0 Then
 			SetAlpha(0.75)
 			SetColor(7.5,7.5,7.5)
 		Else
@@ -992,6 +1125,7 @@ Function Menu_Stage1_Update()
 	Menu_Stage_DrawRecords()
 
 	If Input\Pressed\Down Then
+		Menu\MissionNo=1
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option+1
 		If Menu\Option>StageAmount Then Menu\Option=1
@@ -999,6 +1133,7 @@ Function Menu_Stage1_Update()
 	EndIf
 
 	If Input\Pressed\Up Then
+		Menu\MissionNo=1
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option-1
 		If Menu\Option<1 Then Menu\Option=StageAmount
@@ -1013,7 +1148,7 @@ Function Menu_StageSpecial_Update()
 	Menu\ShowCards=True
 	Menu\ControlsToShow=Menu\Menu
 	
-	For i=1 to 7
+	For i=1 To 7
 		j=False
 		If i>1 Then
 			If UNLOCKEDEMERALDS[i-1]=0 Then j=True
@@ -1021,15 +1156,15 @@ Function Menu_StageSpecial_Update()
 		DrawSmartButton(-i, "Special Stage "+Int(i), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#-10*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2.0-105*GAME_WINDOW_SCALE#+(i-1)*35*GAME_WINDOW_SCALE#, False, True, j)
 	Next
 
-	Menu_Stage_DrawRecords(true,30*GAME_WINDOW_SCALE#,-20*GAME_WINDOW_SCALE#)
+	Menu_Stage_DrawRecords(True,30*GAME_WINDOW_SCALE#,-20*GAME_WINDOW_SCALE#)
 
 	If Input\Pressed\Down Then
 		j=Menu\Option
 		Repeat
 			Menu\Option=Menu\Option-1
 			If Menu\Option<-7 Then Menu\Option=-1
-		Until abs(Menu\Option)=1 Or UNLOCKEDEMERALDS[abs(Menu\Option)-1]=1
-		IF j<>Menu\Option Then PlaySmartSound(Sound_MenuMove)
+		Until Abs(Menu\Option)=1 Or UNLOCKEDEMERALDS[Abs(Menu\Option)-1]=1
+		If j<>Menu\Option Then PlaySmartSound(Sound_MenuMove)
 	EndIf
 
 	If Input\Pressed\Up Then
@@ -1037,8 +1172,8 @@ Function Menu_StageSpecial_Update()
 		Repeat
 			Menu\Option=Menu\Option+1
 			If Menu\Option>-1 Then Menu\Option=-7
-		Until abs(Menu\Option)=1 Or UNLOCKEDEMERALDS[abs(Menu\Option)-1]=1
-		IF j<>Menu\Option Then PlaySmartSound(Sound_MenuMove)
+		Until Abs(Menu\Option)=1 Or UNLOCKEDEMERALDS[Abs(Menu\Option)-1]=1
+		If j<>Menu\Option Then PlaySmartSound(Sound_MenuMove)
 	EndIf
 
 	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
@@ -1080,8 +1215,8 @@ Function Menu_Stage_ReturnRecordValue(value, h, i, r=0)
 	End Select
 End Function
 
-Function Menu_Stage_LoadMissions(stageno, loadideals=false)
-	For i=1 to 5
+Function Menu_Stage_LoadMissions(stageno, loadideals=False)
+	For i=1 To 5
 		StageMission[i]=0
 		StageMissionTime[i]=0
 		StageMissionMach[i]=0
@@ -1094,7 +1229,7 @@ Function Menu_Stage_LoadMissions(stageno, loadideals=false)
 	EndIf
 
 	If (Not(stageno>StageAmount Or stageno<0)) Then
-	If (fileType(StagePath$(stageno)+"/Media/Missions.xml")=1) Then
+	If (FileType(StagePath$(stageno)+"/Media/Missions.xml")=1) Then
 		xmlin = xmlLoad(StagePath$(stageno)+"/Media/Missions.xml")
 
 		For i = 1 To xmlNodeChildCount(xmlin)
@@ -1121,7 +1256,7 @@ Function Menu_Stage_LoadMissions(stageno, loadideals=false)
 	EndIf
 	EndIf
 
-	For i=1 to 5
+	For i=1 To 5
 		If StageMission[i]>MISSIONCOUNT# Then StageMission[i]=0
 	Next
 End Function
@@ -1129,11 +1264,11 @@ End Function
 Function Menu_Stage_LoadThumbnail(stageno)
 	If INTERFACE_EXISTS(Interface_Thumbnail) Then FreeSmartImage(Interface_Thumbnail)
 	If stageno>StageAmount Then
-		LoadSmartFastImage("Interface/NoThumbnail2.png", Interface_Thumbnail, 400, 308, 0, 1, 2.03695, 2.03695, false, false, true)
+		LoadSmartFastImage("Interface/NoThumbnail2.png", Interface_Thumbnail, 400, 308, 0, 1, 2.03695, 2.03695, False, False, True)
 	ElseIf Not(FileType(StagePath$(stageno)+"/Media/thumbnail.png")=1) Then
-		LoadSmartFastImage("Interface/NoThumbnail.png", Interface_Thumbnail, 400, 308, 0, 1, 2.03695, 2.03695, false, false, true)
+		LoadSmartFastImage("Interface/NoThumbnail.png", Interface_Thumbnail, 400, 308, 0, 1, 2.03695, 2.03695, False, False, True)
 	Else
-		LoadSmartFastImage(StagePath$(stageno)+"/Media/thumbnail.png", Interface_Thumbnail, 400, 308, 0, 1, 2.03695, 2.03695, false, false, true)
+		LoadSmartFastImage(StagePath$(stageno)+"/Media/thumbnail.png", Interface_Thumbnail, 400, 308, 0, 1, 2.03695, 2.03695, False, False, True)
 	EndIf
 End Function
 
@@ -1143,15 +1278,15 @@ Function Menu_Stage_LoadThumbnailAndMissions(stageno)
 End Function
 
 Function Menu_Stage_LoadStageSelectThumbnails()
-For i=1 to 12
+For i=1 To 12
 	If INTERFACE_EXISTS(Interface_StageSelectThumbnails[i]) Then FreeSmartImage(Interface_StageSelectThumbnails[i])
 	stageno = i+4*Menu\OptionOrder2
 	If stageno>StageAmount Then
-		LoadSmartFastImage("Interface/NoThumbnail2.png", Interface_StageSelectThumbnails[i], 400, 308, 0, 1, 2.03695, 2.03695, false, false, true)
+		LoadSmartFastImage("Interface/NoThumbnail2.png", Interface_StageSelectThumbnails[i], 400, 308, 0, 1, 2.03695, 2.03695, False, False, True)
 	ElseIf Not(FileType(StagePath$(stageno)+"/Media/thumbnail.png")=1) Then
-		LoadSmartFastImage("Interface/NoThumbnail.png", Interface_StageSelectThumbnails[i], 400, 308, 0, 1, 2.03695, 2.03695, false, false, true)
+		LoadSmartFastImage("Interface/NoThumbnail.png", Interface_StageSelectThumbnails[i], 400, 308, 0, 1, 2.03695, 2.03695, False, False, True)
 	Else
-		LoadSmartFastImage(StagePath$(stageno)+"/Media/thumbnail.png", Interface_StageSelectThumbnails[i], 400, 308, 0, 1, 2.03695, 2.03695, false, false, true)
+		LoadSmartFastImage(StagePath$(stageno)+"/Media/thumbnail.png", Interface_StageSelectThumbnails[i], 400, 308, 0, 1, 2.03695, 2.03695, False, False, True)
 	EndIf
 Next
 End Function
@@ -1168,22 +1303,22 @@ Function Menu_RandomNonmodChar()
 End Function
 
 Function Menu_RandomNonmodChar_NotAcceptableTails(charA,charB)
-	If (charA=CHAR_TMH and charB=CHAR_TAI) Or (charB=CHAR_TMH and charA=CHAR_TAI) Then Return True
+	If (charA=CHAR_TMH And charB=CHAR_TAI) Or (charB=CHAR_TMH And charA=CHAR_TAI) Then Return True
 	Return False
 End Function
 
-Function Menu_RandomNonmodChar_AcceptableAt1(char1,isplayer=true)
-	If isplayer and (Not UNLOCKEDCHAR[char1]=1) Then Return False
+Function Menu_RandomNonmodChar_AcceptableAt1(char1,isplayer=True)
+	If isplayer And (Not UNLOCKEDCHAR[char1]=1) Then Return False
 	Return True
 End Function
-Function Menu_RandomNonmodChar_AcceptableAt2(char1,char2,isplayer=true)
-	If isplayer and (Not UNLOCKEDCHAR[char2]=1) Then Return False
+Function Menu_RandomNonmodChar_AcceptableAt2(char1,char2,isplayer=True)
+	If isplayer And (Not UNLOCKEDCHAR[char2]=1) Then Return False
 	If char2=char1 Then Return False
 	If Menu_RandomNonmodChar_NotAcceptableTails(char1,char2) Then Return False
 	Return True
 End Function
-Function Menu_RandomNonmodChar_AcceptableAt3(char1,char2,char3,isplayer=true)
-	If isplayer and (Not UNLOCKEDCHAR[char3]=1) Then Return False
+Function Menu_RandomNonmodChar_AcceptableAt3(char1,char2,char3,isplayer=True)
+	If isplayer And (Not UNLOCKEDCHAR[char3]=1) Then Return False
 	If char3=char1 Or char3=char2 Then Return False
 	If Menu_RandomNonmodChar_NotAcceptableTails(char1,char3) Then Return False
 	If Menu_RandomNonmodChar_NotAcceptableTails(char2,char3) Then Return False
@@ -1211,3 +1346,5 @@ End Function
 
 ;--------------------------------------------------------------------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------------------------------
+;~IDEal Editor Parameters:
+;~C#Blitz3D

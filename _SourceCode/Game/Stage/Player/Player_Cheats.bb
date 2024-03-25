@@ -1,9 +1,37 @@
 	; =========================================================================================================
 	; =========================================================================================================
-
+Function Player_CycleDebugObjects(p.tPlayer)
+	Select p\ObjType
+		Case OBJTYPE_BOXWOODEN:
+			Game\Interface\DebugNewObj=OBJTYPE_BOXMETAL
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_BOXMETAL
+		Case OBJTYPE_BOXMETAL
+			Game\Interface\DebugNewObj=OBJTYPE_BOXIRON
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_BOXIRON
+		Case OBJTYPE_BOXIRON
+			Game\Interface\DebugNewObj=OBJTYPE_BOXCAGE
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_BOXCAGE
+		Case OBJTYPE_BOXCAGE
+			Game\Interface\DebugNewObj=OBJTYPE_BOXWOODEN
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_BOXWOODEN
+		;translators
+		Case OBJTYPE_HOOP
+			Game\Interface\DebugNewObj=OBJTYPE_THOOP
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_THOOP
+		Case OBJTYPE_THOOP
+			Game\Interface\DebugNewObj=OBJTYPE_HOOP
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_HOOP
+	End Select 
+End Function
 Function Player_HandleCheats(p.tPlayer)
 If p\No#=1 Then
-
+	DebugSpam_InGameEnable(p)
 	;spawn at origin, or cinema mode playing
 	If (KeyHit(KEY_F1)) Then
 		Select Game\CinemaMode
@@ -18,16 +46,16 @@ If p\No#=1 Then
 		End Select
 		Game\Cheater=1
 	EndIf
-
+	
 	;die cheat
-	If KeyHit(KEY_F2) and (Not(p\Action=ACTION_GRABBED Or p\Action=ACTION_DEBUG)) and Menu\ChaoGarden=0 Then Player_Die(p)
+	If KeyHit(KEY_F2) And (Not(p\Action=ACTION_GRABBED Or p\Action=ACTION_DEBUG)) And Menu\ChaoGarden=0 Then Game\Cheater=1 : Player_Die(p)
 
 	;hurt cheat
 	If KeyHit(KEY_HYPHEN) Then
 		If Menu\ChaoGarden=0 Then
 			Player_Hit(p)
 		Else
-			Object_Seed_Create(Rand(FRUIT_ROUND,FRUIT_RADISH), p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, true)
+			Object_Seed_Create(Rand(FRUIT_ROUND,FRUIT_RADISH), p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, True)
 		EndIf
 		Game\Cheater=1
 	EndIf
@@ -36,6 +64,9 @@ If p\No#=1 Then
 	If (KeyDown(KEY_SPACE)) Then
 		p\Motion\Ground=False : p\Motion\Speed\y=1.53
 		Game\Cheater=1
+		;p\Action=ACTION_FULLFALL
+		;Player_ResetJumpActionStuff(p)
+
 	EndIf
 
 	;object reset cheat
@@ -44,13 +75,13 @@ If p\No#=1 Then
 	EndIf
 
 	;go debug placer
-	If (Menu\ChaoGarden=0 Or Menu\Developer=1) and (Not(p\Action=ACTION_DIE)) Then
-		If (KeyHit(KEY_DELETE)) Then Player_HandleCheats_DebugPlacer(p,1)
-		If (KeyHit(KEY_F3)) Then Player_HandleCheats_DebugPlacer(p,2)
+	If (Menu\ChaoGarden=0 Or Menu\Developer=1) And (Not(p\Action=ACTION_DIE)) Then
+		If (KeyHit(KEY_DELETE)) Then Player_HandleCheats_DebugPlacer(p,1) : Game\Interface\DebugNewObj=0
+		If (KeyHit(KEY_F3)) Then Player_HandleCheats_DebugPlacer(p,2) : Game\Interface\DebugNewObj=0
 	EndIf
 
 	;character changing
-	If Menu\Members=1 Then
+	If Menu\Members=99 Then
 		If KeyHit(KEY_PLUS) Then
 			If p\RealCharacter>CHAR_NONMODPLAYABLECOUNT Then
 				p\NewCharacter=1
@@ -74,10 +105,10 @@ If p\No#=1 Then
 				Game\Cheater=1
 			EndIf
 			If Menu\CharacterRow>0 Then
-				For i=KEY_1 to KEY_0
+				For i=KEY_1 To KEY_0
 					j = (10*(Menu\CharacterRow-1))+i-1
 					If j<=CHAR_NONMODPLAYABLECOUNT Then
-					If KeyHit(i) and UNLOCKEDCHAR[j]=1 Then
+					If KeyHit(i) And UNLOCKEDCHAR[j]=1 Then
 						p\NewCharacter=j
 						Game\Cheater=1 : Game\CheaterChangedCharacter=1 : FlushKeys()
 						If p\NewCharacter>CHAR_NONMODPLAYABLECOUNT Then p\NewCharacter=1
@@ -90,10 +121,14 @@ If p\No#=1 Then
 
 	;go invincible
 	If (KeyHit(KEY_F6)) Then
-		Game\Invinc=1 : Game\InvincTimer=20.046391*secs#
-		StopChannel(Game\Channel_Invincible) : StopChannel(Game\Channel_SpeedShoes)
-		Game\Channel_Invincible=PlaySmartSound(Sound_Invincible)
-		Game\Cheater=1
+		If (Not(p\Action=ACTION_DEBUG)) Then
+			Game\Invinc=1 : Game\InvincTimer=20.046391*secs#
+			StopChannel(Game\Channel_Invincible) : StopChannel(Game\Channel_SpeedShoes)
+			Game\Channel_Invincible=PlaySmartSound(Sound_Invincible)
+			Game\Cheater=1
+		Else
+			Player_CycleDebugObjects(p)
+		EndIf 			
 	EndIf
 
 	;go speedshoes
@@ -106,10 +141,10 @@ If p\No#=1 Then
 
 	If Menu\ChaoGarden=0 Then
 		;ring cheat
-		If (KeyHit(KEY_F8)) Then Gameplay_AddRings(50) : Game\Cheater=1
+		If (KeyHit(KEY_F8)) Then Gameplay_AddRings(50) : Gameplay_AddGaugeEnergy(50) : Game\Cheater=1
 
 		;complete stage cheat
-		If (KeyHit(KEY_F9)) and Menu\Stage>0 Then Game\Cheater=1 : Player_Goal(p)
+		If (KeyHit(KEY_F9)) And Menu\Stage>0 Then Game\Cheater=1 : Player_Goal(p)
 	EndIf
 
 	;cinema mode
@@ -119,9 +154,11 @@ If p\No#=1 Then
 			Select Game\CinemaMode
 				Case 0:
 					Game\CinemaMode=1
+					If (Not(KeyDown(KEY_F))) Then
 					cam\CinemaX#=p\Objects\Position\x#
 					cam\CinemaY#=p\Objects\Position\y#
 					cam\CinemaZ#=p\Objects\Position\z#
+				EndIf
 				Default:
 					Game\CinemaMode=0
 			End Select
@@ -133,3 +170,5 @@ If p\No#=1 Then
 
 EndIf
 End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D
