@@ -1,4 +1,5 @@
 
+;; Stores most relevant in-game settings before saving them.
 Type tMenu_Settings
 	Field DisallowParticles#
 	Field Resolution#
@@ -32,8 +33,8 @@ Type tMenu_Settings
 	Field VSync#
 	Field ViewRange#
 End Type
-
-Type tMenu
+;; Menu type, consisting of flags for anything saved in the menu.
+Type tMenu 
 	Field Developer
 
 	Field FirstTime
@@ -232,8 +233,7 @@ Type tMenu
 End Type
 
 ;-----------------------------------------------------------------------------------------------------------------------------------------
-
-Global Menu.tMenu = New tMenu
+Global Menu.tMenu = New tMenu 
 Menu\Settings = New tMenu_Settings
 
 ;-----------------------------------------------------------------------------------------------------------------------------------------

@@ -10,8 +10,8 @@
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
-
-	Type tChaoEmo
+	;; Stores the Chao emotion, including the eyes, mouth and office affected by it.
+	Type tChaoEmo 
 		Field Emotion
 		Field PreviousEmotion
 		Field Objects.tChaoEmo_Objects
