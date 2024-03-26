@@ -17,7 +17,7 @@ This version of the game is built on V1.106 of [Blitz3D](https://www.blitzcoder.
 - User32
 
 As Blitz3D is no longer maintained, most of these userlibs' original links are down, so all the required .dll's and .decl's are provided.
-Assets are not included and need to be provided. See [Assets]() heading to see how to acquire said assets.
+Assets are not included and need to be provided. See [Assets](#assets) heading to see how to acquire said assets.
 
  ------------------------------------------------------------------------
 
@@ -65,7 +65,6 @@ As this is a recent discovery, it has not been tested much. Hopefully this repo 
 5. From the Command Pallate (Ctrl + Shift + P), you should see methods from the Blitz3D extension. These can be used for running open files and debugging.
 6. To build an exe you will need to open a terminal in VSCode and run ```blitzcc -o "Sonic World" "Sonic World.bb"```.
 
-
 ***When distributing the game, you need the exe, all the dlls, any folder without an underscore and a GameArchive.swarc (this file can be empty if using extracted assets)***
 
 ## Assets
@@ -77,3 +76,4 @@ The extracted folders should all be placed in the game's main directory (i.e. Ch
 ## Contributions
 
 Contributions are welcome! Feel free to fork this repository and make pull requests for new features or optimizations. If any new assets not from the base game are required for this, make sure to include those assets as well.
+As Blitz3D is a very old program, documentation is sparse. As a guide, you can learn from [this tutorial series](https://www.youtube.com/watch?v=dO2RI0b2N0c&list=PLRJvImgPvSp9uYnlkKI-hdxvfmOX2spg2) or the [Blitz3D Documentation and Samples (DocsPak)](https://www.blitzcoder.org/forum/downloads.php). These will be downloaded locally as .html files but give you almost everything to start.
