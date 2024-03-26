@@ -37,7 +37,7 @@ Assets are not included and need to be provided. See [Assets]() heading to see h
 
 ### Using IDEaL (Recommended!)
 
-1. Open `Sonic World.bb` in IDEaL
+1. Open `Sonic World.ipf` in IDEaL. (This is the equivilant of a .vsproj file for Blitz3D games)
 2. Click `Compile/Create executable`.
 
 ### Using Blitz3D
