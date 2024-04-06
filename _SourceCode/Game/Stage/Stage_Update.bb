@@ -729,9 +729,9 @@
 
 		; Render FastExt effects
 		If Menu\Stage<>0 Then
-			; RenderPostprocess(FE_GLOW)
 			If TimeControl#<0.0 Then RenderPostprocess(FE_Inverse)
 			If Menu\Settings\DepthOfField#=1 Then RenderPostprocess(FE_DOF)
+			If Menu\Settings\Bloom#=1 Then RenderPostprocess(FE_GLOW)
 			If Menu\Settings\MotionBlur#=1 and Game\Interface\DebugPlacerOn=0 Then Postprocess_BlurHandle(1,1,0,0,((pp(1)\SpeedLength#-2.2)/6.5),(pp(1)\Objects\Camera\Rotation\y#-(pp(1)\Animation\Direction#-90)))
 			If Game\Stage\Properties\Sun>0 and Game\Stage\Properties\SunRays=1 Then Postprocess_SunRays(Menu\Settings\SunRays#)
 		EndIf

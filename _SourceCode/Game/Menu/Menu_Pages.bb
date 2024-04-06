@@ -208,7 +208,7 @@ End Function
 ;===============================================================================================================================================================
 ;===============================================================================================================================================================
 ;===============================================================================================================================================================
-
+;; Runs the first time you launch the game and press start.
 Function Menu_Welcome_Update()
 
 	Menu\Music=0
@@ -246,18 +246,21 @@ Function Menu_Welcome_Update()
 				Select Menu\Option
 					Case 1:
 						Menu\Settings\DepthOfField#=0
+						Menu\Settings\Bloom#=0
 						Menu\Settings\Shadows#=0
 						Menu\Settings\MotionBlur#=0
 						Menu\Settings\SunRays#=0
 						Menu\Settings\BumpMaps#=0
 					Case 2:
 						Menu\Settings\DepthOfField#=0
+						Menu\Settings\Bloom#=0
 						Menu\Settings\Shadows#=1
 						Menu\Settings\MotionBlur#=0
 						Menu\Settings\SunRays#=0
 						Menu\Settings\BumpMaps#=1
 					Case 3:
 						Menu\Settings\DepthOfField#=0
+						Menu\Settings\Bloom#=1
 						Menu\Settings\Shadows#=1
 						Menu\Settings\MotionBlur#=0
 						Menu\Settings\SunRays#=0

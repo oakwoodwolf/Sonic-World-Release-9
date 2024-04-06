@@ -161,7 +161,7 @@ End Function
 
 ;________________________________________________________________
 
-
+;; Draws the text for the option buttons based on its id.
 Function Menu_UpdateOptionButtons(optionorder)
 
 If optionorder>MENU_RESET# Then optionorder=optionorder-MENU_RESET#
@@ -174,19 +174,20 @@ Select optionorder
 	Case 5: Menu\OptionButton$="      Controls"
 	Case 6: Menu\OptionButton$="   Controls"
 	Case 7: Menu\OptionButton$="Depth of Field"
-	Case 8: Menu\OptionButton$="Shadows"
-	Case 9: Menu\OptionButton$="Motion Blur"
-	Case 10: Menu\OptionButton$="Sun Rays"
-	Case 11: Menu\OptionButton$="Bump Maps"
-	Case 12: Menu\OptionButton$="3D Sounds"
-	Case 13: Menu\OptionButton$="Plants"
-	Case 14: Menu\OptionButton$="View Range"
-	Case 15: Menu\OptionButton$="Auto Camera"
-	Case 16: Menu\OptionButton$="V-Sync"
-	Case 17: Menu\OptionButton$="Mods"
-	Case 18: Menu\OptionButton$="Control Tips"
-	Case 19: Menu\OptionButton$="Menu Theme"
-	Case 20: Menu\OptionButton$="Reset SaveData"
+	Case 8: Menu\OptionButton$="Bloom"
+	Case 9: Menu\OptionButton$="Shadows"
+	Case 10: Menu\OptionButton$="Motion Blur"
+	Case 11: Menu\OptionButton$="Sun Rays"
+	Case 12: Menu\OptionButton$="Bump Maps"
+	Case 13: Menu\OptionButton$="3D Sounds"
+	Case 14: Menu\OptionButton$="Plants"
+	Case 15: Menu\OptionButton$="View Range"
+	Case 16: Menu\OptionButton$="Auto Camera"
+	Case 17: Menu\OptionButton$="V-Sync"
+	Case 18: Menu\OptionButton$="Mods"
+	Case 19: Menu\OptionButton$="Control Tips"
+	Case 20: Menu\OptionButton$="Menu Theme"
+	Case 21: Menu\OptionButton$="Reset SaveData"
 End Select
 
 End Function

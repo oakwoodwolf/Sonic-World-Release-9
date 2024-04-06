@@ -14,6 +14,7 @@ Type tMenu_Settings
 	Field VolumeM#
 	Field VolumeAmb#
 	Field DepthOfField#
+	Field Bloom#
 	Field Shadows#
 	Field MotionBlur#
 	Field SunRays#
@@ -271,19 +272,21 @@ Menu\Settings = New tMenu_Settings
 	Const MENU_CONTROLS#= 5
 	Const MENU_CONTROLS2#= 6
 	Const MENU_DOF#		= 7
-	Const MENU_SHADOWS#	= 8
-	Const MENU_BLUR#	= 9
-	Const MENU_SRAYS#	= 10
-	Const MENU_BUMPMAPS#= 11
-	Const MENU_SOUNDS#	= 12
-	Const MENU_PLANTS#	= 13
-	Const MENU_VIEW#	= 14
-	Const MENU_AUTOCAM#	= 15
-	Const MENU_VSYNC#	= 16
-	Const MENU_MODS#	= 17
-	Const MENU_TIPS#	= 18
-	Const MENU_THEME#	= 19
-	Const MENU_RESET#	= 20
+	Const MENU_BLOOM#	= 8
+	Const MENU_SHADOWS#	= 9
+	Const MENU_BLUR#	= 10
+	Const MENU_SRAYS#	= 11
+	Const MENU_BUMPMAPS#= 12
+	Const MENU_SOUNDS#	= 13
+	Const MENU_PLANTS#	= 14
+	Const MENU_VIEW#	= 15
+	Const MENU_AUTOCAM#	= 16
+	Const MENU_VSYNC#	= 17
+	Const MENU_MODS#	= 18
+	Const MENU_TIPS#	= 19
+	Const MENU_THEME#	= 20
+	Const MENU_RESET#	= 21
+	
 
 	Const MENU_BLACKMARKET_MAIN#		= 0
 	Const MENU_BLACKMARKET_BUY#		= 1
