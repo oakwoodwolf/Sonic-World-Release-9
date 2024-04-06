@@ -478,7 +478,7 @@ End Function
 		FxManager_Startup()
 		
 		InitPostprocess()
-		CustomPostprocessGlow(0.35, 1, 1, 0.35, 1, 255, 255, 255, 0)
+		CustomPostprocessGlow(0.35, 2, 4, 0.35, 1)
 		CustomPostprocessDOF(2000,20000,1,10,.15)
 		CustomPostprocessContrast(.60,2,225,225,225,2)
 

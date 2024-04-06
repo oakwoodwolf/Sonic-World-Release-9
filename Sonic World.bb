@@ -45,8 +45,6 @@ Include "_SourceCode\Game\Stage\Objects\ObjectsMeshes.bb"
 Include "_SourceCode\Game\Menu\Menu.bb"
 
 ; --- Initializate ---
-;   throws error if archive is not found. This can be safely removed
-If Not(FileType("GameArchive.swarc")=1) Then RuntimeError("Game Archive was not found.")
 ;   Developer mode flag. Allows debug to be used in any mode and adds extra debug functions.
 Menu\Developer=1
 

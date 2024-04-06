@@ -36,7 +36,7 @@ Function LoadMods_Characters()
 	Next
 
 	ListRoot = xmlLoad("Mods/Characters/Characters.xml")
-	If (xmlErrorCount()>0) Then RuntimeError("Game_Startup() -> Error while parsing xml")
+	If (xmlErrorCount()>0) Then RuntimeError("LoadMods_Characters() -> Error while parsing Characters.xml"+xmlError(0))
 	For i=1 To xmlNodeChildCount(ListRoot)
 		Child = xmlNodeChild(ListRoot, i)
 		Select xmlNodeNameGet$(Child)
@@ -66,11 +66,11 @@ Function LoadMods_DisableCharacter(charno)
 	UNLOCKEDCHAR[charno+CHAR_MOD1-1]=0
 	TOUNLOCKCHAR[charno+CHAR_MOD1-1]=-1
 End Function
-
+;; Loads a specific character mod
 Function LoadMods_Character(charno)
 	actualcharno = CHAR_MOD1+charno-1
 	ListRoot = xmlLoad("Mods/Characters/"+MODCHARS_PATH$(charno)+"/Character.xml")
-	If (xmlErrorCount()>0) Then RuntimeError("Game_Startup() -> Error while parsing xml")
+	If (xmlErrorCount()>0) Then RuntimeError("LoadMods_Character("+charno+") -> Error while parsing xml"+xmlError(0))
 	For i=1 To xmlNodeChildCount(ListRoot)
 		Child = xmlNodeChild(ListRoot, i)
 		Select xmlNodeNameGet$(Child)
@@ -139,7 +139,7 @@ End Function
 
 Function LoadMods_Bio$(charno)
 	ListRoot = xmlLoad("Mods/Characters/"+MODCHARS_PATH$(charno)+"/Character.xml")
-	If (xmlErrorCount()>0) Then RuntimeError("Game_Startup() -> Error while parsing xml")
+	If (xmlErrorCount()>0) Then RuntimeError("LoadMods_Bio("+charno+") -> Error while parsing Character.xml"+xmlError(0))
 	For i=1 To xmlNodeChildCount(ListRoot)
 		Child = xmlNodeChild(ListRoot, i)
 		Select xmlNodeNameGet$(Child)
@@ -163,7 +163,7 @@ Function LoadMods_Voices()
 	Next
 
 	ListRoot = xmlLoad("Mods/Voices/Voices.xml")
-	If (xmlErrorCount()>0) Then RuntimeError("Game_Startup() -> Error while parsing xml")
+	If (xmlErrorCount()>0) Then RuntimeError("LoadMods_Voices() -> Error while parsing xml"+xmlError(0))
 	For i=1 To xmlNodeChildCount(ListRoot)
 		Child = xmlNodeChild(ListRoot, i)
 		Select xmlNodeNameGet$(Child)
