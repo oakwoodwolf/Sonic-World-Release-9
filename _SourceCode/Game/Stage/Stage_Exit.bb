@@ -263,6 +263,8 @@
 		For i =1 to 3
 		If Game\CharacterMesh[i]<>0 Then FreeEntity Game\CharacterMesh[i]
 		If Game\SuperCharacterMesh[i]<>0 Then FreeEntity Game\SuperCharacterMesh[i]
+		;In R9 hypers werent freed, causing a memory leak.
+		If Game\HyperCharacterMesh[i]<>0 Then FreeEntity Game\HyperCharacterMesh[i]
 		Next
 	End Function
 
