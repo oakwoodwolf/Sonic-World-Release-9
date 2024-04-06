@@ -496,7 +496,7 @@
 	EndIf
 	Player_SkillActions(p)
 	End Function
-
+	;; Resets limits for jump actions.
 	Function Player_ResetJumpActionStuff(p.tPlayer)
 		Player_ResetAirRestrictionStuff(p)
 		Select p\Action
@@ -650,7 +650,7 @@
 	If Menu\Stage>0 and ((Player_IsPlayable(p) and Input\Pressed\ActionSkill3) or force) Then
 		Select p\Character
 			Case CHAR_ESP,CHAR_SHD,CHAR_EME,CHAR_GME,CHAR_INF:
-			Case CHAR_SON,CHAR_SHA,CHAR_BLA,CHAR_MAR,CHAR_STO,CHAR_JET,CHAR_MIG,CHAR_TIK:
+			Case CHAR_SHA,CHAR_BLA,CHAR_MAR,CHAR_STO,CHAR_JET,CHAR_MIG,CHAR_TIK:
 				Player_Action_Throw_Initiate(p)
 			Case CHAR_ROU,CHAR_MKN,CHAR_COM:
 				Player_Action_Uppercut_Initiate(p)
@@ -659,6 +659,12 @@
 					Player_Action_Throw_Initiate(p,2)
 				Else
 					Player_Action_Uppercut_Initiate(p)
+				EndIf
+			Case CHAR_SON
+				If p\Motion\Ground=False Then
+					Player_Action_Instashield_Initiate(p)
+				Else
+					Player_Action_Throw_Initiate(p)
 				EndIf
 			Case CHAR_OME:
 				Player_Action_Gatling_Initiate(p)

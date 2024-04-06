@@ -253,7 +253,15 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 
 	;deal waterparticle when used
 	If ChannelPlaying(p\Channel_Water) Then ParticleTemplate_Call(p\Particle, PARTICLE_PLAYER_WATER, p\Objects\Entity)
-
+	
+	;deal instashield mesh
+	If p\Action=ACTION_INSTASHIELD Then
+		ShowEntity(p\Objects\Instashield)
+		PositionEntity p\Objects\Instashield, EntityX(p\Objects\Mesh), EntityY(p\Objects\Mesh), EntityZ(p\Objects\Mesh)
+        	RotateEntity (p\Objects\Instashield, 0, p\Animation\Direction#-180, 0)
+	Else
+		HideEntity(p\Objects\Instashield)
+	EndIf
 	;psychokinesis sound
 	Select p\Psychokinesis
 		Case 1:

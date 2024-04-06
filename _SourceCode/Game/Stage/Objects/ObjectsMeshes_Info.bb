@@ -21,6 +21,7 @@
 	Global Mesh_Razer	= cm : cm=cm+1
 	Global Mesh_Cube	= cm : cm=cm+1
 	Global Mesh_Ice		= cm : cm=cm+1
+	Global Mesh_InstaShield = cm : cm=cm+1
 	Global Mesh_ShieldNormal= cm : cm=cm+1
 	Global Mesh_ShieldFlame	= cm : cm=cm+1
 	Global Mesh_ShieldBubble= cm : cm=cm+1

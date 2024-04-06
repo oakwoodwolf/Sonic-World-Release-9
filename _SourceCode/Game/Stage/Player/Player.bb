@@ -247,6 +247,7 @@
 		Field Mesh5
 		Field Mesh6
 		Field Shield
+		Field Instashield
 		Field Staring
 		Field DestinationTarget
 		Field AirBeg
@@ -551,6 +552,9 @@
 	Global ACTION_GLIDE				= i : i=i+1
 	Global ACTION_DOUBLEJUMP		= i : i=i+1
 	Global ACTION_LEVITATE			= i : i=i+1
+	Global ACTION_INSTASHIELD		= i : i=i+1
+	Global ACTION_FIREDASH			= i : i=i+1
+	Global ACTION_STARDASH			= i : i=i+1
 	Global ACTION_STOMP				= i : i=i+1
 	Global ACTION_HURT				= i : i=i+1
 	Global ACTION_DIE				= i : i=i+1
@@ -765,6 +769,7 @@
 		p\Objects\DestinationTarget=CreatePivot()
 		DeformCharacter(p)
 		p\Objects\JumpBall=CopyEntity(MESHES(Mesh_JumpBall), Game\Stage\Root) : Animate p\Objects\JumpBall,1,1 : HideEntity(p\Objects\JumpBall)
+		p\Objects\Instashield=CopyEntity(MESHES(Mesh_InstaShield), Game\Stage\Root) : Animate p\Objects\Instashield,1,0.756 : HideEntity(p\Objects\Instashield)
 		p\Objects\Stomp=CopyEntity(MESHES(Mesh_Stomp), Game\Stage\Root) : Animate p\Objects\Stomp,1,1 : HideEntity(p\Objects\Stomp)
 		p\Objects\Forth=CopyEntity(MESHES(Mesh_Forth), Game\Stage\Root) : Animate p\Objects\Forth,1,1 : HideEntity(p\Objects\Forth)
 		p\Objects\Scanner=CopyEntity(MESHES(Mesh_Scanner), Game\Stage\Root) : HideEntity(p\Objects\Scanner)
@@ -909,6 +914,12 @@
 					Player_Action_Float(p)
 				Case ACTION_SLOWGLIDE
 					Player_Action_SlowGlide(p)
+				Case ACTION_INSTASHIELD
+					Player_Action_Instashield(p)
+				Case ACTION_FIREDASH
+					Player_Action_FireDash(p)
+				Case ACTION_STARDASH
+					Player_Action_StarDash(p)
 				Case ACTION_SPRINT
 					Player_Action_Sprint(p)
 				Case ACTION_GRIND

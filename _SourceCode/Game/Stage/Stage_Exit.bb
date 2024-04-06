@@ -132,6 +132,7 @@
 			FreeEntity p\Objects\Froggy
                         FreeEntity p\Objects\JumpBall
                         FreeEntity p\Objects\Stomp
+						FreeEntity p\Objects\Instashield
 			FreeEntity p\Objects\Scanner
 			FreeEntity p\Objects\FollowerPlace[1-1]
 			FreeEntity p\Objects\FollowerPlace[2-1]

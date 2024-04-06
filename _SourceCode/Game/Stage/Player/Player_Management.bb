@@ -228,14 +228,14 @@
 	EndIf
 
 	; Determine if attacking strongly
-	If p\Action=ACTION_STOMP Or (p\Action=ACTION_GLIDE and Menu\ChaoGarden=0) Or p\Action=ACTION_SPRINT Or p\Action=ACTION_PUNCH Or p\Action=ACTION_THRUST Or p\Action=ACTION_SWIPE Or p\Action=ACTION_UPPERCUT Or p\Action=ACTION_CLAW Or (p\Action=ACTION_THROW and (p\Character=CHAR_KNU Or p\Character=CHAR_HBO Or p\Character=CHAR_STO Or p\Character=CHAR_MET Or p\Character=CHAR_MT3)) Or (p\Action=ACTION_BOARD and (p\GrindTurn=2 Or p\SpeedLength#>1)) Or p\Action=ACTION_BOARDJUMP Or p\Action=ACTION_BOARDFALL Or p\Action=ACTION_BOARDDRIFT Or p\Action=ACTION_BOARDTRICK Or p\Action=ACTION_GLIDER Or ((p\Action=ACTION_CAR Or p\Action=ACTION_CARFALL Or p\Action=ACTION_CARDRIFT) and (p\SpeedLength#>1 Or p\Motion\Speed\y#>1)) Or p\Action=ACTION_BELLYFLOP Or p\Action=ACTION_TORNADO Then
+	If p\Action=ACTION_STOMP Or (p\Action=ACTION_GLIDE and Menu\ChaoGarden=0) Or p\Action=ACTION_INSTASHIELD Or p\Action=ACTION_STARDASH Or p\Action=ACTION_FIREDASH Or p\Action=ACTION_SPRINT Or p\Action=ACTION_PUNCH Or p\Action=ACTION_THRUST Or p\Action=ACTION_SWIPE Or p\Action=ACTION_UPPERCUT Or p\Action=ACTION_CLAW Or (p\Action=ACTION_THROW and (p\Character=CHAR_KNU Or p\Character=CHAR_HBO Or p\Character=CHAR_STO Or p\Character=CHAR_MET Or p\Character=CHAR_MT3)) Or (p\Action=ACTION_BOARD and (p\GrindTurn=2 Or p\SpeedLength#>1)) Or p\Action=ACTION_BOARDJUMP Or p\Action=ACTION_BOARDFALL Or p\Action=ACTION_BOARDDRIFT Or p\Action=ACTION_BOARDTRICK Or p\Action=ACTION_GLIDER Or ((p\Action=ACTION_CAR Or p\Action=ACTION_CARFALL Or p\Action=ACTION_CARDRIFT) and (p\SpeedLength#>1 Or p\Motion\Speed\y#>1)) Or p\Action=ACTION_BELLYFLOP Or p\Action=ACTION_TORNADO Then
 		p\Flags\StronglyAttacking=True
 	Else
 		p\Flags\StronglyAttacking=False
 	EndIf
 
 	; Determine if doing air attack
-	If (p\Action=ACTION_GLIDE and Menu\ChaoGarden=0) Or p\Action=ACTION_PUNCH Or p\Action=ACTION_THRUST Or p\Action=ACTION_SWIPE Or p\Action=ACTION_SPRINT Or p\Action=ACTION_CLAW Or p\Action=ACTION_UPPERCUT Then
+	If (p\Action=ACTION_GLIDE and Menu\ChaoGarden=0) Or p\Action=ACTION_INSTASHIELD Or p\Action=ACTION_STARDASH Or p\Action=ACTION_FIREDASH Or p\Action=ACTION_PUNCH Or p\Action=ACTION_THRUST Or p\Action=ACTION_SWIPE Or p\Action=ACTION_SPRINT Or p\Action=ACTION_CLAW Or p\Action=ACTION_UPPERCUT Then
 		p\Flags\InAirAttack=True
 	Else
 		p\Flags\InAirAttack=False
@@ -251,7 +251,7 @@
 
 	; Determine if doing targeter air attack
 	Select p\Action
-		Case ACTION_THRUST,ACTION_SPRINT,ACTION_UPPERCUT,ACTION_SWIPE,ACTION_CLAW:
+		Case ACTION_THRUST,ACTION_STARDASH,ACTION_SPRINT,ACTION_UPPERCUT,ACTION_SWIPE,ACTION_CLAW:
 			If p\Motion\Ground=False Then p\Flags\InTargeterAirAttack=True Else p\Flags\InTargeterAirAttack=False
 		Default:
 			p\Flags\InTargeterAirAttack=False

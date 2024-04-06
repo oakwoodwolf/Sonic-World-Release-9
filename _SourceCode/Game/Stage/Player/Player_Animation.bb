@@ -442,6 +442,8 @@ If Game\Interface\DebugPlacerOn=0 Then Player_UpdateBoneEntities(p)
 				p\Animation\Animation = ANIMATION_FORWARD
 			Case ACTION_HOMING,ACTION_SPIRIT
 				p\Animation\Animation = ANIMATION_SPIN
+			Case ACTION_INSTASHIELD, ACTION_STARDASH, ACTION_FIREDASH
+				p\Animation\Animation = ANIMATION_SPIN
 			Case ACTION_FLY,ACTION_LEVITATE,ACTION_BUOY,ACTION_SOARFLAP
 				p\Animation\Animation = ANIMATION_FLY
 			Case ACTION_SHOOTHOVER
