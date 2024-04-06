@@ -175,7 +175,8 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-
+	;; Returns True if the player is controllable and not an NPC.
+	;;return IsPlayable
 	Function Player_IsPlayable(p.tPlayer)
 		If p\No#>0 Then Return True Else Return False
 	End Function
@@ -186,7 +187,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-
+	;; Controls the follow mechanic for other members in a pair or a team.
 	Function Player_Follow(p.tPlayer)
 
 		If Game\Victory=0 and (Not(pp(1)\Action=ACTION_TORNADO)) Then
@@ -520,7 +521,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-
+	;; Controls what skills each character can do.
 	Function Player_SkillActions(p.tPlayer,force=false)
 	If Not((p\No#=1 or p\No#<0) and Menu\ChaoGarden=0) Then Return
 	If Menu\Stage>0 and ((Player_IsPlayable(p) and Input\Pressed\ActionSkill1) or force) Then
@@ -693,7 +694,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-
+	;; Main function for fall. Controls which fall state to use.
 	Function Player_ActuallyFall(p.tPlayer)
 		If p\Motion\Ground=False Then
 			Select p\Action
@@ -705,7 +706,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-
+	;; Main function for charging spindash.
 	Function Player_ActuallyCharge(p.tPlayer,force=false)
 	If p\No#=1 Or force Or (pp(1)\Invisibility=0 and (pp(1)\Action=ACTION_COMMON Or pp(1)\Action=ACTION_ROLL Or pp(1)\Action=ACTION_CHARGE Or pp(1)\Action=ACTION_DRIFT)) Then
 
@@ -721,7 +722,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-
+	;; Main function for jumping.
 	Function Player_ActuallyJump(p.tPlayer,force=false,noeffects=false,mightbebounce=false)
 	If p\No#=1 Or force Or (pp(1)\Flags\InJumpAction=False and pp(1)\Invisibility=0) Then
 
@@ -852,7 +853,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-
+	;; Resets action flags i.e. jumpdashing on landing.
 	Function Player_ResetAirRestrictionStuff(p.tPlayer)
 		p\JumpDashedOnce=0
 		p\LevitatedOnce=0
@@ -867,7 +868,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-
+	;; Main function for homing attack.
 	Function Player_HomingAttack(p.tPlayer, d.tDeltaTime)
 		If p\Flags\HomingLocked Then
 			If p\Action=ACTION_HOMING Or p\Flags\InTargeterAirAttack Then

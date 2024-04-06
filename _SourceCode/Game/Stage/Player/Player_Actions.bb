@@ -70,7 +70,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-
+	;; Update function for the Landing.
 	Function Player_Action_Land(p.tPlayer)
 		
 		Player_Action_Common(p)
@@ -81,7 +81,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-
+	;; Update function for falling.
 	Function Player_Action_Fall(p.tPlayer)
 
 		Player_ActuallyLand(p)
@@ -90,7 +90,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-
+	;; Update function for falling, with jump actions available.
 	Function Player_Action_JumpFall(p.tPlayer)
 
 		Player_JumpActions(p)
@@ -101,7 +101,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-
+	;; Update function for the Charging a Spindash.
 	Function Player_Action_Charge(p.tPlayer)
 
 		ParticleTemplate_Call(p\SmokeParticle, PARTICLE_PLAYER_SMOKE, p\Objects\Mesh, 1, 0.075, p\SpeedLength#+1.25, 0, 1, 0.0375)
@@ -128,7 +128,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-
+	;; Start function for the Roll/Released Spindash.
 	Function Player_Action_Roll_Initiate(p.tPlayer, chargedelay#)
 		p\Action = ACTION_ROLL
 		If Player_IsSoundable(p) Then EmitSmartSound(Sound_SpinDashRelease,p\Objects\Entity)
@@ -139,7 +139,7 @@
 			Player_SetSpeed(p,p\Physics\SPINDASH_SPEED#+1.0+(5.0-chargedelay#),true)
 		EndIf
 	End Function
-
+	;; Start function for the Roll/Released Spindash for Rival players.
 	Function Player_Action_Roll_Initiate_Rival(p.tPlayer)
 		p\Action = ACTION_ROLL
 		p\Rival\Speed#=p\Physics\SPINDASH_SPEED#+Rand(0,4)/2.0
@@ -147,7 +147,7 @@
 		EmitSmartSound(Sound_SpinDashRelease,p\Objects\Entity)
 		Player_PlayAttackVoice(p)
 	End Function
-
+	;; Update function for the Roll/Released Spindash.
 	Function Player_Action_Roll(p.tPlayer)
 
 		If p\No#>1 and (Not(pp(1)\Action=ACTION_CHARGE Or pp(1)\Action=ACTION_ROLL)) Then p\Action=ACTION_COMMON
@@ -166,7 +166,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-
+	;; Start function for the Drift.
 	Function Player_Action_Drift_Initiate(p.tPlayer)
 		If p\No#=1 Then
 			If (Not(p\Action=ACTION_CHARGE Or p\Action=ACTION_ROLL)) Then EmitSmartSound(Sound_SpinDashCharge,p\Objects\Entity)
@@ -179,7 +179,7 @@
 			Case 2: p\DriftDirection=-1
 		End Select
 	End Function
-
+	;; Update function for the Drift.
 	Function Player_Action_Drift(p.tPlayer)
         
 		Create_Spark.tSpark(p,p\Objects\Entity,MESHES(Mesh_Spark),cam\Entity, p\Animation\Direction#, 0, p\No#)
@@ -201,7 +201,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-
+	;; Update function for player up state. Often used on ramps.
 	Function Player_Action_Fwd(p.tPlayer)
 
 		Player_ResetAirRestrictionStuff(p)
@@ -216,7 +216,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-
+	;; Update function for player up state. Often used on springs.
 	Function Player_Action_Up(p.tPlayer)
 
 		Player_ResetAirRestrictionStuff(p)
@@ -231,7 +231,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-
+	;; Start function for the Air-Dash for the player
 	Function Player_Action_JumpDash_Initiate(p.tPlayer)
 		If p\JumpDashedOnce=0 Then
 			p\JumpDashedOnce=1
@@ -243,13 +243,13 @@
 			Player_FollowerHolding_EveryoneJumpDashes(p)
 		EndIf
 	End Function
-
+	;; Start function for the Air-Dash for followers
 	Function Player_Action_JumpDash_Initiate_Generic(p.tPlayer)
 		p\Action=ACTION_JUMPDASH
 		p\JumpDashTimer=0.35*secs#
 		Player_SetSpeed(p,(p\Physics\JUMPDASH_SPEED#+1.3),true)
 	End Function
-
+	;; Update function for the Air-Dash
 	Function Player_Action_JumpDash(p.tPlayer)
 
 		Player_SetSpeedYUpDown(p,0.5,p\JumpActionRestrictTimer)
@@ -262,7 +262,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-
+	;; Update function for the Homing Attack
 	Function Player_Action_Homing(p.tPlayer)
 
 		If (Not(p\HomingTimer>0)) and p\Flags\Targeter=0 Then p\Action=ACTION_FALL
@@ -285,7 +285,7 @@
 		If p\LevitatedOnce=0 Then p\FlyDistanceLimit=p\Objects\Position\y# : p\LevitatedOnce=1
 		If p\Character=CHAR_CHA Then Player_SetSpeedY(p,abs(p\Physics\BUZZFLYFALL_SPEED#*2))
 	End Function
-
+	;; Update function for the Fly
 	Function Player_Action_Fly(p.tPlayer)
 
 		Player_ActuallyLand(p)
@@ -333,7 +333,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-
+	;; Start function for the glide
 	Function Player_Action_Glide_Initiate(p.tPlayer)
 		If (Not(p\GlideRestartTimer>0)) Then
 			Player_PlayJumpActionVoice(p)
@@ -343,7 +343,7 @@
 			Player_SetSpeedY(p,0,true)
 		EndIf
 	End Function
-
+	;; Update function for the Glide
 	Function Player_Action_Glide(p.tPlayer)
 
 		Player_ActuallyLand(p)
@@ -360,7 +360,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-
+	;; Starts a Double Jump for the player
 	Function Player_Action_DoubleJump_Initiate(p.tPlayer,wallkick=false)
 		If p\JumpDashedOnce=0 Then
 			p\JumpDashedOnce=1
@@ -395,7 +395,7 @@
 			Player_FollowerHolding_EveryoneDoubleJumps(p)
 		EndIf
 	End Function
-
+	;; Starts a Double Jump for followers.
 	Function Player_Action_DoubleJump_Initiate_Generic(p.tPlayer,wallkick=false)
 		p\DoubleJump=0
 		p\DoubleJumpTimer=0.105*secs#
@@ -405,7 +405,7 @@
 		p\Motion\Ground = False
 		p\Motion\Align\x# = 0.0 : p\Motion\Align\y# = 1.0 : p\Motion\Align\z# = 0.0
 	End Function
-
+	;; Update function for the Double Jump
 	Function Player_Action_DoubleJump(p.tPlayer)
 
 		Select p\Character
