@@ -386,7 +386,7 @@ Function Menu_Characters1_Controls(char,x#,y#,ystep#)
 
 	EndIf
 End Function
-
+;; Updates the older character select, accessible by pressing Skill 2.
 Function Menu_Characters1_Update()
 	If Menu\Option>CHAR_NONMODPLAYABLECOUNT and Menu\Settings\Mods#=0 Then
 		found=false
@@ -460,7 +460,7 @@ Function Menu_Characters2_Roster(x#, y#)
 	Next
 	Next
 End Function
-
+;; Updates the main grid-based character select.
 Function Menu_Characters2_Update()
 	Menu_Characters2_Roster(GAME_WINDOW_W/2+(BUTTON_PLACE1#-150)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-100)*GAME_WINDOW_SCALE#)
 
@@ -482,7 +482,7 @@ Function Menu_Characters2_Update()
 	If Input\Pressed\ActionDrift Then
 		PlaySmartSound(Sound_MenuBack)
 		Menu\Option2=Menu\Option2+1
-		If Menu\Option2>2 Then Menu\Option2=1
+		If Menu\Option2>6 Then Menu\Option2=1
 		Menu\MeshChange=1
 	EndIf
 
