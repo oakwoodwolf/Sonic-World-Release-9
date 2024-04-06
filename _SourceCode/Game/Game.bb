@@ -479,7 +479,7 @@ End Function
 		
 		InitPostprocess()
 		CustomPostprocessGlow(0.35, 1, 1, 0.35, 1, 255, 255, 255, 0)
-		CustomPostprocessDOF(400,620,1,3,.15)
+		CustomPostprocessDOF(2000,20000,1,10,.15)
 		CustomPostprocessContrast(.60,2,225,225,225,2)
 
 		Game\Others\FpsLimit=CreateTimer(FPS_LIMIT)
