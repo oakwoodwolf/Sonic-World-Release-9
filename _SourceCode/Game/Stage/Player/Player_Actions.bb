@@ -620,31 +620,34 @@
 	; =========================================================================================================
 	; =========================================================================================================
 	Function Player_Action_Instashield_Initiate(p.tPlayer,limit=1)
-		Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_BELLYFLOP)
-		Select Game\Shield
-						Case OBJTYPE_FSHIELD:
-							If p\Underwater=0 Then
-								p\Action=ACTION_FIREDASH
-								EmitSmartSound(Sound_FireDash,p\Objects\Entity)
+	If p\JumpDashedOnce=0 Then
+			p\JumpDashedOnce=1
+			Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_BELLYFLOP)
+			Select Game\Shield
+							Case OBJTYPE_FSHIELD:
+								If p\Underwater=0 Then
+									p\Action=ACTION_FIREDASH
+									EmitSmartSound(Sound_FireDash,p\Objects\Entity)
+									p\JumpDashTimer=0.35*secs#
+								EndIf
+							Case OBJTYPE_BSHIELD:
+								Player_Action_Stomp_Initiate(p, true)
+								ParticleTemplate_Call(p\WaterParticle, PARTICLE_PLAYER_WATERSPLASH, p\Objects\Mesh, (p\SpeedLength#/2.0))
+								p\BouncesDone=0
+							Case OBJTYPE_ESHIELD:
+								p\Action=ACTION_STARDASH
+								EmitSmartSound(Sound_Dash,p\Objects\Entity)
 								p\JumpDashTimer=0.35*secs#
-							EndIf
-						Case OBJTYPE_BSHIELD:
-							Player_Action_Stomp_Initiate(p, true)
-							ParticleTemplate_Call(p\WaterParticle, PARTICLE_PLAYER_WATERSPLASH, p\Objects\Mesh, (p\SpeedLength#/2.0))
-							p\BouncesDone=0
-						Case OBJTYPE_ESHIELD:
-							p\Action=ACTION_STARDASH
-							EmitSmartSound(Sound_Dash,p\Objects\Entity)
-							p\JumpDashTimer=0.35*secs#
-						Case OBJTYPE_TSHIELD:
-							ParticleTemplate_Call(p\Particle, PARTICLE_PLAYER_ELECTRIC, p\Objects\Entity, 1)
-							Player_Action_DoubleJump_Initiate_Generic(p, false)
-							EmitSmartSound(Sound_DashElectro,p\Objects\Entity)
-						Default:
-							p\Action=ACTION_INSTASHIELD
-							p\JumpDashTimer=0.31*secs#
-							EmitSmartSound(Sound_GlideStart,p\Objects\Entity)
-					End Select
+							Case OBJTYPE_TSHIELD:
+								ParticleTemplate_Call(p\Particle, PARTICLE_PLAYER_ELECTRIC, p\Objects\Entity, 1)
+								Player_Action_DoubleJump_Initiate_Generic(p, false)
+								EmitSmartSound(Sound_DashElectro,p\Objects\Entity)
+							Default:
+								p\Action=ACTION_INSTASHIELD
+								p\JumpDashTimer=0.31*secs#
+								EmitSmartSound(Sound_GlideStart,p\Objects\Entity)
+						End Select
+		End If
 	End Function
 	
 	;; Update function for InstaShield (Ported from R4)
