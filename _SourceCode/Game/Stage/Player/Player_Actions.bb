@@ -316,7 +316,7 @@
 						If (Not(Game\CheeseTimer>0)) and (Not(p\CheeseRestrictTimer>0)) Then Player_Action_Drop_Initiate(p)
 					Case CHAR_CHA:
 						Player_Action_Sprint_Initiate(p)
-					Case CHAR_EGR:
+					Case CHAR_EGR, CHAR_TRI:
 						Player_Action_Shoot_Initiate(p)
 				End Select
 			EndIf
@@ -776,7 +776,7 @@
 		EndIf
 
 		Player_ActuallyJump(p)
-
+		If (p\SpeedLength#)>2 Then ParticleTemplate_Call(p\SmokeParticle, PARTICLE_PLAYER_SMOKE, p\Objects\Mesh, 1, 0.075, p\SpeedLength#+1.25, 0, 1, 0.0375)
 		If abs(p\Rotation#)<17.5 Then p\Action=ACTION_COMMON
 
 		If p\AirBegTooFar Then Player_ActuallyJump(p,true,true) : p\AirBegGround=False
@@ -876,7 +876,8 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-
+	;; Start function for shooting a projectile.
+	;;param throwtype determines type of projectile movement 
 	Function Player_Action_Throw_Initiate(p.tPlayer,throwtype=1,limit=2)
 		Select p\Character
 			Case CHAR_CRE: If throwtype=1 and (Not( (Not(Game\CheeseTimer>0)) and (Not(p\CheeseRestrictTimer>0)) )) Then Return
@@ -890,7 +891,7 @@
 			Select p\Character
 				Case CHAR_HBO,CHAR_MPH,CHAR_INF: p\ThrowTimer=0.577*secs#
 				Case CHAR_KNU: If throwtype=1 Then p\ThrowTimer=0.577*secs# Else p\ThrowTimer=0.37*secs#
-				Case CHAR_CHO,CHAR_BLA,CHAR_STO,CHAR_SON: If throwtype=2 Then p\ThrowTimer=0.577*secs# Else p\ThrowTimer=0.37*secs#
+				Case CHAR_CHO,CHAR_BLA,CHAR_TRI,CHAR_STO,CHAR_SON: If throwtype=2 Then p\ThrowTimer=0.577*secs# Else p\ThrowTimer=0.37*secs#
 				Default: p\ThrowTimer=0.37*secs#
 			End Select
 			p\ThrowABomb=0
@@ -902,7 +903,7 @@
 			End Select
 		EndIf
 	End Function
-
+	;; Drops a projectile, used by flying characters.
 	Function Player_Action_Drop_Initiate(p.tPlayer,throwtype=1,limit=4)
 		If (Not(p\ThrowTimer>0)) and p\BombThrown<limit Then
 			p\ThrowTimer=0.37*secs#
@@ -963,7 +964,7 @@
 					Case 2: EmitSmartSound(Sound_Ninja,p\Objects\Entity)
 					End Select
 				Case CHAR_AMY: EmitSmartSound(Sound_Flower1,p\Objects\Entity)
-				Case CHAR_BLA: EmitSmartSound(Sound_FireDash,p\Objects\Entity)
+				Case CHAR_BLA,CHAR_TRI: EmitSmartSound(Sound_FireDash,p\Objects\Entity)
 				Case CHAR_RAY: EmitSmartSound(Sound_Dart,p\Objects\Entity)
 				Case CHAR_ESP,CHAR_JET: EmitSmartSound(Sound_Ninja,p\Objects\Entity)
 				Case CHAR_KNU:
@@ -1061,6 +1062,8 @@
 						Case 1: Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_FLAME)
 						Case 2: Object_Bomb_Create5(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180+360, 0, BOMB_FIREBALL)
 					End Select
+				Case CHAR_TRI:
+ 					Object_Bomb_Create.tBomb(p, EntityX(p\Objects\Head,1), EntityY(p\Objects\Head,1), EntityZ(p\Objects\Head,1), 0, p\Animation\Direction#-180, 0, BOMB_FLAME)
 				Case CHAR_KNU:
 					Select p\ThrowType
 						Case 1: Object_Bomb_Create5(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180+360, 0, BOMB_FIREBALL)
@@ -1135,7 +1138,7 @@
 			If (Not(p\Action=ACTION_TORNADO)) Then
 				Player_PlayAttackVoice(p)
 				If p\Action=ACTION_HOVER Or p\Action=ACTION_FLY Then p\Action=ACTION_SHOOTHOVER Else p\Action=ACTION_SHOOT
-				If p\Motion\Ground=False and (p\Character=CHAR_EGR) Then p\BombThrown=p\BombThrown+1
+				If p\Motion\Ground=False and (p\Character=CHAR_EGR Or p\Character=CHAR_TRI) Then p\BombThrown=p\BombThrown+1
 			Else
 				p\TornadoShoot=1
 			EndIf
@@ -1180,6 +1183,8 @@
 				Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_ORB, -1)
 				Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_ORB)
 				Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_ORB, 1)
+			Case CHAR_TRI:
+				Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_FLAME)
 			Default:
 				Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_SHOT)
 		End Select
@@ -2181,7 +2186,7 @@
 	; =========================================================================================================
 
 	Function Player_Action_Gatling_Initiate(p.tPlayer)
-		If (p\Motion\Ground Or p\Character=CHAR_TIA) and (Not(p\ShootCooldownTimer>0)) Then
+		If (p\Motion\Ground Or p\Character=CHAR_TIA Or p\Character=CHAR_TRI) and (Not(p\ShootCooldownTimer>0)) Then
 			Player_PlayAttackVoice(p)
 			p\Action=ACTION_GATLING
 			p\PunchTimer=0.2*secs#
@@ -2196,33 +2201,42 @@
 			Case CHAR_TIA:
 				Player_SetSpeedY(p,0)
 				If Not(ChannelPlaying(p\Channel_Tinkle)) Then p\Channel_Tinkle=EmitSmartSound(Sound_Tinkle,p\Objects\Entity)
+			Case CHAR_TRI:
+				Player_SetSpeedY(p,0)
+				If Not(ChannelPlaying(p\Channel_Tinkle)) Then p\Channel_Tinkle=EmitSmartSound(Sound_Fire,p\Objects\Head)
 			Default:
 				Player_ActuallyFall(p)
 		End Select
 
 		If (Not(p\PunchTimer>0)) Then
 			If p\PunchNumber<10 Then
-				p\PunchTimer=0.25*secs#
 				Select p\Character
 					Case CHAR_OME:
+						p\PunchTimer=0.25*secs#
 						EmitSmartSound(Sound_Shotgun2,p\Objects\Entity)
 						Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_BULLET2, 1)
 						Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandL,1), EntityY(p\Objects\HandL,1), EntityZ(p\Objects\HandL,1), 0, p\Animation\Direction#-180, 0, BOMB_BULLET2, 2)
 					Case CHAR_VEC:
+						p\PunchTimer=0.25*secs#
 						EmitSmartSound(Sound_GlideStart2,p\Objects\Entity)
 						Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#+4, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_NOTE)
 					Case CHAR_TIA:
+						p\PunchTimer=0.25*secs#
 						Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_BEAM)
+					Case CHAR_TRI:
+						p\PunchTimer=0.15*secs#
+						Object_Bomb_Create.tBomb(p, EntityX(p\Objects\Head,1), EntityY(p\Objects\Head,1), EntityZ(p\Objects\Head,1), 0, p\Animation\Direction#-180, 0, BOMB_FIREBALL)
+						Object_Bomb_Create.tBomb(p, EntityX(p\Objects\Head,1), EntityY(p\Objects\Head,1), EntityZ(p\Objects\Head,1), 0, p\Animation\Direction#-180, 0, BOMB_FLAME)
 				End Select
 				p\PunchNumber=p\PunchNumber+1
 			EndIf
 		EndIf
 
-		If (((Not(Input\Hold\ActionSkill3)) and (Not(p\Character=CHAR_TIA))) Or ((Not(Input\Hold\ActionSkill1)) and (p\Character=CHAR_TIA))) Or (Not(p\PunchNumber<10)) Then
+		If (((Not(Input\Hold\ActionSkill3)) and (Not(p\Character=CHAR_TIA)) and (Not(p\Character=CHAR_TRI))) Or ((Not(Input\Hold\ActionSkill1)) and ((p\Character=CHAR_TIA) Or (p\Character=CHAR_TRI)))) Or (Not(p\PunchNumber<10)) Then
 			p\PunchTimer=0
 			If p\Motion\Ground Then p\Action=ACTION_COMMON Else p\Action=ACTION_JUMPFALL
 			Select p\Character
-				Case CHAR_TIA: p\ShootCooldownTimer=1.82*secs#
+				Case CHAR_TIA,CHAR_TRI: p\ShootCooldownTimer=1.82*secs#
 			End Select
 		EndIf
 
@@ -2241,7 +2255,7 @@
 
 		If (Not(Animating(p\Objects\Mesh))) Then
 			Select p\Character
-				Case CHAR_EGR: p\Action=ACTION_FLY
+				Case CHAR_EGR, CHAR_TRI: p\Action=ACTION_FLY
 				Default: p\Action=ACTION_HOVER
 			End Select
 			Player_Action_Shoot_Shot(p)

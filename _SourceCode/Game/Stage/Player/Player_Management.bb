@@ -219,7 +219,7 @@
 	EndIf
 
 	; Determine if attacking
-	If p\Flags\StronglyAttacking Or p\Action=ACTION_JUMP Or p\Action=ACTION_HOP Or p\Action=ACTION_CHARGE Or p\Action=ACTION_ROLL Or p\Action=ACTION_DRIFT Or p\Action=ACTION_HOMING Or p\Action=ACTION_BUMPED Then
+	If p\Flags\StronglyAttacking Or p\Action=ACTION_JUMP Or p\Action=ACTION_HOP Or p\Action=ACTION_CHARGE Or p\Action=ACTION_ROLL Or p\Action=ACTION_DRIFT Or p\Action=ACTION_HOMING Or p\Action=ACTION_BUMPED Or (p\Character=CHAR_TRI And p\Action=ACTION_DOUBLEJUMP) Then
 		p\Flags\Attacking=True
 		If Not(p\Flags\TargeterTimer>0) Then p\Flags\Targeter=0
 	Else
@@ -258,7 +258,7 @@
 	End Select
 
 	; Determine if doing spin jump attack
-	If p\Action=ACTION_JUMP Or p\Action=ACTION_HOP Then
+	If p\Action=ACTION_JUMP Or p\Action=ACTION_HOP Or (p\Character=CHAR_TRI And p\Action=ACTION_DOUBLEJUMP) Then
 		p\Flags\InJumpAttack=True
 	Else
 		p\Flags\InJumpAttack=False
@@ -307,7 +307,7 @@
 
 		; If the character's on the ground, apply deceleration based on the current slope, and
 		; check if he has not enough speed to go further.
-		If p\CanClimbTimer>0 and p\AirBegTooFar=False and (p\Action=ACTION_CLIMB Or (p\Action=ACTION_GLIDE and (Not(p\Character=CHAR_OME))) Or (p\Action=ACTION_SPRINT and Player_CanWallKick(p))) Then
+		If p\CanClimbTimer>0 and p\AirBegTooFar=False and (p\Action=ACTION_CLIMB Or (p\Action=ACTION_GLIDE and (Not(p\Character=CHAR_OME))) Or (p\Action=ACTION_SPRINT and Player_CanWallKick(p)) Or (p\Action=ACTION_DOUBLEJUMP and p\Character=CHAR_TRI)) Then
 			p\Flags\CanClimb=True
 			p\Physics\MOTION_GROUND# = -1
 		Else
@@ -1004,12 +1004,26 @@ End Function
 				Case 3: Return CHAR_SIL
 				Case 4: Return CHAR_KNU
 				End Select
+			Case CHAR_TRI:
+				Select(try)
+				Case 1: Return CHAR_NAC
+				Case 2: Return CHAR_AMY
+				Case 3: Return CHAR_EGR
+				Case 4: Return CHAR_EGW
+				End Select
 			Case CHAR_TMH:
 				Select(try)
 				Case 1: Return CHAR_EGG
 				Case 2: Return CHAR_CHW
 				Case 3: Return CHAR_GAM
 				Case 4: Return CHAR_BET
+				End Select
+			Default:
+				Select(try)
+				Case 1: Return CHAR_SHA
+				Case 2: Return CHAR_MET
+				Case 3: Return CHAR_SIL
+				Case 4: Return CHAR_INF
 				End Select
 		End Select
 		Return CHAR_SON

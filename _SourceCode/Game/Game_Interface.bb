@@ -610,7 +610,7 @@ End Function
 						Game\Interface\ShowCaution3Timer=0.01*secs#
 						DrawBetterNumber(p\ThrowTimer/secs#, GAME_WINDOW_W-73*GAME_WINDOW_SCALE#, (66+36*i)*GAME_WINDOW_SCALE#, 0, 1)
 					EndIf
-				Case CHAR_OME,CHAR_VEC,CHAR_TIA:
+				Case CHAR_OME,CHAR_VEC,CHAR_TIA, CHAR_TRI:
 					If p\ShootCooldownTimer>0 Then
 						Game\Interface\ShowCaution1Timer=0.01*secs#
 						DrawBetterNumber(p\ShootCooldownTimer/secs#, GAME_WINDOW_W-73*GAME_WINDOW_SCALE#, (66+36*i)*GAME_WINDOW_SCALE#, 0, 1)

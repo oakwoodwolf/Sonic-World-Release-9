@@ -329,6 +329,7 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 						Case CHAR_CHW: p\DrownValue=25
 						Case CHAR_EGR: p\DrownValue=-1
 						Case CHAR_INF: p\DrownValue=40
+						Case CHAR_TRI: p\DrownValue=40
 						Default:
 							If IsCharMod(InterfaceChar(p\RealCharacter)) Then
 								p\DrownValue=(MODCHARS_DROWN(p\RealCharacter-CHAR_MOD1+1))

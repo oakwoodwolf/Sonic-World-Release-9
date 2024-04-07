@@ -1140,7 +1140,7 @@
 
 	Function Player_HasSuperModel(char)
 		Select char
-			Case CHAR_SON,CHAR_TAI,CHAR_KNU,CHAR_SHA,CHAR_SIL,CHAR_BLA:
+			Case CHAR_SON,CHAR_TAI,CHAR_KNU,CHAR_SHA,CHAR_SIL,CHAR_BLA,CHAR_TRI:
 				Return true
 			Default:
 				Return false

@@ -45,6 +45,7 @@ ShortCharNames$(CHAR_COM,1) = "Com"
 ShortCharNames$(CHAR_CHW,1) = "Chw"
 ShortCharNames$(CHAR_EGR,1) = "Egr"
 ShortCharNames$(CHAR_INF,1) = "Inf"
+ShortCharNames$(CHAR_TRI,1) = "Tri"
 ;---
 ShortCharNames$(CHAR_OBT,1) = "Obt"
 ShortCharNames$(CHAR_CBT,1) = "Cbt"
@@ -60,6 +61,7 @@ ShortCharNames$(CHAR_FRO,1) = "Fro"
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
 	; Character values
+	
 	Const TEAM_SONIC		= 1
 	Const TEAM_DARK			= 2
 	Const TEAM_ROSE			= 3
@@ -117,7 +119,8 @@ ShortCharNames$(CHAR_FRO,1) = "Fro"
 	Const CHAR_CHW			= 42
 	Const CHAR_EGR			= 43
 	Const CHAR_INF			= 44
-	Const CHAR_NONMODPLAYABLECOUNT= 44
+	Const CHAR_TRI			= 45
+	Const CHAR_NONMODPLAYABLECOUNT= 45
 	;Mod slots, duplicate and increment to your liking.
 	Const CHAR_MOD1			= CHAR_NONMODPLAYABLECOUNT+1
 	Const CHAR_MOD2			= CHAR_NONMODPLAYABLECOUNT+2
@@ -453,7 +456,7 @@ ShortCharNames$(CHAR_FRO,1) = "Fro"
 			ExtractAnimSeq(CharacterMesh,		a,	-1+a+1) : a=a+1		;DeadFall
 
 			Select char
-			Case CHAR_TAI,CHAR_ROU,CHAR_CRE,CHAR_SIL,CHAR_CHA,CHAR_TDL,CHAR_TIK,CHAR_RAY,CHAR_JET,CHAR_WAV,CHAR_TIA,CHAR_MPH,CHAR_OME,CHAR_EME,CHAR_MT3,CHAR_GME,CHAR_EGR,CHAR_BEA,CHAR_INF:
+			Case CHAR_TAI,CHAR_ROU,CHAR_CRE,CHAR_SIL,CHAR_CHA,CHAR_TDL,CHAR_TIK,CHAR_RAY,CHAR_JET,CHAR_WAV,CHAR_TIA,CHAR_MPH,CHAR_OME,CHAR_EME,CHAR_MT3,CHAR_GME,CHAR_EGR,CHAR_BEA,CHAR_INF,CHAR_TRI:
 				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Fly
 			Case CHAR_BIG,CHAR_GAM,CHAR_BET:
 				ExtractAnimSeq(CharacterMesh,	a,	-1+a+17) : a=a+17	;Fly
@@ -471,7 +474,7 @@ ShortCharNames$(CHAR_FRO,1) = "Fro"
 			End Select
 
 			Select char
-			Case CHAR_KNU,CHAR_ROU,CHAR_ESP,CHAR_MKN,CHAR_CHO,CHAR_TIK,CHAR_SHD,CHAR_EME,CHAR_GME,CHAR_COM:
+			Case CHAR_KNU,CHAR_ROU,CHAR_ESP,CHAR_MKN,CHAR_CHO,CHAR_TIK,CHAR_SHD,CHAR_EME,CHAR_GME,CHAR_COM, CHAR_TRI:
 				ExtractAnimSeq(CharacterMesh,	a,	-1+a+17) : a=a+17	;ClimbIdle
 				ExtractAnimSeq(CharacterMesh,	a,	-1+a+17) : a=a+17	;Climb
 			Default:
@@ -496,7 +499,7 @@ ShortCharNames$(CHAR_FRO,1) = "Fro"
 				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Throw
 				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Throw2
 				ExtractAnimSeq(CharacterMesh,	0,	0)					;ThrowAir
-			Case CHAR_CRE:
+			Case CHAR_CRE, CHAR_TRI:
 				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Throw
 				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;Throw2
 				ExtractAnimSeq(CharacterMesh,	a,	-1+a+9) : a=a+9		;ThrowAir

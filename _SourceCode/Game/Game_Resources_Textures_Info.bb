@@ -50,6 +50,8 @@
 	Interface_Card2_R[CHAR_CHW]=084	: Interface_Card2_G[CHAR_CHW]=194	: Interface_Card2_B[CHAR_CHW]=194
 	Interface_Card2_R[CHAR_EGR]=033	: Interface_Card2_G[CHAR_EGR]=035	: Interface_Card2_B[CHAR_EGR]=047
 	Interface_Card2_R[CHAR_INF]=031	: Interface_Card2_G[CHAR_INF]=031	: Interface_Card2_B[CHAR_INF]=031
+	Interface_Card2_R[CHAR_TRI]=104	: Interface_Card2_G[CHAR_TRI]=064	: Interface_Card2_B[CHAR_TRI]=060
+
 
 	;________________________________________________________________________________________________________________________________________
 	;________________________________________________________________________________________________________________________________________
@@ -101,6 +103,7 @@
 	Interface_TextNames_R[CHAR_CHW]=077	: Interface_TextNames_G[CHAR_CHW]=225	: Interface_TextNames_B[CHAR_CHW]=225
 	Interface_TextNames_R[CHAR_EGR]=113	: Interface_TextNames_G[CHAR_EGR]=003	: Interface_TextNames_B[CHAR_EGR]=003
 	Interface_TextNames_R[CHAR_INF]=048	: Interface_TextNames_G[CHAR_INF]=048	: Interface_TextNames_B[CHAR_INF]=048
+	Interface_TextNames_R[CHAR_TRI]=193	: Interface_TextNames_G[CHAR_TRI]=104	: Interface_TextNames_B[CHAR_TRI]=065
 	;---
 	Interface_TextNames_R[CHAR_OBT]=199	: Interface_TextNames_G[CHAR_OBT]=038	: Interface_TextNames_B[CHAR_OBT]=037
 	Interface_TextNames_R[CHAR_CBT]=241	: Interface_TextNames_G[CHAR_CBT]=209	: Interface_TextNames_B[CHAR_CBT]=019
@@ -162,6 +165,8 @@
 	Interface_Circle_R[CHAR_CHW]=046	: Interface_Circle_G[CHAR_CHW]=210	: Interface_Circle_B[CHAR_CHW]=212
 	Interface_Circle_R[CHAR_EGR]=057	: Interface_Circle_G[CHAR_EGR]=059	: Interface_Circle_B[CHAR_EGR]=080
 	Interface_Circle_R[CHAR_INF]=144	: Interface_Circle_G[CHAR_INF]=010	: Interface_Circle_B[CHAR_INF]=010
+	Interface_Circle_R[CHAR_TRI]=109	: Interface_Circle_G[CHAR_TRI]=074	: Interface_Circle_B[CHAR_TRI]=069
+
 	;---
 	Interface_Circle_R[CHAR_OBT]=071	: Interface_Circle_G[CHAR_OBT]=071	: Interface_Circle_B[CHAR_OBT]=071
 	Interface_Circle_R[CHAR_CBT]=070	: Interface_Circle_G[CHAR_CBT]=070	: Interface_Circle_B[CHAR_CBT]=070
@@ -219,6 +224,7 @@
 	Interface_Lives_R[CHAR_CHW]=089	: Interface_Lives_G[CHAR_CHW]=209	: Interface_Lives_B[CHAR_CHW]=210
 	Interface_Lives_R[CHAR_EGR]=139	: Interface_Lives_G[CHAR_EGR]=003	: Interface_Lives_B[CHAR_EGR]=003
 	Interface_Lives_R[CHAR_INF]=007	: Interface_Lives_G[CHAR_INF]=007	: Interface_Lives_B[CHAR_INF]=007
+	Interface_Lives_R[CHAR_TRI]=206	: Interface_Lives_G[CHAR_TRI]=121	: Interface_Lives_B[CHAR_TRI]=000
 
 	;________________________________________________________________________________________________________________________________________
 	;________________________________________________________________________________________________________________________________________

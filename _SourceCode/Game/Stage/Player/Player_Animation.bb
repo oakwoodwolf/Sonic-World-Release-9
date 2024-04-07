@@ -336,7 +336,12 @@ EndIf
 
 ;Climbing sound
 If (p\Action=ACTION_CLIMB and p\SpeedLength#>0) Then
-	If ChannelPlaying(p\Channel_Climb)=False Then p\Channel_Climb=EmitSmartSound(Sound_Climb,p\Objects\Entity)
+	If ChannelPlaying(p\Channel_Climb)=False Then
+		Select p\Character
+			Case CHAR_TRI: p\Channel_Climb=EmitSmartSound(Sound_KnuxStomp,p\Objects\Entity)
+			Default: p\Channel_Climb=EmitSmartSound(Sound_Climb,p\Objects\Entity)
+		End Select
+	End If
 ElseIf (p\Action=ACTION_SKYDIVE Or p\Action=ACTION_GLIDER) Then
 	If ChannelPlaying(p\Channel_Climb)=False Then p\Channel_Climb=EmitSmartSound(Sound_Skydive,p\Objects\Entity)
 ElseIf (p\Action=ACTION_CAR Or p\Action=ACTION_CARFALL Or p\Action=ACTION_CARDRIFT) Then
@@ -436,6 +441,7 @@ If Game\Interface\DebugPlacerOn=0 Then Player_UpdateBoneEntities(p)
 							Case 0: p\Animation\Animation = ANIMATION_KICKAIR
 							Case 1: p\Animation\Animation = ANIMATION_UP
 						End Select
+					Case CHAR_TRI: p\Animation\Animation = ANIMATION_CLIMB
 					Default: p\Animation\Animation = ANIMATION_UP
 				End Select
 			Case ACTION_FWD,ACTION_JUMPDASH,ACTION_LIGHTDASH
@@ -594,6 +600,7 @@ If Game\Interface\DebugPlacerOn=0 Then Player_UpdateBoneEntities(p)
 			Case ACTION_GATLING:
 				Select p\Character
 					Case CHAR_TIA: p\Animation\Animation = ANIMATION_THROW
+					Case CHAR_TRI: p\Animation\Animation = ANIMATION_THROW2
 					Default: p\Animation\Animation = ANIMATION_PUNCH3
 				End Select
 			Case ACTION_TURN
@@ -740,7 +747,7 @@ If Game\Interface\DebugPlacerOn=0 Then Player_UpdateBoneEntities(p)
 						Case CHAR_JET: Animate(p\Objects\Mesh, 3, 0.54, p\Animation\Animation, 10)
 						Case CHAR_WAV: Animate(p\Objects\Mesh, 1, 0.7/1.5, p\Animation\Animation, 10)
 						Case CHAR_OME: Animate(p\Objects\Mesh, 3, 2.4, p\Animation\Animation, 10)
-						Case CHAR_ROU,CHAR_EGR: Animate(p\Objects\Mesh, 1, 0.3/1.3, p\Animation\Animation, 10)
+						Case CHAR_ROU,CHAR_EGR,CHAR_TRI: Animate(p\Objects\Mesh, 1, 0.3/1.3, p\Animation\Animation, 10)
 						Default: Animate(p\Objects\Mesh, 1, 0.7, p\Animation\Animation, 10)
 					End Select
 				Case ANIMATION_GLIDE:
@@ -799,6 +806,7 @@ If Game\Interface\DebugPlacerOn=0 Then Player_UpdateBoneEntities(p)
 					Select p\Character
 						Case CHAR_AMY,CHAR_CRE: Animate(p\Objects\Mesh, 3, 0.69, p\Animation\Animation, 10)
 						Case CHAR_MAR: Animate(p\Objects\Mesh, 3, 0.9675, p\Animation\Animation, 10)
+						Case CHAR_TRI: Animate(p\Objects\Mesh, 1, 0.69, p\Animation\Animation, 1)
 						Default: Animate(p\Objects\Mesh, 3, 1.125, p\Animation\Animation, 10)
 					End Select
 				Case ANIMATION_THROWAIR:

@@ -489,6 +489,12 @@
 					Case CHAR_OME:
 						Player_Action_Hover_Initiate(p)
 				End Select
+			Case CHAR_TRI:
+				If Game\Superform=0 Then
+				Player_Action_DoubleJump_Initiate(p)
+				Else
+				Player_Action_Fly_Initiate(p)
+				End If
 		End Select
 		Else
 			Player_Action_JumpDash_Initiate(p)
@@ -575,6 +581,8 @@
 				Player_Action_Throw_Initiate(p,1,1)
 			Case CHAR_SIL:
 				If (Not(Player_IsPlayable(p))) Then Player_Action_Throw_Initiate(p)
+			Case CHAR_TRI:
+				Player_Action_Gatling_Initiate(p)
 		End Select
 	EndIf
 	Player_SkillActions2(p)
@@ -637,6 +645,8 @@
 				Else
 					Player_Action_Throw_Initiate(p)
 				EndIf
+			Case CHAR_TRI:
+				Player_Action_Throw_Initiate(p)
 		End Select
 	EndIf
 	Player_SkillActions3(p)
@@ -694,6 +704,7 @@
 				Else
 					Player_Action_BellyFlop_Initiate(p)
 				EndIf
+			
 		End Select
 	EndIf
 	End Function
@@ -839,12 +850,17 @@
 			Case ACTION_CARFALL:
 				p\Action = ACTION_CAR : p\LandTimer=0
 			Default:
-				If p\CanClimbTimer>0 and p\AirBegTooFar=False and abs(p\Rotation#)>30 and (p\Action=ACTION_GLIDE Or p\Action=ACTION_SPRINT) Then
+				If p\CanClimbTimer>0 and p\AirBegTooFar=False and abs(p\Rotation#)>30 and (p\Action=ACTION_GLIDE Or p\Action=ACTION_SPRINT Or p\Action=ACTION_DOUBLEJUMP) Then
 					If p\Action=ACTION_GLIDE Then
 						Player_Action_Climb_Initiate(p)
 					ElseIf p\Action=ACTION_SPRINT Then
 						Select p\Character
 							Case CHAR_ESP,CHAR_GME: Player_Action_Climb_Initiate(p)
+							Default: Player_Action_DoubleJump_Initiate(p,true)
+						End Select
+					ElseIf p\Action=ACTION_DOUBLEJUMP Then
+						Select p\Character
+							Case CHAR_TRI: Player_Action_Climb_Initiate(p)
 							Default: Player_Action_DoubleJump_Initiate(p,true)
 						End Select
 					EndIf
