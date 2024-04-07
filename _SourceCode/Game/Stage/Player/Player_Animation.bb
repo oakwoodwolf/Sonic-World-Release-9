@@ -284,7 +284,7 @@ If p\Action=ACTION_FLY Then
 			If Not(ChannelPlaying(p\Channel_Fly)) Then p\Channel_Fly=EmitSmartSound(Sound_Propeller,p\Objects\Entity)
 		Case CHAR_EME,CHAR_GME,CHAR_EGR,CHAR_BEA:
 			If Not(ChannelPlaying(p\Channel_Fly)) Then p\Channel_Fly=EmitSmartSound(Sound_Hover,p\Objects\Entity)
-		Case CHAR_ROU:
+		Case CHAR_ROU, CHAR_TRI:
 			If Player_FrameCheck(p,2) and ChannelPlaying(p\Channel_Fly)=False Then p\Channel_Fly=EmitSmartSound(Sound_FlyWings,p\Objects\Entity)
 	End Select
 Else
@@ -454,7 +454,7 @@ If Game\Interface\DebugPlacerOn=0 Then Player_UpdateBoneEntities(p)
 				p\Animation\Animation = ANIMATION_FLY
 			Case ACTION_SHOOTHOVER
 				Select p\Character
-					Case CHAR_GAM,CHAR_EGG,CHAR_BET,CHAR_CHW,CHAR_TMH,CHAR_EGR: p\Animation\Animation = ANIMATION_THROWAIR
+					Case CHAR_GAM,CHAR_EGG,CHAR_BET,CHAR_CHW,CHAR_TMH,CHAR_EGR,CHAR_TRI: p\Animation\Animation = ANIMATION_THROWAIR
 					Default: p\Animation\Animation = ANIMATION_FLY
 				End Select
 			Case ACTION_GLIDE,ACTION_HOVER,ACTION_SOAR,ACTION_FLUTTER
@@ -813,7 +813,7 @@ If Game\Interface\DebugPlacerOn=0 Then Player_UpdateBoneEntities(p)
 					Select p\Character
 						Case CHAR_AMY,CHAR_ESP,CHAR_SHD,CHAR_EME,CHAR_GME: Animate(p\Objects\Mesh, 3, 0.45, p\Animation\Animation, 10)
 						Case CHAR_CRE: Animate(p\Objects\Mesh, 3, 1.0125, p\Animation\Animation, 10)
-						Case CHAR_OME,CHAR_GAM,CHAR_EGG,CHAR_BET,CHAR_CHW,CHAR_TMH,CHAR_EGR: Animate(p\Objects\Mesh, 3, 3.4, p\Animation\Animation, 10)
+						Case CHAR_OME,CHAR_GAM,CHAR_EGG,CHAR_BET,CHAR_CHW,CHAR_TMH,CHAR_EGR, CHAR_TRI: Animate(p\Objects\Mesh, 3, 3.4, p\Animation\Animation, 10)
 						Case CHAR_NAC,CHAR_COM: Animate(p\Objects\Mesh, 3, 0.72, p\Animation\Animation, 10)
 						Case CHAR_MET,CHAR_MT3: Animate(p\Objects\Mesh, 1, 0.425, p\Animation\Animation, 10)
 						Default: Animate(p\Objects\Mesh, 3, 1.125, p\Animation\Animation, 10)

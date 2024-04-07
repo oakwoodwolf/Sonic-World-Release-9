@@ -108,7 +108,7 @@
 					Player_FollowerHolding_ByTriangleDive(p)
 				Case ACTION_SLOWGLIDE,ACTION_HOVER,ACTION_SHOOTHOVER,ACTION_SLEET:
 					Select p\Character
-						Case CHAR_TIA,CHAR_EGR: Player_FollowerHolding_ByFeet(p)
+						Case CHAR_TIA,CHAR_EGR, CHAR_TRI: Player_FollowerHolding_ByFeet(p)
 						Default: Player_FollowerHolding_ByLatchOn(p)
 					End Select
 			End Select

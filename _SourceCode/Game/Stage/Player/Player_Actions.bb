@@ -325,6 +325,8 @@
 				Select p\Character
 					Case CHAR_CHA:
 						Player_Action_Drop_Initiate(p)
+					Case CHAR_TRI:
+						Player_Action_Shoot_Initiate(p)
 				End Select
 			EndIf
 		EndIf
@@ -1184,12 +1186,18 @@
 				Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_ORB)
 				Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_ORB, 1)
 			Case CHAR_TRI:
-				Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_FLAME)
+				Object_Bomb_Create.tBomb(p, EntityX(p\Objects\Head,1), EntityY(p\Objects\Head,1), EntityZ(p\Objects\Head,1), 0, p\Animation\Direction#-178, 0, BOMB_FLAME)
+				Object_Bomb_Create.tBomb(p, EntityX(p\Objects\Head,1), EntityY(p\Objects\Head,1), EntityZ(p\Objects\Head,1), 0, p\Animation\Direction#-180, 0, BOMB_FLAME)
+				Object_Bomb_Create.tBomb(p, EntityX(p\Objects\Head,1), EntityY(p\Objects\Head,1), EntityZ(p\Objects\Head,1), 0, p\Animation\Direction#+178, 0, BOMB_FLAME)
 			Default:
 				Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180, 0, BOMB_SHOT)
 		End Select
 		p\ShootCooldownTimer=0.05*secs#
-		EmitSmartSound(Sound_EnemyShot,p\Objects\Entity)
+		If (Not(p\Character=CHAR_TRI)) Then
+			EmitSmartSound(Sound_EnemyShot,p\Objects\Entity)
+		Else
+			EmitSmartSound(Sound_FireDash,p\Objects\Entity)
+		End If
 		p\ForceShotWalkTimer=0.24*secs#
 	End Function
 

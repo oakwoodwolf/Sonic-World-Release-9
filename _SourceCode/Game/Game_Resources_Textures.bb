@@ -407,7 +407,7 @@ Function LoadSmartImage(x)
 						Case 27: LoadSmartFastImage("Interface/Bubble3sc.png", x, 200, 200, 0, 1, 5.5*2, 5.5*2)
 						Case 30: LoadSmartFastImage("Interface/Bubble1u.png", x, 200, 200, 0, 1, 5.5*2, 5.5*2)
 						End Select
-		Case Interface_Characters:	LoadSmartFastImage("Interface/Characters.png", x, 2560/10.0, 1400/5.0, 0, CHAR_NONMODPLAYABLECOUNT+5, 6, 6)
+		Case Interface_Characters:	LoadSmartFastImage("Interface/Characters.png", x, 2560/10.0, 2500/9.0, 0, CHAR_NONMODPLAYABLECOUNT+5, 6, 6)
 		Case Interface_TextRecords_1:	LoadSmartFastImage("Interface/TextRecords1.png", x, (1440/16.0), (540/6.0), 0, 96, 2.75, 2.75)
 		Case Interface_Treasure:	LoadSmartFastImage("Interface/Treasure.png", x, 51, 51, 0, 4, 2, 2)
 		Case Interface_Treasure_Big:	LoadSmartFastImage("Interface/Treasure.png", x, 51, 51, 0, 4, 1.7, 1.7)

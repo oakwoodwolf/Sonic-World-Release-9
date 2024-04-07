@@ -550,7 +550,7 @@ End Function
 						Game\Interface\ShowCaution2Timer=0.01*secs#
 						DrawBetterNumber(p\FlyTimer/secs#, GAME_WINDOW_W-73*GAME_WINDOW_SCALE#, (66+36*i)*GAME_WINDOW_SCALE#, 0, 1)
 					EndIf
-				Case CHAR_TAI,CHAR_CHA,CHAR_TDL,CHAR_ROU,CHAR_EGR,CHAR_BEA:
+				Case CHAR_TAI,CHAR_CHA,CHAR_TDL,CHAR_ROU,CHAR_EGR,CHAR_BEA, CHAR_TRI:
 					If p\Action=ACTION_FLY Then
 						Game\Interface\ShowCaution2Timer=0.01*secs#
 						DrawBetterNumber(p\FlyTimer/secs#, GAME_WINDOW_W-73*GAME_WINDOW_SCALE#, (66+36*i)*GAME_WINDOW_SCALE#, 0, 1)
