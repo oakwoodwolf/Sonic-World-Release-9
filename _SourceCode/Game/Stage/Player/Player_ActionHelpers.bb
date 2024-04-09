@@ -861,7 +861,6 @@
 					ElseIf p\Action=ACTION_DOUBLEJUMP Then
 						Select p\Character
 							Case CHAR_TRI: Player_Action_Climb_Initiate(p)
-							Default: Player_Action_DoubleJump_Initiate(p,true)
 						End Select
 					EndIf
 				Else

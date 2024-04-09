@@ -778,7 +778,7 @@
 		EndIf
 
 		Player_ActuallyJump(p)
-		If (p\SpeedLength#)>2 Then ParticleTemplate_Call(p\SmokeParticle, PARTICLE_PLAYER_SMOKE, p\Objects\Mesh, 1, 0.075, p\SpeedLength#+1.25, 0, 1, 0.0375)
+		If (p\SpeedLength#)>2 Then ParticleTemplate_Call(p\SmokeParticle, PARTICLE_PLAYER_SMOKE, p\Objects\Mesh, 1, 0.25, p\SpeedLength#+1.25, 0, 1, 0.0375)
 		If abs(p\Rotation#)<17.5 Then p\Action=ACTION_COMMON
 
 		If p\AirBegTooFar Then Player_ActuallyJump(p,true,true) : p\AirBegGround=False

@@ -86,6 +86,7 @@
 	Global Sound_ChaosDrive			= cm : cm=cm+1
 	Global Sound_Check			= cm : cm=cm+1
 	Global Sound_Climb			= cm : cm=cm+1
+	Global Sound_ClimbSpiked			= cm : cm=cm+1
 	Global Sound_Cloud			= cm : cm=cm+1
 	Global Sound_Counter			= cm : cm=cm+1
 	Global Sound_Crumble			= cm : cm=cm+1

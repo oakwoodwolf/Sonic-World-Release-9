@@ -1194,7 +1194,7 @@
 		Player_PlayTurnVoice(pp(1))
 		Delay(1)
 	End Function
-
+	;; Turns bones usually used for particles to entities.
 	Function DeformCharacter_GetTheBoneEntities(p.tPlayer)
 		Select p\Character
 			Case CHAR_SHA,CHAR_STO:
@@ -1292,7 +1292,7 @@
 		p\Objects\Spine=FindChild(p\Objects\Mesh, "spine")
 		p\Objects\Hips=FindChild(p\Objects\Mesh, "hips")
 	End Function
-
+	;; Deletes special detected bones
 	Function DeformCharacter_DeleteTheBoneEntities(p.tPlayer)
 		Select p\Character
 			Case CHAR_SHA,CHAR_STO:

@@ -427,10 +427,11 @@ End Function
 				Case BOMB_SHOT:
 					MoveEntity b\Pivot,0,0,(1.8+b\InitialSpeed#)*d\Delta
 					TurnEntity b\Entity, 0, 0, 0.4*20*d\Delta
-				Case BOMB_SPEAR,BOMB_SPEARWATER,BOMB_FLAME:
+				Case BOMB_SPEAR,BOMB_SPEARWATER:
 					MoveEntity b\Pivot,0,0,(3+b\InitialSpeed#)*d\Delta
 					If b\DisappearTimer<0.75*secs# Then MoveEntity b\Pivot,0,-0.34*d\Delta,0
-				Case BOMB_WIND:
+				Case BOMB_WIND,BOMB_FLAME:
+					TurnEntity b\Entity, 0, 0, 0.4*20*d\Delta
 					MoveEntity b\Pivot,0,0,(3.2+b\InitialSpeed#)*d\Delta
 				Case BOMB_SHOCK:
 					MoveEntity b\Pivot,0,-0.05*d\Delta,(2.87+b\InitialSpeed#)*d\Delta

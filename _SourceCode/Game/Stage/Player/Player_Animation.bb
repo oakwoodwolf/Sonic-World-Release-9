@@ -338,7 +338,7 @@ EndIf
 If (p\Action=ACTION_CLIMB and p\SpeedLength#>0) Then
 	If ChannelPlaying(p\Channel_Climb)=False Then
 		Select p\Character
-			Case CHAR_TRI: p\Channel_Climb=EmitSmartSound(Sound_KnuxStomp,p\Objects\Entity)
+			Case CHAR_TRI: p\Channel_Climb=EmitSmartSound(Sound_ClimbSpiked,p\Objects\Entity)
 			Default: p\Channel_Climb=EmitSmartSound(Sound_Climb,p\Objects\Entity)
 		End Select
 	End If
