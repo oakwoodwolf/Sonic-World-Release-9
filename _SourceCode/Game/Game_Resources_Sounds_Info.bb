@@ -223,6 +223,8 @@
 	Global Sound_Levitate			= cm : cm=cm+1
 	Global Sound_Levitate2			= cm : cm=cm+1
 	Global Sound_LevitateStart		= cm : cm=cm+1
+	Global Sound_MechaBuzzsaw		= cm : cm=cm+1
+	Global Sound_MechaSaw		= cm : cm=cm+1
 	Global Sound_Minion			= cm : cm=cm+1
 	Global Sound_MissionCompleted		= cm : cm=cm+1
 	Global Sound_Monitor			= cm : cm=cm+1

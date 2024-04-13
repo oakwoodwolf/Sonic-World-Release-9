@@ -961,6 +961,11 @@ Function LoadSmartEntity(x)
 											ExtractAnimSeq(MESHES(x),44,52);attack
 											ExtractAnimSeq(MESHES(x),53,57);super
 											ExtractAnimSeq(MESHES(x),58,62);flysuper
+		Case Mesh_Boss_RoboSonic:		MESHES(x) = LoadAnimMesh("Objects/Enemies/RoboSonic.b3d") : ScaleEntity MESHES(x),1.1,1.1,1.1
+											ExtractAnimSeq(MESHES(x),1,9);idle
+											ExtractAnimSeq(MESHES(x),10,18);charge
+											ExtractAnimSeq(MESHES(x),19,28);spin
+											ExtractAnimSeq(MESHES(x),29,29);die
 		Case Mesh_Boss_EggMobile_Shield:		MESHES(x) = LoadAnimMesh("Objects/Shields/EggMobileShield.b3d") : ScaleEntity MESHES(x),1.1,1.1,1.1
 		Case Mesh_Boss_BetaRainbow:				MESHES(x) = LoadAnimMesh("Objects/Enemies/BetaRainbow.b3d") : ScaleEntity MESHES(x),1.1,1.1,1.1
 		Case Mesh_Axes:				MESHES(x) = LoadMesh("Objects/Axes.b3d")

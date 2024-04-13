@@ -331,7 +331,7 @@ Next
 										Case "pinkwater": Game\Stage\Properties\WaterType=8
 										Default: Game\Stage\Properties\WaterType=1
 									End Select
-
+									
 									If Menu\Settings\BumpMaps#>0 Then EntityTexture(Game\Stage\Properties\WaterMesh, water_bump_texture(Game\Stage\Properties\WaterType),0,0)
 									EntityTexture(Game\Stage\Properties\WaterMesh, water_texture(Game\Stage\Properties\WaterType,Game\Stage\Properties\WaterTexture),0,1)
 
@@ -3068,7 +3068,16 @@ Next
 										GetAttribute(ATTRIB_SWITCHOBJ, SceneChildNode)
 										
 										If Menu\Mission=MISSION_BOSS# Then CreateObject()
+									Case "bossrobo","bossrobosonic"
+										; Update progress bar
+										Game_Stage_UpdateProgressBar("Loading object n."+j+": Mecha Sonic MK1 Boss", Float#(j)/Float#(xmlNodeChildCount(RootChildNode)))
+										TempAttribute\ObjectNo=OBJTYPE_BOSSROBO
+										GetAttribute(ATTRIB_AMOUNT, SceneChildNode) : GetAttribute(ATTRIB_POSITION, SceneChildNode)
+										GetAttribute(ATTRIB_ROTATION, SceneChildNode)
+										GetAttribute(ATTRIB_SWITCHOBJ, SceneChildNode)
+										GetAttribute(ATTRIB_CARNIVAL, SceneChildNode)
 
+										If Menu\Mission=MISSION_BOSS# Then CreateObject()
 									;======================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
 
 									Case "bombr1","bomber1","bombr","bomber"

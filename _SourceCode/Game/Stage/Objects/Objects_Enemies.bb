@@ -55,6 +55,8 @@ Function Object_CheckEnemyHitBox(o.tObject,p.tPlayer)
 									If o\Enemy\AttackMode=0 Then EmitSmartSound(Sound_Spikes,o\Entity)
 								Case OBJTYPE_FLAPPERNEEDLE:
 									If o\Anim=2 Then EmitSmartSound(Sound_Spikes,o\Entity)
+								Case OBJTYPE_BOSSROBO:
+									If o\Anim=3 Then EmitSmartSound(Sound_Spikes,o\Entity)
 							End Select
 						EndIf
 						If o\PsychoedThrown=False and (Not(o\Enemy\MayNotHurtTimer>0)) Then
@@ -281,6 +283,8 @@ Function Object_AnimateEnemy(o.tObject)
 				Else
 					Animate o\Entity,1,0.15,o\Anim,10 : Animate o\Entity2,1,0.15,o\Anim,10
 				EndIf
+			Case OBJTYPE_BOSSROBO:
+				Animate o\Entity,1,0.45,o\Anim,10
 			Case OBJTYPE_DOOMSEYE:
 				Animate o\Entity,1,0.075,o\Anim,10
 			Case OBJTYPE_HAMMERHAMMER:
@@ -304,7 +308,7 @@ Function Object_Enemy_GravityStuff(o.tObject,p.tPlayer,d.tDeltaTime)
 	Select o\ObjType
 		Case OBJTYPE_PAWN,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSWORD,OBJTYPE_MOTOBUG,OBJTYPE_CRABMEAT,OBJTYPE_KIKI,OBJTYPE_SPINY,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_ACHAOS,OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES,OBJTYPE_FIGHTER,OBJTYPE_CAMERON,OBJTYPE_KLAGEN,OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_ANTON,OBJTYPE_BOMBIE,OBJTYPE_NEWTRON,OBJTYPE_PENGUINATOR,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_SPIKES,OBJTYPE_CRAWL,OBJTYPE_BITER,OBJTYPE_CRAWLER,OBJTYPE_BALLHOG,OBJTYPE_RHINOTANK,OBJTYPE_TECHNOSQU,OBJTYPE_COPRACER,OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_OAKSWORD,OBJTYPE_LEECH,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_CLUCKOID,OBJTYPE_SHEEP,OBJTYPE_SNOWY,OBJTYPE_TOXO,OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER,OBJTYPE_HAMMERSHIELD,OBJTYPE_WITCH1,OBJTYPE_WITCH2,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
 			Object_EnforceGravity(o,d)
-		Case OBJTYPE_CHOPPER,OBJTYPE_JAWS,OBJTYPE_STEELION,OBJTYPE_OCTUS,OBJTYPE_MUSHMEANIE,OBJTYPE_BURROBOT,OBJTYPE_E1000,OBJTYPE_MANTIS,OBJTYPE_ROLLER,OBJTYPE_SPLATS:
+		Case OBJTYPE_CHOPPER,OBJTYPE_JAWS,OBJTYPE_STEELION,OBJTYPE_OCTUS,OBJTYPE_MUSHMEANIE,OBJTYPE_BURROBOT,OBJTYPE_E1000,OBJTYPE_MANTIS,OBJTYPE_ROLLER,OBJTYPE_SPLATS, OBJTYPE_BOSSROBO:
 			If Not o\Enemy\FlyEnemyType Then Object_EnforceGravity(o,d)
 	End Select
 	If o\Enemy\IsBoss=0 Then
@@ -358,7 +362,7 @@ Function Object_CreateEnemyPieces(o.tObject,dontspawnmesh=false)
 	Select o\ObjType
 		Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD:
 			Object_Pieces_Create(true,o\ObjType,situation,o\Position\x#,o\Position\y#+12,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold,true)
-		Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA:
+		Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA, OBJTYPE_BOSSROBO:
 			Object_Pieces_Create(true,o\ObjType,situation,o\Position\x#,o\Position\y#+5,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold,true)
 	End Select
 End Function
@@ -417,7 +421,7 @@ End Function
 			Case OBJTYPE_ROLLER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,5,10,5)
 			Case OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER,OBJTYPE_HAMMERSHIELD: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,14.25,21,14.25)
 			Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,10,8,10) : o\Enemy\IsBoss=1
-			Case OBJTYPE_BOSSMECHA: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,5,5.5,5) : o\Enemy\IsBoss=1
+			Case OBJTYPE_BOSSMECHA, OBJTYPE_BOSSROBO: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,5,5.5,5) : o\Enemy\IsBoss=1
 			Case OBJTYPE_FCANNON1: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,16.5,25,16.5)
 			Case OBJTYPE_FCANNON2: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,15,39,15)
 			Case OBJTYPE_FCANNON3: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,21.5,17.5,21.5)
@@ -567,6 +571,8 @@ End Function
 				o\ExtraTexture = LoadTexture("Objects/Shields/EggMobileNegaShield.png",2+256) : o\HasExtraTexture=1
 				o\Entity3 = CopyEntity(MESHES(SmartEntity(Mesh_Boss_EggMobile_Shield)), Game\Stage\Root) : EntityTexture o\Entity3, o\ExtraTexture
 				ScaleEntity o\Entity3, 0.8, 0.8, 0.8
+			Case OBJTYPE_BOSSROBO:
+				o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Boss_RoboSonic)), Game\Stage\Root)
 		End Select
 
 		Select o\ObjType
@@ -596,7 +602,7 @@ End Function
 		Select o\ObjType
 			Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN:
 				o\Enemy\Center=FindChild(o\Entity, "mobile")
-			Case OBJTYPE_BEETLE,OBJTYPE_BEETLESPRING,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLEMONO:
+			Case OBJTYPE_BEETLE,OBJTYPE_BEETLESPRING,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLEMONO, OBJTYPE_BOSSROBO:
 				o\Enemy\Center=FindChild(o\Entity, "spine")
 			Case OBJTYPE_JAWS,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
 				o\Enemy\Center=FindChild(o\Entity, "root")
@@ -607,7 +613,7 @@ End Function
 		o\Enemy\WaterParticle = ParticleTemplate_Create.tParticleTemplate()
 
 		Select o\ObjType
-			Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_MOTOBUG,OBJTYPE_EGGROBO,OBJTYPE_ORBINAUT,OBJTYPE_ANTON,OBJTYPE_E1000,OBJTYPE_RHINOTANK,OBJTYPE_BOSSBETA:
+			Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_MOTOBUG,OBJTYPE_EGGROBO,OBJTYPE_ORBINAUT,OBJTYPE_ANTON,OBJTYPE_E1000,OBJTYPE_RHINOTANK,OBJTYPE_BOSSBETA, OBJTYPE_BOSSROBO:
 				o\Enemy\Jet1=FindChild(o\Entity, "jetL")
 				o\Enemy\Jet2=FindChild(o\Entity, "jetR")
 				o\Enemy\JetParticle1 = ParticleTemplate_Create.tParticleTemplate()
@@ -650,7 +656,7 @@ End Function
 		End Select
 
 		Select o\ObjType
-			Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA: o\Enemy\InitialHealth=10
+			Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA, OBJTYPE_BOSSMECHA, OBJTYPE_BOSSROBO: o\Enemy\InitialHealth=10
 			Case OBJTYPE_SNOWY,OBJTYPE_CAMERON,OBJTYPE_OAKSWORD,OBJTYPE_WITCH1,OBJTYPE_WITCH2: o\Enemy\InitialHealth=3
 			Case OBJTYPE_PAWNSHIELD,OBJTYPE_HUNTERSHIELD,OBJTYPE_STEELION,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE: o\Enemy\InitialHealth=2
 			Case OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER: o\Enemy\InitialHealth=5
@@ -699,7 +705,7 @@ End Function
 				Default:
 					ShowEntity(o\Entity)
 					Select o\ObjType
-						Case OBJTYPE_BOSSBETA:
+						Case OBJTYPE_BOSSBETA, OBJTYPE_BOSSROBO:
 						Default: ShowEntity(o\Entity2)
 					End Select
 			End Select
@@ -738,7 +744,7 @@ End Function
 		EndIf
 
 		; Animate and update enemy frame
-		If o\Enemy\IsBoss=0 Or (o\ObjType=OBJTYPE_BOSSBETA Or o\ObjType=OBJTYPE_BOSSMECHA) Then Object_AnimateEnemy(o) : o\Enemy\Frame = Int(AnimTime(o\Entity))
+		If o\Enemy\IsBoss=0 Or (o\ObjType=OBJTYPE_BOSSBETA Or o\ObjType=OBJTYPE_BOSSMECHA Or o\ObjType=OBJTYPE_BOSSROBO) Then Object_AnimateEnemy(o) : o\Enemy\Frame = Int(AnimTime(o\Entity))
 
 		; Update collision aligning
 		Object_UpdateCollisions(o,o\Entity)
@@ -752,7 +758,7 @@ End Function
 
 		; Detect the player
 		Select o\ObjType
-			Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA:
+			Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA,OBJTYPE_BOSSROBO:
 				If EntityDistance(o\Entity,p\Objects\Entity)<300 Or o\Enemy\BossMode>=5 Then
 					o\Enemy\InRange=True
 				Else
@@ -847,7 +853,11 @@ End Function
 					Select o\ObjType
 						Case OBJTYPE_BOSSBETA:
 							If o\Anim=9 Then o\Anim=1
-						Case OBJTYPE_BOSSMECHA:
+						Case OBJTYPE_BOSSMECHA: 
+						Case OBJTYPE_BOSSROBO: 
+							o\Enemy\WasJustAttacked=0.31*secs#
+							Game\ControlLock=0.1*secs#
+							Player_SetSpeed(p,0, true)
 						Default:
 							Animate(o\Entity, 3, 0.25, 1, 10)
 					End Select
@@ -949,7 +959,7 @@ End Function
 					Select o\ObjType
 						Case OBJTYPE_BOSSBETA:
 							If o\Anim=9 Then o\Anim=1
-						Case OBJTYPE_BOSSMECHA:
+						Case OBJTYPE_BOSSMECHA, OBJTYPE_BOSSROBO:
 						Default:
 							Animate(o\Entity, 3, 0.5, 1, 10)
 					End Select
@@ -1073,6 +1083,16 @@ End Function
 				RotateEntity o\Entity2, EntityPitch(o\Entity, 1), EntityYaw(o\Entity, 1), EntityRoll(o\Entity, 1), 1
 				PositionEntity o\Entity3, EntityX(o\Enemy\Center, 1), EntityY(o\Enemy\Center, 1), EntityZ(o\Enemy\Center, 1), 1
 				PointEntity o\Entity3, cam\Entity
+			Case OBJTYPE_BOSSROBO:
+				Select o\Anim
+					Case 2:
+						ParticleTemplate_Call(o\Enemy\JetParticle1, PARTICLE_PLAYER_ROCKET2, o\Enemy\Jet1)
+						ParticleTemplate_Call(o\Enemy\JetParticle2, PARTICLE_PLAYER_ROCKET2, o\Enemy\Jet2)
+				End Select
+				If o\Enemy\FlyEnemyType=1 Then:
+					ParticleTemplate_Call(o\Enemy\JetParticle1, PARTICLE_PLAYER_ROCKET2, o\Enemy\Jet1)
+					ParticleTemplate_Call(o\Enemy\JetParticle2, PARTICLE_PLAYER_ROCKET2, o\Enemy\Jet2)
+				End If
 		End Select
 
 		; Fallen too low
@@ -1095,7 +1115,7 @@ End Function
 		o\EnemyMissile\MissileType=enemyno#
 
 		Select enemyno#
-			Case OBJTYPE_KIKI,OBJTYPE_ASTERON: Object_CreateHitBox(HITBOXTYPE_SPEEDY,o,4,4,4)
+			Case OBJTYPE_KIKI,OBJTYPE_ASTERON, OBJTYPE_BOSSROBO: Object_CreateHitBox(HITBOXTYPE_SPEEDY,o,4,4,4)
 			Case OBJTYPE_CHASER,OBJTYPE_BOSSRUN,-OBJTYPE_BOSSRUN: Object_CreateHitBox(HITBOXTYPE_SPEEDY,o,8.5,8.5,8.5)
 			Case OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_MADMOLE: Object_CreateHitBox(HITBOXTYPE_SPEEDY,o,6,6,6)
 			Case OBJTYPE_EGGROBO,OBJTYPE_STEELION,OBJTYPE_DRAGONFLY,OBJTYPE_BITER,OBJTYPE_OAKSWORD,OBJTYPE_CATAKILLER,OBJTYPE_SNOWY: Object_CreateHitBox(HITBOXTYPE_SPEEDY,o,6.5,6.5,6.5)
@@ -1141,7 +1161,7 @@ End Function
 			Case OBJTYPE_BOMBIE,OBJTYPE_STEELION,OBJTYPE_OCTUS,OBJTYPE_DRAGONFLY,OBJTYPE_BITER,OBJTYPE_OAKSWORD,OBJTYPE_CATAKILLER,-OBJTYPE_CATAKILLER,OBJTYPE_TOXO,OBJTYPE_SNOWY,OBJTYPE_BOSSBETA,OBJTYPE_HAMMERHAMMER: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_Empty)), o\Entity)
 			Case OBJTYPE_SLICER: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_EnemyMissile_SlicerSlicer)), o\Entity)
 			Case OBJTYPE_SPIKES: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_EnemyMissile_SpikesSpike)), o\Entity)
-			Case OBJTYPE_ASTERON: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_EnemyMissile_AsteronPoint)), o\Entity)
+			Case OBJTYPE_ASTERON, OBJTYPE_BOSSROBO: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_EnemyMissile_AsteronPoint)), o\Entity)
 			Case OBJTYPE_MADMOLE: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_EnemyMissile_MadmoleMushroom)), o\Entity)
 			Case OBJTYPE_MANTA: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_EnemyMissile_MantaBomb)), o\Entity)
 			Case OBJTYPE_TAKER,OBJTYPE_CRAWLER: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_EnemyMissile_TakerSpikeBall)), o\Entity)
@@ -1348,7 +1368,7 @@ End Function
 					Case 5: MoveEntity o\Entity,0.99,1.58,1.01
 				End Select
 				EntityRadius o\Entity, 1.5
-			Case OBJTYPE_ASTERON:
+			Case OBJTYPE_ASTERON, OBJTYPE_BOSSROBO:
 				o\EnemyMissile\FollowTimer=0.59*secs#
 				o\EnemyMissile\DisappearTimer=2.31*secs#
 				Select mode
@@ -1571,7 +1591,7 @@ End Function
 			Case OBJTYPE_NEWTRON:
 				If o\EnemyMissile\FollowTimer>0 Then PointEntity(o\Entity,p\Objects\Entity)
 				MoveEntity(o\Entity,0,0,0.8*d\Delta*0.75)
-			Case OBJTYPE_SPIKES,OBJTYPE_ASTERON: MoveEntity(o\Entity,0,0.45*d\Delta*0.75,0)
+			Case OBJTYPE_SPIKES,OBJTYPE_ASTERON, OBJTYPE_BOSSROBO: MoveEntity(o\Entity,0,0.45*d\Delta*0.75,0)
 			Case OBJTYPE_STEELION,OBJTYPE_BITER: MoveEntity(o\Entity,0,0,1.2*d\Delta*0.75)
 			Case OBJTYPE_MADMOLE:
 				If o\EnemyMissile\FollowTimer>0 Then PointEntity(o\Entity,p\Objects\Entity)
@@ -1703,7 +1723,7 @@ End Function
 				ParticleTemplate_Call(o\Particle, PARTICLE_PLAYER_FIRE, o\Entity)
 			Case OBJTYPE_OCTUS:
 				ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_INK, o\Entity)
-			Case OBJTYPE_E1000,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO:
+			Case OBJTYPE_E1000,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO, OBJTYPE_BOSSROBO:
 				ParticleTemplate_Call(o\Particle, PARTICLE_PLAYER_ATTACKTRAIL, o\Entity, 0.5, 0.075, 3, 0, 8)
 			Case OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_DOOMSEYE:
 				ParticleTemplate_Call(o\Particle, PARTICLE_PLAYER_BULLETHEATALIEN, o\Entity, 1, 1, 1, 0, 0, 0.025)
@@ -1720,7 +1740,7 @@ End Function
 				If o\Hit and o\PsychoedThrown=False and o\EnemyMissile\MayNotHurt=0 Then
 					If Game\Invinc=0 and (Not(p\DontGetHurtTimer>0)) Then
 						Select o\EnemyMissile\MissileType
-							Case OBJTYPE_ORBINAUT,OBJTYPE_SPONA,OBJTYPE_SPIKES,OBJTYPE_ASTERON,OBJTYPE_MANTA,OBJTYPE_NEBULA,OBJTYPE_SPRINKLR: EmitSmartSound(Sound_Spikes,o\Entity)
+							Case OBJTYPE_ORBINAUT,OBJTYPE_SPONA,OBJTYPE_SPIKES,OBJTYPE_ASTERON,OBJTYPE_MANTA,OBJTYPE_NEBULA,OBJTYPE_SPRINKLR, OBJTYPE_BOSSROBO: EmitSmartSound(Sound_Spikes,o\Entity)
 							Case OBJTYPE_MADMOLE: EmitSmartSound(Sound_Ninja,o\Entity)
 							Case OBJTYPE_OCTUS,OBJTYPE_TOXO: EmitSmartSound(Sound_Throw,o\Entity)
 							Case OBJTYPE_DRAGONFLY: If Not(p\HurtTimer>0) Then EmitSmartSound(Sound_Spikes,o\Entity)
@@ -1959,7 +1979,7 @@ Function Object_EnemyMovements_SpawnMissile(o.tObject, p.tPlayer)
 				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 3)
 				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 4)
 				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0, 5)
-			Case OBJTYPE_ASTERON:
+			Case OBJTYPE_ASTERON, OBJTYPE_BOSSROBO:
 				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 0*72, 1)
 				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 1*72, 2)
 				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\position\x#, o\position\y#, o\position\z#, 0, EntityYaw(o\Entity), 2*72, 3)
@@ -2193,7 +2213,7 @@ Function Object_EnemyMovements(o.tObject, p.tPlayer, d.tDeltaTime)
 			Object_Enemy_Behaviour(o,p,d,5,3.5,0.75)
 		Case OBJTYPE_WITCH1,OBJTYPE_WITCH2:
 			Object_Enemy_Behaviour(o,p,d,6.5,4.5,0.5)
-		Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA:
+		Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA, OBJTYPE_BOSSROBO:
 			Object_Enemy_BossBehaviour(o,p,d)
 		Case OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
 			Object_Enemy_Behaviour(o,p,d,2.5,2,1)
@@ -3231,6 +3251,8 @@ End Function
 				o\Enemy\AttackMode=1
 			Case OBJTYPE_OCTUS:
 				If o\Enemy\Underwater=1 Then o\Enemy\FlyEnemyType=True Else o\Enemy\FlyEnemyType=False
+			Case OBJTYPE_BOSSROBO:
+				;o\Enemy\Channel_EnemyState = EmitSmartSound(Sound_AmbientAlarm, o\Entity)
 		End Select
 	End Function
 
@@ -3401,7 +3423,7 @@ End Function
 
 ;-------------------------------------------------------------------------------------------
 ;-------------------------------------------------------------------------------------------
-
+;; Master function for boss behavior. Calls the common function, and the enemy-specific ones based on BossMode/phases
 Function Object_Enemy_BossBehaviour(o.tObject,p.tPlayer,d.tDeltaTime)
 
 	Select o\ObjType
@@ -3418,11 +3440,14 @@ Function Object_Enemy_BossBehaviour(o.tObject,p.tPlayer,d.tDeltaTime)
 
 	If o\Enemy\InRange Then
 		Object_Enemy_BossGeneral(o,p,d)
-		Select o\Enemy\BossMode
-			Case 0:
+		Select o\Enemy\BossMode ; phases
+			Case 0: ; setup Phase
+			Select o\ObjType
+				Default:
 				o\Enemy\BossMode=1 : o\Enemy\AttackTimer=2*secs#
-				If (o\ObjType=OBJTYPE_BOSSBETA Or o\ObjType=OBJTYPE_BOSSMECHA) Then o\Enemy\AttackMode=0 : o\Enemy\AttackMode2=0
-			Case 1:
+				If (o\ObjType=OBJTYPE_BOSSBETA Or o\ObjType=OBJTYPE_BOSSMECHA Or o\ObjType=OBJTYPE_BOSSROBO) Then o\Enemy\AttackMode=0 : o\Enemy\AttackMode2=0
+				End Select
+			Case 1: ; first phase
 				Select o\ObjType
 					Case OBJTYPE_BOSSBETA:
 						Object_Enemy_BossBehaviour_BetaShock(o,p)
@@ -3432,23 +3457,27 @@ Function Object_Enemy_BossBehaviour(o.tObject,p.tPlayer,d.tDeltaTime)
 						Case OBJTYPE_BOSS,OBJTYPE_BOSSRUN:
 							o\Enemy\AttackTimer=(1+Rand(0,2)/2.0)*secs#
 							EmitSmartSound(Sound_EnemyCannon,o\Entity)
+							If (Not(Rand(3,3+5)>3)) and (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) and (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Attack[Rand(1,5)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
 							o\Enemy\ShouldSpawnMissile=True
 						Case OBJTYPE_BOSS2:
 							o\Enemy\AttackTimer=(0.5+Rand(0,1)/2.0)*secs#
+							If (Not(Rand(3,3+5)>3)) and (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) and (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Attack[Rand(1,5)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
 							EmitSmartSound(Sound_EnemyShot2,o\Entity)
 							o\Enemy\ShouldSpawnMissile=True
 						Case OBJTYPE_BOSSBETA:
 							Object_Enemy_BossBehaviour_Beta(o,p)
 						Case OBJTYPE_BOSSMECHA:
 							Object_Enemy_BossBehaviour_MechaSonic(o,p)
+						Case OBJTYPE_BOSSROBO:
+							Object_Enemy_BossBehaviour_RoboSonic(o,p,d)
 					End Select
-					If (Not(Rand(3,3+5)>3)) and (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) and (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Attack[Rand(1,5)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
+					
 				EndIf
 				If o\Enemy\Health<=7 Then
 					o\Enemy\BossMode=2 : o\Enemy\AttackTimer=2*secs#
-					If (o\ObjType=OBJTYPE_BOSSBETA Or o\ObjType=OBJTYPE_BOSSMECHA) Then o\Enemy\AttackMode=0 : o\Enemy\AttackMode2=0
+					If (o\ObjType=OBJTYPE_BOSSBETA Or o\ObjType=OBJTYPE_BOSSMECHA Or o\ObjType=OBJTYPE_BOSSROBO) Then o\Enemy\AttackMode=0 : o\Enemy\AttackMode2=0
 				EndIf
-			Case 2:
+			Case 2: ;2nd phase, happens at 7hp or less
 				Select o\ObjType
 					Case OBJTYPE_BOSSBETA:
 						Object_Enemy_BossBehaviour_BetaShock(o,p)
@@ -3457,10 +3486,12 @@ Function Object_Enemy_BossBehaviour(o.tObject,p.tPlayer,d.tDeltaTime)
 					Select o\ObjType
 						Case OBJTYPE_BOSS:
 							o\Enemy\AttackTimer=(0.5+Rand(0,2)/4.0)*secs#
+							If (Not(Rand(3,3+5)>3)) and (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) and (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Attack[Rand(1,5)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
 							EmitSmartSound(Sound_EnemyCannon,o\Entity)
 							o\Enemy\ShouldSpawnMissile=True
 						Case OBJTYPE_BOSS2:
 							o\Enemy\AttackTimer=(2+Rand(0,2)/2.0)*secs#
+							If (Not(Rand(3,3+5)>3)) and (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) and (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Attack[Rand(1,5)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
 							EmitSmartSound(Sound_EnemyShot2,o\Entity)
 							o\Enemy\ShouldSpawnMissile=True
 						Case OBJTYPE_BOSSRUN:
@@ -3471,8 +3502,10 @@ Function Object_Enemy_BossBehaviour(o.tObject,p.tPlayer,d.tDeltaTime)
 							Object_Enemy_BossBehaviour_Beta(o,p,1)
 						Case OBJTYPE_BOSSMECHA:
 							Object_Enemy_BossBehaviour_MechaSonic(o,p)
+						Case OBJTYPE_BOSSROBO:
+							Object_Enemy_BossBehaviour_RoboSonic(o,p,d)
 					End Select
-					If (Not(Rand(3,3+5)>3)) and (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) and (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Attack[Rand(1,5)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
+					
 				EndIf
 				Select o\ObjType
 					Case OBJTYPE_BOSS,OBJTYPE_BOSSRUN:
@@ -3497,10 +3530,10 @@ Function Object_Enemy_BossBehaviour(o.tObject,p.tPlayer,d.tDeltaTime)
 					Default:
 						If o\Enemy\Health<=4 Then
 							o\Enemy\BossMode=3 : o\Enemy\AttackTimer=2*secs#
-							If (o\ObjType=OBJTYPE_BOSSBETA Or o\ObjType=OBJTYPE_BOSSMECHA) Then o\Enemy\AttackMode=0 : o\Enemy\AttackMode2=0
+							If (o\ObjType=OBJTYPE_BOSSBETA Or o\ObjType=OBJTYPE_BOSSMECHA Or o\ObjType=OBJTYPE_BOSSROBO) Then o\Enemy\AttackMode=0 : o\Enemy\AttackMode2=0
 						EndIf
 				End Select				
-			Case 3:
+			Case 3: ; HEALTH 4 or less
 				Select o\ObjType
 					Case OBJTYPE_BOSS,OBJTYPE_BOSSRUN:
 						PositionEntity o\Enemy\BossObj1\Entity, o\Position\x#, o\Position\y#-8, o\Position\z#, 1
@@ -3514,6 +3547,8 @@ Function Object_Enemy_BossBehaviour(o.tObject,p.tPlayer,d.tDeltaTime)
 				End Select
 				Select o\ObjType
 					Case OBJTYPE_BOSS:
+						If (Not(Rand(3,3+5)>3)) and (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) and (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Attack[Rand(1,5)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
+
 					Default:
 						If Not(o\Enemy\AttackTimer)>0 Then
 							Select o\ObjType
@@ -3529,8 +3564,9 @@ Function Object_Enemy_BossBehaviour(o.tObject,p.tPlayer,d.tDeltaTime)
 									Object_Enemy_BossBehaviour_Beta(o,p,2)
 								Case OBJTYPE_BOSSMECHA:
 									Object_Enemy_BossBehaviour_MechaSonic(o,p)
+								Case OBJTYPE_BOSSROBO:
+									Object_Enemy_BossBehaviour_RoboSonic(o,p,d)
 							End Select
-							If (Not(Rand(3,3+5)>3)) and (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) and (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Attack[Rand(1,5)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
 						EndIf
 				End Select
 				Select o\ObjType
@@ -3557,7 +3593,7 @@ Function Object_Enemy_BossBehaviour(o.tObject,p.tPlayer,d.tDeltaTime)
 					Default:
 						If o\Enemy\Health<=2 Then
 							o\Enemy\BossMode=4 : o\Enemy\AttackTimer=0
-							If (o\ObjType=OBJTYPE_BOSSBETA Or o\ObjType=OBJTYPE_BOSSMECHA) Then o\Enemy\AttackMode=0 : o\Enemy\AttackMode2=0
+							If (o\ObjType=OBJTYPE_BOSSBETA Or o\ObjType=OBJTYPE_BOSSMECHA Or o\ObjType=OBJTYPE_BOSSROBO) Then o\Enemy\AttackMode=0 : o\Enemy\AttackMode2=0
 							If (Not(Rand(1,1+3)=1)) and (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) and (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Lose[Rand(1,3)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
 							Select o\ObjType
 								Case OBJTYPE_BOSSRUN:
@@ -3567,7 +3603,7 @@ Function Object_Enemy_BossBehaviour(o.tObject,p.tPlayer,d.tDeltaTime)
 							End Select
 						EndIf
 				End Select
-			Case 4:
+			Case 4: ;health 2 or less
 				Select o\ObjType
 					Case OBJTYPE_BOSS,OBJTYPE_BOSS2:
 						PositionEntity o\Enemy\BossObj1\Entity, o\Position\x#, o\Position\y#-8, o\Position\z#, 1
@@ -3597,12 +3633,14 @@ Function Object_Enemy_BossBehaviour(o.tObject,p.tPlayer,d.tDeltaTime)
 							Object_Enemy_BossBehaviour_Beta(o,p,3)
 						Case OBJTYPE_BOSSMECHA:
 							Object_Enemy_BossBehaviour_MechaSonic(o,p)
+						Case OBJTYPE_BOSSROBO:
+							Object_Enemy_BossBehaviour_RoboSonic(o,p,d)
 					End Select
 					If (Not(Rand(3,3+5)>3)) and (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) and (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Attack[Rand(1,5)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
 				EndIf
 				If o\Enemy\Health<=0 Then
 					o\Enemy\BossMode=5 : o\Enemy\AttackTimer=5*secs# : o\Enemy\WaitTimer=0
-					If (o\ObjType=OBJTYPE_BOSSBETA Or o\ObjType=OBJTYPE_BOSSMECHA) Then o\Enemy\AttackMode=0 : o\Enemy\AttackMode2=0
+					If (o\ObjType=OBJTYPE_BOSSBETA Or o\ObjType=OBJTYPE_BOSSMECHA Or o\ObjType=OBJTYPE_BOSSROBO) Then o\Enemy\AttackMode=0 : o\Enemy\AttackMode2=0
 					If (Not(Rand(1,1+3)=1)) and (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) and (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Lose[Rand(1,3)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
 					Select o\ObjType
 						Case OBJTYPE_BOSS,OBJTYPE_BOSS2:
@@ -3790,24 +3828,165 @@ Function Object_Enemy_BossBehaviour_MechaSonic(o.tObject, p.tPlayer)
 			End Select
 	End Select
 End Function
+Function Object_Enemy_BossBehaviour_RoboSonic(o.tObject, p.tPlayer, d.tDeltaTime)
+	;attackmode 0 - idle
+	;attackmode 1 - jump
+	;attackmode 2 - spindash
+	;attackmode 3 - charge
+	Select o\Enemy\BossMode
+		Case 0,1: ;Start-up, Hover Down
+			o\Enemy\InRangeForced=True
+			Object_EnemyLookAtPlayer(o,p)
+			o\Enemy\FlyEnemyType=True
+		Case 2,3,4: ;General Handling
+		Select o\Enemy\AttackMode2
+				Case 0:
+					o\Enemy\AttackMode2=Rand(1,3)
+				Case 3: ; start jump
+					o\Enemy\AttackMode2=4
+					o\Anim=3
+					o\Enemy\FlyEnemyType=False
+					o\Enemy\AttackTimer=1*secs#
+					EmitSmartSound(Sound_MechaBuzzsaw,o\Entity)
+					o\Enemy\WaitTimer=1.75*o\Enemy\BossMode*secs#
+				Case 4: ; jumping
+				If (o\Enemy\WaitTimer>0) Then
+					o\Enemy\InRangeForced=True
+					o\Enemy\FlyEnemyType=False
+					Object_EnemyLookAtPlayer(o,p)
+					o\Anim=3
+					
+					If o\Enemy\AttackMode3=0 Then
+						Object_EnemyMoveUp(o,p,d,-1.8)
+						Object_EnemyMoveToPlayer(o,p,d,1.8)
+						If abs(o\Position\y#-p\Objects\Position\y#)<5 Then
+							o\Enemy\AttackMode3=1
+							EmitSmartSound(Sound_Crusher,o\Entity)
+						End If
+					Else
+						Object_EnemyMoveUp(o,p,d,1.8)
+						Object_EnemyMoveToPlayer(o,p,d,1.5)
+						If abs(o\Position\y#-p\Objects\Position\y#)>20 Then
+							o\Enemy\AttackMode3=0 : EmitSmartSound(Sound_Dart,o\Entity)
+							If (o\Enemy\BossMode>2) Then
+								o\Enemy\ShouldSpawnMissile=True
+							End If
+						End If
+					End If
+				Else
+					o\Enemy\ShouldSpawnMissile=False
+					
+					If (o\Enemy\BossMode>2) Then
+						o\Enemy\AttackMode2=0
+					Else 
+						o\Enemy\AttackMode2=7
+					End If
+					o\Enemy\AttackMode3=0
 
-Function Object_Enemy_BossGeneral(o.tObject, p.tPlayer, d.tDeltaTime)
-	If Not(ChannelPlaying(o\Enemy\Channel_EnemyStep)) Then o\Enemy\Channel_EnemyStep=EmitSmartSound(Sound_EnemyHover,o\Entity)
-
-	If o\Enemy\WaitTimer2>0 Then
-		ShowEntity(o\Entity3)
-		PositionTexture(o\ExtraTexture, 0, 0.002*Game\Gameplay\Time)
-		o\Enemy\MayGetAttacked=False
-		Select o\ObjType
-			Case OBJTYPE_BOSSBETA:
-				HideEntity(o\Entity2)
+				End If
+				Case 2: ; start charging
+					o\Anim=2
+					o\Enemy\InRangeForced=True
+					o\Enemy\FlyEnemyType=False
+					ParticleTemplate_Call(o\Enemy\JetParticle1, PARTICLE_BOMB_SHINE, o\Enemy\Jet1)
+					EmitSmartSound(Sound_MechaSaw,o\Entity)
+					o\Enemy\AttackMode2=5
+					o\Enemy\WaitTimer=3*secs#
+					Object_EnemyLookAtPlayer(o,p)
+					o\Enemy\AttackMode3=0
+					o\Enemy\AttackTimer=2*secs#
+					
+				Case 5: ; charging
+				If (o\Enemy\WaitTimer>0) Then
+					If (o\Enemy\AttackMode3=0) Then EmitSmartSound(Sound_SpinDashRelease,o\Entity) : Object_EnemyLookAtPlayer(o,p) : o\Enemy\AttackMode3=1
+					o\Enemy\FlyEnemyType=False
+					o\Enemy\InRangeForced=True
+					o\Anim=2
+					;If EntityDistance(o\Entity,p\Objects\Entity)>20 Then Object_EnemyLookAtPlayer(o,p)
+					Object_EnemyMoveToPlayer(o,p,d,6)
+					
+				Else
+					o\Enemy\AttackMode2=0
+					o\Enemy\AttackMode3=0
+				End If
+				Case 1: ; start spindash
+					o\Anim=3
+					EmitSmartSound(Sound_MechaBuzzsaw,o\Entity)
+					ParticleTemplate_Call(o\Enemy\JetParticle1, PARTICLE_PLAYER_SMOKE, o\Enemy\Center)
+					o\Enemy\InRangeForced=True
+					o\Enemy\WaitTimer=4*secs#
+					o\Enemy\AttackMode2=6
+					Object_EnemyLookAtPlayer(o,p)
+					o\Enemy\AttackTimer=3*secs#
+				Case 6: ; spindashing
+				If (o\Enemy\WaitTimer>0) Then
+					If (o\Enemy\AttackMode3=0) Then EmitSmartSound(Sound_MechaSaw,o\Entity) : ParticleTemplate_Call(o\Enemy\JetParticle1, PARTICLE_PLAYER_CONTACTSPARK, o\Enemy\Center) : o\Enemy\AttackMode3=1	
+					o\Enemy\InRangeForced=True
+					o\Anim=3
+					If EntityDistance(o\Entity,p\Objects\Entity)>15 Then Object_EnemyLookAtPlayer(o,p)
+					Object_EnemyMoveToPlayer(o,p,d,4)
+					ParticleTemplate_Call(o\Enemy\JetParticle2, PARTICLE_PLAYER_SMOKE, o\Enemy\Center)
+				Else
+					If (o\Enemy\BossMode>2) Then
+						o\Enemy\AttackMode2=0
+					Else 
+						o\Enemy\AttackMode2=7
+					End If
+					o\Enemy\AttackMode3=0
+				End If
+				Case 7: ; idle start
+					
+				If (o\Enemy\AttackMode3=0) Then
+					o\Anim=1
+					EmitSmartSound(Sound_EnemyHello,o\Entity)
+					o\Enemy\AttackMode3=1
+					Object_EnemyLookAtPlayer(o,p)
+					o\Enemy\WaitTimer=3*secs#
+					o\Enemy\AttackTimer=1*secs#
+					Else
+					If (o\Enemy\WaitTimer>0) Then
+						o\Anim=1
+						Object_EnemyLookAtPlayer(o,p)
+					Else
+						EmitSmartSound(Sound_EggmanShield,o\Entity)
+						o\Enemy\AttackMode2=0
+						o\Enemy\AttackMode3=0
+					End If
+				End If
 		End Select
+		Case 5:
+			o\Anim=4
+		Default: ;
+			o\Enemy\FlyEnemyType=False
+			
+
+	End Select
+
+	
+End Function
+
+;; Boss behavior code shared amongst all bosses.
+Function Object_Enemy_BossGeneral(o.tObject, p.tPlayer, d.tDeltaTime)
+	If Not(ChannelPlaying(o\Enemy\Channel_EnemyStep) ) Then o\Enemy\Channel_EnemyStep=EmitSmartSound(Sound_EnemyHover,o\Entity)
+
+	If o\Enemy\WaitTimer2>0 Then ;shield
+		If (not(o\ObjType=OBJTYPE_BOSSROBO)) Then
+			ShowEntity(o\Entity3)
+			PositionTexture(o\ExtraTexture, 0, 0.002*Game\Gameplay\Time)
+			o\Enemy\MayGetAttacked=False
+			Select o\ObjType
+				Case OBJTYPE_BOSSBETA:
+					HideEntity(o\Entity2)
+			End Select
+		End If
 	Else
-		If o\Enemy\BossMode<5 and o\Enemy\WasJustAttacked<3.8*secs# and o\Enemy\WasJustAttacked>1*secs# Then
+		If o\Enemy\BossMode<5 and o\Enemy\WasJustAttacked<3.8*secs# and o\Enemy\WasJustAttacked>1*secs# and (not(o\ObjType=OBJTYPE_BOSSROBO)) Then
 			o\Enemy\WaitTimer2=(5+Rand(1,4)/4.0)*secs# : EmitSmartSound(Sound_EggmanShield,o\Entity)
 			o\Enemy\WasJustAttacked=0
 		EndIf
-		HideEntity(o\Entity3)
+		If (not(o\ObjType=OBJTYPE_BOSSROBO)) Then
+			HideEntity(o\Entity3) ;hide shield
+		End If
 		Select o\ObjType
 			Case OBJTYPE_BOSSBETA:
 				If o\Anim=9 Then o\Enemy\MayGetAttacked=True Else o\Enemy\MayGetAttacked=False
@@ -3819,22 +3998,29 @@ Function Object_Enemy_BossGeneral(o.tObject, p.tPlayer, d.tDeltaTime)
 				EndIf
 			Case OBJTYPE_BOSSMECHA:
 				If (Not(o\Anim=3)) and o\Enemy\Shield=0 Then o\Enemy\MayGetAttacked=True Else o\Enemy\MayGetAttacked=False
+			Case OBJTYPE_BOSSROBO:
+				If o\Anim=3 Then o\Enemy\MayGetAttacked=False Else o\Enemy\MayGetAttacked=True
 			Default: o\Enemy\MayGetAttacked=True
 		End Select
 	EndIf
 
 	Select o\Enemy\BossMode
-		Case 5:
-			Object_EnemyLookAtPlayer(o,p)
-			Object_EnemyMoveToPlayer(o,p,d,-0.6)
-			Object_EnemyMoveUp(o,p,d,0.4)
+		Case 5: ;Death Phase
+			If (not(o\ObjType=OBJTYPE_BOSSROBO)) Then
+				Object_EnemyLookAtPlayer(o,p)
+				Object_EnemyMoveToPlayer(o,p,d,-0.6)
+				Object_EnemyMoveUp(o,p,d,0.4)
+			End If
 			If (Not(o\Enemy\AttackTimer>0)) Then Game\BossNotDefeated=0
-			If Not(EntityDistance(o\Entity,p\Objects\Entity)>450) Then
-				If Not(o\Enemy\WaitTimer)>0 Then
-					o\Enemy\WaitTimer=(Rand(2,5)/5.0)*secs#
-					Object_PlayRobotDestroySound(o)
-					ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_BOMBBIG, o\Entity)
+				If (Menu\Mission=MISSION_BOSS#) Then
+					If Not(EntityDistance(o\Entity,p\Objects\Entity)>450) Then
+						If Not(o\Enemy\WaitTimer)>0 Then
+							o\Enemy\WaitTimer=(Rand(2,5)/5.0)*secs#
+							Object_PlayRobotDestroySound(o)
+							ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_BOMBBIG, o\Entity)
+						EndIf
 				EndIf
+				
 			EndIf
 		Default:
 			Select o\ObjType
@@ -3856,6 +4042,7 @@ Function Object_Enemy_BossGeneral(o.tObject, p.tPlayer, d.tDeltaTime)
 							EndIf
 						EndIf
 					EndIf
+				Case OBJTYPE_BOSSROBO:
 				Case OBJTYPE_BOSSMECHA:
 					If o\Position\z#<p\Objects\Position\z#-100 Or o\Position\z#>p\Objects\Position\z#+700 Or abs(o\Position\y#-p\Objects\Position\y#)>700 Then
 						Object_Enemy_BossGeneral_BossRun(o,p,d)
@@ -3940,6 +4127,7 @@ Function Object_Enemy_BossGeneral(o.tObject, p.tPlayer, d.tDeltaTime)
 					EndIf
 				Case OBJTYPE_BOSSMECHA:
 					If o\Anim=2 Or o\Anim=4 Then Object_Enemy_BossGeneral_UpDownAround(o,p,d,25)
+				Case OBJTYPE_BOSSROBO:
 				Default:
 					Object_Enemy_BossGeneral_UpDownAround(o,p,d)
 			End Select

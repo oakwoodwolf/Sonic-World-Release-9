@@ -608,6 +608,7 @@
 	Global Mesh_Boss_Betamk2			= cm : cm=cm+1
 	Global Mesh_Boss_MechaSonic			= cm : cm=cm+1
 	Global Mesh_Boss_MechaSonicS		= cm : cm=cm+1
+	Global Mesh_Boss_RoboSonic			= cm : cm=cm+1
 	Global Mesh_Boss_EggMobile_Shield	= cm : cm=cm+1
 	Global Mesh_Boss_BetaRainbow		= cm : cm=cm+1
 

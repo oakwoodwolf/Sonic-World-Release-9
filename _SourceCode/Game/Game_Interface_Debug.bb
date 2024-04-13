@@ -727,6 +727,8 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 					DrawRealText("Eggman run", GAME_WINDOW_W-(245)*GAME_WINDOW_SCALE#, (40+20*3)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 					DrawRealText("Beta mk.2", GAME_WINDOW_W-(245)*GAME_WINDOW_SCALE#, (40+20*4)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 					DrawRealText("Mecha Sonic run", GAME_WINDOW_W-(245)*GAME_WINDOW_SCALE#, (40+20*5)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+					DrawRealText("Mecha Sonic mk.1", GAME_WINDOW_W-(245)*GAME_WINDOW_SCALE#, (40+20*6)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+
 			End Select
 
 			If Input\Pressed\Down Then
@@ -743,7 +745,7 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 					Case 8: If Game\Interface\DebugMenuOption>12 Then Game\Interface\DebugMenuOption=1
 					Case 9: If Game\Interface\DebugMenuOption>5 Then Game\Interface\DebugMenuOption=1
 					Case 10: If Game\Interface\DebugMenuOption>15 Then Game\Interface\DebugMenuOption=1
-					Case 11: If Game\Interface\DebugMenuOption>7 Then Game\Interface\DebugMenuOption=1
+					Case 11: If Game\Interface\DebugMenuOption>8 Then Game\Interface\DebugMenuOption=1
 				End Select
 			EndIf
 			If Input\Pressed\Up Then
@@ -760,7 +762,7 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 					Case 8: If Game\Interface\DebugMenuOption<1 Then Game\Interface\DebugMenuOption=12
 					Case 9: If Game\Interface\DebugMenuOption<1 Then Game\Interface\DebugMenuOption=5
 					Case 10: If Game\Interface\DebugMenuOption<1 Then Game\Interface\DebugMenuOption=15
-					Case 11: If Game\Interface\DebugMenuOption<1 Then Game\Interface\DebugMenuOption=7
+					Case 11: If Game\Interface\DebugMenuOption<1 Then Game\Interface\DebugMenuOption=8
 				End Select
 			EndIf
 
@@ -910,6 +912,7 @@ Function Interface_Render_Stage_Debug(p.tPlayer)
 							Case 5: Game\Interface\DebugNewObj = OBJTYPE_BOSSRUN
 							Case 6: Game\Interface\DebugNewObj = OBJTYPE_BOSSBETA
 							Case 7: Game\Interface\DebugNewObj = OBJTYPE_BOSSMECHA
+							Case 8: Game\Interface\DebugNewObj = OBJTYPE_BOSSROBO
 						End Select
 				End Select
 				Game\Interface\DebugMenu=0

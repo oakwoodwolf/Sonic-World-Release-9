@@ -234,7 +234,7 @@ Function CreateObject_Create(x#, y#, z#, pitch#, yaw#, roll#, special#=0)
 			obj.tObject = Object_Trigger_Create(x#, y#, z#, special#)
 		Case OBJTYPE_TRIGGER_WATER,OBJTYPE_TRIGGER_MUSIC:
 			obj.tObject = Object_Trigger_Create(x#, y#, z#, special#, TempAttribute\power#)
-		Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA:
+		Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA, OBJTYPE_BOSSROBO:
 			obj.tObject = Object_Enemy_Create(x#, y#, z#, pitch#, yaw#, roll#, TempAttribute\switch1#, 0)
 		Case OBJTYPE_REPEATER:
 			obj.tObject = Object_Repeater_Create(TempAttribute\hint1$, x#, y#, z#, pitch#, yaw#, roll#, TempAttribute\power#, TempAttribute\hasd#, TempAttribute\dx#, TempAttribute\dy#, TempAttribute\dz#)

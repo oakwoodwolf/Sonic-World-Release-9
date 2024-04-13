@@ -329,6 +329,7 @@ End Function
 							mesh1=Mesh_Boss_EggMobile
 			Case OBJTYPE_BOSSBETA:		mesh1=Mesh_Boss_Betamk2
 			Case OBJTYPE_BOSSMECHA:		mesh1=Mesh_Boss_MechaSonic
+			Case OBJTYPE_BOSSROBO:		mesh1=Mesh_Boss_RoboSonic
 			Case OBJTYPE_BUBBLES:		mesh1=Mesh_Bubble
 			Case OBJTYPE_REDRING:		mesh1=Mesh_RedRing
 			Case OBJTYPE_TELEPORTER:	mesh1=Mesh_Teleporter : mesh2=Mesh_Locker
@@ -573,7 +574,7 @@ End Function
 				EntityRadius(p\Objects\Entity, 3.75)
 			Case OBJTYPE_SIGN,OBJTYPE_SIGN+1000,OBJTYPE_SIGN+2000,OBJTYPE_SIGN+3000,OBJTYPE_SIGN+4000:
 				EntityRadius(p\Objects\Entity, 8.25)
-			Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA:
+			Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA, OBJTYPE_BOSSROBO:
 				EntityRadius(p\Objects\Entity, 14)
 			Case OBJTYPE_CHAIR,OBJTYPE_PARASOL:
 				EntityRadius(p\Objects\Entity, 1.5)
@@ -1073,6 +1074,7 @@ End Function
 				Case OBJTYPE_BOSSRUN:		objname$ = "bossrun"
 				Case OBJTYPE_BOSSBETA:		objname$ = "bossbeta"
 				Case OBJTYPE_BOSSMECHA:		objname$ = "bossmecha"
+				Case OBJTYPE_BOSSROBO:		objname$ = "bossrobo"
 				Case OBJTYPE_BUBBLES:		objname$ = "bubbles"
 				Case OBJTYPE_REDRING:		objname$ = "redring"
 				Case OBJTYPE_TELEPORTER:	objname$ = "teleporter"

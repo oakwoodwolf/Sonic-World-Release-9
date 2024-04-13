@@ -389,7 +389,6 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 			If p\No#=1 Then Player_VictoryCam()
 		EndIf
 	EndIf
-
 	;mission management
 	If Game\Victory=0 and p\No#=1 Then
 		Select Menu\Mission
