@@ -253,8 +253,10 @@
 			Delete ls
 		Next
 
-		If Game\Stage\Properties\Water=1 Then FreeEntity Game\Stage\Properties\WaterMesh
-
+		If Game\Stage\Properties\Water=1 Then
+			If Menu\Settings\WaterQuality#>0 Then FreeWater()
+			FreeEntity Game\Stage\Properties\WaterMesh
+		EndIf
 		If Menu\Stage<>0 Then
 			For i=0 to 2
 				If Game\Stage\Properties\Music[i]<>0 Then FreeSound Game\Stage\Properties\Music[i]

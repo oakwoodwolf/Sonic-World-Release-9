@@ -23,6 +23,7 @@ Type tMenu_Settings
 	Field NewTheme#
 	Field ChaoNameTag#
 	Field BumpMaps#
+	Field WaterQuality#
 	Field StadiumDifficulty#
 	Field DisablePlants#
 	Field RealDisablePlants#
@@ -277,15 +278,16 @@ Menu\Settings = New tMenu_Settings
 	Const MENU_BLUR#	= 10
 	Const MENU_SRAYS#	= 11
 	Const MENU_BUMPMAPS#= 12
-	Const MENU_SOUNDS#	= 13
-	Const MENU_PLANTS#	= 14
-	Const MENU_VIEW#	= 15
-	Const MENU_AUTOCAM#	= 16
-	Const MENU_VSYNC#	= 17
-	Const MENU_MODS#	= 18
-	Const MENU_TIPS#	= 19
-	Const MENU_THEME#	= 20
-	Const MENU_RESET#	= 21
+	Const MENU_WATER#=13
+	Const MENU_SOUNDS#	= 14
+	Const MENU_PLANTS#	= 15
+	Const MENU_VIEW#	= 16
+	Const MENU_AUTOCAM#	= 17
+	Const MENU_VSYNC#	= 18
+	Const MENU_MODS#	= 19
+	Const MENU_TIPS#	= 20
+	Const MENU_THEME#	= 21
+	Const MENU_RESET#	= 22
 	
 
 	Const MENU_BLACKMARKET_MAIN#		= 0

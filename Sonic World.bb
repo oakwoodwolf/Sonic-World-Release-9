@@ -94,6 +94,8 @@ Include "_SourceCode\Game\Stage\ParticleTemplate.bb"
 Include "_SourceCode\Libraries\Library_Particles.bb"
 Include "_SourceCode\Libraries\Library_Shadows.bb"
 Include "_SourceCode\Libraries\Library_PostFX.bb"
+Include "_SourceCode\Libraries\Library_FastWater.bb"
+
 
 ; Game code
 Include "_SourceCode\Game\Game.bb"

@@ -181,7 +181,7 @@ Function Menu_Options_Update()
 		Case 0: Menu_Options_Main_Update()
 		Case MENU_RESOLUTION#: Menu_Options_Resolution_Update()
 		Case MENU_SCREEN#: Menu_Options_Screen_Update()
-		Case MENU_DEBUG#,MENU_DOF#,MENU_BLOOM#,MENU_SHADOWS#,MENU_BLUR#,MENU_SRAYS#,MENU_SOUNDS#,MENU_BUMPMAPS#,MENU_PLANTS#,MENU_VIEW#,MENU_MODS#,MENU_TIPS#,MENU_AUTOCAM#,MENU_VSYNC#:
+		Case MENU_DEBUG#,MENU_DOF#,MENU_BLOOM#,MENU_SHADOWS#,MENU_BLUR#,MENU_SRAYS#,MENU_SOUNDS#,MENU_BUMPMAPS#,MENU_PLANTS#,MENU_VIEW#,MENU_MODS#,MENU_TIPS#,MENU_AUTOCAM#,MENU_VSYNC#, MENU_WATER#:
 			Menu_Options_OnOff_Update()
 		Case MENU_VOLUME#: Menu_Options_Volume_Update()
 		Case MENU_CONTROLS#,MENU_CONTROLS2#: Menu_Options_Controls_Update()
@@ -233,14 +233,15 @@ Function Menu_Options_Main_Update()
 			Case 10: Menu\NewOption2=Menu\Settings\MotionBlur# : Menu\NewMenu2=MENU_BLUR#
 			Case 11: Menu\NewOption2=Menu\Settings\SunRays# : Menu\NewMenu2=MENU_SRAYS#
 			Case 12: Menu\NewOption2=Menu\Settings\BumpMaps# : Menu\NewMenu2=MENU_BUMPMAPS#
-			Case 13: Menu\NewOption2=Menu\Settings\ThreeDSounds# : Menu\NewMenu2=MENU_SOUNDS#
-			Case 14: Menu\NewOption2=Menu\Settings\DisablePlants# : Menu\NewMenu2=MENU_PLANTS#
-			Case 15: Menu\NewOption2=Menu\Settings\ViewRange# : Menu\NewMenu2=MENU_VIEW#
-			Case 16: Menu\NewOption2=Menu\Settings\AutoCameraDisabled# : Menu\NewMenu2=MENU_AUTOCAM#
-			Case 17: Menu\NewOption2=Menu\Settings\VSync# : Menu\NewMenu2=MENU_VSYNC#
-			Case 18: Menu\NewOption2=Menu\Settings\Mods# : Menu\NewMenu2=MENU_MODS#
-			Case 19: Menu\NewOption2=Menu\Settings\ControlTips# : Menu\NewMenu2=MENU_TIPS#
-			Case 20: Menu\NewMenu2=MENU_THEME#
+			Case 13: Menu\NewOption2=Menu\Settings\WaterQuality# : Menu\NewMenu2=MENU_WATER#
+			Case 14: Menu\NewOption2=Menu\Settings\ThreeDSounds# : Menu\NewMenu2=MENU_SOUNDS#
+			Case 15: Menu\NewOption2=Menu\Settings\DisablePlants# : Menu\NewMenu2=MENU_PLANTS#
+			Case 16: Menu\NewOption2=Menu\Settings\ViewRange# : Menu\NewMenu2=MENU_VIEW#
+			Case 17: Menu\NewOption2=Menu\Settings\AutoCameraDisabled# : Menu\NewMenu2=MENU_AUTOCAM#
+			Case 18: Menu\NewOption2=Menu\Settings\VSync# : Menu\NewMenu2=MENU_VSYNC#
+			Case 19: Menu\NewOption2=Menu\Settings\Mods# : Menu\NewMenu2=MENU_MODS#
+			Case 20: Menu\NewOption2=Menu\Settings\ControlTips# : Menu\NewMenu2=MENU_TIPS#
+			Case 21: Menu\NewMenu2=MENU_THEME#
 					If Menu\Settings\Mods#=0 Then MENU_THEME_AMOUNT#=MENU_THEME_NONMODAMOUNT#
 					Menu\NewOption2=(Menu\Settings\Theme# Mod 7)
 					If Menu\NewOption2=0 Then Menu\NewOption2=7
@@ -250,7 +251,7 @@ Function Menu_Options_Main_Update()
 						Menu\NewOption2=abs(MENU_THEME_AMOUNT#-Menu\Settings\Theme#-7)
 					EndIf
 					Menu_Options_Theme_LoadThumbnail()
-			Case 21: Menu\NewOption2=1 : Menu\NewMenu2=MENU_RESET#
+			Case 22: Menu\NewOption2=1 : Menu\NewMenu2=MENU_RESET#
 		End Select
 	EndIf
 
@@ -391,6 +392,7 @@ Function Menu_Options_OnOff_Update()
 			Case MENU_SRAYS#: Menu\Settings\SunRays#=Menu\Option2
 			Case MENU_SOUNDS#: Menu\Settings\ThreeDSounds#=Menu\Option2
 			Case MENU_BUMPMAPS#: Menu\Settings\BumpMaps#=Menu\Option2
+			Case MENU_WATER#: Menu\Settings\WaterQuality#=Menu\Option2
 			Case MENU_PLANTS#: Menu\Settings\DisablePlants#=Menu\Option2
 			Case MENU_VIEW#: Menu\Settings\ViewRange#=Menu\Option2
 			Case MENU_AUTOCAM#: Menu\Settings\AutoCameraDisabled#=Menu\Option2

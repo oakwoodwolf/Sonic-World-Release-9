@@ -19,6 +19,10 @@
 	Const COLLISION_WORLD_POLYGON_PINBALL		=	13
 	Const COLLISION_WORLD_POLYGON_ICE			=	14
 	Const COLLISION_WORLD_POLYGON_BOUNCE		=	15
+	Const COLLISION_WORLD_POLYGON_SLIDEXP		=	111
+	Const COLLISION_WORLD_POLYGON_SLIDEXN		=	112
+	Const COLLISION_WORLD_POLYGON_SLIDEZP		=	113
+	Const COLLISION_WORLD_POLYGON_SLIDEZN		=	114
 	Const COLLISION_WORLD_POLYGON_SLOW			=	16
 
 	Type MeshStructure
@@ -332,6 +336,17 @@ Next
 										Default: Game\Stage\Properties\WaterType=1
 									End Select
 									
+									If Menu\Settings\WaterQuality#>0 Then
+										Select Game\Stage\Properties\WaterType
+											Case 1: CreateWater.tFastWater(128, 128, Game\Stage\Properties\WaterLevel, "Textures/water/Bump.png")
+											Case 3: CreateWater.tFastWater(128, 128, Game\Stage\Properties\WaterLevel, "Textures/sea/Bump.png")
+											Case 5: CreateWater.tFastWater(128, 128, Game\Stage\Properties\WaterLevel, "Textures/swamp/Bump.png")
+										End Select
+										Select Game\Stage\Properties\WaterType
+											Case 1,3,5: HideEntity(Game\Stage\Properties\WaterMesh)
+										End Select
+									EndIf
+
 									If Menu\Settings\BumpMaps#>0 Then EntityTexture(Game\Stage\Properties\WaterMesh, water_bump_texture(Game\Stage\Properties\WaterType),0,0)
 									EntityTexture(Game\Stage\Properties\WaterMesh, water_texture(Game\Stage\Properties\WaterType,Game\Stage\Properties\WaterTexture),0,1)
 
@@ -437,7 +452,6 @@ Next
 
 								Game\Stage\Properties\SunRays = xmlNodeAttributeValueGet(InformationChildNode, "sunrays")
 								If Not(Game\Stage\Properties\Sun > 0) Then Game\Stage\Properties\SunRays = 0
-
 							Case "vehicle"
 								Game\WholeVehicle = xmlNodeAttributeValueGet(InformationChildNode, "on")
 								If Game\WholeVehicle<0 Or Game\WholeVehicle>9 Then Game\WholeVehicle=0
@@ -454,7 +468,7 @@ Next
 						
 						; Find out wich kind of scene entity it is.
 						Select xmlNodeNameGet$(SceneChildNode)
-							Case "mesh","animmesh","hurtmesh","deathmesh","railmesh","blockmesh","pinballmesh","rollmesh","icemesh","bouncemesh","slowmesh"
+							Case "mesh","animmesh","hurtmesh","deathmesh","railmesh","blockmesh","pinballmesh","rollmesh","icemesh","bouncemesh","slowmesh","slidemesh"
 								; Retrieve mesh properties information
 								MeshFilename$	= xmlNodeAttributeValueGet(SceneChildNode, "filename") 
 								MeshVisible	= xmlNodeAttributeValueGet(SceneChildNode, "visible")
@@ -468,7 +482,7 @@ Next
 								; set collision type.
 								; Create structure
 								m.MeshStructure = New MeshStructure
-
+								
 								Select xmlNodeNameGet$(SceneChildNode)
 									Case "animmesh":
 										m\Entity = LoadAnimMesh(Path$+MeshFilename$, Game\Stage\Root)
@@ -504,6 +518,14 @@ Next
 											EntityType(m\Entity, COLLISION_WORLD_POLYGON_ICE)
 										Case "bouncemesh"
 											EntityType(m\Entity, COLLISION_WORLD_POLYGON_BOUNCE)
+										Case "slidemesh"
+											Select xmlNodeAttributeValueGet(SceneChildNode, "dir")
+											Case 1,"right": EntityType(m\Entity, COLLISION_WORLD_POLYGON_SLIDEXP)
+											Case 2,"left": EntityType(m\Entity, COLLISION_WORLD_POLYGON_SLIDEXN)
+											Case 3,"forward": EntityType(m\Entity, COLLISION_WORLD_POLYGON_SLIDEZP)
+											Case 4,"backward": EntityType(m\Entity, COLLISION_WORLD_POLYGON_SLIDEZN)
+											Default: EntityType(m\Entity, COLLISION_WORLD_POLYGON)
+											End Select
 										Case "slowmesh"
 											EntityType(m\Entity, COLLISION_WORLD_POLYGON_SLOW)
 										Default:
@@ -4641,6 +4663,10 @@ Next
 		Collisions(COLLISION_PLAYER, COLLISION_WORLD_POLYGON_ICE, 2, 2)
 		Collisions(COLLISION_PLAYER, COLLISION_WORLD_POLYGON_BOUNCE, 2, 2)
 		Collisions(COLLISION_PLAYER, COLLISION_WORLD_POLYGON_SLOW, 2, 2)
+		Collisions(COLLISION_PLAYER, COLLISION_WORLD_POLYGON_SLIDEXP, 2, 2)
+		Collisions(COLLISION_PLAYER, COLLISION_WORLD_POLYGON_SLIDEXN, 2, 2)
+		Collisions(COLLISION_PLAYER, COLLISION_WORLD_POLYGON_SLIDEZP, 2, 2)
+		Collisions(COLLISION_PLAYER, COLLISION_WORLD_POLYGON_SLIDEZN, 2, 2)
 		Collisions(COLLISION_PLAYER, COLLISION_PLAYER, 2, 2)
 		Collisions(COLLISION_PLAYER, COLLISION_OBJECT, 2, 2)
 		Collisions(COLLISION_PLAYER, COLLISION_OBJECT2, 2, 2)
@@ -4653,6 +4679,10 @@ Next
 		Collisions(COLLISION_CAMERA, COLLISION_WORLD_POLYGON_ICE, 2, 2)
 		Collisions(COLLISION_CAMERA, COLLISION_WORLD_POLYGON_BOUNCE, 2, 2)
 		Collisions(COLLISION_CAMERA, COLLISION_WORLD_POLYGON_SLOW, 2, 2)
+		Collisions(COLLISION_CAMERA, COLLISION_WORLD_POLYGON_SLIDEXP, 2, 2)
+		Collisions(COLLISION_CAMERA, COLLISION_WORLD_POLYGON_SLIDEXN, 2, 2)
+		Collisions(COLLISION_CAMERA, COLLISION_WORLD_POLYGON_SLIDEZP, 2, 2)
+		Collisions(COLLISION_CAMERA, COLLISION_WORLD_POLYGON_SLIDEZN, 2, 2)
 		Collisions(COLLISION_CAMERA, COLLISION_PLAYER, 2, 2)
 
 		Collisions(COLLISION_OBJECT, COLLISION_WORLD_POLYGON, 2, 3)
@@ -4664,6 +4694,10 @@ Next
 		Collisions(COLLISION_OBJECT, COLLISION_WORLD_POLYGON_ICE, 2, 3)
 		Collisions(COLLISION_OBJECT, COLLISION_WORLD_POLYGON_BOUNCE, 2, 3)
 		Collisions(COLLISION_OBJECT, COLLISION_WORLD_POLYGON_SLOW, 2, 3)
+		Collisions(COLLISION_OBJECT, COLLISION_WORLD_POLYGON_SLIDEXP, 2, 2)
+		Collisions(COLLISION_OBJECT, COLLISION_WORLD_POLYGON_SLIDEXN, 2, 2)
+		Collisions(COLLISION_OBJECT, COLLISION_WORLD_POLYGON_SLIDEZP, 2, 2)
+		Collisions(COLLISION_OBJECT, COLLISION_WORLD_POLYGON_SLIDEZN, 2, 2)
 		Collisions(COLLISION_OBJECT, COLLISION_PLAYER, 2, 3)
 		Collisions(COLLISION_OBJECT, COLLISION_OBJECT, 2, 3)
 		Collisions(COLLISION_OBJECT, COLLISION_OBJECT_GOTHRU, 2, 3)
@@ -4679,6 +4713,10 @@ Next
 		Collisions(COLLISION_OBJECT2, COLLISION_WORLD_POLYGON_ICE, 2, 2)
 		Collisions(COLLISION_OBJECT2, COLLISION_WORLD_POLYGON_BOUNCE, 2, 2)
 		Collisions(COLLISION_OBJECT2, COLLISION_WORLD_POLYGON_SLOW, 2, 2)
+		Collisions(COLLISION_OBJECT2, COLLISION_WORLD_POLYGON_SLIDEXP, 2, 2)
+		Collisions(COLLISION_OBJECT2, COLLISION_WORLD_POLYGON_SLIDEXN, 2, 2)
+		Collisions(COLLISION_OBJECT2, COLLISION_WORLD_POLYGON_SLIDEZP, 2, 2)
+		Collisions(COLLISION_OBJECT2, COLLISION_WORLD_POLYGON_SLIDEZN, 2, 2)
 		Collisions(COLLISION_OBJECT2, COLLISION_PLAYER, 2, 2)
 		Collisions(COLLISION_OBJECT2, COLLISION_OBJECT, 2, 2)
 		Collisions(COLLISION_OBJECT2, COLLISION_OBJECT_GOTHRU, 2, 2)
@@ -4694,6 +4732,10 @@ Next
 		Collisions(COLLISION_OBJECT_GOTHRU, COLLISION_WORLD_POLYGON_ICE, 2, 3)
 		Collisions(COLLISION_OBJECT_GOTHRU, COLLISION_WORLD_POLYGON_BOUNCE, 2, 3)
 		Collisions(COLLISION_OBJECT_GOTHRU, COLLISION_WORLD_POLYGON_SLOW, 2, 3)
+		Collisions(COLLISION_OBJECT_GOTHRU, COLLISION_WORLD_POLYGON_SLIDEXP, 2, 2)
+		Collisions(COLLISION_OBJECT_GOTHRU, COLLISION_WORLD_POLYGON_SLIDEXN, 2, 2)
+		Collisions(COLLISION_OBJECT_GOTHRU, COLLISION_WORLD_POLYGON_SLIDEZP, 2, 2)
+		Collisions(COLLISION_OBJECT_GOTHRU, COLLISION_WORLD_POLYGON_SLIDEZN, 2, 2)
 		Collisions(COLLISION_OBJECT_GOTHRU, COLLISION_PLAYER, 2, 3)
 		Collisions(COLLISION_OBJECT_GOTHRU, COLLISION_OBJECT, 2, 3)
 		Collisions(COLLISION_OBJECT_GOTHRU, COLLISION_OBJECT_GOTHRU, 2, 3)
@@ -4709,6 +4751,10 @@ Next
 		Collisions(COLLISION_OBJECT2_GOTHRU, COLLISION_WORLD_POLYGON_ICE, 2, 2)
 		Collisions(COLLISION_OBJECT2_GOTHRU, COLLISION_WORLD_POLYGON_BOUNCE, 2, 2)
 		Collisions(COLLISION_OBJECT2_GOTHRU, COLLISION_WORLD_POLYGON_SLOW, 2, 2)
+		Collisions(COLLISION_OBJECT2_GOTHRU, COLLISION_WORLD_POLYGON_SLIDEXP, 2, 2)
+		Collisions(COLLISION_OBJECT2_GOTHRU, COLLISION_WORLD_POLYGON_SLIDEXN, 2, 2)
+		Collisions(COLLISION_OBJECT2_GOTHRU, COLLISION_WORLD_POLYGON_SLIDEZP, 2, 2)
+		Collisions(COLLISION_OBJECT2_GOTHRU, COLLISION_WORLD_POLYGON_SLIDEZN, 2, 2)
 		Collisions(COLLISION_OBJECT2_GOTHRU, COLLISION_PLAYER, 2, 2)
 		Collisions(COLLISION_OBJECT2_GOTHRU, COLLISION_OBJECT, 2, 2)
 		Collisions(COLLISION_OBJECT2_GOTHRU, COLLISION_OBJECT_GOTHRU, 2, 2)

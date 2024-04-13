@@ -250,6 +250,7 @@ Function Menu_Welcome_Update()
 						Menu\Settings\Shadows#=0
 						Menu\Settings\MotionBlur#=0
 						Menu\Settings\SunRays#=0
+						Menu\Settings\WaterQuality#=0
 						Menu\Settings\BumpMaps#=0
 					Case 2:
 						Menu\Settings\DepthOfField#=0
@@ -257,6 +258,7 @@ Function Menu_Welcome_Update()
 						Menu\Settings\Shadows#=1
 						Menu\Settings\MotionBlur#=0
 						Menu\Settings\SunRays#=0
+						Menu\Settings\WaterQuality#=0
 						Menu\Settings\BumpMaps#=1
 					Case 3:
 						Menu\Settings\DepthOfField#=0
@@ -264,6 +266,7 @@ Function Menu_Welcome_Update()
 						Menu\Settings\Shadows#=1
 						Menu\Settings\MotionBlur#=0
 						Menu\Settings\SunRays#=0
+						Menu\Settings\WaterQuality#=1
 						Menu\Settings\BumpMaps#=1
 				End Select
 				Menu\Option=1

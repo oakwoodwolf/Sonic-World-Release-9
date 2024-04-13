@@ -644,7 +644,6 @@
 			PointEntity(Game\Stage\Properties\Sun, c\Entity)
 			If Menu\ChaoGarden=1 and Menu\Stage=999 Then PointEntity(Game\Stage\Properties\SunMoon, c\Entity)
 		EndIf
-
 		; Is camera under water?
 		If c\DontDoUnderwaterEffectsTimer>0 Then c\DontDoUnderwaterEffectsTimer=c\DontDoUnderwaterEffectsTimer-timervalue#
 		If c\Underwater=1 and (Not c\DontDoUnderwaterEffectsTimer>0) Then
@@ -700,7 +699,21 @@
 		EndIf
 
 		SetFilterColor(c\Filter, Game\FilterIntensity#, Game\FilterColorR#, Game\FilterColorG#, Game\FilterColorB#)
-
+		; fast water
+		If Menu\Stage>0 And Menu\Settings\WaterQuality#>0 And Game\Stage\Properties\Water=1 And Menu\Pause=0 Then
+			For Water.tFastWater = Each tFastWater
+				If Menu\ChaoGarden=1 Then
+					For i=1 To 3 : ScaleEntity(Game\Stage\Properties\SkyMesh[i], 350.1, 350.1, 350.1) : Next
+					Select Game\Stage\Properties\SkyCycle
+						Case 1,3: UpdateWater(Water, c\Entity, c\Listener, Game\Stage\Properties\SkyMesh[1])		
+						Case 2:   UpdateWater(Water, c\Entity, c\Listener, Game\Stage\Properties\SkyMesh[3])
+						Case 4:   UpdateWater(Water, c\Entity, c\Listener, Game\Stage\Properties\SkyMesh[2])
+					End Select
+				Else
+					UpdateWater(Water, c\Entity, c\Listener, Game\Stage\Properties\Skydome)
+				EndIf
+			Next
+		EndIf
 		FxManager_RenderWorldFast()
 		CameraProjMode (c\Entity, 0)
 			
