@@ -581,6 +581,7 @@
 					If Game\Stage\Properties\WaterLevel<Game\Stage\Properties\WaterLevelTarget Then Game\Stage\Properties\WaterLevel=Game\Stage\Properties\WaterLevel+1*d\Delta
 				EndIf
 				PositionEntity(Game\Stage\Properties\WaterMesh, 0, Game\Stage\Properties\WaterLevel, 0)
+				
 			Else
 				StopChannel(Game\Stage\Properties\WaterLevelChangeChannel)
 			EndIf

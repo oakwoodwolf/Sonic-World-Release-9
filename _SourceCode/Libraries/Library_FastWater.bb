@@ -144,7 +144,10 @@ Function UpdateWater(Water.tFastWater, Camera, Listener, Sky)
 			ScaleEntity(Camera,1,1,1)
 			RenderWorld
 			
+
 			; camera under water-plane?
+			If Game\Stage\Properties\WaterLevelChanged=1 Then PositionEntity(Water\Mesh, 0, Game\Stage\Properties\WaterLevel, 0)
+			
 			If EntityY(Camera,1)>Game\Stage\Properties\WaterLevel Then UnderWaterFlag = 0 Else UnderWaterFlag = 1
 			
 			For c.tCamera = Each tCamera
