@@ -1785,11 +1785,15 @@ End Function
 						ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_BOMBBIG, o\Entity)
 					Case -OBJTYPE_BOSS2*10,-OBJTYPE_BOSSBETA*10:
 						EmitSmartSound(Sound_EnemyShotBlow,o\Entity)
+						ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_WINDTUNNEL, o\Entity)
 					Case OBJTYPE_TAKER,OBJTYPE_CRAWLER:
 						EmitSmartSound(Sound_SpearImpact,o\Entity)
 						ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_FLAMYBLOOD, o\Entity)
 					Case OBJTYPE_BOMBER2:
 						EmitSmartSound(Sound_Paddle2,o\Entity)
+					Case OBJTYPE_BOSS, OBJTYPE_BOSS2:
+						EmitSmartSound(Sound_EnemyShotBlow,o\Entity)
+						ParticleTemplate_Call(o\Particle, PARTICLE_BOMB_SHINE, o\Entity, 1, 1, 1, 0, 0, 0.025)
 				End Select
 			EndIf
 
@@ -3938,7 +3942,7 @@ Function Object_Enemy_BossBehaviour_RoboSonic(o.tObject, p.tPlayer, d.tDeltaTime
 					
 				If (o\Enemy\AttackMode3=0) Then
 					o\Anim=1
-					EmitSmartSound(Sound_EnemyHello,o\Entity)
+					EmitSmartSound(Sound_MechaSaw,o\Entity)
 					o\Enemy\AttackMode3=1
 					Object_EnemyLookAtPlayer(o,p)
 					o\Enemy\WaitTimer=3*secs#
@@ -3948,7 +3952,6 @@ Function Object_Enemy_BossBehaviour_RoboSonic(o.tObject, p.tPlayer, d.tDeltaTime
 						o\Anim=1
 						Object_EnemyLookAtPlayer(o,p)
 					Else
-						EmitSmartSound(Sound_EggmanShield,o\Entity)
 						o\Enemy\AttackMode2=0
 						o\Enemy\AttackMode3=0
 					End If
