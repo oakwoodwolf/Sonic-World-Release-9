@@ -596,9 +596,9 @@
 	If Menu\Stage>0 and ((Player_IsPlayable(p) and Input\Pressed\ActionSkill2) or force) Then
 		Select p\Character
 			Case CHAR_TIK:
-			Case CHAR_CHA,CHAR_RAY,CHAR_AMY,CHAR_BAR,CHAR_WAV,CHAR_COM:
+			Case CHAR_CHA,CHAR_RAY,CHAR_AMY,CHAR_BAR,CHAR_WAV,CHAR_COM,CHAR_SON:
 				Player_Action_Throw_Initiate(p)
-			Case CHAR_CRE,CHAR_MAR,CHAR_BLA,CHAR_SON:
+			Case CHAR_CRE,CHAR_MAR,CHAR_BLA:
 				Player_Action_Throw_Initiate(p,2)
 			Case CHAR_SHA:
 				If (Not(p\PsychoChargeTimer>0)) Then Player_Action_Throw_Initiate(p,2)
@@ -673,8 +673,7 @@
 			Case CHAR_SON
 				If p\Motion\Ground=False Then
 					Player_Action_Instashield_Initiate(p)
-				Else
-					Player_Action_Throw_Initiate(p)
+
 				EndIf
 			Case CHAR_OME:
 				Player_Action_Gatling_Initiate(p)
@@ -1115,6 +1114,7 @@
 			p\Physics\TRICK_ANGLE#=0
 			p\Physics\DRIFT_ANGLE_ACTUAL#=0
 			p\Physics\DRIFT_ANGLE#=0
+			p\Flags\SonicBoom=False
 		Next
 	End Function
 
@@ -1215,6 +1215,7 @@
 						Next
 					EndIf
 				EndIf
+				p\Flags\SonicBoom=False
 				Game\ControlLock=0
 				Game\RunLock=0
 			EndIf
@@ -1251,6 +1252,7 @@
 			Player_DieCamera(p)
 			Player_PlayDieVoice(p)
 			p\Action=ACTION_DIE
+			p\Flags\SonicBoom=False
 			p\DieButDontLoseLife=diebutdontloselife
 			PostEffect_Create_FadeOut(0.007, 10, 10, 10)
 		EndIf

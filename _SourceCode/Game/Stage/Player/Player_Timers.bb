@@ -35,6 +35,8 @@ If p\CreateGumBallTimer>0 Then p\CreateGumBallTimer=p\CreateGumBallTimer-timerva
 If p\Action=ACTION_LAND Then p\LandTimer=p\LandTimer+timervalue#
 If p\FloatTimer>0 Then p\FloatTimer=p\FloatTimer-timervalue#
 If p\SonicBoomTrailTimer>0 Then p\SonicBoomTrailTimer=p\SonicBoomTrailTimer-timervalue#
+If p\SonicBoomTimer>0 Then p\SonicBoomTimer=p\SonicBoomTimer-timervalue#
+If p\SonicBoomOverheatTimer>0 Then p\SonicBoomOverheatTimer=p\SonicBoomOverheatTimer-timervalue#
 If p\PsychoChargeTimer>0 Then p\PsychoChargeTimer=p\PsychoChargeTimer-timervalue#
 If p\ShootCooldownTimer>0 Then p\ShootCooldownTimer=p\ShootCooldownTimer-timervalue#
 If p\CheeseRestrictTimer>0 Then p\CheeseRestrictTimer=p\CheeseRestrictTimer-timervalue#
@@ -157,6 +159,8 @@ p\CreateGumBallTimer=0
 p\LandTimer=0
 p\FloatTimer=0
 p\SonicBoomTrailTimer=0
+p\SonicBoomTimer=0
+p\SonicBoomOverheatTimer=0
 p\PsychoChargeTimer=0
 p\ShootCooldownTimer=0
 p\CheeseRestrictTimer=0

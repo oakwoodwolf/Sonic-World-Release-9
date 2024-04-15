@@ -482,6 +482,9 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 	;deal enemy combo
 	If (Not(p\EnemyComboTimer>0)) Then p\EnemyComboCounter=0
 
+	;deal sonic boom
+	If p\Flags\SonicBoom=True and ( (Not(Input\Hold\ActionSkill3)) Or (Not(p\SonicBoomTimer>0)) ) Then p\Flags\SonicBoom=False : p\SonicBoomOverheatTimer=10*secs#
+
 	;deal obj carry carrying nothing
 	If (Not(p\ObjPickUpTimer>0)) and p\ObjPickUp=1 Then p\ObjPickUp=0
 
@@ -801,7 +804,7 @@ End Function
 
 Function Player_IsPowerChar(p.tPlayer)
 	Select p\Character
-		Case CHAR_KNU,CHAR_OME,CHAR_BIG,CHAR_VEC,CHAR_MAR,CHAR_MKN,CHAR_CHO,CHAR_BAR,CHAR_STO,CHAR_TIA,CHAR_MPH,CHAR_HBO,CHAR_GAM,CHAR_EGG,CHAR_BET,CHAR_COM:
+		Case CHAR_KNU,CHAR_OME,CHAR_BIG,CHAR_VEC,CHAR_MAR,CHAR_MIG,CHAR_MKN,CHAR_CHO,CHAR_BAR,CHAR_STO,CHAR_TIA,CHAR_MPH,CHAR_HBO,CHAR_GAM,CHAR_EGG,CHAR_BET,CHAR_COM:
 			Return True
 		Default:
 			Return False

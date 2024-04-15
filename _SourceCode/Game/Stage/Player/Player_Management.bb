@@ -187,6 +187,10 @@
 					Player_Action_Turn_Initiate(p)
 				Case CHAR_INF:
 					Player_Action_Psycho_Initiate(p)
+				Case CHAR_SON:
+					If p\Motion\Ground=True Then
+					Player_Action_SonicBoom_Initiate(p)
+					End If
 			End Select
 		EndIf
 		If Input\Pressed\ActionAct Then

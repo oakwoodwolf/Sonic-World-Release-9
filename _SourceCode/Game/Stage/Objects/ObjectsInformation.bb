@@ -530,7 +530,7 @@ Function Object_EnforceObjPickUp_Normal(o.tObject,p.tPlayer)
 
 	Select o\ObjPickedUp
 		Case 0:
-			If EntityDistance(o\Entity,p\Objects\Entity)<(o\HitBox\y#+2) Then
+			If (o\ThisIsAMonitor=False and EntityDistance(o\Entity,p\Objects\Entity)<(o\HitBox\y#+2)) Or (o\ThisIsAMonitor=True and EntityDistance(o\Entity,p\Objects\Entity)<(o\HitBox\y#+5)) Then
 				If p\ObjPickUpTimer>0 and p\ObjPickUp=0 Then
 					Player_PlayJumpVoice(p)
 					p\ObjPickUpTimer=0 : p\ObjPickUp=1 : p\ObjPickUpTarget=o
@@ -540,13 +540,13 @@ Function Object_EnforceObjPickUp_Normal(o.tObject,p.tPlayer)
 				Interface_ControlTipUpdate_PickUp(1)
 			EndIf
 			If p\ObjPickUp=1 and p\Action=ACTION_CARRY Then
-			If EntityDistance(o\Entity,p\Objects\Entity)<(o\HitBox\y#+2) Then
+			If (o\ThisIsAMonitor=False and EntityDistance(o\Entity,p\Objects\Entity)<(o\HitBox\y#+2)) Or (o\ThisIsAMonitor=True and EntityDistance(o\Entity,p\Objects\Entity)<(o\HitBox\y#+5)) Then
 				o\ObjPickedUp=1
 				p\ObjPickUp=3
 			EndIf
 			EndIf
 		Case 1:
-			If (Input\Hold\Up Or Input\Hold\Left Or Input\Hold\Right Or Input\Hold\Down) Or p\Motion\Ground=False Then
+			If (Input\Hold\Up Or Input\Hold\Left Or Input\Hold\Right Or Input\Hold\Down) Or p\Motion\Ground=False Or Input\Hold\ActionSkill2 Then
 				canthrow=true
 				If Menu\ChaoGarden=1 Then Interface_ActivateGardenAction(2, CONTROLTIPS$(TIP_THROW))
 				Interface_ControlTipUpdate_PickUp(2)
@@ -556,6 +556,7 @@ Function Object_EnforceObjPickUp_Normal(o.tObject,p.tPlayer)
 				Interface_ControlTipUpdate_PickUp(3)
 			EndIf
 			If (Not(p\Action=ACTION_CARRY Or p\Action=ACTION_CARRYJUMP Or p\Action=ACTION_CARRYTHROWN)) Then p\ObjPickUp=0
+			
 			Select p\RealCharacter
 				Case CHAR_EGG,CHAR_TMH:
 					PositionEntity o\Entity, EntityX(p\Objects\Extra2, 1), EntityY(p\Objects\Extra2, 1), EntityZ(p\Objects\Extra2, 1)
@@ -574,6 +575,11 @@ Function Object_EnforceObjPickUp_Normal(o.tObject,p.tPlayer)
 			If o\ObjType=OBJTYPE_CHAO Then
 				PositionEntity o\ChaoObj\targetcc\Pivot, EntityX(o\Entity), EntityY(o\Entity), EntityZ(o\Entity)
 				RotateEntity o\ChaoObj\targetcc\Pivot, EntityPitch(o\Entity), EntityYaw(o\Entity), EntityRoll(o\Entity)
+			EndIf
+			If o\ThisIsAMonitor=True or o\ThisIsABox=True Then
+				PositionEntity o\Entity, EntityX(p\Objects\Entity), EntityY(p\Objects\Entity)+8.5, EntityZ(p\Objects\Entity)
+				RotateEntity o\Entity, 0, p\Animation\Direction#, 0
+				PositionEntity o\EntityX, EntityX(p\Objects\Entity), EntityY(p\Objects\Entity)+8.5, EntityZ(p\Objects\Entity)
 			EndIf
 			If p\ObjPickUpThrowTimer>0 Then
 				If canthrow Then
@@ -629,7 +635,15 @@ Function Object_EnforceObjPickUp_Normal(o.tObject,p.tPlayer)
 			For b.tBomb=Each tBomb
 			If o\ThrownAsBomb=b\ThrownMode Then
 				b\ThrownAsBomb=True
+				If o\ThisIsAMonitor=True Then
+					PositionEntity o\Entity, EntityX(b\Pivot), EntityY(b\Pivot)+4.5, EntityZ(b\Pivot)
+					PositionEntity o\EntityX, EntityX(b\Pivot), EntityY(b\Pivot)+4.5, EntityZ(b\Pivot)
+				ElseIf o\ObjType=OBJTYPE_OMOCHAO Then
+					PositionEntity o\Entity, EntityX(b\Pivot), EntityY(b\Pivot)+1.5, EntityZ(b\Pivot)
+					PositionEntity o\EntityX, EntityX(b\Pivot), EntityY(b\Pivot)+1.5, EntityZ(b\Pivot)
+				Else
 				PositionEntity o\Entity, EntityX(b\Pivot), EntityY(b\Pivot), EntityZ(b\Pivot)
+				EndIf
 				If o\ObjType=OBJTYPE_CHAO Then
 					PositionEntity o\ChaoObj\targetcc\Pivot, EntityX(o\Entity), EntityY(o\Entity), EntityZ(o\Entity)
 					RotateEntity o\ChaoObj\targetcc\Pivot, EntityPitch(o\Entity), EntityYaw(o\Entity), EntityRoll(o\Entity)

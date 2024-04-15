@@ -540,6 +540,11 @@ End Function
 		If (Not(p\Action=ACTION_TORNADO)) Then
 			i = 0
 			Select p\Character
+				Case CHAR_SON:
+				If p\SonicBoomOverheatTimer>0 Then
+					Game\Interface\ShowCaution1Timer=0.01*secs#
+					DrawBetterNumber(p\SonicBoomOverheatTimer/secs#, GAME_WINDOW_W-73*GAME_WINDOW_SCALE#, 66*GAME_WINDOW_SCALE#, 0, 1)
+				EndIf
 				Case CHAR_CRE:
 					If p\CheeseRestrictTimer>0 Then
 						Game\Interface\ShowCaution3Timer=0.01*secs#

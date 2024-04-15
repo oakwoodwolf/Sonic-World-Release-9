@@ -72,7 +72,7 @@
 	Function Object_Box_GravityStuff(o.tObject, p.tPlayer, d.tDeltaTime)
 		; Update collision
 		If (Not(o\ObjType=OBJTYPE_BOXLIGHT)) Then
-			If o\Psychoed>0 Then
+			If o\Psychoed>0 Or o\ObjPickedUp>0  Then
 				EntityType(o\Entity,COLLISION_OBJECT_GOTHRU)
 			Else
 				EntityType(o\Entity,COLLISION_OBJECT)
@@ -86,8 +86,11 @@
 			Object_EnforceGravity(o,d)
 			Object_EnforceStun(o,p,d,false)
 			Object_EnforcePsychokinesis(o,p,d)
-			If Not o\Psychoed=0 Then EntityRadius(o\Entity,o\HitBox\y#-3,1)
+			If Not o\Psychoed=0 Or (Not o\ObjPickedUp=0) Then EntityRadius(o\Entity,o\HitBox\y#-3,1)
 		EndIf
+		; Obj pick up
+		If ((Not(o\ObjType=OBJTYPE_BOXLIGHT Or o\ObjType=OBJTYPE_BOXFLOAT)) And Player_IsPowerChar(p)) Then Object_EnforceObjPickUp(o,p)
+		
 	End Function
 
 	Function Object_Box_Update(o.tObject, p.tPlayer, d.tDeltaTime)

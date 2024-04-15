@@ -118,6 +118,14 @@ Function Player_Physics(p.tPlayer, d.tDeltaTime)
 	p\Physics\COMMON_ROLLWEIGHT_DOWN# = 0.15
 	p\Physics\ROLL_WEIGHT_MULTIPLIER# = 1.0
 
+
+	If p\Flags\SonicBoom=True Then
+		p\Physics\SONICBOOM_SPEED#=1
+		p\Physics\SONICBOOM_ACCELERATION# = 0.06	
+	Else
+		p\Physics\SONICBOOM_SPEED#=0
+		p\Physics\SONICBOOM_ACCELERATION# = 0
+	EndIf
 	; Speed compensation. Lower = better turning power
 	Select p\Action
 		Case ACTION_DRIFT,ACTION_BOARDDRIFT,ACTION_CARDRIFT:
@@ -277,7 +285,7 @@ Select p\Action
 		If p\SpeedLength#<1 Then p\Physics\COMMON_XZACCELERATION#=p\Physics\COMMON_XZACCELERATION#+0.005*(1-p\SpeedLength#)/1.0
 		p\Physics\COMMON_XZACCELERATION# = (p\Physics\COMMON_XZACCELERATION# + 0.005 - 0.0025*p\ScaleFactor# + 0.01*p\Rotation#/90.0) * (p\Physics\UNDERWATERTRIGGER#) * (p\Physics\ICETRIGGER#)
 End Select
-
+p\Physics\COMMON_XZACCELERATION# = p\Physics\COMMON_XZACCELERATION#+p\Physics\SONICBOOM_ACCELERATION#
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -449,7 +457,7 @@ Else
 	End Select
 EndIf
 
-p\Physics\COMMON_XZTOPSPEED# = p\Physics\COMMON_XZTOPSPEED# * (p\Physics\UNDERWATERTRIGGER#) * (p\Physics\SLOWTRIGGER#)
+p\Physics\COMMON_XZTOPSPEED# = p\Physics\COMMON_XZTOPSPEED# * (p\Physics\UNDERWATERTRIGGER#) * (p\Physics\SLOWTRIGGER#) +p\Physics\SONICBOOM_SPEED#
 
 If Menu\ChaoGarden=1 Then
 	If p\Physics\COMMON_XZTOPSPEED#>1.509458 Then p\Physics\COMMON_XZTOPSPEED#=1.509458

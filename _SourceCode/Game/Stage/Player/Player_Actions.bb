@@ -1502,6 +1502,16 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
+	Function Player_Action_SonicBoom_Initiate(p.tPlayer)
+			If (Not(p\SonicBoomOverheatTimer>0)) Then
+						Player_SetSpeed(p,d,p\SpeedLength#+0.75)
+						EmitSmartSound(Sound_SonicBoom,p\Objects\Entity)
+						p\Flags\SonicBoom=True
+						p\SonicBoomTimer=5*secs#
+					EndIf
+	End Function
+	; =========================================================================================================
+	; =========================================================================================================
 
 	Function Player_Action_Uppercut_Initiate(p.tPlayer)
 		If p\Motion\Ground Then

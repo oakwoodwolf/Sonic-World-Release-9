@@ -155,6 +155,8 @@
 		Field SonicBoomTrailTimer
 		Field PsychoChargeTimer
 		Field ShootCooldownTimer
+		Field SonicBoomTimer
+		Field SonicBoomOverheatTimer
 		Field CheeseRestrictTimer
 		Field GlideTimer
 		Field GlideStartTimer
@@ -213,6 +215,8 @@
 		Field JustDeformedCharacterTimer
 		Field IsHoldingTimer
 		Field IsGrabbedTimer
+		Field SoccerShieldTimer
+		Field SoccerShieldRestrictTimer
 		Field JustGrabbedPulleyTimer
 		Field ForceBeingAbleToChangeLeaderTimer
 		Field CantJumpTimer
@@ -379,6 +383,7 @@
 		Field InJumpAttack
 		Field Stomping
 		Field Walking
+		Field SonicBoom
 		Field DisallowCustomPhysics
         Field LongTrailCreated
 		Field InTargeterAttack
@@ -446,6 +451,8 @@
 		Field SPRINT_SPEED#
 		Field BOUNCE_SPEED#
 		Field RINGDASH_SPEED#
+		Field SONICBOOM_SPEED#
+		Field SONICBOOM_ACCELERATION#
 		Field FLUTTERFALL_SPEED#
 
 		; Rotation correction values

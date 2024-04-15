@@ -293,6 +293,7 @@
 	Global Sound_SoldierCharge1		= cm : cm=cm+1
 	Global Sound_SoldierCharge2		= cm : cm=cm+1
 	Global Sound_SoldierCharge3		= cm : cm=cm+1
+	Global Sound_SonicBoom		= cm : cm=cm+1
 	Global Sound_SpearImpact		= cm : cm=cm+1
 	Global Sound_SpearShoot			= cm : cm=cm+1
 	Global Sound_SpeedShoes			= cm : cm=cm+1

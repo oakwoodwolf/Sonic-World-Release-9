@@ -124,7 +124,7 @@
 		EndIf
 
 		; Deal trails
-		If p\No#=1 and (Game\MachLock>0 Or Game\SpeedShoes=1 Or (p\Action=ACTION_SKYDIVE and Input\Hold\ActionRoll)) and (Not(p\Action=ACTION_HOMING Or p\Action=ACTION_DEBUG)) and (p\SpeedLength#>0 Or abs(p\Motion\Speed\y#)>1) and (Game\SuperForm=0 Or Game\MachLock>0) and Game\Victory=0 Then
+		If p\No#=1 and (Game\MachLock>0 Or Game\SpeedShoes=1 or  p\Flags\SonicBoom=True Or (p\Action=ACTION_SKYDIVE and Input\Hold\ActionRoll)) and (Not(p\Action=ACTION_HOMING Or p\Action=ACTION_DEBUG)) and (p\SpeedLength#>0 Or abs(p\Motion\Speed\y#)>1) and (Game\SuperForm=0 Or Game\MachLock>0) and Game\Victory=0 Then
 			If (Not(p\SonicBoomTrailTimer>0)) Then
 				Player_FreeTrails(p,1)
 				For i=0 to 4

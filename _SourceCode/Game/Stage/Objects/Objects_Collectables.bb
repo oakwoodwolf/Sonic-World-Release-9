@@ -273,7 +273,8 @@
 
 		; Movement
 		Object_Monitor_ItemRotate(o,p)
-		
+		; Obj pick up - R4
+		If Player_IsPowerChar(p) Then Object_EnforceObjPickUp(o,p)
 		; Player collided with object
 		If (o\Hit Or o\CheeseHit Or o\FroggyHit Or o\BombHit) and o\State=0 Then
 		
