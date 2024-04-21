@@ -133,6 +133,7 @@ End Function
 ;---------------------------------------------------------------------------------------
 
 	Function Player_Action_Debug_ChangeObj(p.tPlayer)
+		If FindShadowCaster(p\Objects\Mesh)>0 Then FreeShadowCaster(p\Objects\Mesh)
 		FreeEntity p\Objects\Mesh
 		FreeEntity p\Objects\Mesh2
 		mesh1=Mesh_Empty : mesh2=Mesh_Empty

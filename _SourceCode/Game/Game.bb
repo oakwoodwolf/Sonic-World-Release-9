@@ -555,6 +555,7 @@ End Function
 	; ---------------------------------------------------------------------------------------------------------
 	Function Game_End()
 		FreeEntity Menu\RingRotator
+		If Menu\Settings\Shadows#=1 Then FreeShadows()
 		DeInitExt()
 		DeInitDraw()
 		ClearWorld(True,True,True)

@@ -122,6 +122,7 @@
 	Function Game_Stage_End_Player()
 		For p.tPlayer = Each tPlayer
 			DeformCharacter_DeleteTheBoneEntities(p)
+			If FindShadowCaster(p\Objects\Mesh)>0 Then FreeShadowCaster(p\Objects\Mesh)
 			If Menu\Settings\Shadows#>0 and (Menu\ChaoGarden=0 Or Menu\Stage=999) Then FreeEntity(p\Objects\ShadowCircle)
 			FreeEntity p\Objects\Staring
 			If p\Objects\Entity<>0 Then FreeEntity p\Objects\Entity

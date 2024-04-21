@@ -27,6 +27,8 @@
 
 	Type MeshStructure
 		Field Entity
+		Field CastedShadow
+		Field StageShadowTexture
 		Field AnimTexType
 		Field ScrollSpeedX#
 		Field ScrollSpeedY#
@@ -96,7 +98,11 @@ Next
 		Else
 			Input_GamepadThreshold = 0.8
 		EndIf
-
+	; Init shadows if allowed or not
+		If Menu\Settings\Shadows#=1 Then
+			Game_Stage_UpdateProgressBar("Initializing Shadows", 0)
+			If Menu\Stage>0 Then InitializeShadows(SHADOWS_QUALITY#, SHADOWS_RANGE#, SHADOWS_BLUR#, 0, 0)
+		EndIf
 		; Reset pause situation
 		Menu\Pause=0
 		Input\Hold\Start=False
@@ -277,7 +283,7 @@ Next
 		Game\Stage\GravityAlignment	= Vector(0, 1, 0)
 
 		; Initialize general light
-		InitializeGeneralLight(1, 20000, Game\Stage\Root)
+		InitializeShadowLight(1, 20000, Game\Stage\Root, "Shadows")
 
 		; Create camera
 		Game_Stage_UpdateProgressBar("Creating camera", 0)
@@ -452,6 +458,7 @@ Next
 
 								Game\Stage\Properties\SunRays = xmlNodeAttributeValueGet(InformationChildNode, "sunrays")
 								If Not(Game\Stage\Properties\Sun > 0) Then Game\Stage\Properties\SunRays = 0
+								If Menu\Settings\Shadows#=1 Then DeltaYawEntity(Game\Stage\Properties\GeneralLightPivot, Game\Stage\Properties\Sun, 180 + 180)
 							Case "vehicle"
 								Game\WholeVehicle = xmlNodeAttributeValueGet(InformationChildNode, "on")
 								If Game\WholeVehicle<0 Or Game\WholeVehicle>9 Then Game\WholeVehicle=0
@@ -483,6 +490,12 @@ Next
 								; Create structure
 								m.MeshStructure = New MeshStructure
 								
+
+								; Assign shadow textures
+								If Menu\Settings\Shadows#=1 Then
+									m\StageShadowTexture = ShadowTexture()
+								EndIf
+
 								Select xmlNodeNameGet$(SceneChildNode)
 									Case "animmesh":
 										m\Entity = LoadAnimMesh(Path$+MeshFilename$, Game\Stage\Root)
@@ -490,6 +503,14 @@ Next
 									Default:
 										m\Entity = LoadMesh(Path$+MeshFilename$, Game\Stage\Root)
 								End Select
+
+								; Texture mesh with masked shadows
+								If Menu\Settings\Shadows#=1 Then 
+									If m\Entity>0 Then EntityTexture(m\Entity, m\StageShadowTexture, 0, SHADOWS_TEXTURE_LAYER#)
+									TextureBlend(m\StageShadowTexture, SHADOWS_TEXTURE_BLEND#)
+									;CreateShadowCaster(m\Entity)
+									AttachShadowReceiver(m\Entity)
+								EndIf
 
 								If (MeshVisible = False) Then
 									If (MeshCollision = True) Then
@@ -646,6 +667,7 @@ Next
 								If (LightRotation<>0) Then RotateEntity(ls\Source, xmlNodeAttributeValueGet(LightRotation, "pitch"), xmlNodeAttributeValueGet(LightRotation, "yaw"), xmlNodeAttributeValueGet(LightRotation, "roll"))
 								LightCol = xmlNodeFind("color", SceneChildNode)
 								If (LightCol<>0) Then LightColor(ls\Source, xmlNodeAttributeValueGet(LightCol, "r"), xmlNodeAttributeValueGet(LightCol, "g"), xmlNodeAttributeValueGet(LightCol, "b"))
+								If Menu\Settings\Shadows#=1 Then ShadowLight(ls\Source, LightType$)
 
 							Case "object"
 
