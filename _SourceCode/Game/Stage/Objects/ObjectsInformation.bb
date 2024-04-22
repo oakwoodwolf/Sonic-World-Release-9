@@ -242,9 +242,11 @@ Function Object_CheckHitBox_Bomb(o.tObject,p.tPlayer)
 			o\BombHittable=True
 		ElseIf (o\ObjType=OBJTYPE_BOXCAGE) and (b\BombType=BOMB_PSYCHIC Or b\BombType=BOMB_BOOMERANG Or b\BombType=BOMB_GEAR Or b\BombType=BOMB_TYPHOON Or b\BombType=BOMB_PUNCH Or b\BombType=BOMB_BULLET3 Or b\BombType=BOMB_BULLET2 Or b\BombType=BOMB_BULLET Or b\BombType=BOMB_ROCK Or b\BombType=BOMB_JUSTICE Or b\BombType=BOMB_HOOKSHOT Or b\BombType=BOMB_CUBETRAIL Or b\BombType=BOMB_BELLYFLOP) Then
 			o\BombHittable=True
-		ElseIf (o\ObjType=OBJTYPE_OMOCHAO Or o\ObjType=OBJTYPE_SWITCHTOP Or o\ObjType=OBJTYPE_CHAO Or o\ObjType=OBJTYPE_BELL) and (Not(b\BombType=-1 Or b\BombType=-2)) Then
+		ElseIf (o\ObjType=OBJTYPE_OMOCHAO Or o\ObjType=OBJTYPE_SWITCHTOP Or o\ObjType=OBJTYPE_BELL) and (Not(b\BombType=-1 Or b\BombType=-2)) Then
 			o\BombHittable=True
 		ElseIf (o\ObjType=OBJTYPE_ROCK Or o\ObjType=OBJTYPE_CRYSTAL Or o\ObjType=OBJTYPE_AUTO Or o\ObjType=OBJTYPE_ICICLE Or o\ObjType=OBJTYPE_ICICLEBIG Or o\ObjType=OBJTYPE_ICEDECOR) and (Not(b\BombType=BOMB_RING Or b\BombType=BOMB_NOTE)) Then
+			o\BombHittable=True
+		ElseIf (o\ObjType=OBJTYPE_CHAO And Menu\Stage>=997) Then
 			o\BombHittable=True
 		Else
 			o\BombHittable=False
@@ -647,7 +649,7 @@ Function Object_EnforceObjPickUp_Normal(o.tObject,p.tPlayer)
 				If o\ObjType=OBJTYPE_CHAO Then
 					PositionEntity o\ChaoObj\targetcc\Pivot, EntityX(o\Entity), EntityY(o\Entity), EntityZ(o\Entity)
 					RotateEntity o\ChaoObj\targetcc\Pivot, EntityPitch(o\Entity), EntityYaw(o\Entity), EntityRoll(o\Entity)
-					o\ChaoObj\targetcc\Action=CHAOACTION_THROWN
+					If Menu\Stage < 997 Then o\ChaoObj\targetcc\Action=CHAOACTION_THROWN
 				EndIf
 			EndIf
 			Next			

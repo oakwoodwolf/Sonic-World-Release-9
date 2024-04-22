@@ -27,6 +27,7 @@
 		Field WanderDirectionSpeed
 		Field FoundTarget
 		Field Target.tObject
+		Field Targetp.tPlayer
 		Field EatingWaiting
 		Field ForceInterface
 		Field Position.tVector
@@ -171,16 +172,16 @@
 	Function Object_ChaoManager_NewChao(cc.tChaoManager, Color=0, makepos=True)
 		cc\Stats\Age=0
 		cc\Stats\Persona=1
-		If makepos Then Object_ChaoManager_RandomBeginPos(cc, true)
+		If makepos Then Object_ChaoManager_RandomBeginPos(cc, True)
 		cc\Stats\Hunger#=5 : cc\GetHungryTimer=80*secs#
 		cc\HatchTimer=Rand(30,60)*secs#
 		cc\Stats\ShellGrit#=4+Rand(0,10)
 		cc\Stats\Side=CHAOSIDE_NEUTRAL
 		cc\Stats\Shape=1
-		If color=0 Then cc\Stats\Color=1 Else cc\Stats\Color=color
+		If Color=0 Then cc\Stats\Color=1 Else cc\Stats\Color=Color
 	End Function
 
-	Function Object_ChaoManager_RandomBeginPos(cc.tChaoManager, frominventory=false)
+	Function Object_ChaoManager_RandomBeginPos(cc.tChaoManager, frominventory=False)
 		temporarychaolocation=CreatePivot()
 		If frominventory Then
 			PositionEntity temporarychaolocation,pp(1)\Objects\Position\x#,pp(1)\Objects\Position\y#,pp(1)\Objects\Position\z#,1
@@ -197,18 +198,18 @@
 		cc\g\Motion\Direction#=Rand(-180,180)
 	End Function
 
-	Function Object_ChaoManager_SpawnNewChao(color=0,takepos=false,x#=0,y#=0,z#=0)
+	Function Object_ChaoManager_SpawnNewChao(color=0,takepos=False,x#=0,y#=0,z#=0)
 		CHAOSUM(1)=CHAOSUM(1)+1 : CHAOSLOTS(1,CHAOSUM(1))=1
-		Object_CreateChao(CHAOSUM(1),color,takepos,x#,y#,z#)
+		Object_CreateChao(CHAOSUM(1),Color,takepos,x#,y#,z#)
 		SaveGame_AllChaoStuff()
 	End Function
 
 	Function Object_ChaoManager_HornInHat(hattype)
 		Select hattype
 			Case HAT_STRAW_0,HAT_WOOL_0,HAT_WOOL_1,HAT_WOOL_2,HAT_WOOL_3,HAT_FORMAL_0,HAT_FORMAL_1,HAT_SKULL_0,HAT_BUCKET_0,HAT_TUNIC_0,HAT_TUNIC_1,HAT_TUNIC_2,HAT_TUNIC_3,HAT_BEANIE_0,HAT_BEANIE_1,HAT_BEANIE_2,HAT_BEANIE_3,HAT_FPOT_0,HAT_CARDBOARD_0,HAT_SHELL_0,HAT_PLUMBER_0,HAT_PLUMBER_1,HAT_PLUMBER_2,HAT_PLUMBER_3,HAT_PLUMBER_4,HAT_BANDANA_0,HAT_BANDANA_1,HAT_BANDANA_2,HAT_BANDANA_3,HAT_BANDANA_4:
-				Return true
+				Return True
 			Default:
-				Return false
+				Return False
 		End Select
 	End Function
 
@@ -221,14 +222,14 @@
 
 	Function Object_ChaoManager_TakeOffHat(cc.tChaoManager)
 		FreeEntity cc\HatMesh
-		obj.tObject = Object_Hat_Create(EntityX(cc\Pivot), EntityY(cc\Pivot), EntityZ(cc\Pivot), cc\Stats\Hat, true)
+		obj.tObject = Object_Hat_Create(EntityX(cc\Pivot), EntityY(cc\Pivot), EntityZ(cc\Pivot), cc\Stats\Hat, True)
 		cc\Stats\Hat=0
 		cc\HatCoversHorn=Object_ChaoManager_HornInHat(cc\Stats\Hat)
 		HATSUM(1) = HATSUM(1) - 1
 		ChaoManager_RemoveBoostedSkills(cc)
 	End Function
 	
-	Function Object_ChaoManager_Create.tChaoManager(number, o.tObject, born=false, color=0, takepos=false, x#=0, y#=0, z#=0, forcechao=false, forceage=0, forcepersona=0, forcecolor=0, forceshape=0, forceside=0, forcehat=0)
+	Function Object_ChaoManager_Create.tChaoManager(number, o.tObject, born=False, color=0, takepos=False, x#=0, y#=0, z#=0, forcechao=False, forceage=0, forcepersona=0, forcecolor=0, forceshape=0, forceside=0, forcehat=0)
 	
 		cc.tChaoManager = New tChaoManager
 		cc\Number=number
@@ -237,9 +238,9 @@
 		cc\Position = New tVector
 		cc\InitialPosition = New tVector
 
-		If forcechao=false Then
+		If forcechao=False Then
 			If Not(FileType(SaveDataPath$+"CHAO"+cc\Number+".dat")=1) Then
-				Object_ChaoManager_NewChao(cc,color,true)
+				Object_ChaoManager_NewChao(cc,Color,True)
 				If takepos Then cc\Position\x#=x# : cc\Position\y#=y# : cc\Position\z#=z#
 				SaveGame_Chao(cc)
 			EndIf
@@ -303,7 +304,7 @@
 
 		EntityType(cc\Pivot,COLLISION_OBJECT2)
 
-		If ChaoManager_ChaoAlive(cc) Or ChaoManager_ChaoCocoonAlive(cc) Then cc\Emo = Object_ChaoEmo_Create.tChaoEmo(cc\Mesh, cc\Stats\Side, false, cc\Stats\ReviveEternal)
+		If ChaoManager_ChaoAlive(cc) Or ChaoManager_ChaoCocoonAlive(cc) Then cc\Emo = Object_ChaoEmo_Create.tChaoEmo(cc\Mesh, cc\Stats\Side, False, cc\Stats\ReviveEternal)
 
 		If Menu\Settings\Shadows#>0 Then cc\ShadowCircle = Init_CircleShadow(cc\Pivot, cc\Mesh, 1.5)
 
@@ -377,7 +378,7 @@
 		If cc\Stats\DarkLove#>100 Then cc\Stats\DarkLove#=100
 
 		; Reference stats
-		For i=1 to 7
+		For i=1 To 7
 		Select i
 			Case 1:
 			cc\Stats\Skills[i]=cc\Stats\Run
@@ -402,7 +403,7 @@
 			cc\Stats\CurrentSkills[i]=cc\Stats\CurrentLuck
 		End Select
 		Next
-		For i=1 to 2
+		For i=1 To 2
 		Select i
 			Case 1:
 			cc\Stats\Love[i]=cc\Stats\HeroLove
@@ -449,17 +450,17 @@
 		EndIf
 
 		; Look for target
-		If ChaoManager_ChaoAlive(cc) and (Not(cc\Action=CHAOACTION_SLEEP)) Then
+		If ChaoManager_ChaoAlive(cc) And (Not(cc\Action=CHAOACTION_SLEEP)) Then
 		Select cc\FoundTarget
 			Case False:
-				chaotaketarget=false
+				chaotaketarget=False
 				Select cc\Action
 					Case CHAOACTION_COMMON,CHAOACTION_DANCE,CHAOACTION_THINK:
-						chaotaketarget=true
+						chaotaketarget=True
 					Case CHAOACTION_SWIM:
 						If pp(1)\ObjPickUp>0 Then
 							If pp(1)\ObjPickUpTarget\ObjType=OBJTYPE_TOY Then
-								If pp(1)\ObjPickUpTarget\ChaoObj\ToyType=TOY_RUBBERDUCK Then chaotaketarget=true
+								If pp(1)\ObjPickUpTarget\ChaoObj\ToyType=TOY_RUBBERDUCK Then chaotaketarget=True
 							EndIf
 						EndIf
 				End Select
@@ -467,7 +468,7 @@
 					For o.tObject=Each tObject
 						Select o\ObjType
 						Case OBJTYPE_FRUIT,OBJTYPE_DRIVE,OBJTYPE_HAT,OBJTYPE_TOY:
-							If o\ChaoObj\ChaoTargetedThis=False and (o\ObjPickedUp=-2 Or (o\ObjPickedUp=0 and (Not(o\ObjType=OBJTYPE_HAT))) Or o\ObjPickedUp=1) and (Abs(EntityX(cc\Pivot) - o\Position\x#) < 2) And (Abs(EntityY(cc\Pivot) - o\Position\y#) < 6.5) And (Abs(EntityZ(cc\Pivot) - o\Position\z#) < 2) Then
+							If o\ChaoObj\ChaoTargetedThis=False And (o\ObjPickedUp=-2 Or (o\ObjPickedUp=0 And (Not(o\ObjType=OBJTYPE_HAT))) Or o\ObjPickedUp=1) And (Abs(EntityX(cc\Pivot) - o\Position\x#) < 2) And (Abs(EntityY(cc\Pivot) - o\Position\y#) < 6.5) And (Abs(EntityZ(cc\Pivot) - o\Position\z#) < 2) Then
 								cc\Target=o
 								cc\FoundTarget=True
 								If o\ObjPickedUp=1 Then o\ObjPickedUp=-2 : pp(1)\ObjPickUp=0
@@ -475,7 +476,7 @@
 								o\ChaoObj\targetcc=cc
 							EndIf
 						Case OBJTYPE_BREEDER:
-							If o\ChaoObj\ChaoTargetedThis=False and cc\obj\ObjPickedUp=0 and cc\Stats\MateSeason=1 and (Not(cc\Action=CHAOACTION_WAITBREED Or cc\Action=CHAOACTION_BREED)) and (Abs(EntityX(cc\Pivot) - o\Position\x#) < o\HitBox\x#) And (Abs(EntityY(cc\Pivot) - o\Position\y#) < o\HitBox\y#) And (Abs(EntityZ(cc\Pivot) - o\Position\z#) < o\HitBox\z#) Then
+							If o\ChaoObj\ChaoTargetedThis=False And cc\obj\ObjPickedUp=0 And cc\Stats\MateSeason=1 And (Not(cc\Action=CHAOACTION_WAITBREED Or cc\Action=CHAOACTION_BREED)) And (Abs(EntityX(cc\Pivot) - o\Position\x#) < o\HitBox\x#) And (Abs(EntityY(cc\Pivot) - o\Position\y#) < o\HitBox\y#) And (Abs(EntityZ(cc\Pivot) - o\Position\z#) < o\HitBox\z#) Then
 								o\ChaoObj\ChaoTargetedThis=True
 								o\ChaoObj\targetcc2=cc
 								o\ChaoObj\targetcc\Action=CHAOACTION_BREED : o\ChaoObj\targetcc\BreedTimer=(6+Rand(-2,2))*secs#
@@ -486,9 +487,9 @@
 					Next
 				EndIf
 			Case True:
-				maybefar=false
-				If cc\Target\ObjType=OBJTYPE_TOY and cc\Action=CHAOACTION_BALL Then maybefar=true
-				If cc\obj\ObjPickedUp=1 Or cc\LetGoTarget Or ( maybefar=false and (Not(Abs(EntityX(cc\Pivot) - cc\Target\Position\x#) < 4) And (Abs(EntityY(cc\Pivot) - cc\Target\Position\y#) < 4) And (Abs(EntityZ(cc\Pivot) - cc\Target\Position\z#) < 4)) ) Then
+				maybefar=False
+				If cc\Target\ObjType=OBJTYPE_TOY And cc\Action=CHAOACTION_BALL Then maybefar=True
+				If cc\obj\ObjPickedUp=1 Or cc\LetGoTarget Or ( maybefar=False And (Not(Abs(EntityX(cc\Pivot) - cc\Target\Position\x#) < 4) And (Abs(EntityY(cc\Pivot) - cc\Target\Position\y#) < 4) And (Abs(EntityZ(cc\Pivot) - cc\Target\Position\z#) < 4)) ) Then
 					cc\FoundTarget=False
 					cc\Target\ChaoObj\ChaoTargetedThis=False
 					If cc\LetGoTarget=False Then cc\Target\ObjPickedUp=0 Else cc\Target\ObjPickedUp=6 : cc\LetGoTarget=False
@@ -509,9 +510,9 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-	Function ChaoManager_AgeUp(cc.tChaoManager, born=false)
+	Function ChaoManager_AgeUp(cc.tChaoManager, born=False)
 
-		die=false
+		die=False
 
 		cc\Stats\Age=cc\Stats\Age+1
 
@@ -539,9 +540,9 @@
 		End Select
 
 		Select die
-		Case true:
+		Case True:
 			Game\Channel_ChaoEffect=PlaySmartSound(Sound_ChaoDeath)
-		Case false:
+		Case False:
 			SaveGame_Chao(cc)
 
 			obj.tObject = Object_Chao_Create(cc\Position\x#, cc\Position\y#, cc\Position\z#, cc\g\Motion\Direction#)
@@ -551,8 +552,8 @@
 
 			Select cc\Stats\Age
 				Case 1: If Not(SHELLSUM(1)+1>=10) Then
-						obj.tObject = Object_Shell_Create(cc\Position\x#, cc\Position\y#, cc\Position\z#, cc\g\Motion\Direction#, SHELL_BOTTOM, cc\Stats\Color, false)
-						obj.tObject = Object_Shell_Create(cc\Position\x#, cc\Position\y#, cc\Position\z#, cc\g\Motion\Direction#, SHELL_TOP, cc\Stats\Color, true)
+						obj.tObject = Object_Shell_Create(cc\Position\x#, cc\Position\y#, cc\Position\z#, cc\g\Motion\Direction#, SHELL_BOTTOM, cc\Stats\Color, False)
+						obj.tObject = Object_Shell_Create(cc\Position\x#, cc\Position\y#, cc\Position\z#, cc\g\Motion\Direction#, SHELL_TOP, cc\Stats\Color, True)
 					Else
 						ii.tItem = Item_Create(TOTALITEMS+1, 4, SHELL_BOTTOM, cc\Stats\Color)
 						ii.tItem = Item_Create(TOTALITEMS+1, 4, SHELL_TOP, cc\Stats\Color)
@@ -588,7 +589,7 @@
 
 		cc\Stats\Side=ChaoManager_GetHighestSide(cc)
 
-		For i=0 to 2 : ChannelVolume Game\Stage\Properties\MusicChn[i],0 : Next
+		For i=0 To 2 : ChannelVolume Game\Stage\Properties\MusicChn[i],0 : Next
 		Select cc\Stats\Side
 			Case 1: Game\Channel_ChaoEffect=PlaySmartSound(Sound_ChaoHeroEvo) : Interface_CreateChaoNamedMsg("has evolved into hero form.",cc\Name$,229,232,207)
 			Case 2: Game\Channel_ChaoEffect=PlaySmartSound(Sound_ChaoDarkEvo) : Interface_CreateChaoNamedMsg("has evolved into dark form.",cc\Name$,119,76,76)
@@ -600,15 +601,15 @@
 
 	Function ChaoManager_GetHighestSkill(cc.tChaoManager)
 
-		For i=1 to 7
-			CHAOCHECKER_SKILL(i)=true
-			For j=1 to 7
-				If Not(cc\Stats\Skills[i]>=cc\Stats\Skills[j]) Then CHAOCHECKER_SKILL(i)=false
+		For i=1 To 7
+			CHAOCHECKER_SKILL(i)=True
+			For j=1 To 7
+				If Not(cc\Stats\Skills[i]>=cc\Stats\Skills[j]) Then CHAOCHECKER_SKILL(i)=False
 			Next
 		Next
 
 		h=0
-		Repeat : h=Rand(1,7) : Until CHAOCHECKER_SKILL(h)=true
+		Repeat : h=Rand(1,7) : Until CHAOCHECKER_SKILL(h)=True
 		Return h
 
 	End Function
@@ -658,7 +659,7 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-	Function ChaoManager_Gain(gaintype1, gaintype2, cc.tChaoManager, eatcycle=0)
+	Function ChaoManager_Gain(gaintype1, gaintype2, cc.tChaoManager, eatcycle=0, instage=0)
 
 		gainedstat=0
 
@@ -879,47 +880,48 @@
 					Default:
 						gainedstat = gaintype2
 				End Select
+
 		End Select
 
 		; Level up
-		gainamount = Rand(1,5)
+		If instage =1 Then gainamount = Rand(1,5) Else gainamount = 1
 		If gainedstat>10 Then gainedstat=gainedstat/10 : gainamount = gainamount+5
 
-		For i=1 to gainamount
+		For i=1 To gainamount
 			Select gainedstat
-				Case 1: cc\Stats\CurrentRun#=cc\Stats\CurrentRun#+1
-				Case 2: cc\Stats\CurrentSwim#=cc\Stats\CurrentSwim#+1
-				Case 3: cc\Stats\CurrentFly#=cc\Stats\CurrentFly#+1
-				Case 4: cc\Stats\CurrentStrength#=cc\Stats\CurrentStrength#+1
-				Case 5: cc\Stats\CurrentStamina#=cc\Stats\CurrentStamina#+1
-				Case 6: cc\Stats\CurrentIntelligence#=cc\Stats\CurrentIntelligence#+1
-				Case 7: cc\Stats\CurrentLuck#=cc\Stats\CurrentLuck#+1
+				Case 1: cc\Stats\CurrentRun#=cc\Stats\CurrentRun#+1 : DebugLog("run")
+				Case 2: cc\Stats\CurrentSwim#=cc\Stats\CurrentSwim#+1 : DebugLog("swim")
+				Case 3: cc\Stats\CurrentFly#=cc\Stats\CurrentFly#+1 : DebugLog("fly")
+				Case 4: cc\Stats\CurrentStrength#=cc\Stats\CurrentStrength#+1 : DebugLog("strength")
+				Case 5: cc\Stats\CurrentStamina#=cc\Stats\CurrentStamina#+1 : DebugLog("stamina")
+				Case 6: cc\Stats\CurrentIntelligence#=cc\Stats\CurrentIntelligence#+1 : DebugLog("intelligence")
+				Case 7: cc\Stats\CurrentLuck#=cc\Stats\CurrentLuck#+1 : DebugLog("luck")
 			End Select
 
-			If cc\Stats\CurrentRun#>10 and cc\Stats\Run#<50 Then
+			If cc\Stats\CurrentRun#>10 And cc\Stats\Run#<50 Then
 				cc\Stats\Run#=cc\Stats\Run#+1 : cc\Stats\CurrentRun#=cc\Stats\CurrentRun#-11 : Interface_CreateChaoNamedMsg("has leveled up in run.",cc\Name$,233,233,233)
-				If cc\Stats\Age<=1 and cc\Stats\Run#=4 Then Interface_CreateChaoNamedMsg("learned to walk.",cc\Name$,220,220,220)
+				If cc\Stats\Age<=1 And cc\Stats\Run#=4 Then Interface_CreateChaoNamedMsg("learned to walk.",cc\Name$,220,220,220)
 			EndIf
-			If cc\Stats\CurrentSwim#>10 and cc\Stats\Swim#<50 Then
+			If cc\Stats\CurrentSwim#>10 And cc\Stats\Swim#<50 Then
 				cc\Stats\Swim#=cc\Stats\Swim#+1 : cc\Stats\CurrentSwim#=cc\Stats\CurrentSwim#-11 : Interface_CreateChaoNamedMsg("has leveled up in swim.",cc\Name$,233,233,233)
 				If cc\Stats\Swim#=3 Then Interface_CreateChaoNamedMsg("learned to swim.",cc\Name$,220,220,220)
 			EndIf
-			If cc\Stats\CurrentFly#>10 and cc\Stats\Fly#<50 Then
+			If cc\Stats\CurrentFly#>10 And cc\Stats\Fly#<50 Then
 				cc\Stats\Fly#=cc\Stats\Fly#+1 : cc\Stats\CurrentFly#=cc\Stats\CurrentFly#-11 : Interface_CreateChaoNamedMsg("has leveled up in fly.",cc\Name$,233,233,233)
 				If cc\Stats\Fly#=6 Then Interface_CreateChaoNamedMsg("learned to fly.",cc\Name$,220,220,220)
 			EndIf
-			If cc\Stats\CurrentStrength#>10 and cc\Stats\Strength#<50 Then
+			If cc\Stats\CurrentStrength#>10 And cc\Stats\Strength#<50 Then
 				cc\Stats\Strength#=cc\Stats\Strength#+1 : cc\Stats\CurrentStrength#=cc\Stats\CurrentStrength#-11 : Interface_CreateChaoNamedMsg("has leveled up in strength.",cc\Name$,233,233,233)
 			EndIf
-			If cc\Stats\CurrentStamina#>10 and cc\Stats\Stamina#<50 Then
+			If cc\Stats\CurrentStamina#>10 And cc\Stats\Stamina#<50 Then
 				cc\Stats\Stamina#=cc\Stats\Stamina#+1 : cc\Stats\CurrentStamina#=cc\Stats\CurrentStamina#-11 : Interface_CreateChaoNamedMsg("has leveled up in stamina.",cc\Name$,233,233,233)
 			EndIf
-			If cc\Stats\CurrentIntelligence#>10 and cc\Stats\Intelligence#<50 Then
+			If cc\Stats\CurrentIntelligence#>10 And cc\Stats\Intelligence#<50 Then
 				cc\Stats\Intelligence#=cc\Stats\Intelligence#+1 : cc\Stats\CurrentIntelligence#=cc\Stats\CurrentIntelligence#-11 : Interface_CreateChaoNamedMsg("has leveled up in intelligence.",cc\Name$,233,233,233)
 				If cc\Stats\Intelligence#=2 Then Interface_CreateChaoNamedMsg("learned to play with toys.",cc\Name$,220,220,220)
 				If cc\Stats\Intelligence#=4 Then Interface_CreateChaoNamedMsg("learned to put on hats.",cc\Name$,220,220,220)
 			EndIf
-			If cc\Stats\CurrentLuck#>10 and cc\Stats\Luck#<50 Then
+			If cc\Stats\CurrentLuck#>10 And cc\Stats\Luck#<50 Then
 				cc\Stats\Luck#=cc\Stats\Luck#+1 : cc\Stats\CurrentLuck#=cc\Stats\CurrentLuck#-11 : Interface_CreateChaoNamedMsg("has leveled up in luck.",cc\Name$,233,233,233)
 			EndIf
 		Next
@@ -929,10 +931,11 @@
 			cc\Stats\Hunger#=cc\Stats\Hunger#-1
 			cc\Stats\TooFull#=cc\Stats\TooFull#+1
 		EndIf
+		
 
 		; Auto-save
 		cc\StatChange=cc\StatChange+1
-		If cc\StatChange>=10 Then
+		If cc\StatChange>=10 And instage=0 Then
 			SaveGame_AllChaoStuff()
 			Game\Interface\AutoSaveShowTimer=0.5*secs#
 			cc\StatChange=0
@@ -1009,7 +1012,7 @@
 			Case 7: Interface_CreateChaoNamedMsg("got boosted in luck.",cc\Name$,233,233,233)
 		End Select
 
-		For i=1 to 5
+		For i=1 To 5
 			If cc\Stats\Skills[skillno]<50 Then
 				Select skillno
 					Case 1: cc\Stats\Run#=cc\Stats\Run#+1
@@ -1028,7 +1031,7 @@
 
 	Function ChaoManager_RemoveBoostedSkills(cc.tChaoManager)
 
-		For skillno=1 to 7
+		For skillno=1 To 7
 			If cc\Stats\BoostSkills[skillno]>0 Then
 				Select skillno
 					Case 1: cc\Stats\Run#=cc\Stats\Run#-cc\Stats\BoostSkills[skillno]
@@ -1347,3 +1350,5 @@
 				End Select
 		End Select
 	End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

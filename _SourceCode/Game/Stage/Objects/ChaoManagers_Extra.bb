@@ -274,7 +274,7 @@ Function Object_CreateKarateChao()
 End Function
 
 Function Object_CreateRaceChao_Held(chaonumber,x#,y#,z#)
-
+If (Not( Menu\Stage=0)) Then
 	raceage=Menu\HeldChaoAge
 	racepersona=Menu\HeldChaoPersona
 	racecolor=Menu\HeldChaoColor
@@ -303,8 +303,53 @@ Function Object_CreateRaceChao_Held(chaonumber,x#,y#,z#)
 	Case 997: racecc\Action=CHAOACTION_KARATE_BEGIN
 			Game\Interface\KarateHealth#[1]=20
 			Game\Interface\KarateZeal#[1]=racecc\Stats\Stamina#+racecc\Stats\Luck#/2.0
+	Case 999:
+	Default: 
+	If Menu\ChaoGarden=0 And Menu\Stage>0 Then 
+		racecc\Action=CHAOACTION_BUDDY
+	EndIf
 	End Select
+EndIf
+End Function
 
+Function Object_CreateRaceChao_Stage.tChaoManager(chaonumber,x#,y#,z#)
+If (Not( Menu\Stage=0)) Then
+	raceage=Menu\HeldChaoAge
+	racepersona=Menu\HeldChaoPersona
+	racecolor=Menu\HeldChaoColor
+	raceshape=Menu\HeldChaoShape
+	raceside=Menu\HeldChaoSide
+	racehat=Menu\HeldChaoHat
+
+	obj.tObject = Object_Chao_Create(0, 0, 0, 0)
+	racecc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, false, 0, true, x#, y#, z#, true, raceage, racepersona, racecolor, raceshape, raceside, racehat)
+
+	racecc\Stats\Run# = Menu\HeldChaoSkills[1] : racecc\Stats\CurrentRun# = Menu\HeldChaoCurrentSkills[1]
+	racecc\Stats\Swim# = Menu\HeldChaoSkills[2] : racecc\Stats\CurrentSwim# = Menu\HeldChaoCurrentSkills[2]
+	racecc\Stats\Fly# = Menu\HeldChaoSkills[3] : racecc\Stats\CurrentFly# = Menu\HeldChaoCurrentSkills[3]
+	racecc\Stats\Strength# = Menu\HeldChaoSkills[4] : racecc\Stats\CurrentStrength# = Menu\HeldChaoCurrentSkills[4]
+	racecc\Stats\Stamina# = Menu\HeldChaoSkills[5] : racecc\Stats\CurrentStamina# = Menu\HeldChaoCurrentSkills[5]
+	racecc\Stats\Intelligence# = Menu\HeldChaoSkills[6] : racecc\Stats\CurrentIntelligence# = Menu\HeldChaoCurrentSkills[6]
+	racecc\Stats\Luck# = Menu\HeldChaoSkills[7] : racecc\Stats\CurrentLuck# = Menu\HeldChaoCurrentSkills[7]
+
+	racecc\HatchTimer=1800*secs#
+	racecc\MateTimer=1800*secs#
+	racecc\Stats\ReviveEternal=Menu\HeldChaoEternal
+	racecc\Emo\Eternal=racecc\Stats\ReviveEternal
+
+	Select Menu\Stage
+	Case 998: racecc\Action=CHAOACTION_RACE_BEGIN
+	Case 997: racecc\Action=CHAOACTION_KARATE_BEGIN
+			Game\Interface\KarateHealth#[1]=20
+			Game\Interface\KarateZeal#[1]=racecc\Stats\Stamina#+racecc\Stats\Luck#/2.0
+	Case 999:
+	Default: 
+	If Menu\ChaoGarden=0 And Menu\Stage>0 Then 
+		racecc\Action=CHAOACTION_BUDDY
+	EndIf
+	End Select
+EndIf
+Return racecc
 End Function
 
 Function Object_CreateRaceChao_Random(chaonumber,x#,y#,z#)

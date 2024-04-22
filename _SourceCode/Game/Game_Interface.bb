@@ -307,7 +307,10 @@ Function Interface_MemberHeads(x#=0, y#=0)
 		SetColor(255,255,255)
 	EndIf
 End Function
-
+Function Interface_ChaoStuff(p.tPlayer, x#=0, y#=0)
+	LoadSmartImage(Interface_Boxes) : LoadSmartImage(Interface_Stats)
+	DrawChaoStats(p\Objects\FollowerChao, 130*GAME_WINDOW_SCALE#,75*GAME_WINDOW_SCALE#)
+End Function
 Function Interface_ProgressBar(inputx#, inputy#)
 	DrawImageEx(INTERFACE(Interface_ProgressBar), inputx#, inputy#)
 
@@ -369,6 +372,7 @@ End Function
 		EndIf
 
 		Interface_MemberHeads()
+		Interface_ChaoStuff(p)
 		SetColor(Interface_Lives_R[InterfaceChar(pp(1)\RealCharacter)],Interface_Lives_G[InterfaceChar(pp(1)\RealCharacter)],Interface_Lives_B[InterfaceChar(pp(1)\RealCharacter)])
 		If Menu\Members>1 Then
 			DrawBetterNumber(Game\Gameplay\Lives, 67.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-30*GAME_WINDOW_SCALE#)

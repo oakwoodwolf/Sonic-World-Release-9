@@ -44,6 +44,8 @@
 	Global CHAOACTION_KARATE_LOSE	= i : i=i+1
 	Global CHAOACTION_KARATE_MEDITATE=i : i=i+1
 	Global CHAOACTION_KARATE_DODGE	= i : i=i+1
+	Global CHAOACTION_BUDDY	= i : i=i+1
+	
 
 	Function ChaoManager_ManageActions(cc.tChaoManager, d.tDeltaTime)
 
@@ -134,6 +136,8 @@
 				ChaoManager_Action_Karate_Meditate(cc,d)
 			Case CHAOACTION_KARATE_DODGE:
 				ChaoManager_Action_Karate_Dodge(cc,d)
+			Case CHAOACTION_BUDDY:
+				ChaoManager_Action_Buddy(cc,d)
 		End Select
 
 		;animation determine
@@ -293,6 +297,7 @@
 				cc\Emo\Emotion=CHAOEMO_sad
 			Else
 				Select cc\Action
+					Case CHAOACTION_BUDDY:
 					Case CHAOACTION_DANCE:
 						Select cc\Stats\Persona
 							Case CHAOEMO_happy,CHAOEMO_thrilled,CHAOEMO_joyful:
@@ -369,6 +374,7 @@
 		;voice determine
 		If ChaoManager_ChaoAlive(cc) Then
 			Select cc\Action
+				Case CHAOACTION_BUDDY: 
 				Case CHAOACTION_THROWN,CHAOACTION_KARATE_THROWN:
 					cc\VoiceEmo=CHAOVOICEEMO_FRUSTRATED
 				Case CHAOACTION_HURT,CHAOACTION_KARATE_HURT:
@@ -866,6 +872,91 @@
 
 	End Function
 
+	; =========================================================================================================
+	; =========================================================================================================
+	;; Initiate buddy state for player chao
+	;;author Deefor
+	Function ChaoManager_Action_Buddy(cc.tChaoManager, d.tDeltaTime)
+		cc\targetp=pp(1)
+		ShowEntity(cc\Mesh)
+		ChaoManager_NoAutonomousCommonActions(cc)
+		ChaoManager_Action_Buddy_Update_Real(cc, cc\targetp, d)
+	End Function
+	Function ChaoManager_Action_Buddy_Update_Real(cc.tChaoManager ,p.tPlayer, d.tDeltaTime)
+		; Decide animation
+		If Game\CheeseTimer>0 and (Not(p\Flags\HomingTarget\x#=99999 and p\Flags\HomingTarget\y#=99999 and p\Flags\HomingTarget\z#=99999)) Then
+			cc\Animation=CHAOANIMATION_PUNCHL
+			cc\VoiceEmo=CHAOVOICEEMO_ATTACK
+			ParticleTemplate_Call(cc\Particle, PARTICLE_CHAO_CHEESE, cc\Pivot)
+		Else
+		Select p\Action
+			Case ACTION_THROW:
+				cc\Animation=CHAOANIMATION_EXCLAMATIONAIR
+				cc\Emo\Emotion=CHAOEMO_angry
+			Case ACTION_HURT:
+				cc\VoiceEmo=CHAOVOICEEMO_HURT
+				cc\Emo\Emotion=CHAOEMO_hurt
+				cc\Animation=CHAOANIMATION_THROWN
+			Case ACTION_DIE:
+				cc\VoiceEmo=CHAOVOICEEMO_HURT
+				cc\Emo\Emotion=CHAOEMO_hurt
+				cc\Animation=CHAOANIMATION_HURT
+			Case ACTION_VICTORY:
+				cc\Animation=CHAOANIMATION_WIN
+				cc\VoiceEmo=CHAOVOICEEMO_AMAZED
+				cc\Emo\Emotion=CHAOEMO_cheerful
+			Default:
+			If (cc\Underwater=1) Then
+				If cc\Stats\Swim#<3 Then
+					ParticleTemplate_Call(cc\Particle, PARTICLE_PLAYER_BUBBLEBREATHE, cc\Pivot, 0.1, 0, 0, 0, 0, Rand(1,5)/2.0)
+					cc\Animation=CHAOANIMATION_DROWN
+				Else
+					ParticleTemplate_Call(cc\Particle, PARTICLE_PLAYER_BUBBLEBREATHE, cc\Pivot, 0.1, 0, 0, 0, 0, Rand(1,5)/8.0)
+					cc\Animation=CHAOANIMATION_SWIM
+				EndIf
+			Else
+				cc\VoiceEmo=CHAOVOICEEMO_CASUAL
+				If p\SpeedLength#>2 Then
+					cc\Animation=CHAOANIMATION_RUNAIR
+					ParticleTemplate_Call(cc\Particle, PARTICLE_CHAO_CHEESE, cc\Pivot)
+				Else If p\SpeedLength#>0.5
+					cc\Animation=CHAOANIMATION_WALKAIR
+				Else
+					cc\Animation=CHAOANIMATION_IDLEAIR
+				EndIf
+			EndIf
+		End Select
+		EndIf
+
+
+		; Movement
+		If Game\CheeseTimer>0 and (Not(p\Flags\HomingTarget\x#=99999 and p\Flags\HomingTarget\y#=99999 and p\Flags\HomingTarget\z#=99999)) Then
+			PositionEntity(p\Flags\HomingMesh, p\Flags\HomingTarget\x#, p\Flags\HomingTarget\y#+0.3, p\Flags\HomingTarget\z#)
+			ParticleTemplate_Call(cc\Particle, PARTICLE_CHAO_CHEESE, cc\Pivot)
+
+			ex# = p\Flags\HomingTarget\x# - cc\Position\x#
+			ey# = (p\Flags\HomingTarget\y#+3) - cc\Position\y#
+			ez# = p\Flags\HomingTarget\z# - cc\Position\z#
+			AlignToVector(cc\Pivot, ex#, ey#, ez#, 2, .925)
+			AlignToVector(cc\Mesh, ex#, ey#, ez#, 2, .925)
+			TurnEntity cc\Mesh, -90, 0, 0
+			MoveEntity cc\Pivot, 0, 3.2*d\Delta, 0
+			p\Flags\HomingTarget\x#=99999
+			p\Flags\HomingTarget\y#=99999
+			p\Flags\HomingTarget\z#=99999
+		Else
+			PointEntity cc\Pivot, p\Objects\Cheese, 0
+			If EntityDistance(p\Objects\Cheese, cc\Pivot)>=150 Then
+				EntityType(cc\Pivot,COLLISION_NONE) : PositionEntity cc\Pivot, p\Objects\Position\x#, p\Objects\Position\y#+12, p\Objects\Position\z#
+				EntityType(cc\Pivot,COLLISION_OBJECT2_GOTHRU)
+			Else
+				MoveEntity cc\Pivot,0,-0.1,(0.15*EntityDistance(p\Objects\Cheese, cc\Pivot)*d\Delta+(cc\Stats\Run#/100.0));*(cc\Stats\Run/3))
+				;cc\g\Motion\Speed\z#=-0.05+(cc\Stats\Run#/100.0)
+				cc\g\Motion\Speed\y#=0.05+(cc\Stats\Fly#/100.0)
+			EndIf
+		EndIf
+			
+	End Function
 	; =========================================================================================================
 	; =========================================================================================================
 	Function ChaoManager_Action_Thrown(cc.tChaoManager)

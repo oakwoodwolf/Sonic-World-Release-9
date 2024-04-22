@@ -22,7 +22,7 @@
 	Function Object_Chao_Update(o.tObject, p.tPlayer)
 
 		; Obj pick up
-		If ChaoManager_ChaoAlive(o\ChaoObj\targetcc) Or o\ChaoObj\targetcc\Stats\Age=0 Then Object_EnforceObjPickUp(o,p)
+		If (ChaoManager_ChaoAlive(o\ChaoObj\targetcc) Or o\ChaoObj\targetcc\Stats\Age=0) And (Menu\Stage=999) Then Object_EnforceObjPickUp(o,p)
 		If o\ObjPickedUp=1 Then
 			If o\ChaoObj\targetcc\Stats\Age=0 Then Interface_CreateOverlappingChaoMsg(8,"This chao egg has "+Int(o\ChaoObj\targetcc\Stats\ShellGrit)+" cycles left to hatch.",77,155,244)
 		EndIf
@@ -31,7 +31,7 @@
 		If p\Flags\Attacking and o\Hit Then
 			If p\Flags\CantAttackChao=False Then
 				o\ObjPickedUp=-1
-			Else
+			Else If Menu\ChaoGarden=1 Then
 				o\ChaoObj\targetcc\Action=CHAOACTION_COMMON
 			EndIf
 		EndIf
@@ -605,11 +605,19 @@
 
 					; Delete
 					If o\Hit Then
-						If ChannelPlaying(p\Channel_ChaosDrive)=False Then p\Channel_ChaosDrive=PlaySmartSound(Sound_ChaosDrive)
-						CarriedItem_CreateFromTouch(1, o\ChaoObj\DriveType)
-						o\ChaoObj\ForceDelete=True
-						ChaoIcon_Draw(o\ChaoObj\DriveType)
+						If Not(Menu\HeldChaoNumber>0) Then
+							If ChannelPlaying(p\Channel_ChaosDrive)=False Then p\Channel_ChaosDrive=PlaySmartSound(Sound_ChaosDrive)
+							CarriedItem_CreateFromTouch(1, o\ChaoObj\DriveType)
+							o\ChaoObj\ForceDelete=True
+							ChaoIcon_Draw(o\ChaoObj\DriveType)
+						Else
+							If ChannelPlaying(p\Channel_ChaosDrive)=False Then p\Channel_ChaosDrive=PlaySmartSound(Sound_CharacterChange)
+							ChaoManager_Gain(2, o\ChaoObj\DriveType, p\Objects\FollowerChao, 0, 1)
+							o\ChaoObj\ForceDelete=True
+						EndIf
+					
 					EndIf
+					
 				EndIf
 
 				If (p\Action=ACTION_DIE Or p\Action=ACTION_VICTORY Or p\Action=ACTION_VICTORYHOLD) Then o\ChaoObj\ForceDelete=True

@@ -274,6 +274,7 @@
 		Field ForthScale#
 
 		Field Follower
+		Field FollowerChao.tChaoManager
 		Field Cheese
 		Field Froggy
 

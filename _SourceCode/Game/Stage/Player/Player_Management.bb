@@ -216,7 +216,7 @@
 	End Select
 
 	; Determine if cant attack chao
-	If (p\Action=ACTION_JUMP Or p\Action=ACTION_HOP) Then
+	If (p\Action=ACTION_JUMP Or p\Action=ACTION_HOP) Or (Not(Menu\Stage=999)) Then
 		p\Flags\CantAttackChao=True
 	Else
 		p\Flags\CantAttackChao=False
