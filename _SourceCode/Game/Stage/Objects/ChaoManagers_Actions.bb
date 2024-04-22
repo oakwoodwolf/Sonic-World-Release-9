@@ -950,8 +950,8 @@
 				EntityType(cc\Pivot,COLLISION_NONE) : PositionEntity cc\Pivot, p\Objects\Position\x#, p\Objects\Position\y#+12, p\Objects\Position\z#
 				EntityType(cc\Pivot,COLLISION_OBJECT2_GOTHRU)
 			Else
-				MoveEntity cc\Pivot,0,-0.1,(0.15*EntityDistance(p\Objects\Cheese, cc\Pivot)*d\Delta+(cc\Stats\Run#/100.0));*(cc\Stats\Run/3))
-				;cc\g\Motion\Speed\z#=-0.05+(cc\Stats\Run#/100.0)
+				MoveEntity cc\Pivot,0,-0.1,(0.15*EntityDistance(p\Objects\Cheese, cc\Pivot)*d\Delta);*(cc\Stats\Run/3))
+				;If EntityDistance(p\Objects\Cheese, cc\Pivot)>3 Then cc\g\Motion\Speed\z#=0.05+(cc\Stats\Run#/50.0)
 				cc\g\Motion\Speed\y#=0.05+(cc\Stats\Fly#/100.0)
 			EndIf
 		EndIf

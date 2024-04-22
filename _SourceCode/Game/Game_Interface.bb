@@ -309,7 +309,7 @@ Function Interface_MemberHeads(x#=0, y#=0)
 End Function
 Function Interface_ChaoStuff(p.tPlayer, x#=0, y#=0)
 	LoadSmartImage(Interface_Boxes) : LoadSmartImage(Interface_Stats)
-	DrawChaoStats(p\Objects\FollowerChao, 130*GAME_WINDOW_SCALE#,75*GAME_WINDOW_SCALE#)
+	If Menu\Pause=1 And (Not(p\Objects\FollowerChao = Null)) Then DrawChaoStats(p\Objects\FollowerChao, 130*GAME_WINDOW_SCALE#,75*GAME_WINDOW_SCALE#)
 End Function
 Function Interface_ProgressBar(inputx#, inputy#)
 	DrawImageEx(INTERFACE(Interface_ProgressBar), inputx#, inputy#)

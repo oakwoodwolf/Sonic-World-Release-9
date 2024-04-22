@@ -357,6 +357,7 @@
 	Global Interface_Transporter4		= i : i=i+1
 	Global Interface_Transporter5		= i : i=i+1
 	Global Interface_Goodbye		= i : i=i+1
+	Global Interface_Buddy		= i : i=i+1
 	Global Interface_Naming			= i : i=i+1
 
 	Global INTERFACE_TRANSPORTERTOTAL=i-1

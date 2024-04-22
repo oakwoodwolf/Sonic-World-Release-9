@@ -330,7 +330,8 @@ End Function
 
 Function Menu_Transporter_Buddy()
 
-	Menu\Background2=2
+	Menu\Background2=5
+	DrawImageEx(INTERFACE(Interface_Buddy), GAME_WINDOW_W/2+(BUTTON_PLACE1#)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(55)*GAME_WINDOW_SCALE#)
 	Select Menu\OptionOrder2
 	Case 1: DrawRealText("Bring your Chao to stages and let it grow.", GAME_WINDOW_W/2+(BUTTON_PLACE1#-100)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+30*GAME_WINDOW_SCALE#, (Interface_Text_3), 0, GAME_WINDOW_W/2+(BUTTON_PLACE1#-100)*GAME_WINDOW_SCALE#+175*GAME_WINDOW_SCALE#)
 	Case 2: DrawRealText("Buddy Chao assigned! Enter a stage with your buddy!", GAME_WINDOW_W/2+(BUTTON_PLACE1#-100)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+30*GAME_WINDOW_SCALE#, (Interface_Text_3), 0, GAME_WINDOW_W/2+(BUTTON_PLACE1#-100)*GAME_WINDOW_SCALE#+175*GAME_WINDOW_SCALE#)

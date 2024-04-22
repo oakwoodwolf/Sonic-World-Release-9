@@ -103,9 +103,9 @@
 					RECORDS_RANK(Menu\MissionNo,3)=Menu\Character[3]
 					RECORDS_RANK(Menu\MissionNo,4)=Menu\Members
 				EndIf
-
+				If Menu\BuddyChaoNumber>0 Then SaveGame_Chao(p\Objects\FollowerChao) : 	Game\Interface\AutoSaveShowTimer=0.5*secs#
 				SaveGame_Records(Menu\Stage)
-
+				
 				Menu\EmblemsGot=0
 				If Menu\Stage>0 Then
 					If EMBLEMS1(Menu\MissionNo,Menu\Stage)=0 Then EMBLEMS1(Menu\MissionNo,Menu\Stage)=1 : Menu\EmblemsGot=Menu\EmblemsGot+1
@@ -141,7 +141,11 @@
 			For i=0 to 4 : Game\Interface\ResultBoxAlpha#[i]=0 : Next
 			Game\Interface\ResultTitlePosition#=0
 		EndIf
-
+		If Game\Interface\AutoSaveShowTimer>0 Then
+					DrawImageEx(INTERFACE(Interface_Saving), 18*GAME_WINDOW_SCALE#, 18*GAME_WINDOW_SCALE#)
+					DrawRealText("Auto-saving...", 32*GAME_WINDOW_SCALE#, 22*GAME_WINDOW_SCALE#, (Interface_Text_2))
+					Game\Interface\AutoSaveShowTimer=Game\Interface\AutoSaveShowTimer-timervalue#
+		EndIf
 		If Game\Interface\ResultTimer>0 Then Game\Interface\ResultTimer=Game\Interface\ResultTimer-timervalue#
 
 		If Input\Pressed\Start Or Input\Pressed\ActionJump Then Game\Interface\ResultOrder2=-1
