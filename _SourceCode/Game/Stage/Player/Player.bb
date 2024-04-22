@@ -1077,8 +1077,6 @@
 			Case CHAR_GME: If p\CharacterMode=0 Then p\CharacterMode=CHAR_ESP
 			Default: p\CharacterMode=0
 		End Select
-		
-		If FindShadowCaster(p\Objects\Mesh)>0 Then FreeShadowCaster(p\Objects\Mesh)
 
 		If p\Objects\Mesh<>0 Then ShowEntity(p\Objects\Mesh)
 		FreeEntity p\Objects\Mesh
@@ -1119,8 +1117,6 @@
 			EndIf
 		EndIf
 		DeformCharacter_GetTheBoneEntities(p)
-
-		If Menu\Settings\Shadows#=1 and (Menu\ChaoGarden=0 Or Menu\Stage=999) Then CreateShadowCaster(p\Objects\Mesh)
 
 		EntityShininess(p\Objects\Mesh, 0)
 

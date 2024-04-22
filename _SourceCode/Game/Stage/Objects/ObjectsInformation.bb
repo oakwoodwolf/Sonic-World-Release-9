@@ -578,7 +578,7 @@ Function Object_EnforceObjPickUp_Normal(o.tObject,p.tPlayer)
 				PositionEntity o\ChaoObj\targetcc\Pivot, EntityX(o\Entity), EntityY(o\Entity), EntityZ(o\Entity)
 				RotateEntity o\ChaoObj\targetcc\Pivot, EntityPitch(o\Entity), EntityYaw(o\Entity), EntityRoll(o\Entity)
 			EndIf
-			If o\ThisIsAMonitor=True Then
+			If o\ThisIsAMonitor=True or o\ThisIsABox=True Then
 				PositionEntity o\Entity, EntityX(p\Objects\Entity), EntityY(p\Objects\Entity)+8.5, EntityZ(p\Objects\Entity)
 				RotateEntity o\Entity, 0, p\Animation\Direction#, 0
 				PositionEntity o\EntityX, EntityX(p\Objects\Entity), EntityY(p\Objects\Entity)+8.5, EntityZ(p\Objects\Entity)
