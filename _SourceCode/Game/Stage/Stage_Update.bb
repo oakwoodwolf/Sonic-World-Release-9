@@ -9,7 +9,7 @@
 			If Menu\Stage<>0 Then
 				If Menu\Pause=0 and (Menu\ChaoGarden=0 Or Menu\Stage=999) Then Input\AllowMouse=true
 			Else
-				If Menu\Menu=MENU_CHARACTERS# Or Menu\Menu=MENU_BIOS# Or (Menu\Menu=MENU_TRANSPORTER# and (Menu\Menu2=MENU_TRANSPORTER_GOODBYE# Or Menu\Menu2=MENU_TRANSPORTER_STADIUM#)) Then Input\AllowMouse=true
+				If Menu\Menu=MENU_CHARACTERS# Or Menu\Menu=MENU_BIOS# Or (Menu\Menu=MENU_TRANSPORTER# and (Menu\Menu2=MENU_TRANSPORTER_GOODBYE# Or Menu\Menu2=MENU_TRANSPORTER_STADIUM# Or Menu\Menu2=MENU_TRANSPORTER_GOODBYE#)) Then Input\AllowMouse=true
 			EndIf
 			If Game\Interface\DebugPlacerOn=1 and Menu\Pause=0 Then Input\AllowMouse=true
 		If Input\AllowMouse Then

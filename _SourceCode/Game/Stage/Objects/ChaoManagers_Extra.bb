@@ -314,27 +314,27 @@ End Function
 
 Function Object_CreateRaceChao_Stage.tChaoManager(chaonumber,x#,y#,z#)
 If (Not( Menu\Stage=0)) Then
-	raceage=Menu\HeldChaoAge
-	racepersona=Menu\HeldChaoPersona
-	racecolor=Menu\HeldChaoColor
-	raceshape=Menu\HeldChaoShape
-	raceside=Menu\HeldChaoSide
-	racehat=Menu\HeldChaoHat
+	raceage=Menu\BuddyChaoAge
+	racepersona=Menu\BuddyChaoPersona
+	racecolor=Menu\BuddyChaoColor
+	raceshape=Menu\BuddyChaoShape
+	raceside=Menu\BuddyChaoSide
+	racehat=Menu\BuddyChaoHat
 
 	obj.tObject = Object_Chao_Create(0, 0, 0, 0)
 	racecc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, false, 0, true, x#, y#, z#, true, raceage, racepersona, racecolor, raceshape, raceside, racehat)
 
-	racecc\Stats\Run# = Menu\HeldChaoSkills[1] : racecc\Stats\CurrentRun# = Menu\HeldChaoCurrentSkills[1]
-	racecc\Stats\Swim# = Menu\HeldChaoSkills[2] : racecc\Stats\CurrentSwim# = Menu\HeldChaoCurrentSkills[2]
-	racecc\Stats\Fly# = Menu\HeldChaoSkills[3] : racecc\Stats\CurrentFly# = Menu\HeldChaoCurrentSkills[3]
-	racecc\Stats\Strength# = Menu\HeldChaoSkills[4] : racecc\Stats\CurrentStrength# = Menu\HeldChaoCurrentSkills[4]
-	racecc\Stats\Stamina# = Menu\HeldChaoSkills[5] : racecc\Stats\CurrentStamina# = Menu\HeldChaoCurrentSkills[5]
-	racecc\Stats\Intelligence# = Menu\HeldChaoSkills[6] : racecc\Stats\CurrentIntelligence# = Menu\HeldChaoCurrentSkills[6]
-	racecc\Stats\Luck# = Menu\HeldChaoSkills[7] : racecc\Stats\CurrentLuck# = Menu\HeldChaoCurrentSkills[7]
+	racecc\Stats\Run# = Menu\BuddyChaoSkills[1] : racecc\Stats\CurrentRun# = Menu\BuddyChaoCurrentSkills[1]
+	racecc\Stats\Swim# = Menu\BuddyChaoSkills[2] : racecc\Stats\CurrentSwim# = Menu\BuddyChaoCurrentSkills[2]
+	racecc\Stats\Fly# = Menu\BuddyChaoSkills[3] : racecc\Stats\CurrentFly# = Menu\BuddyChaoCurrentSkills[3]
+	racecc\Stats\Strength# = Menu\BuddyChaoSkills[4] : racecc\Stats\CurrentStrength# = Menu\BuddyChaoCurrentSkills[4]
+	racecc\Stats\Stamina# = Menu\BuddyChaoSkills[5] : racecc\Stats\CurrentStamina# = Menu\BuddyChaoCurrentSkills[5]
+	racecc\Stats\Intelligence# = Menu\BuddyChaoSkills[6] : racecc\Stats\CurrentIntelligence# = Menu\BuddyChaoCurrentSkills[6]
+	racecc\Stats\Luck# = Menu\BuddyChaoSkills[7] : racecc\Stats\CurrentLuck# = Menu\BuddyChaoCurrentSkills[7]
 
 	racecc\HatchTimer=1800*secs#
 	racecc\MateTimer=1800*secs#
-	racecc\Stats\ReviveEternal=Menu\HeldChaoEternal
+	racecc\Stats\ReviveEternal=Menu\BuddyChaoEternal
 	racecc\Emo\Eternal=racecc\Stats\ReviveEternal
 
 	Select Menu\Stage

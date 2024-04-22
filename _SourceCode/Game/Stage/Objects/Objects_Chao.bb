@@ -605,7 +605,7 @@
 
 					; Delete
 					If o\Hit Then
-						If Not(Menu\HeldChaoNumber>0) Then
+						If Not(Menu\BuddyChaoNumber>0) Then
 							If ChannelPlaying(p\Channel_ChaosDrive)=False Then p\Channel_ChaosDrive=PlaySmartSound(Sound_ChaosDrive)
 							CarriedItem_CreateFromTouch(1, o\ChaoObj\DriveType)
 							o\ChaoObj\ForceDelete=True

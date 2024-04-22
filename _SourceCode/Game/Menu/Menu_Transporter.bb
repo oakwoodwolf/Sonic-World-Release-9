@@ -85,6 +85,7 @@ Function Menu_Transporter_Update()
 		Case MENU_TRANSPORTER_MAIN#: Menu_Transporter_Main()
 		Case MENU_TRANSPORTER_NAME#: Menu_Transporter_Name()
 		Case MENU_TRANSPORTER_GOODBYE#: Menu_Transporter_GoodBye()
+		Case MENU_TRANSPORTER_BUDDY#: Menu_Transporter_Buddy()
 		Case MENU_TRANSPORTER_INVENTORY#: Menu_Transporter_Inventory()
 		Case MENU_TRANSPORTER_EXIT#: Menu_Transporter_Exit()
 		Case MENU_TRANSPORTER_STADIUM#: Menu_Transporter_Stadium()
@@ -108,22 +109,24 @@ Function Menu_Transporter_Main()
 	Menu\Background2=1
 
 	If Menu\HeldChaoNumber>0 Then
-		DrawSmartButtonT(1, "Name", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-75*GAME_WINDOW_SCALE#, 1)
-		DrawSmartButtonT(2, "Good-bye", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-25*GAME_WINDOW_SCALE#, 1)
+		DrawSmartButtonT(1, "Name", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-95*GAME_WINDOW_SCALE#, 1)
+		DrawSmartButtonT(2, "Good-bye", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-45*GAME_WINDOW_SCALE#, 1)
+		DrawSmartButtonT(3, "Select Buddy", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+05*GAME_WINDOW_SCALE#, 1)
 	Else
-		DrawSmartButtonT(1, "Name", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-75*GAME_WINDOW_SCALE#, 1, true)
-		DrawSmartButtonT(2, "Good-bye", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-25*GAME_WINDOW_SCALE#, 1, true)
+		DrawSmartButtonT(1, "Name", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-95*GAME_WINDOW_SCALE#, 1, true)
+		DrawSmartButtonT(2, "Good-bye", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-45*GAME_WINDOW_SCALE#, 1, true)
+		DrawSmartButtonT(3, "Select Buddy", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-45*GAME_WINDOW_SCALE#, 1, true)
 	EndIf
-	DrawSmartButtonT(3, "Inventory", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+25*GAME_WINDOW_SCALE#, 1)
-	DrawSmartButtonT(4, "Exit", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+75*GAME_WINDOW_SCALE#, 1)
+	DrawSmartButtonT(4, "Inventory", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+45*GAME_WINDOW_SCALE#, 1)
+	DrawSmartButtonT(5, "Exit", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+95*GAME_WINDOW_SCALE#, 1)
 
 	If Input\Pressed\Down Then
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option+1
 		If Menu\HeldChaoNumber>0 Then
-			If Menu\Option>4 Then Menu\Option=1
+			If Menu\Option>5 Then Menu\Option=1
 		Else
-			If Menu\Option>4 Then Menu\Option=3
+			If Menu\Option>5 Then Menu\Option=4
 		EndIf
 	EndIf
 
@@ -131,9 +134,9 @@ Function Menu_Transporter_Main()
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option-1
 		If Menu\HeldChaoNumber>0 Then
-			If Menu\Option<1 Then Menu\Option=4
+			If Menu\Option<1 Then Menu\Option=5
 		Else
-			If Menu\Option<3 Then Menu\Option=4
+			If Menu\Option<4 Then Menu\Option=5
 		EndIf
 	EndIf
 
@@ -145,8 +148,9 @@ Function Menu_Transporter_Main()
 		Select Menu\Option
 			Case 1: Menu\NewChaoName$=Menu\HeldChaoName$
 			Case 2: Menu\OptionOrder2=1
-			Case 3: Menu\OptionOrder=0 : Menu\CurrentItem=0
-			Case 4: Menu\Background=3
+			Case 3: Menu\OptionOrder2=1
+			Case 4: Menu\OptionOrder=0 : Menu\CurrentItem=0
+			Case 5: Menu\Background=3
 		End Select
 	EndIf
 
@@ -289,6 +293,7 @@ Function Menu_Transporter_Goodbye()
 			Menu\NewMenu2=0
 			Menu_Transporter_Goodbye_DeleteAChao(Menu\HeldChaoNumber)
 			Menu\HeldChaoNumber=0
+			Menu\BuddyChaoNumber=0
 		EndIf
 	EndIf
 
@@ -316,7 +321,57 @@ End Function
 ;--------------------------------------------------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------------------------------
 
+Function Menu_Transporter_Buddy()
+
+	Menu\Background2=2
+	Select Menu\OptionOrder2
+	Case 1: DrawRealText("Bring your Chao to stages and let it grow.", GAME_WINDOW_W/2+(BUTTON_PLACE1#-100)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+30*GAME_WINDOW_SCALE#, (Interface_Text_3), 0, GAME_WINDOW_W/2+(BUTTON_PLACE1#-100)*GAME_WINDOW_SCALE#+175*GAME_WINDOW_SCALE#)
+	Case 2: DrawRealText("Buddy Chao assigned! Enter a stage with your buddy!", GAME_WINDOW_W/2+(BUTTON_PLACE1#-100)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+30*GAME_WINDOW_SCALE#, (Interface_Text_3), 0, GAME_WINDOW_W/2+(BUTTON_PLACE1#-100)*GAME_WINDOW_SCALE#+175*GAME_WINDOW_SCALE#)
+	End Select
+
+	If Menu\OptionOrder2<2 Then
+		DrawChaoStats_Menu(GAME_WINDOW_W/2-(BUTTON_PLACE1#+210)*GAME_WINDOW_SCALE#,GAME_WINDOW_H/2-(87.5)*GAME_WINDOW_SCALE#)
+
+		DrawSmartButtonT(1, "Make Buddy", GAME_WINDOW_W/2+(BUTTON_PLACE1#+205)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+95*GAME_WINDOW_SCALE#, 1, false, 2)
+
+		If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+			PlaySmartSound(Sound_MenuAccept)
+			Menu\OptionOrder2=Menu\OptionOrder2+1
+			If Menu\OptionOrder2=2 Then Menu\ChaoMenuTimer=3.202*secs#
+		EndIf
+
+		If Input\Pressed\ActionRoll Or Input\Pressed\Back Or Input\Pressed\ActionSkill1 Then
+			PlaySmartSound(Sound_MenuBack)
+			Menu\Transition=1
+			Menu\NewOption=3
+			Menu\NewMenu2=0
+		EndIf
+	Else
+		If (Not(Menu\ChaoMenuTimer>0)) and Menu\Transition=0 Then
+			PlaySmartSound(Sound_MenuBack)
+			Menu\Transition=1
+			Menu\NewOption=3
+			Menu\BuddyChaoNumber= Menu\HeldChaoNumber
+			Menu\NewMenu2=0
+		EndIf
+	EndIf
+
+End Function
+
+
+;--------------------------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------------------------------
 Function Menu_Transporter_Name()
 
 	Menu\Background2=3

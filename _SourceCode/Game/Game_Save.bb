@@ -141,7 +141,7 @@ Function SaveGame(saveemblems=true)
 	For c=1 to 7
 	WriteLine(CurrentOpenFile,"<emerald no="+Chr$(34)+(c)+Chr$(34)+" unlocked="+Chr$(34)+UNLOCKEDEMERALDS[c]+Chr$(34)+"/>")
 	Next
-
+	WriteLine(CurrentOpenFile,"<buddy is="+Chr$(34)+Menu\BuddyChaoNumber+Chr$(34)+"/>")
 	For c=1 to CHAR_PLAYABLECOUNT
 	WriteLine(CurrentOpenFile,"<jumpamode no="+Chr$(34)+(c)+Chr$(34)+" is="+Chr$(34)+JUMPAMODE[c]+Chr$(34)+"/>")
 	Next
@@ -204,7 +204,7 @@ Function LoadGame(loademblems=true)
 		Case "team": i = xmlNodeAttributeValueGet(child, "no") : If i<=TEAM_TEAMCOUNT Then UNLOCKEDTEAM[i] = xmlNodeAttributeValueGet(child, "unlocked")
 		Case "specialstages": UNLOCKEDSPECIALSTAGES[0] = xmlNodeAttributeValueGet(child, "unlocked")
 		Case "emerald": i = xmlNodeAttributeValueGet(child, "no") : If i<=7 Then UNLOCKEDEMERALDS[i] = xmlNodeAttributeValueGet(child, "unlocked")
-
+		Case "buddy": Menu\BuddyChaoNumber=xmlNodeAttributeValueGet(child, "is")
 		Case "jumpamode": i = xmlNodeAttributeValueGet(child, "no") : If i<=CHAR_PLAYABLECOUNT Then JUMPAMODE[i] = xmlNodeAttributeValueGet(child, "is")
 
 	End Select
@@ -839,37 +839,60 @@ Function LoadGame_ResetMenuChao()
 
 End Function
 
-Function LoadGame_MenuChao(number)
+Function LoadGame_MenuChao(number, buddy=0)
 
 	LoadFileWithEncryption("CHAO"+number) : xmlin = xmlLoad(SaveDataTmp$)
 
 	For cchild = 1 To xmlNodeChildCount(xmlin)
 
 	child = xmlNodeChild(xmlin, cchild)
+    If buddy=0 Then
+		Select xmlNodeNameGet$(child)
+			Case "name": Menu\HeldChaoName$ = xmlNodeAttributeValueGet(child, "is")
+			Case "age": Menu\HeldChaoAge = xmlNodeAttributeValueGet(child, "is")
+			Case "persona": Menu\HeldChaoPersona = xmlNodeAttributeValueGet(child, "is")
+			Case "color": Menu\HeldChaoColor = xmlNodeAttributeValueGet(child, "is")
+			Case "shape": Menu\HeldChaoShape = xmlNodeAttributeValueGet(child, "is")
+			Case "side": Menu\HeldChaoSide = xmlNodeAttributeValueGet(child, "is")
 
-	Select xmlNodeNameGet$(child)
-		Case "name": Menu\HeldChaoName$ = xmlNodeAttributeValueGet(child, "is")
-		Case "age": Menu\HeldChaoAge = xmlNodeAttributeValueGet(child, "is")
-		Case "persona": Menu\HeldChaoPersona = xmlNodeAttributeValueGet(child, "is")
-		Case "color": Menu\HeldChaoColor = xmlNodeAttributeValueGet(child, "is")
-		Case "shape": Menu\HeldChaoShape = xmlNodeAttributeValueGet(child, "is")
-		Case "side": Menu\HeldChaoSide = xmlNodeAttributeValueGet(child, "is")
+			Case "run": Menu\HeldChaoSkills[1] = xmlNodeAttributeValueGet(child, "level") : Menu\HeldChaoCurrentSkills[1] = xmlNodeAttributeValueGet(child, "current")
+			Case "swim": Menu\HeldChaoSkills[2] = xmlNodeAttributeValueGet(child, "level") : Menu\HeldChaoCurrentSkills[2] = xmlNodeAttributeValueGet(child, "current")
+			Case "fly": Menu\HeldChaoSkills[3] = xmlNodeAttributeValueGet(child, "level") : Menu\HeldChaoCurrentSkills[3] = xmlNodeAttributeValueGet(child, "current")
+			Case "strength": Menu\HeldChaoSkills[4] = xmlNodeAttributeValueGet(child, "level") : Menu\HeldChaoCurrentSkills[4] = xmlNodeAttributeValueGet(child, "current")
+			Case "stamina": Menu\HeldChaoSkills[5] = xmlNodeAttributeValueGet(child, "level") : Menu\HeldChaoCurrentSkills[5] = xmlNodeAttributeValueGet(child, "current")
+			Case "intelligence": Menu\HeldChaoSkills[6] = xmlNodeAttributeValueGet(child, "level") : Menu\HeldChaoCurrentSkills[6] = xmlNodeAttributeValueGet(child, "current")
+			Case "luck": Menu\HeldChaoSkills[7] = xmlNodeAttributeValueGet(child, "level") : Menu\HeldChaoCurrentSkills[7] = xmlNodeAttributeValueGet(child, "current")
 
-		Case "run": Menu\HeldChaoSkills[1] = xmlNodeAttributeValueGet(child, "level") : Menu\HeldChaoCurrentSkills[1] = xmlNodeAttributeValueGet(child, "current")
-		Case "swim": Menu\HeldChaoSkills[2] = xmlNodeAttributeValueGet(child, "level") : Menu\HeldChaoCurrentSkills[2] = xmlNodeAttributeValueGet(child, "current")
-		Case "fly": Menu\HeldChaoSkills[3] = xmlNodeAttributeValueGet(child, "level") : Menu\HeldChaoCurrentSkills[3] = xmlNodeAttributeValueGet(child, "current")
-		Case "strength": Menu\HeldChaoSkills[4] = xmlNodeAttributeValueGet(child, "level") : Menu\HeldChaoCurrentSkills[4] = xmlNodeAttributeValueGet(child, "current")
-		Case "stamina": Menu\HeldChaoSkills[5] = xmlNodeAttributeValueGet(child, "level") : Menu\HeldChaoCurrentSkills[5] = xmlNodeAttributeValueGet(child, "current")
-		Case "intelligence": Menu\HeldChaoSkills[6] = xmlNodeAttributeValueGet(child, "level") : Menu\HeldChaoCurrentSkills[6] = xmlNodeAttributeValueGet(child, "current")
-		Case "luck": Menu\HeldChaoSkills[7] = xmlNodeAttributeValueGet(child, "level") : Menu\HeldChaoCurrentSkills[7] = xmlNodeAttributeValueGet(child, "current")
+			Case "revive": Menu\HeldChaoEternal = xmlNodeAttributeValueGet(child, "eternal")
 
-		Case "revive": Menu\HeldChaoEternal = xmlNodeAttributeValueGet(child, "eternal")
+			Case "hat": Menu\HeldChaoHat = xmlNodeAttributeValueGet(child, "is")
 
-		Case "hat": Menu\HeldChaoHat = xmlNodeAttributeValueGet(child, "is")
+			Case "competitions": Menu\HeldChaoCompetitionsWon = xmlNodeAttributeValueGet(child, "won") : Menu\HeldChaoCompetitionsLost = xmlNodeAttributeValueGet(child, "lost")
+		End Select
+	Else ;buddy
+		Select xmlNodeNameGet$(child)
+			Case "name": Menu\BuddyChaoName$ = xmlNodeAttributeValueGet(child, "is")
+			Case "age": Menu\BuddyChaoAge = xmlNodeAttributeValueGet(child, "is")
+			Case "persona": Menu\BuddyChaoPersona = xmlNodeAttributeValueGet(child, "is")
+			Case "color": Menu\BuddyChaoColor = xmlNodeAttributeValueGet(child, "is")
+			Case "shape": Menu\BuddyChaoShape = xmlNodeAttributeValueGet(child, "is")
+			Case "side": Menu\BuddyChaoSide = xmlNodeAttributeValueGet(child, "is")
 
-		Case "competitions": Menu\HeldChaoCompetitionsWon = xmlNodeAttributeValueGet(child, "won") : Menu\HeldChaoCompetitionsLost = xmlNodeAttributeValueGet(child, "lost")
-	End Select
+			Case "run": Menu\BuddyChaoSkills[1] = xmlNodeAttributeValueGet(child, "level") : Menu\BuddyChaoCurrentSkills[1] = xmlNodeAttributeValueGet(child, "current")
+			Case "swim": Menu\BuddyChaoSkills[2] = xmlNodeAttributeValueGet(child, "level") : Menu\BuddyChaoCurrentSkills[2] = xmlNodeAttributeValueGet(child, "current")
+			Case "fly": Menu\BuddyChaoSkills[3] = xmlNodeAttributeValueGet(child, "level") : Menu\BuddyChaoCurrentSkills[3] = xmlNodeAttributeValueGet(child, "current")
+			Case "strength": Menu\BuddyChaoSkills[4] = xmlNodeAttributeValueGet(child, "level") : Menu\BuddyChaoCurrentSkills[4] = xmlNodeAttributeValueGet(child, "current")
+			Case "stamina": Menu\BuddyChaoSkills[5] = xmlNodeAttributeValueGet(child, "level") : Menu\BuddyChaoCurrentSkills[5] = xmlNodeAttributeValueGet(child, "current")
+			Case "intelligence": Menu\BuddyChaoSkills[6] = xmlNodeAttributeValueGet(child, "level") : Menu\BuddyChaoCurrentSkills[6] = xmlNodeAttributeValueGet(child, "current")
+			Case "luck": Menu\BuddyChaoSkills[7] = xmlNodeAttributeValueGet(child, "level") : Menu\BuddyChaoCurrentSkills[7] = xmlNodeAttributeValueGet(child, "current")
 
+			Case "revive": Menu\BuddyChaoEternal = xmlNodeAttributeValueGet(child, "eternal")
+
+			Case "hat": Menu\BuddyChaoHat = xmlNodeAttributeValueGet(child, "is")
+			Case "stages": Menu\HeldChaoCompetitionsWon = xmlNodeAttributeValueGet(child, "beat")
+			Case "competitions": Menu\HeldChaoCompetitionsWon = xmlNodeAttributeValueGet(child, "won") : Menu\HeldChaoCompetitionsLost = xmlNodeAttributeValueGet(child, "lost")
+		End Select
+	End If
 	Next
 
 	xmlNodeDelete(xmlin) : CloseLoadedFileWithEncryption()
@@ -888,7 +911,6 @@ Function SaveGame_ChaoSlots()
 	For i=1 to CHAOCOUNT
 	WriteLine(CurrentOpenFile,"<slot chao="+Chr$(34)+i+Chr$(34)+" is="+Chr$(34)+CHAOSLOTS(1,i)+Chr$(34)+"/>")
 	Next
-
 	CloseWrittenFileWithEncryption()
 
 End Function

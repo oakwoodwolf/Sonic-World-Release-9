@@ -220,6 +220,20 @@ Type tMenu
 	Field HeldChaoCompetitionsLost
 	Field SaveChaoCompetitions
 
+	Field BuddyChaoNumber
+	Field BuddyChaoName$
+	Field BuddyChaoAge
+	Field BuddyChaoPersona
+	Field BuddyChaoColor
+	Field BuddyChaoShape
+	Field BuddyChaoSide
+	Field BuddyChaoSkills[7]
+	Field BuddyChaoCurrentSkills[7]
+	Field BuddyChaoEternal
+	Field BuddyChaoHat
+	Field BuddyChaoStagesCleared
+	Field SaveChaoStages
+
 	Field BlackMarketRandomizerTimer
 
 	Field LoadThumbnailAndMissions
@@ -304,13 +318,14 @@ Menu\Settings = New tMenu_Settings
 	Const MENU_TRANSPORTER_MAIN#		= 0
 	Const MENU_TRANSPORTER_NAME#		= 1
 	Const MENU_TRANSPORTER_GOODBYE#		= 2
-	Const MENU_TRANSPORTER_INVENTORY#	= 3
-	Const MENU_TRANSPORTER_EXIT#		= 4
-	Const MENU_TRANSPORTER_STADIUM#		= 5
-	Const MENU_TRANSPORTER_RACEEXIT#	= 6
-	Const MENU_TRANSPORTER_RACES#		= 7
-	Const MENU_TRANSPORTER_KARATEEXIT#	= 8
-	Const MENU_TRANSPORTER_DIFFICULTY#	= 9
+	Const MENU_TRANSPORTER_BUDDY#		= 3
+	Const MENU_TRANSPORTER_INVENTORY#	= 4
+	Const MENU_TRANSPORTER_EXIT#		= 5
+	Const MENU_TRANSPORTER_STADIUM#		= 6
+	Const MENU_TRANSPORTER_RACEEXIT#	= 7
+	Const MENU_TRANSPORTER_RACES#		= 8
+	Const MENU_TRANSPORTER_KARATEEXIT#	= 9
+	Const MENU_TRANSPORTER_DIFFICULTY#	= 10
 
 	Const MENU_PRINCIPAL_MAIN#		= 0
 	Const MENU_PRINCIPAL_LESSONS#		= 1

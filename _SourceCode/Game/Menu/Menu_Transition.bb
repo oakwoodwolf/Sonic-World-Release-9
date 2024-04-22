@@ -417,7 +417,7 @@ Function Menu_Transition(d.tDeltaTime)
 							Select Menu\NewMenu2
 								Case MENU_TRANSPORTER_INVENTORY#:
 									Menu_TakeButton1Place_RightOut() : Menu_ResetButtonPlace1_RightIn()
-								Case MENU_TRANSPORTER_GOODBYE#:
+								Case MENU_TRANSPORTER_GOODBYE#, MENU_TRANSPORTER_BUDDY#:
 									Menu_TakeButton1Place_RightOut() : Menu_ResetButtonPlace1_MidIn()
 								Default:
 									Menu_TakeButton1Place_LeftOut() : Menu_ResetButtonPlace1_MidIn()

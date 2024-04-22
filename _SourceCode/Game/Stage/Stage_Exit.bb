@@ -165,12 +165,15 @@
 			Delete p\Motion\Speed
 			Delete p\Motion\Align
 			Delete p\Animation\Align
+			;TODO delete follower
+			
 			Delete p\Objects\Position
 			Delete p\Objects
 			Delete p\Motion
 			Delete p\Animation
 			Delete p\Flags
 			Delete p\Physics
+			
 			Delete p
 		Next
 

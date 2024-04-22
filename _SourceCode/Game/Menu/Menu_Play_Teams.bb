@@ -778,6 +778,15 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 						PositionEntity(Menu\Mesh[2],0,5,0)
 					EndIf
 					PositionEntity(Menu\Mesh[2],EntityX(Menu\Mesh[2])*GetMenuCharacterScale#(),EntityY(Menu\Mesh[2])*GetMenuCharacterScale#()-GetMenuCharacterExtraY#(4),EntityZ(Menu\Mesh[2])*GetMenuCharacterScale#())
+				Case MENU_TRANSPORTER_BUDDY#:
+					If Menu\OptionOrder2<2 Then
+						PositionEntity(Menu\Mesh[2],+0.4,CARD_PLACE#/100,0)
+						Menu_CharacterMeshOnScreen_RotateControl_Chao()
+					Else
+						PositionEntity(Menu\Mesh[2],0,5,0)
+					EndIf
+					PositionEntity(Menu\Mesh[2],EntityX(Menu\Mesh[2])*GetMenuCharacterScale#(),EntityY(Menu\Mesh[2])*GetMenuCharacterScale#()-GetMenuCharacterExtraY#(4),EntityZ(Menu\Mesh[2])*GetMenuCharacterScale#())
+				
 				Case MENU_TRANSPORTER_STADIUM#:
 					PositionEntity(Menu\Mesh[2],-0.025,CARD_PLACE#/100-0.0125,0)
 					Menu_CharacterMeshOnScreen_RotateControl_Chao()

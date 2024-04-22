@@ -694,6 +694,12 @@ Next
 										If Menu\Members>2 Then p3.tPlayer = Player_Create(3)
 										If Menu\Members>1 Then p2.tPlayer = Player_Create(2)
 										p1.tPlayer = Player_Create(1)
+										;num = Rand(1,20)
+										If (Menu\Stage <997 And Menu\BuddyChaoNumber>0) Then
+											;Menu\HeldChaoNumber = num
+											LoadGame_MenuChao(Menu\BuddyChaoNumber,1)
+											p1\Objects\FollowerChao	= Object_CreateRaceChao_Stage(1, Game\Stage\Properties\StartX#, Game\Stage\Properties\StartY#+7, Game\Stage\Properties\StartZ#)
+										EndIf
 										ch.tCheese = Object_Cheese_Create.tCheese()
 										f.tFroggy = Object_Froggy_Create.tFroggy()
 										Player_Spawn(Game\Gameplay\CheckX#,Game\Gameplay\CheckY#,Game\Gameplay\CheckZ#,Game\Gameplay\CheckDirection#)
