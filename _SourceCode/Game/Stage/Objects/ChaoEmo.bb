@@ -138,7 +138,8 @@
 	; =========================================================================================================
 
 	Function Object_ChaoEmo_Update(mesh, ce.tChaoEmo, d.tDeltaTime)
-
+		;point office at camera 
+		PointEntity(ce\Objects\emotionsroot, cam\Entity)
 		;center office
 		If ce\CenterOffice Then
 			PositionEntity ce\Objects\emotionsroot, 0, 0.2643, 0.2442

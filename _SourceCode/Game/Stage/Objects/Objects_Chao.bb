@@ -611,7 +611,7 @@
 							o\ChaoObj\ForceDelete=True
 							ChaoIcon_Draw(o\ChaoObj\DriveType)
 						Else
-							If ChannelPlaying(p\Channel_ChaosDrive)=False Then p\Channel_ChaosDrive=PlaySmartSound(Sound_CharacterChange)
+							If ChannelPlaying(p\Channel_ChaosDrive)=False Then p\Channel_ChaosDrive=PlaySmartSound(Sound_ChaosDrive)
 							ChaoManager_Gain(2, o\ChaoObj\DriveType, p\Objects\FollowerChao, 0, 1)
 							o\ChaoObj\ForceDelete=True
 						EndIf

@@ -677,6 +677,7 @@ Next
 											;Menu\HeldChaoNumber = num
 											LoadGame_MenuChao(Menu\BuddyChaoNumber,1)
 											p1\Objects\FollowerChao	= Object_CreateRaceChao_Stage(1, Game\Stage\Properties\StartX#, Game\Stage\Properties\StartY#+7, Game\Stage\Properties\StartZ#)
+											LoadChaoVoices()
 										EndIf
 										ch.tCheese = Object_Cheese_Create.tCheese()
 										f.tFroggy = Object_Froggy_Create.tFroggy()

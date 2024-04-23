@@ -375,6 +375,26 @@
 		If ChaoManager_ChaoAlive(cc) Then
 			Select cc\Action
 				Case CHAOACTION_BUDDY: 
+					Select cc\targetp\Action
+						Case ACTION_THROW, ACTION_GATLING, ACTION_THRUST, ACTION_SHOOT, ACTION_SHOOTHOVER, ACTION_PUNCH, ACTION_UPPERCUT, ACTION_PSYCHO, ACTION_SPRINT:
+							cc\VoiceEmo=CHAOVOICEEMO_ATTACK
+						Case ACTION_HURT, ACTION_DIE:
+							cc\VoiceEmo=CHAOVOICEEMO_HURT
+						Case ACTION_VICTORY, ACTION_VICTORYHOLD:
+							cc\VoiceEmo=CHAOVOICEEMO_SINGING
+						Case ACTION_UP, ACTION_FLOAT, ACTION_SLOWGLIDE, ACTION_SLEET, ACTION_GLIDE, ACTION_SKYDIVE:
+							cc\VoiceEmo=CHAOVOICEEMO_CRAZY
+						Default:
+							If (cc\Underwater=1) Then
+								If cc\Stats\Swim#<3 Then
+									cc\VoiceEmo=CHAOVOICEEMO_DROWNING
+								Else
+									cc\VoiceEmo=CHAOVOICEEMO_HUMMING
+								EndIf
+							Else
+								cc\VoiceEmo=CHAOVOICEEMO_CASUAL
+							EndIf
+					End Select
 				Case CHAOACTION_THROWN,CHAOACTION_KARATE_THROWN:
 					cc\VoiceEmo=CHAOVOICEEMO_FRUSTRATED
 				Case CHAOACTION_HURT,CHAOACTION_KARATE_HURT:
@@ -880,6 +900,7 @@
 		cc\targetp=pp(1)
 		ShowEntity(cc\Mesh)
 		ChaoManager_NoAutonomousCommonActions(cc)
+		
 		ChaoManager_Action_Buddy_Update_Real(cc, cc\targetp, d)
 	End Function
 	Function ChaoManager_Action_Buddy_Update_Real(cc.tChaoManager ,p.tPlayer, d.tDeltaTime)
@@ -890,44 +911,66 @@
 			ParticleTemplate_Call(cc\Particle, PARTICLE_CHAO_CHEESE, cc\Pivot)
 		Else
 		Select p\Action
-			Case ACTION_THROW:
+			Case ACTION_THROW, ACTION_THRUST, ACTION_SHOOT, ACTION_SHOOTHOVER:
 				cc\Animation=CHAOANIMATION_EXCLAMATIONAIR
 				cc\Emo\Emotion=CHAOEMO_angry
+			Case ACTION_PUNCH, ACTION_UPPERCUT, ACTION_PSYCHO:
+				cc\Animation=CHAOANIMATION_PUNCHL
+				cc\Emo\Emotion=CHAOEMO_angry
+			Case ACTION_SPRINT:
+				cc\Animation=CHAOANIMATION_RUNAIR
+				cc\Emo\Emotion=CHAOEMO_angry
 			Case ACTION_HURT:
-				cc\VoiceEmo=CHAOVOICEEMO_HURT
 				cc\Emo\Emotion=CHAOEMO_hurt
 				cc\Animation=CHAOANIMATION_THROWN
 			Case ACTION_DIE:
-				cc\VoiceEmo=CHAOVOICEEMO_HURT
 				cc\Emo\Emotion=CHAOEMO_hurt
 				cc\Animation=CHAOANIMATION_HURT
-			Case ACTION_VICTORY:
+			Case ACTION_VICTORY, ACTION_VICTORYHOLD:
 				cc\Animation=CHAOANIMATION_WIN
-				cc\VoiceEmo=CHAOVOICEEMO_AMAZED
 				cc\Emo\Emotion=CHAOEMO_cheerful
 			Default:
 			If (cc\Underwater=1) Then
 				If cc\Stats\Swim#<3 Then
 					ParticleTemplate_Call(cc\Particle, PARTICLE_PLAYER_BUBBLEBREATHE, cc\Pivot, 0.1, 0, 0, 0, 0, Rand(1,5)/2.0)
 					cc\Animation=CHAOANIMATION_DROWN
+					cc\Emo\Emotion=CHAOEMO_disgusted
 				Else
 					ParticleTemplate_Call(cc\Particle, PARTICLE_PLAYER_BUBBLEBREATHE, cc\Pivot, 0.1, 0, 0, 0, 0, Rand(1,5)/8.0)
 					cc\Animation=CHAOANIMATION_SWIM
+					cc\Emo\Emotion=CHAOEMO_bored
 				EndIf
 			Else
-				cc\VoiceEmo=CHAOVOICEEMO_CASUAL
-				If p\SpeedLength#>2 Then
-					cc\Animation=CHAOANIMATION_RUNAIR
-					ParticleTemplate_Call(cc\Particle, PARTICLE_CHAO_CHEESE, cc\Pivot)
-				Else If p\SpeedLength#>0.5
-					cc\Animation=CHAOANIMATION_WALKAIR
+				cc\Emo\Emotion=ChaoManager_GetDefaultPersona(cc)
+				If (Not(p\Motion\Ground)) Or cc\Stats\Fly>6 Then
+					If p\SpeedLength#>2 Then
+						cc\Animation=CHAOANIMATION_RUNAIR
+						cc\VoiceEmo=CHAOVOICEEMO_HUMMING
+						ParticleTemplate_Call(cc\Particle, PARTICLE_CHAO_CHEESE, cc\Pivot)
+					Else If p\SpeedLength#>0.5
+						cc\VoiceEmo=CHAOVOICEEMO_CASUAL
+						cc\Animation=CHAOANIMATION_WALKAIR
+					Else
+						cc\VoiceEmo=CHAOVOICEEMO_CASUAL
+						cc\Animation=CHAOANIMATION_IDLEAIR
+					EndIf
 				Else
-					cc\Animation=CHAOANIMATION_IDLEAIR
+					If p\SpeedLength#>2 Then
+						cc\Animation=CHAOANIMATION_RUN
+						cc\VoiceEmo=CHAOVOICEEMO_HUMMING
+						ParticleTemplate_Call(cc\Particle, PARTICLE_PLAYER_ATTACKTRAIL, cc\Pivot)
+					Else If p\SpeedLength#>0.1
+						cc\VoiceEmo=CHAOVOICEEMO_CASUAL
+						cc\Animation=CHAOANIMATION_WALK
+					Else
+						cc\VoiceEmo=CHAOVOICEEMO_CASUAL
+						cc\Animation=CHAOANIMATION_IDLE
+					EndIf
 				EndIf
 			EndIf
 		End Select
 		EndIf
-
+		
 
 		; Movement
 		If Game\CheeseTimer>0 and (Not(p\Flags\HomingTarget\x#=99999 and p\Flags\HomingTarget\y#=99999 and p\Flags\HomingTarget\z#=99999)) Then
@@ -945,14 +988,26 @@
 			p\Flags\HomingTarget\y#=99999
 			p\Flags\HomingTarget\z#=99999
 		Else
-			PointEntity cc\Pivot, p\Objects\Cheese, 0
-			If EntityDistance(p\Objects\Cheese, cc\Pivot)>=150 Then
+
+				If (Not(p\Motion\Ground)) Or cc\Stats\Fly>6 Then
+					PointEntity cc\Pivot, p\Objects\Cheese, 0
+				Else
+					RotateEntity cc\Pivot,0,(DeltaYaw#(cc\Pivot,p\Objects\Cheese)),0
+				EndIf
+
+				
+			If EntityDistance(p\Objects\Cheese, cc\Pivot)>=100 Then
 				EntityType(cc\Pivot,COLLISION_NONE) : PositionEntity cc\Pivot, p\Objects\Position\x#, p\Objects\Position\y#+12, p\Objects\Position\z#
-				EntityType(cc\Pivot,COLLISION_OBJECT2_GOTHRU)
+				EmitSmartSound(Sound_CharacterChange, cc\Pivot)
+				ParticleTemplate_Call(cc\Particle, PARTICLE_PLAYER_CHARACTERDUST, cc\Pivot) :EntityType(cc\Pivot,COLLISION_OBJECT2_GOTHRU)
 			Else
 				MoveEntity cc\Pivot,0,-0.1,(0.15*EntityDistance(p\Objects\Cheese, cc\Pivot)*d\Delta);*(cc\Stats\Run/3))
 				;If EntityDistance(p\Objects\Cheese, cc\Pivot)>3 Then cc\g\Motion\Speed\z#=0.05+(cc\Stats\Run#/50.0)
-				cc\g\Motion\Speed\y#=0.05+(cc\Stats\Fly#/100.0)
+				If cc\Stats\Fly>6 Then 
+					cc\g\Motion\Speed\y#=0.05+(cc\Stats\Fly#/100.0)
+				Else
+					If (Not(p\Motion\Ground)) Then cc\g\Motion\Speed\y#=0.05+(cc\Stats\Fly#/100.0)
+				EndIf 
 			EndIf
 		EndIf
 			

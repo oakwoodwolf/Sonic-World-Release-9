@@ -88,6 +88,7 @@ End Function
 		EndIf
 
 		If Not(cc\VoiceTimer>0) Then
+			
 			If (Not(ChannelPlaying(cc\Channel_Voice))) Then
 				cc\VoiceTimer=(4.5575+Rand(-1.5,2.5))*secs#
 				Select cc\VoiceEmo

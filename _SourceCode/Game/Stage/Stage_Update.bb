@@ -387,7 +387,7 @@
 			For ch.tCheese=Each tCheese
 				If ch\targetp\Character=CHAR_CRE Then Object_ChaoEmo_Update(ch\Mesh, ch\Emo, d)
 			Next
-			If Menu\ChaoGarden=1 Then
+			If Menu\ChaoGarden>=0 Then
 				For cc.tChaoManager=Each tChaoManager
 					If ChaoManager_ChaoAlive(cc) Or ChaoManager_ChaoCocoonAlive(cc) Then
 						Object_ChaoEmo_Update(cc\Mesh, cc\Emo, d)
