@@ -129,6 +129,7 @@
 			If Game\Shield>0 Then FreeEntity p\Objects\Shield
 			FreeEntity p\Objects\Follower
 			FreeEntity p\Objects\Cheese
+			FreeEntity p\Objects\Buddy
 			FreeEntity p\Objects\Froggy
                         FreeEntity p\Objects\JumpBall
                         FreeEntity p\Objects\Stomp

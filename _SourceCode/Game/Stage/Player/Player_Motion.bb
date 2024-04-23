@@ -527,12 +527,11 @@
 				RotateEntity p\Objects\Follower, EntityPitch(p\Objects\Mesh), EntityYaw(p\Objects\Mesh), EntityRoll(p\Objects\Mesh), 1
 				MoveEntity p\Objects\Follower, -10.0876, -2.9673, -10.2656
 				PositionEntity p\Objects\Froggy, EntityX(p\Objects\Follower), EntityY(p\Objects\Follower), EntityZ(p\Objects\Follower), 1
-			Default:
-				PositionEntity p\Objects\Follower, EntityX(p\Objects\Mesh), EntityY(p\Objects\Mesh), EntityZ(p\Objects\Mesh), 1
-				RotateEntity p\Objects\Follower, EntityPitch(p\Objects\Mesh), EntityYaw(p\Objects\Mesh), EntityRoll(p\Objects\Mesh), 1
-				MoveEntity p\Objects\Follower, 2+GetCharScaleFactor(p\Character), 3+GetCharScaleFactor(p\Character), -2
-				PositionEntity p\Objects\Cheese, EntityX(p\Objects\Follower), EntityY(p\Objects\Follower), EntityZ(p\Objects\Follower), 1
 		End Select
+		PositionEntity p\Objects\Follower, EntityX(p\Objects\Mesh), EntityY(p\Objects\Mesh), EntityZ(p\Objects\Mesh), 1
+		RotateEntity p\Objects\Follower, EntityPitch(p\Objects\Mesh), EntityYaw(p\Objects\Mesh), EntityRoll(p\Objects\Mesh), 1
+		MoveEntity p\Objects\Follower, 2+(GetCharScaleFactor(p\Character)/2), 3+(GetCharScaleFactor(p\Character)/1.5), -2.5
+		PositionEntity p\Objects\Buddy, EntityX(p\Objects\Follower), EntityY(p\Objects\Follower), EntityZ(p\Objects\Follower), 1
 	End Function
 
 	; =========================================================================================================

@@ -276,6 +276,7 @@
 		Field Follower
 		Field FollowerChao.tChaoManager
 		Field Cheese
+		Field Buddy
 		Field Froggy
 
 		Field Gum
@@ -786,6 +787,7 @@
 		; Form places
 		p\Objects\Follower=CreatePivot()
 		p\Objects\Cheese=CreatePivot()
+		p\Objects\Buddy=CreatePivot()
 		p\Objects\Froggy=CreatePivot()
 		p\Objects\FollowerPlace[1-1]=CreatePivot()
 		p\Objects\FollowerPlace[2-1]=CreatePivot()
