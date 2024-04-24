@@ -1013,7 +1013,7 @@
 					cc\g\Motion\Speed\y#=0.05+(cc\Stats\Fly#/100.0)
 					
 				Else
-					If EntityDistance(cc\Pivot, p\Objects\Hips)>=10 Then MoveEntity cc\Pivot,0,-0.1,((0.01+(cc\Stats\Run#/25.0)*(EntityDistance(p\Objects\Hips, cc\Pivot)/7))*d\Delta) : cc\g\SpeedLength=1
+					If EntityDistance(cc\Pivot, p\Objects\Hips)>=7 Then MoveEntity cc\Pivot,0,0,((((EntityDistance(p\Objects\Hips, cc\Pivot)*((cc\Stats\Run + 20)/70))^2)/100)*d\Delta)
 					;If EntityDistance(cc\Pivot, p\Objects\Hips)>=10 Then MoveEntity cc\Pivot,0,-0.1,((0.01+(cc\Stats\Run#/25.0)+(p\SpeedLength/1.5))*d\Delta)
 					If (Not(p\Motion\Ground)) Then cc\g\Motion\Speed\y#=0.05+(cc\Stats\Fly#/100.0)
 				EndIf 
