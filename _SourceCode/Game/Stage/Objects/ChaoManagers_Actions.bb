@@ -597,7 +597,7 @@
 		If cc\MateTimer>0 Then cc\MateTimer=cc\MateTimer-timervalue#
 		If cc\WillWaitBreedTimer>0 Then cc\WillWaitBreedTimer=cc\WillWaitBreedTimer-timervalue#
 		If cc\WaitBreedTimer>0 Then cc\WaitBreedTimer=cc\WaitBreedTimer-timervalue#
-		If cc\BreedTimer>0 Then cc\BreedTimer=cc\BreedTimer-timervalue#
+		If cc\BreedTimer>0 Then cc\BreedTimer=cc\BreedTimer-timervalue# : ParticleTemplate_Call(cc\Particle, PARTICLE_PLAYER_HEARTS, cc\Pivot)
 		If cc\PlayTimer>0 Then cc\PlayTimer=cc\PlayTimer-timervalue#
 		If cc\PlayedEnoughTimer>0 Then cc\PlayedEnoughTimer=cc\PlayedEnoughTimer-timervalue#
 		If cc\ShallFollowWhistleTimer>0 Then cc\ShallFollowWhistleTimer=cc\ShallFollowWhistleTimer-timervalue#

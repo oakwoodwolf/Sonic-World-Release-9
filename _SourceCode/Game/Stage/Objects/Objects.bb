@@ -681,6 +681,9 @@ Global Object_Texture_Box_Float=LoadTexture("Objects\Boxes\box_float.png")
 		Field FruitGrowthTimer[4]
 		Field ShellType
 		Field ShellType2
+		Field ShellMono
+		Field ShellShiny
+		Field ShellTex
 		Field DriveType
 		Field DrivePitch
 		Field HatType

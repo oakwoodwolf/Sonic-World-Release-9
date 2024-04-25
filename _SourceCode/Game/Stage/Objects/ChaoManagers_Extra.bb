@@ -323,13 +323,14 @@ If (Not( Menu\Stage=0)) Then
 	racecolor=Menu\BuddyChaoColor
 	raceshiny=Menu\BuddyChaoShiny
 	racemono=Menu\BuddyChaoMonotone
+	racebright=Menu\BuddyChaoBright
 	racetex=Menu\BuddyChaoTextured
 	raceshape=Menu\BuddyChaoShape
 	raceside=Menu\BuddyChaoSide
 	racehat=Menu\BuddyChaoHat
 
 	obj.tObject = Object_Chao_Create(0, 0, 0, 0)
-	racecc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, false, 0, true, x#, y#, z#, true, raceage, racepersona, racecolor, raceshape, raceside, racehat, racemono, raceshiny, racetex)
+	racecc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, false, 0, true, x#, y#, z#, true, raceage, racepersona, racecolor, raceshape, raceside, racehat, racemono, raceshiny, racetex, racebright)
 
 	racecc\Stats\Run# = Menu\BuddyChaoSkills[1] : racecc\Stats\CurrentRun# = Menu\BuddyChaoCurrentSkills[1]
 	racecc\Stats\Swim# = Menu\BuddyChaoSkills[2] : racecc\Stats\CurrentSwim# = Menu\BuddyChaoCurrentSkills[2]

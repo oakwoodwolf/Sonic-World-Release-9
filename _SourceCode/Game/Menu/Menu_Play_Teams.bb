@@ -469,7 +469,7 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 						Case 1: Menu\Mesh[3]=LoadMesh("ChaoWorld\Fruits\"+FRUITS$(Menu\BlackMarketSellCategory)+".b3d", Game\Stage\Root)
 						Case 2: Menu\Mesh[3]=LoadMesh("ChaoWorld\Hats\"+HATS_FILE$(Menu\BlackMarketSellCategory)+".b3d", Game\Stage\Root)
 						Case 3: Menu\Mesh[3]=LoadMesh("ChaoWorld\Eggs\egg.b3d", Game\Stage\Root)
-							Render_Inventory_Egg()
+							Menu_Render_Inventory_Egg()
 						Case 4:
 							Select Menu\BlackMarketSellCategory
 							Case SHELL_BOTTOM: Menu\Mesh[3]=LoadMesh("ChaoWorld\Eggs\eggB.b3d", Game\Stage\Root)
@@ -519,6 +519,10 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 					officeglaretexture=LoadTexture("ChaoWorld\Chao\0.chaoref.png",1+64) : TextureBlend(officeglaretexture,3)
 
 					ApplyMeshTextureLayer(Menu\Mesh[2], CHAOSIDES$(Menu\HeldChaoSide)+".body.celeste.png", bodytexture)
+					If Menu\HeldChaoBright>0 Then
+						TextureBlend(bodytexture,3)
+						ApplyMeshTextureLayer(Menu\Mesh[2], CHAOSIDES$(Menu\HeldChaoSide)+".body.celeste.png", bodytexture, true)
+					EndIf
 					ApplyMeshTextureLayer(Menu\Mesh[2], CHAOSIDES$(Menu\HeldChaoSide)+".office.normal.png", officetexture)
 					ApplyMeshTextureLayer(Menu\Mesh[2], CHAOSIDES$(Menu\HeldChaoSide)+".body."+CHAOCOLORS$(Menu\HeldChaoColor)+"."+CHAOSHAPES$(Menu\HeldChaoShape)+".png", bodyglaretexture, True)
 					ApplyMeshTextureLayer(Menu\Mesh[2], CHAOSIDES$(Menu\HeldChaoSide)+".office."+CHAOSHAPES$(Menu\HeldChaoShape)+".png", officeglaretexture, True)
@@ -553,7 +557,7 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 						Case 1: Menu\Mesh[3]=LoadMesh("ChaoWorld\Fruits\"+FRUITS$(Menu\BlackMarketSellCategory)+".b3d", Game\Stage\Root)
 						Case 2: Menu\Mesh[3]=LoadMesh("ChaoWorld\Hats\"+HATS_FILE$(Menu\BlackMarketSellCategory)+".b3d", Game\Stage\Root)
 						Case 3: Menu\Mesh[3]=LoadMesh("ChaoWorld\Eggs\egg.b3d", Game\Stage\Root)
-							Render_Inventory_Egg()
+							Menu_Render_Inventory_Egg()
 						Case 4:
 							Select Menu\BlackMarketSellCategory
 							Case SHELL_BOTTOM: Menu\Mesh[3]=LoadMesh("ChaoWorld\Eggs\eggB.b3d", Game\Stage\Root)
@@ -829,7 +833,7 @@ Function Menu_Particle_Emblem(entity, size#=1)
 	ParticleTemplate_Call(Game\Stage\Properties\AmbientParticle, PARTICLE_MENU_EMBLEM, entity, size#)
 End Function
 
-Function Render_Inventory_Egg()
+Function Menu_Render_Inventory_Egg()
 	eggItem = Menu\BlackMarketSellCategory MOD CHAOCOLORS_total
 		If eggItem = 0 Then eggItem = CHAOCOLORS_total
 		If ((Menu\BlackMarketSellCategory<=CHAOCOLORS_total*2 And Menu\BlackMarketSellCategory>CHAOCOLORS_total) Or (Menu\BlackMarketSellCategory<=CHAOCOLORS_total*4 And Menu\BlackMarketSellCategory>CHAOCOLORS_total*3)) Then ; mono
@@ -840,9 +844,14 @@ Function Render_Inventory_Egg()
 			eggtexture=LoadTexture("ChaoWorld\Eggs\"+CHAOCOLORS$((eggItem))+".png",256)
 		Else ;textured/jewel
 			DebugLog("tex/jewel " + CHAOCOLORS$(eggItem))
-			eggtexture=LoadTexture("ChaoWorld\Chao\Tex\tex_"+CHAOJEWEL$((eggItem))+".png",1+64+256)								;eggtexture=LoadTexture("ChaoWorld\Chao\Tex\tex_"+CHAOJEWEL$(eggItem)+".png",1+64+256)
+			eggtexture=LoadTexture("ChaoWorld\Chao\Tex\tex_"+CHAOJEWEL$((eggItem))+".png",1+64+256)
 		End If
-		EntityTexture Menu\Mesh[3], eggtexture
+		ApplyMeshTextureLayer(Menu\Mesh[3], "celeste.png", eggtexture)
+		If (Menu\BlackMarketSellCategory<=CHAOCOLORS_total*4 And Menu\BlackMarketSellCategory>CHAOCOLORS_total*2) Then
+			glaretexture=LoadTexture("ChaoWorld\Chao\0.blackglare2.Shiny.png",1+64+256) ;: TextureBlend(glaretexture, 3)
+			ApplyMeshTextureLayer(Menu\Mesh[3], "celeste.png", glaretexture, true)
+			FreeTexture glaretexture
+		EndIf
 	FreeTexture eggtexture
 End Function
 

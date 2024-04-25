@@ -649,7 +649,7 @@ Function Object_EnforceObjPickUp_Normal(o.tObject,p.tPlayer)
 				If o\ObjType=OBJTYPE_CHAO Then
 					PositionEntity o\ChaoObj\targetcc\Pivot, EntityX(o\Entity), EntityY(o\Entity), EntityZ(o\Entity)
 					RotateEntity o\ChaoObj\targetcc\Pivot, EntityPitch(o\Entity), EntityYaw(o\Entity), EntityRoll(o\Entity)
-					If Menu\Stage < 997 Then o\ChaoObj\targetcc\Action=CHAOACTION_THROWN
+					If Menu\Stage >= 997 Then o\ChaoObj\targetcc\Action=CHAOACTION_THROWN
 				EndIf
 			EndIf
 			Next			

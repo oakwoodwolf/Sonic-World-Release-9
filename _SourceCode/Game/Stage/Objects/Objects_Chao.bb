@@ -143,7 +143,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Shell_Create.tObject(x#, y#, z#, yaw#, shelltype, shelltype2, throw=false)
+	Function Object_Shell_Create.tObject(x#, y#, z#, yaw#, shelltype, shelltype2, throw=false, mono=0, shiny=0, tex=0)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_SHELL : o\ID=TempAttribute\ObjectID
 		o\g = Object_Gravity_Create.tGravity() : o\HasGravity=True
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
@@ -164,8 +164,15 @@
 			Case SHELL_BOTTOM: o\Entity = LoadAnimMesh("ChaoWorld\Eggs\eggB.b3d", Game\Stage\Root)
 			Case SHELL_TOP:	o\Entity = LoadAnimMesh("ChaoWorld\Eggs\eggT.b3d", Game\Stage\Root)
 		End Select
-		eggtexture=LoadTexture("ChaoWorld\Eggs\"+CHAOCOLORS$(shelltype2)+".png",256)
+		If mono=1 Then
+			eggtexture=LoadTexture("ChaoWorld\Chao\"+CHAOCOLORS$(shelltype2)+"\"+CHAOCOLORS$(shelltype2)+".png",256)
+		Else If tex=1 Then
+			eggtexture=LoadTexture("ChaoWorld\Chao\Tex\tex_"+CHAOJEWEL$(shelltype2)+".png",1+3+256)
+		Else
+			eggtexture=LoadTexture("ChaoWorld\Eggs\"+CHAOCOLORS$(shelltype2)+".png",256)
+		EndIf
 		EntityTexture o\Entity, eggtexture
+		If shiny=1 Then EntityShininess(o\Entity, 1)
 		FreeTexture eggtexture
 
 		EntityType(o\Pivot,0)

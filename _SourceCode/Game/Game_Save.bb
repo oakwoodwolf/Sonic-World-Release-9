@@ -728,7 +728,7 @@ Function SaveGame_Chao(cc.tChaoManager)
 	WriteLine(CurrentOpenFile,"<name is="+Chr$(34)+cc\Name$+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<age is="+Chr$(34)+cc\Stats\Age+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<persona is="+Chr$(34)+cc\Stats\Persona+Chr$(34)+"/>")
-	WriteLine(CurrentOpenFile,"<color is="+Chr$(34)+cc\Stats\Color+Chr$(34)+" shiny="+Chr$(34)+cc\Stats\Shiny+Chr$(34)+" tex="+Chr$(34)+cc\Stats\Textured+Chr$(34)+" mono="+Chr$(34)+cc\Stats\Monotone+Chr$(34)+"/>")
+	WriteLine(CurrentOpenFile,"<color is="+Chr$(34)+cc\Stats\Color+Chr$(34)+" shiny="+Chr$(34)+cc\Stats\Shiny+Chr$(34)+" tex="+Chr$(34)+cc\Stats\Textured+Chr$(34)+" mono="+Chr$(34)+cc\Stats\Monotone+Chr$(34)+" bright="+Chr$(34)+cc\Stats\Bright+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<shape is="+Chr$(34)+cc\Stats\Shape+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<side is="+Chr$(34)+cc\Stats\Side+Chr$(34)+"/>")
 
@@ -778,7 +778,7 @@ Function LoadGame_Chao(cc.tChaoManager)
 		Case "name": cc\Name$ = xmlNodeAttributeValueGet(child, "is")
 		Case "age": cc\Stats\Age = xmlNodeAttributeValueGet(child, "is")
 		Case "persona": cc\Stats\Persona = xmlNodeAttributeValueGet(child, "is")
-		Case "color": cc\Stats\Color = xmlNodeAttributeValueGet(child, "is") : cc\Stats\Monotone = xmlNodeAttributeValueGet(child, "mono") : cc\Stats\Shiny = xmlNodeAttributeValueGet(child, "shiny") : cc\Stats\Textured = xmlNodeAttributeValueGet(child, "tex")
+		Case "color": cc\Stats\Color = xmlNodeAttributeValueGet(child, "is") : cc\Stats\Monotone = xmlNodeAttributeValueGet(child, "mono") : cc\Stats\Shiny = xmlNodeAttributeValueGet(child, "shiny") : cc\Stats\Textured = xmlNodeAttributeValueGet(child, "tex") : cc\Stats\Bright = xmlNodeAttributeValueGet(child, "bright")
 		Case "shape": cc\Stats\Shape = xmlNodeAttributeValueGet(child, "is")
 		Case "side": cc\Stats\Side = xmlNodeAttributeValueGet(child, "is")
 
@@ -827,6 +827,10 @@ Function LoadGame_ResetMenuChao()
 	Menu\HeldChaoAge = 0
 	Menu\HeldChaoPersona = 0
 	Menu\HeldChaoColor = 0
+	Menu\HeldChaoMonotone = 0
+	Menu\HeldChaoShiny = 0
+	Menu\HeldChaoTextured = 0
+	Menu\HeldChaoBright = 0
 	Menu\HeldChaoShape = 0
 	Menu\HeldChaoSide = 0
 	For i=1 to 7
@@ -851,7 +855,7 @@ Function LoadGame_MenuChao(number, buddy=0)
 			Case "name": Menu\HeldChaoName$ = xmlNodeAttributeValueGet(child, "is")
 			Case "age": Menu\HeldChaoAge = xmlNodeAttributeValueGet(child, "is")
 			Case "persona": Menu\HeldChaoPersona = xmlNodeAttributeValueGet(child, "is")
-			Case "color": Menu\HeldChaoColor = xmlNodeAttributeValueGet(child, "is")  : Menu\HeldChaoMonotone = xmlNodeAttributeValueGet(child, "mono") : Menu\HeldChaoShiny = xmlNodeAttributeValueGet(child, "shiny") : Menu\HeldChaoTextured = xmlNodeAttributeValueGet(child, "tex")
+			Case "color": Menu\HeldChaoColor = xmlNodeAttributeValueGet(child, "is")  : Menu\HeldChaoMonotone = xmlNodeAttributeValueGet(child, "mono") : Menu\HeldChaoShiny = xmlNodeAttributeValueGet(child, "shiny") : Menu\HeldChaoTextured = xmlNodeAttributeValueGet(child, "tex") : Menu\HeldChaoBright = xmlNodeAttributeValueGet(child, "bright")
 			Case "shape": Menu\HeldChaoShape = xmlNodeAttributeValueGet(child, "is")
 			Case "side": Menu\HeldChaoSide = xmlNodeAttributeValueGet(child, "is")
 
@@ -874,7 +878,7 @@ Function LoadGame_MenuChao(number, buddy=0)
 			Case "name": Menu\BuddyChaoName$ = xmlNodeAttributeValueGet(child, "is")
 			Case "age": Menu\BuddyChaoAge = xmlNodeAttributeValueGet(child, "is")
 			Case "persona": Menu\BuddyChaoPersona = xmlNodeAttributeValueGet(child, "is")
-			Case "color": Menu\BuddyChaoColor = xmlNodeAttributeValueGet(child, "is") : Menu\BuddyChaoMonotone = xmlNodeAttributeValueGet(child, "mono") : Menu\BuddyChaoShiny = xmlNodeAttributeValueGet(child, "shiny") : Menu\BuddyChaoTextured = xmlNodeAttributeValueGet(child, "tex")
+			Case "color": Menu\BuddyChaoColor = xmlNodeAttributeValueGet(child, "is") : Menu\BuddyChaoMonotone = xmlNodeAttributeValueGet(child, "mono") : Menu\BuddyChaoShiny = xmlNodeAttributeValueGet(child, "shiny") : Menu\BuddyChaoTextured = xmlNodeAttributeValueGet(child, "tex") : Menu\BuddyChaoBright = xmlNodeAttributeValueGet(child, "bright")
 			Case "shape": Menu\BuddyChaoShape = xmlNodeAttributeValueGet(child, "is")
 			Case "side": Menu\BuddyChaoSide = xmlNodeAttributeValueGet(child, "is")
 

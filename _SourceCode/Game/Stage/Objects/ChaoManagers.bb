@@ -122,6 +122,7 @@
 		Field ReviveEternal
 		Field Monotone
 		Field Shiny
+		Field Bright
 		Field Textured
 		Field HeroLove#
 		Field DarkLove#
@@ -246,7 +247,7 @@
 		ChaoManager_RemoveBoostedSkills(cc)
 	End Function
 	
-	Function Object_ChaoManager_Create.tChaoManager(number, o.tObject, born=False, color=0, takepos=False, x#=0, y#=0, z#=0, forcechao=False, forceage=0, forcepersona=0, forcecolor=0, forceshape=0, forceside=0, forcehat=0, forcemono=0, forceshiny=0, forcetex=0)
+	Function Object_ChaoManager_Create.tChaoManager(number, o.tObject, born=False, color=0, takepos=False, x#=0, y#=0, z#=0, forcechao=False, forceage=0, forcepersona=0, forcecolor=0, forceshape=0, forceside=0, forcehat=0, forcemono=0, forceshiny=0, forcetex=0, forcebright=0)
 	
 		cc.tChaoManager = New tChaoManager
 		cc\Number=number
@@ -256,7 +257,7 @@
 		cc\InitialPosition = New tVector
 
 		If forcechao=False Then
-			If Not(FileType(SaveDataPath$+"CHAO"+cc\Number+".dat")=1) Then
+			If Not(FileType(SaveDataPath$+"Chao"+cc\Number+".xml")=1) Then
 				Object_ChaoManager_NewChao(cc,Color,True)
 				If takepos Then cc\Position\x#=x# : cc\Position\y#=y# : cc\Position\z#=z#
 				SaveGame_Chao(cc)
@@ -268,6 +269,7 @@
 			cc\Stats\Color=forcecolor
 			cc\Stats\Monotone=forcemono
 			cc\Stats\Shiny=forceshiny
+			cc\Stats\Bright=forcebright
 			cc\Stats\Textured=forcetex
 			cc\Stats\Shape=forceshape
 			cc\Stats\Side=forceside
@@ -310,6 +312,10 @@
 				cc\OfficeGlareTexture=LoadTexture("ChaoWorld\Chao\0.chaoref.png",1+64) : TextureBlend(cc\OfficeGlareTexture,3)
 
 				ApplyMeshTextureLayer(cc\Mesh, CHAOSIDES$(cc\Stats\Side)+".body.celeste.png", cc\BodyTexture)
+				If cc\Stats\Bright=1 Then
+					TextureBlend(cc\BodyTexture,3)
+					ApplyMeshTextureLayer(cc\Mesh, CHAOSIDES$(cc\Stats\Side)+".body.celeste.png", cc\BodyTexture,true)
+				EndIf
 				ApplyMeshTextureLayer(cc\Mesh, CHAOSIDES$(cc\Stats\Side)+".office.normal.png", cc\OfficeTexture)
 				ApplyMeshTextureLayer(cc\Mesh, CHAOSIDES$(cc\Stats\Side)+".body."+CHAOCOLORS$(cc\Stats\Color)+"."+CHAOSHAPES$(cc\Stats\Shape)+".png", cc\BodyGlareTexture, True)
 				ApplyMeshTextureLayer(cc\Mesh, CHAOSIDES$(cc\Stats\Side)+".office."+CHAOSHAPES$(cc\Stats\Shape)+".png", cc\OfficeGlareTexture, True)
@@ -550,7 +556,7 @@
 		cc\Stats\Age=cc\Stats\Age+1
 
 		Select cc\Stats\Age
-			Case 1: cc\HatchTimer=(3600+Rand(-600,600))*secs#
+			Case 1: cc\HatchTimer=(3000+Rand(-600,600))*secs#
 				Interface_CreateChaoMsg("A chao was born.",51,204,255)
 			Case 2: cc\HatchTimer=(120+Rand(-10,10))*secs#
 				Interface_CreateChaoNamedMsg("has entered a cocoon.",cc\Name$,23,240,0)
@@ -585,8 +591,8 @@
 
 			Select cc\Stats\Age
 				Case 1: If Not(SHELLSUM(1)+1>=10) Then
-						obj.tObject = Object_Shell_Create(cc\Position\x#, cc\Position\y#, cc\Position\z#, cc\g\Motion\Direction#, SHELL_BOTTOM, cc\Stats\Color, False)
-						obj.tObject = Object_Shell_Create(cc\Position\x#, cc\Position\y#, cc\Position\z#, cc\g\Motion\Direction#, SHELL_TOP, cc\Stats\Color, True)
+						obj.tObject = Object_Shell_Create(cc\Position\x#, cc\Position\y#, cc\Position\z#, cc\g\Motion\Direction#, SHELL_BOTTOM, cc\Stats\Color, False, cc\Stats\Monotone, cc\Stats\Shiny, cc\Stats\Textured)
+						obj.tObject = Object_Shell_Create(cc\Position\x#, cc\Position\y#, cc\Position\z#, cc\g\Motion\Direction#, SHELL_TOP, cc\Stats\Color, True, cc\Stats\Monotone, cc\Stats\Shiny, cc\Stats\Textured)
 					Else
 						ii.tItem = Item_Create(TOTALITEMS+1, 4, SHELL_BOTTOM, cc\Stats\Color)
 						ii.tItem = Item_Create(TOTALITEMS+1, 4, SHELL_TOP, cc\Stats\Color)

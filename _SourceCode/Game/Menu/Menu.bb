@@ -211,6 +211,7 @@ Type tMenu
 	Field HeldChaoPersona
 	Field HeldChaoColor
 	Field HeldChaoShiny
+	Field HeldChaoBright
 	Field HeldChaoTextured
 	Field HeldChaoMonotone
 	Field HeldChaoShape
@@ -229,6 +230,7 @@ Type tMenu
 	Field BuddyChaoPersona
 	Field BuddyChaoColor
 	Field BuddyChaoShiny
+	Field BuddyChaoBright
 	Field BuddyChaoTextured
 	Field BuddyChaoMonotone
 	Field BuddyChaoShape
