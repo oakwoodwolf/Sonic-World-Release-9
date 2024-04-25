@@ -181,7 +181,21 @@
 		cc\Stats\ShellGrit#=4+Rand(0,10)
 		cc\Stats\Side=CHAOSIDE_NEUTRAL
 		cc\Stats\Shape=1
-		If Color=0 Then cc\Stats\Color=1 Else cc\Stats\Color=Color
+		If Color=0 Then ; undefined
+			cc\Stats\Color=1
+		Else ;defined
+			cc\Stats\Color=Color Mod CHAOCOLORS_total
+			If cc\Stats\Color=0 Then cc\Stats\Color=CHAOCOLORS_total
+		EndIf
+		If (Color>(CHAOCOLORS_total*1) And Color<=(CHAOCOLORS_total*2)) Or (Color>(CHAOCOLORS_total*3) And Color<=(CHAOCOLORS_total*4)) Then
+			cc\Stats\Monotone=1
+		EndIf
+		If (Color>(CHAOCOLORS_total*2) And Color<=(CHAOCOLORS_total*4)) Then
+			cc\Stats\Shiny=1
+		EndIf
+		If Color>(CHAOCOLORS_total*4) Then
+			cc\Stats\Textured=1
+		EndIf
 	End Function
 
 	Function Object_ChaoManager_RandomBeginPos(cc.tChaoManager, frominventory=False)

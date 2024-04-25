@@ -469,9 +469,7 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 						Case 1: Menu\Mesh[3]=LoadMesh("ChaoWorld\Fruits\"+FRUITS$(Menu\BlackMarketSellCategory)+".b3d", Game\Stage\Root)
 						Case 2: Menu\Mesh[3]=LoadMesh("ChaoWorld\Hats\"+HATS_FILE$(Menu\BlackMarketSellCategory)+".b3d", Game\Stage\Root)
 						Case 3: Menu\Mesh[3]=LoadMesh("ChaoWorld\Eggs\egg.b3d", Game\Stage\Root)
-							eggtexture=LoadTexture("ChaoWorld\Eggs\"+CHAOCOLORS$(Menu\BlackMarketSellCategory)+".png",256)
-							EntityTexture Menu\Mesh[3], eggtexture
-							FreeTexture eggtexture
+							Render_Inventory_Egg()
 						Case 4:
 							Select Menu\BlackMarketSellCategory
 							Case SHELL_BOTTOM: Menu\Mesh[3]=LoadMesh("ChaoWorld\Eggs\eggB.b3d", Game\Stage\Root)
@@ -555,9 +553,7 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 						Case 1: Menu\Mesh[3]=LoadMesh("ChaoWorld\Fruits\"+FRUITS$(Menu\BlackMarketSellCategory)+".b3d", Game\Stage\Root)
 						Case 2: Menu\Mesh[3]=LoadMesh("ChaoWorld\Hats\"+HATS_FILE$(Menu\BlackMarketSellCategory)+".b3d", Game\Stage\Root)
 						Case 3: Menu\Mesh[3]=LoadMesh("ChaoWorld\Eggs\egg.b3d", Game\Stage\Root)
-							eggtexture=LoadTexture("ChaoWorld\Eggs\"+CHAOCOLORS$(Menu\BlackMarketSellCategory)+".png",256)
-							EntityTexture Menu\Mesh[3], eggtexture
-							FreeTexture eggtexture
+							Render_Inventory_Egg()
 						Case 4:
 							Select Menu\BlackMarketSellCategory
 							Case SHELL_BOTTOM: Menu\Mesh[3]=LoadMesh("ChaoWorld\Eggs\eggB.b3d", Game\Stage\Root)
@@ -831,6 +827,23 @@ End Function
 
 Function Menu_Particle_Emblem(entity, size#=1)
 	ParticleTemplate_Call(Game\Stage\Properties\AmbientParticle, PARTICLE_MENU_EMBLEM, entity, size#)
+End Function
+
+Function Render_Inventory_Egg()
+	eggItem = Menu\BlackMarketSellCategory MOD CHAOCOLORS_total
+		If eggItem = 0 Then eggItem = CHAOCOLORS_total
+		If ((Menu\BlackMarketSellCategory<=CHAOCOLORS_total*2 And Menu\BlackMarketSellCategory>CHAOCOLORS_total) Or (Menu\BlackMarketSellCategory<=CHAOCOLORS_total*4 And Menu\BlackMarketSellCategory>CHAOCOLORS_total*3)) Then ; mono
+			DebugLog("mono " + CHAOCOLORS$(eggItem) + eggItem)
+			eggtexture=LoadTexture("ChaoWorld\Chao\"+CHAOCOLORS$((eggItem))+"\"+CHAOCOLORS$((eggItem))+".png",256)
+		ElseIf (Menu\BlackMarketSellCategory<=CHAOCOLORS_total Or (Menu\BlackMarketSellCategory<=CHAOCOLORS_total*3 And Menu\BlackMarketSellCategory>CHAOCOLORS_total*2)) ;dual-tone
+			DebugLog("dual " + CHAOCOLORS$(eggItem) + eggItem)
+			eggtexture=LoadTexture("ChaoWorld\Eggs\"+CHAOCOLORS$((eggItem))+".png",256)
+		Else ;textured/jewel
+			DebugLog("tex/jewel " + CHAOCOLORS$(eggItem))
+			eggtexture=LoadTexture("ChaoWorld\Chao\Tex\tex_"+CHAOJEWEL$((eggItem))+".png",1+64+256)								;eggtexture=LoadTexture("ChaoWorld\Chao\Tex\tex_"+CHAOJEWEL$(eggItem)+".png",1+64+256)
+		End If
+		EntityTexture Menu\Mesh[3], eggtexture
+	FreeTexture eggtexture
 End Function
 
 ;===============================================================================================================================================================
