@@ -1,6 +1,7 @@
 
 Global SaveDataPath$ = GetEnv$("AppData")+"\Sonic World\SaveData\"
 Global SaveDataFormat$ = ".dat"
+Global SaveDataFormatUnencrypted$ = ".xml"
 Global SaveDataTmp$ = SaveDataPath$+"tmp"+SaveDataFormat$
 Global CurrentOpenFile
 Global CurrentOpenFileName$
@@ -12,6 +13,7 @@ Function LoadFileWithEncryption(name$)
 	CurrentOpenFileName$=name$
 	DecryptFile(name$)
 End Function
+
 ;; Saves an encrypted file by name and encrypts it.
 ;;param name the Filename
 ;;param mainroot the body of the file to be written.
@@ -20,6 +22,16 @@ Function WriteFileWithEncryption(name$,mainroot$="savedata")
 	CurrentOpenFile=0
 	CurrentOpenFile=WriteFile(SaveDataTmp$)
 
+	WriteLine(CurrentOpenFile,"<?xml version="+Chr$(34)+"1.0"+Chr$(34)+"?>")
+	WriteLine(CurrentOpenFile,"<"+mainroot$+">")
+End Function
+;; Saves an encrypted file by name and encrypts it.
+;;param name the Filename
+;;param mainroot the body of the file to be written.
+Function WriteFileWithoutEncryption(name$,mainroot$="savedata")
+	CurrentOpenFileName$=name$
+	CurrentOpenFile=0
+	CurrentOpenFile=WriteFile(SaveDataPath$+name$+SaveDataFormatUnencrypted$)
 	WriteLine(CurrentOpenFile,"<?xml version="+Chr$(34)+"1.0"+Chr$(34)+"?>")
 	WriteLine(CurrentOpenFile,"<"+mainroot$+">")
 End Function
@@ -33,6 +45,11 @@ Function CloseWrittenFileWithEncryption(mainroot$="savedata")
 
 	CloseFile(CurrentOpenFile)
 	EncryptFile(CurrentOpenFileName$)
+	DeleteFile(SaveDataTmp$)
+End Function
+Function CloseWrittenFileWithoutEncryption(mainroot$="savedata")
+	WriteLine(CurrentOpenFile,"</"+mainroot$+">")
+	CloseFile(CurrentOpenFile)
 	DeleteFile(SaveDataTmp$)
 End Function
 

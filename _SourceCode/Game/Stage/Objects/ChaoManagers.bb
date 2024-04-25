@@ -120,6 +120,9 @@
 		Field ShellGrit#
 		Field ReviveAble
 		Field ReviveEternal
+		Field Monotone
+		Field Shiny
+		Field Textured
 		Field HeroLove#
 		Field DarkLove#
 		Field Love[2]
@@ -271,9 +274,16 @@
 				FreeTexture cc\BodyTexture
 			Default:
 				cc\Mesh = LoadAnimMesh("ChaoWorld\Chao\"+CHAOSIDES$(cc\Stats\Side)+"."+CHAOSHAPES$(cc\Stats\Shape)+".b3d", cc\Pivot)
-				cc\BodyTexture=LoadTexture("ChaoWorld\Chao\"+CHAOCOLORS$(cc\Stats\Color)+"\"+CHAOSIDES$(cc\Stats\Side)+".body."+CHAOCOLORS$(cc\Stats\Color)+"."+CHAOSHAPES$(cc\Stats\Shape)+".png",256)
+				If cc\Stats\Textured>0 Then
+				 	cc\BodyTexture=LoadTexture("ChaoWorld\Chao\"+CHAOCOLORS$(cc\Stats\Color)+"\"+CHAOCOLORS$(cc\Stats\Color)+".png",1+64+256)
+				ElseIf cc\Stats\Monotone>0 Then
+					cc\BodyTexture=LoadTexture("ChaoWorld\Chao\"+CHAOCOLORS$(cc\Stats\Color)+"\"+CHAOCOLORS$(cc\Stats\Color)+".png",256)
+				Else
+					cc\BodyTexture=LoadTexture("ChaoWorld\Chao\"+CHAOCOLORS$(cc\Stats\Color)+"\"+CHAOSIDES$(cc\Stats\Side)+".body."+CHAOCOLORS$(cc\Stats\Color)+"."+CHAOSHAPES$(cc\Stats\Shape)+".png",256)
+				EndIf
 				cc\OfficeTexture=LoadTexture("ChaoWorld\Chao\Office\"+CHAOSIDES$(cc\Stats\Side)+".office."+CHAOSHAPES$(cc\Stats\Shape)+".png",256)
-				cc\BodyGlareTexture=LoadTexture("ChaoWorld\Chao\0.blackglare2.png",1+64) : TextureBlend(cc\BodyGlareTexture,3)
+				If cc\Stats\Shiny>0 Then cc\BodyGlareTexture=LoadTexture("ChaoWorld\Chao\0.chaoref.png",1+64) Else cc\BodyGlareTexture=LoadTexture("ChaoWorld\Chao\0.blackglare2.png",1+64)
+				TextureBlend(cc\BodyGlareTexture,3)
 				cc\OfficeGlareTexture=LoadTexture("ChaoWorld\Chao\0.chaoref.png",1+64) : TextureBlend(cc\OfficeGlareTexture,3)
 
 				ApplyMeshTextureLayer(cc\Mesh, CHAOSIDES$(cc\Stats\Side)+".body.celeste.png", cc\BodyTexture)

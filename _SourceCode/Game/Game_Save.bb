@@ -723,12 +723,12 @@ End Function
 
 Function SaveGame_Chao(cc.tChaoManager)
 
-	WriteFileWithEncryption("CHAO"+cc\Number)
+	WriteFileWithoutEncryption("Chao"+cc\Number)
 
 	WriteLine(CurrentOpenFile,"<name is="+Chr$(34)+cc\Name$+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<age is="+Chr$(34)+cc\Stats\Age+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<persona is="+Chr$(34)+cc\Stats\Persona+Chr$(34)+"/>")
-	WriteLine(CurrentOpenFile,"<color is="+Chr$(34)+cc\Stats\Color+Chr$(34)+"/>")
+	WriteLine(CurrentOpenFile,"<color is="+Chr$(34)+cc\Stats\Color+Chr$(34)+" shiny="+Chr$(34)+cc\Stats\Shiny+Chr$(34)+" tex="+Chr$(34)+cc\Stats\Textured+Chr$(34)+" mono="+Chr$(34)+cc\Stats\Monotone+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<shape is="+Chr$(34)+cc\Stats\Shape+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<side is="+Chr$(34)+cc\Stats\Side+Chr$(34)+"/>")
 
@@ -762,13 +762,13 @@ Function SaveGame_Chao(cc.tChaoManager)
 
 	WriteLine(CurrentOpenFile,"<competitions won="+Chr$(34)+cc\Stats\CompetitionsWon+Chr$(34)+" lost="+Chr$(34)+cc\Stats\CompetitionsLost+Chr$(34)+"/>")
 
-	CloseWrittenFileWithEncryption()
+	CloseWrittenFileWithoutEncryption()
 
 End Function
 
 Function LoadGame_Chao(cc.tChaoManager)
 
-	LoadFileWithEncryption("CHAO"+cc\Number) : xmlin = xmlLoad(SaveDataTmp$)
+	xmlin = xmlLoad(SaveDataPath$+"Chao"+cc\Number+SaveDataFormatUnencrypted$)
 
 	For cchild = 1 To xmlNodeChildCount(xmlin)
 
@@ -778,7 +778,7 @@ Function LoadGame_Chao(cc.tChaoManager)
 		Case "name": cc\Name$ = xmlNodeAttributeValueGet(child, "is")
 		Case "age": cc\Stats\Age = xmlNodeAttributeValueGet(child, "is")
 		Case "persona": cc\Stats\Persona = xmlNodeAttributeValueGet(child, "is")
-		Case "color": cc\Stats\Color = xmlNodeAttributeValueGet(child, "is")
+		Case "color": cc\Stats\Color = xmlNodeAttributeValueGet(child, "is") : cc\Stats\Monotone = xmlNodeAttributeValueGet(child, "mono") : cc\Stats\Shiny = xmlNodeAttributeValueGet(child, "shiny") : cc\Stats\Textured = xmlNodeAttributeValueGet(child, "tex")
 		Case "shape": cc\Stats\Shape = xmlNodeAttributeValueGet(child, "is")
 		Case "side": cc\Stats\Side = xmlNodeAttributeValueGet(child, "is")
 
@@ -815,7 +815,7 @@ Function LoadGame_Chao(cc.tChaoManager)
 
 	Next
 
-	xmlNodeDelete(xmlin) : CloseLoadedFileWithEncryption()
+	xmlNodeDelete(xmlin)
 
 End Function
 
