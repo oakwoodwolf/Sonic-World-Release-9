@@ -208,7 +208,7 @@ Function Menu_BlackMarket_BuyList()
 	Select Menu\BlackMarketBuyCategory
 		Case 1: DrawRealText(FRUITS$(Menu\CurrentItem)+" "+FRUITS_TYPE$(Menu\CurrentItem), GAME_WINDOW_W/2+(105)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*2+115)*GAME_WINDOW_SCALE#, (Interface_Text_2), 0)
 		Case 2: DrawRealText(HATS$(Menu\CurrentItem), GAME_WINDOW_W/2+(105)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*2+115)*GAME_WINDOW_SCALE#, (Interface_Text_2), 0)
-		Case 3: DrawRealText(CHAOCOLORS$(Menu\CurrentItem)+" egg", GAME_WINDOW_W/2+(105)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*2+115)*GAME_WINDOW_SCALE#, (Interface_Text_2), 0)
+		Case 3: DrawRealText(CHAOEGGCOLORS$(Menu\CurrentItem)+" egg", GAME_WINDOW_W/2+(105)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*2+115)*GAME_WINDOW_SCALE#, (Interface_Text_2), 0)
 		Case 5: DrawRealText(TOYS$(Menu\CurrentItem), GAME_WINDOW_W/2+(105)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*2+115)*GAME_WINDOW_SCALE#, (Interface_Text_2), 0)
 	End Select
 	SetColor(255,255,255)
@@ -327,7 +327,7 @@ Function Menu_BlackMarket_BuyListItem(option)
 	Select Menu\BlackMarketBuyCategory
 		Case 1: DrawRealText(FRUITS$(thisitemtype), GAME_WINDOW_W/2-(BUTTON_PLACE1#-7.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(87.5-35*(option-1))*GAME_WINDOW_SCALE#, (Interface_TextButtons_1), 1)
 		Case 2: DrawRealText(HATS$(thisitemtype), GAME_WINDOW_W/2-(BUTTON_PLACE1#-7.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(87.5-35*(option-1))*GAME_WINDOW_SCALE#, (Interface_TextButtons_1), 1)
-		Case 3: DrawRealText(CHAOCOLORS$(thisitemtype)+" egg", GAME_WINDOW_W/2-(BUTTON_PLACE1#-7.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(87.5-35*(option-1))*GAME_WINDOW_SCALE#, (Interface_TextButtons_1), 1)
+		Case 3: DrawRealText(CHAOEGGCOLORS$(thisitemtype)+" egg", GAME_WINDOW_W/2-(BUTTON_PLACE1#-7.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(87.5-35*(option-1))*GAME_WINDOW_SCALE#, (Interface_TextButtons_1), 1)
 		Case 5: DrawRealText(TOYS$(thisitemtype), GAME_WINDOW_W/2-(BUTTON_PLACE1#-7.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(87.5-35*(option-1))*GAME_WINDOW_SCALE#, (Interface_TextButtons_1), 1)
 	End Select
 
@@ -479,7 +479,7 @@ Function Menu_BlackMarket_SellList()
 	Select Menu\BlackMarketBuyCategory
 		Case 1: DrawRealText(FRUITS$(Menu\BlackMarketSellCategory)+" "+FRUITS_TYPE$(Menu\CurrentItem), GAME_WINDOW_W/2+(105)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*2+115)*GAME_WINDOW_SCALE#, (Interface_Text_2), 0)
 		Case 2: DrawRealText(HATS$(Menu\BlackMarketSellCategory), GAME_WINDOW_W/2+(105)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*2+115)*GAME_WINDOW_SCALE#, (Interface_Text_2), 0)
-		Case 3: DrawRealText(CHAOCOLORS$(Menu\BlackMarketSellCategory)+" egg", GAME_WINDOW_W/2+(105)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*2+115)*GAME_WINDOW_SCALE#, (Interface_Text_2), 0)
+		Case 3: DrawRealText(CHAOEGGCOLORS$(Menu\BlackMarketSellCategory)+" egg", GAME_WINDOW_W/2+(105)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*2+115)*GAME_WINDOW_SCALE#, (Interface_Text_2), 0)
 		Case 4: DrawRealText(SHELLS$(Menu\BlackMarketSellCategory), GAME_WINDOW_W/2+(105)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*2+115)*GAME_WINDOW_SCALE#, (Interface_Text_2), 0)
 		Case 5: DrawRealText(TOYS$(Menu\BlackMarketSellCategory), GAME_WINDOW_W/2+(105)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*2+115)*GAME_WINDOW_SCALE#, (Interface_Text_2), 0)
 		Case 6: DrawRealText("Seed", GAME_WINDOW_W/2+(105)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*2+115)*GAME_WINDOW_SCALE#, (Interface_Text_2), 0)
@@ -559,7 +559,7 @@ Function Menu_BlackMarket_SellListItem(option)
 	Select Menu\BlackMarketBuyCategory
 		Case 1: DrawRealText(FRUITS$(Menu\BlackMarketSellCategory), GAME_WINDOW_W/2-(BUTTON_PLACE1#-7.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(87.5-35*(option-1))*GAME_WINDOW_SCALE#, (Interface_TextButtons_1), 1)
 		Case 2: DrawRealText(HATS$(Menu\BlackMarketSellCategory), GAME_WINDOW_W/2-(BUTTON_PLACE1#-7.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(87.5-35*(option-1))*GAME_WINDOW_SCALE#, (Interface_TextButtons_1), 1)
-		Case 3: DrawRealText(CHAOCOLORS$(Menu\BlackMarketSellCategory)+" egg", GAME_WINDOW_W/2-(BUTTON_PLACE1#-7.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(87.5-35*(option-1))*GAME_WINDOW_SCALE#, (Interface_TextButtons_1), 1)
+		Case 3: DrawRealText(CHAOEGGCOLORS$(Menu\BlackMarketSellCategory)+" egg", GAME_WINDOW_W/2-(BUTTON_PLACE1#-7.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(87.5-35*(option-1))*GAME_WINDOW_SCALE#, (Interface_TextButtons_1), 1)
 		Case 4: DrawRealText(SHELLS$(Menu\BlackMarketSellCategory), GAME_WINDOW_W/2-(BUTTON_PLACE1#-7.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(87.5-35*(option-1))*GAME_WINDOW_SCALE#, (Interface_TextButtons_1), 1)
 		Case 5: DrawRealText(TOYS$(Menu\BlackMarketSellCategory), GAME_WINDOW_W/2-(BUTTON_PLACE1#-7.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(87.5-35*(option-1))*GAME_WINDOW_SCALE#, (Interface_TextButtons_1), 1)
 		Case 6: DrawRealText("Seed", GAME_WINDOW_W/2-(BUTTON_PLACE1#-7.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(87.5-35*(option-1))*GAME_WINDOW_SCALE#, (Interface_TextButtons_1), 1)

@@ -241,7 +241,7 @@ Function Menu_Transporter_InventoryItem(option)
 	Select Menu\BlackMarketBuyCategory
 		Case 1: DrawSmartButtonT(option, FRUITS$(Menu\BlackMarketSellCategory), GAME_WINDOW_W/2+(BUTTON_PLACE1#-15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-50*(option-1))*GAME_WINDOW_SCALE#, 4, false, forcecolor)
 		Case 2: DrawSmartButtonT(option, HATS$(Menu\BlackMarketSellCategory), GAME_WINDOW_W/2+(BUTTON_PLACE1#-15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-50*(option-1))*GAME_WINDOW_SCALE#, 4, false, forcecolor)
-		Case 3: DrawSmartButtonT(option, CHAOCOLORS$(Menu\BlackMarketSellCategory)+" egg", GAME_WINDOW_W/2+(BUTTON_PLACE1#-15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-50*(option-1))*GAME_WINDOW_SCALE#, 4, false, forcecolor)
+		Case 3: DrawSmartButtonT(option, CHAOEGGCOLORS$(Menu\BlackMarketSellCategory)+" egg", GAME_WINDOW_W/2+(BUTTON_PLACE1#-15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-50*(option-1))*GAME_WINDOW_SCALE#, 4, false, forcecolor)
 		Case 4: DrawSmartButtonT(option, SHELLS$(Menu\BlackMarketSellCategory), GAME_WINDOW_W/2+(BUTTON_PLACE1#-15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-50*(option-1))*GAME_WINDOW_SCALE#, 4, false, forcecolor)
 		Case 5: DrawSmartButtonT(option, TOYS$(Menu\BlackMarketSellCategory), GAME_WINDOW_W/2+(BUTTON_PLACE1#-15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-50*(option-1))*GAME_WINDOW_SCALE#, 4, false, forcecolor)
 		Case 6: DrawSmartButtonT(option, "Seed", GAME_WINDOW_W/2+(BUTTON_PLACE1#-15)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-50*(option-1))*GAME_WINDOW_SCALE#, 4, false, forcecolor)
