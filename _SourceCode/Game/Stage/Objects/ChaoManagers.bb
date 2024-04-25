@@ -1136,6 +1136,7 @@
 					Case CHAOCOLOR_LIME:	Return CHAOCOLOR_AZURE
 					Case CHAOCOLOR_PURPLE:	Return CHAOCOLOR_PINK
 					Case CHAOCOLOR_PINK:	Return CHAOCOLOR_RED
+					Default:	Return parent1
 				End Select
 			Case CHAOCOLOR_AZURE:
 				Select parent2
@@ -1153,6 +1154,7 @@
 					Case CHAOCOLOR_LIME:	Return CHAOCOLOR_CELESTE
 					Case CHAOCOLOR_PURPLE:	Return CHAOCOLOR_RED
 					Case CHAOCOLOR_PINK:	Return CHAOCOLOR_CELESTE
+					Default:	Return parent1
 				End Select
 			Case CHAOCOLOR_BLUE:
 				Select parent2
@@ -1170,6 +1172,7 @@
 					Case CHAOCOLOR_LIME:	Return CHAOCOLOR_AZURE
 					Case CHAOCOLOR_PURPLE:	Return CHAOCOLOR_RED
 					Case CHAOCOLOR_PINK:	Return CHAOCOLOR_AZURE
+					Default:	Return parent1
 				End Select
 			Case CHAOCOLOR_WHITE:
 				Select parent2
@@ -1187,6 +1190,7 @@
 					Case CHAOCOLOR_LIME:	Return CHAOCOLOR_LIME
 					Case CHAOCOLOR_PURPLE:	Return CHAOCOLOR_PINK
 					Case CHAOCOLOR_PINK:	Return CHAOCOLOR_PINK
+					Default:	Return parent1
 				End Select
 			Case CHAOCOLOR_GREY:
 				Select parent2
@@ -1204,6 +1208,7 @@
 					Case CHAOCOLOR_LIME:	Return CHAOCOLOR_GREEN
 					Case CHAOCOLOR_PURPLE:	Return CHAOCOLOR_PINK
 					Case CHAOCOLOR_PINK:	Return CHAOCOLOR_PURPLE
+					Default:	Return parent1
 				End Select
 			Case CHAOCOLOR_BLACK:
 				Select parent2
@@ -1221,6 +1226,7 @@
 					Case CHAOCOLOR_LIME:	Return CHAOCOLOR_BLACK
 					Case CHAOCOLOR_PURPLE:	Return CHAOCOLOR_BLACK
 					Case CHAOCOLOR_PINK:	Return CHAOCOLOR_BLACK
+					Default:	Return parent1
 				End Select
 			Case CHAOCOLOR_RED:
 				Select parent2
@@ -1238,6 +1244,7 @@
 					Case CHAOCOLOR_LIME:	Return CHAOCOLOR_BROWN
 					Case CHAOCOLOR_PURPLE:	Return CHAOCOLOR_BLUE
 					Case CHAOCOLOR_PINK:	Return CHAOCOLOR_RED
+					Default:	Return parent1
 				End Select
 			Case CHAOCOLOR_ORANGE:
 				Select parent2
@@ -1255,6 +1262,7 @@
 					Case CHAOCOLOR_LIME:	Return CHAOCOLOR_YELLOW
 					Case CHAOCOLOR_PURPLE:	Return CHAOCOLOR_RED
 					Case CHAOCOLOR_PINK:	Return CHAOCOLOR_ORANGE
+					Default:	Return parent1
 				End Select
 			Case CHAOCOLOR_YELLOW:
 				Select parent2
@@ -1272,6 +1280,7 @@
 					Case CHAOCOLOR_LIME:	Return CHAOCOLOR_LIME
 					Case CHAOCOLOR_PURPLE:	Return CHAOCOLOR_PINK
 					Case CHAOCOLOR_PINK:	Return CHAOCOLOR_PINK
+					Default:	Return parent1
 				End Select
 			Case CHAOCOLOR_BROWN:
 				Select parent2
@@ -1289,6 +1298,7 @@
 					Case CHAOCOLOR_LIME:	Return CHAOCOLOR_GREEN
 					Case CHAOCOLOR_PURPLE:	Return CHAOCOLOR_PURPLE
 					Case CHAOCOLOR_PINK:	Return CHAOCOLOR_PURPLE
+					Default:	Return parent1
 				End Select
 			Case CHAOCOLOR_GREEN:
 				Select parent2
@@ -1306,6 +1316,7 @@
 					Case CHAOCOLOR_LIME:	Return CHAOCOLOR_GREEN
 					Case CHAOCOLOR_PURPLE:	Return CHAOCOLOR_PURPLE
 					Case CHAOCOLOR_PINK:	Return CHAOCOLOR_RED
+					Default:	Return parent1
 				End Select
 			Case CHAOCOLOR_LIME:
 				Select parent2
@@ -1323,6 +1334,7 @@
 					Case CHAOCOLOR_LIME:	Return CHAOCOLOR_LIME
 					Case CHAOCOLOR_PURPLE:	Return CHAOCOLOR_PINK
 					Case CHAOCOLOR_PINK:	Return CHAOCOLOR_PINK
+					Default:	Return parent1
 				End Select
 			Case CHAOCOLOR_PURPLE:
 				Select parent2
@@ -1340,6 +1352,7 @@
 					Case CHAOCOLOR_LIME:	Return CHAOCOLOR_YELLOW
 					Case CHAOCOLOR_PURPLE:	Return CHAOCOLOR_PURPLE
 					Case CHAOCOLOR_PINK:	Return CHAOCOLOR_PURPLE
+					Default:	Return parent1
 				End Select
 			Case CHAOCOLOR_PINK:
 				Select parent2
@@ -1357,6 +1370,25 @@
 					Case CHAOCOLOR_LIME:	Return CHAOCOLOR_GREEN
 					Case CHAOCOLOR_PURPLE:	Return CHAOCOLOR_PINK
 					Case CHAOCOLOR_PINK:	Return CHAOCOLOR_PINK
+					Default:	Return parent1
+				End Select
+			Default:
+				Select parent2
+					Case CHAOCOLOR_CELESTE:	Return CHAOCOLOR_AZURE
+					Case CHAOCOLOR_AZURE:	Return CHAOCOLOR_CELESTE
+					Case CHAOCOLOR_BLUE:	Return CHAOCOLOR_PURPLE
+					Case CHAOCOLOR_WHITE:	Return CHAOCOLOR_PINK
+					Case CHAOCOLOR_GREY:	Return CHAOCOLOR_GREY
+					Case CHAOCOLOR_BLACK:	Return CHAOCOLOR_BLACK
+					Case CHAOCOLOR_RED:	Return CHAOCOLOR_ORANGE
+					Case CHAOCOLOR_ORANGE:	Return CHAOCOLOR_YELLOW
+					Case CHAOCOLOR_YELLOW:	Return CHAOCOLOR_PINK
+					Case CHAOCOLOR_BROWN:	Return CHAOCOLOR_PURPLE
+					Case CHAOCOLOR_GREEN:	Return CHAOCOLOR_LIME
+					Case CHAOCOLOR_LIME:	Return CHAOCOLOR_GREEN
+					Case CHAOCOLOR_PURPLE:	Return CHAOCOLOR_PINK
+					Case CHAOCOLOR_PINK:	Return CHAOCOLOR_PINK
+					Default:	Return parent1
 				End Select
 		End Select
 	End Function
