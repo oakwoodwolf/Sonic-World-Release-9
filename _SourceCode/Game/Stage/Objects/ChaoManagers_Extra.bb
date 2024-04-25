@@ -279,12 +279,15 @@ If (Not( Menu\Stage=0)) Then
 	raceage=Menu\HeldChaoAge
 	racepersona=Menu\HeldChaoPersona
 	racecolor=Menu\HeldChaoColor
+	raceshiny=Menu\HeldChaoShiny
+	racemono=Menu\HeldChaoMonotone
+	racetex=Menu\HeldChaoTextured
 	raceshape=Menu\HeldChaoShape
 	raceside=Menu\HeldChaoSide
 	racehat=Menu\HeldChaoHat
 
 	obj.tObject = Object_Chao_Create(0, 0, 0, 0)
-	racecc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, false, 0, true, x#, y#, z#, true, raceage, racepersona, racecolor, raceshape, raceside, racehat)
+	racecc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, false, 0, true, x#, y#, z#, true, raceage, racepersona, racecolor, raceshape, raceside, racehat, racemono, raceshiny, racetex)
 
 	racecc\Stats\Run# = Menu\HeldChaoSkills[1] : racecc\Stats\CurrentRun# = Menu\HeldChaoCurrentSkills[1]
 	racecc\Stats\Swim# = Menu\HeldChaoSkills[2] : racecc\Stats\CurrentSwim# = Menu\HeldChaoCurrentSkills[2]
@@ -318,12 +321,15 @@ If (Not( Menu\Stage=0)) Then
 	raceage=Menu\BuddyChaoAge
 	racepersona=Menu\BuddyChaoPersona
 	racecolor=Menu\BuddyChaoColor
+	raceshiny=Menu\BuddyChaoShiny
+	racemono=Menu\BuddyChaoMonotone
+	racetex=Menu\BuddyChaoTextured
 	raceshape=Menu\BuddyChaoShape
 	raceside=Menu\BuddyChaoSide
 	racehat=Menu\BuddyChaoHat
 
 	obj.tObject = Object_Chao_Create(0, 0, 0, 0)
-	racecc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, false, 0, true, x#, y#, z#, true, raceage, racepersona, racecolor, raceshape, raceside, racehat)
+	racecc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, false, 0, true, x#, y#, z#, true, raceage, racepersona, racecolor, raceshape, raceside, racehat, racemono, raceshiny, racetex)
 
 	racecc\Stats\Run# = Menu\BuddyChaoSkills[1] : racecc\Stats\CurrentRun# = Menu\BuddyChaoCurrentSkills[1]
 	racecc\Stats\Swim# = Menu\BuddyChaoSkills[2] : racecc\Stats\CurrentSwim# = Menu\BuddyChaoCurrentSkills[2]
@@ -358,6 +364,9 @@ Function Object_CreateRaceChao_Random(chaonumber,x#,y#,z#)
 	raceage=Menu\HeldChaoAge
 	racepersona=ChaoManager_GiveRandomFace()
 	racecolor=Rand(1,CHAOCOLORS_total)
+	racemono=Rand(0,1)
+	racetex=Rand(0,1)
+	raceshiny=Rand(0,1)
 	If raceage>=3 Then
 		raceshape=Rand(1,5)
 		raceside=Rand(1,3)
@@ -370,7 +379,7 @@ Function Object_CreateRaceChao_Random(chaonumber,x#,y#,z#)
 	End Select
 
 	obj.tObject = Object_Chao_Create(0, 0, 0, 0)
-	racecc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, false, 0, true, x#, y#, z#, true, raceage, racepersona, racecolor, raceshape, raceside, racehat)
+	racecc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, false, 0, true, x#, y#, z#, true, raceage, racepersona, racecolor, raceshape, raceside, racehat, racemono, raceshiny, racetex)
 
 	For h=1 to 7
 		downlimit#=Menu\HeldChaoSkills[h]-5 : uplimit#=Menu\HeldChaoSkills[h]+2*Menu\Settings\StadiumDifficulty#
@@ -898,6 +907,9 @@ Function Object_CreateRandomChao(chaonumber,x#,y#,z#)
 	End Select
 	randomchaopersona=ChaoManager_GiveRandomFace()
 	randomchaocolor=Rand(1,CHAOCOLORS_total)
+	randomchaomono=Rand(0,1)
+	randomchaoshiny=Rand(0,1)
+	randomchaotex=Rand(0,1)
 	If randomchaoage>=3 Then
 		randomchaoshape=Rand(1,5)
 		randomchaoside=Rand(1,3)
@@ -910,7 +922,7 @@ Function Object_CreateRandomChao(chaonumber,x#,y#,z#)
 	End Select
 
 	obj.tObject = Object_Chao_Create(0, 0, 0, 0)
-	cc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, false, 0, true, x#, y#, z#, true, randomchaoage, randomchaopersona, randomchaocolor, randomchaoshape, randomchaoside, randomchaohat)
+	cc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, false, 0, true, x#, y#, z#, true, randomchaoage, randomchaopersona, randomchaocolor, randomchaoshape, randomchaoside, randomchaohat, randomchaomono, randomchaoshiny, randomchaotex)
 
 	For h=1 to 7
 		downlimit#=0 : uplimit#=50

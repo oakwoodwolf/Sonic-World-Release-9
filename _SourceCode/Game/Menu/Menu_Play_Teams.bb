@@ -435,8 +435,20 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 						Case 1: Menu\Mesh[3]=LoadMesh("ChaoWorld\Fruits\"+FRUITS$(Menu\CurrentItem)+".b3d", Game\Stage\Root)
 						Case 2: Menu\Mesh[3]=LoadMesh("ChaoWorld\Hats\"+HATS_FILE$(Menu\CurrentItem)+".b3d", Game\Stage\Root)
 						Case 3: Menu\Mesh[3]=LoadMesh("ChaoWorld\Eggs\egg.b3d", Game\Stage\Root)
-							eggtexture=LoadTexture("ChaoWorld\Eggs\"+CHAOCOLORS$(Menu\CurrentItem)+".png",256)
-							EntityTexture Menu\Mesh[3], eggtexture
+							eggItem = Menu\CurrentItem MOD CHAOCOLORS_total
+							If eggItem = 0 Then eggItem = 15
+							If ((Menu\CurrentItem<=CHAOCOLORS_total*2 And Menu\CurrentItem>CHAOCOLORS_total) Or (Menu\CurrentItem<=CHAOCOLORS_total*4 And Menu\CurrentItem>CHAOCOLORS_total*3)) Then ; mono
+								DebugLog("mono " + CHAOCOLORS$(eggItem) + eggItem)
+								eggtexture=LoadTexture("ChaoWorld\Chao\"+CHAOCOLORS$((eggItem))+"\"+CHAOCOLORS$((eggItem))+".png",256)
+							ElseIf (Menu\CurrentItem<=CHAOCOLORS_total Or (Menu\CurrentItem<=CHAOCOLORS_total*3 And Menu\CurrentItem>CHAOCOLORS_total*2)) ;dual-tone
+								DebugLog("dual " + CHAOCOLORS$(eggItem) + eggItem)
+								eggtexture=LoadTexture("ChaoWorld\Eggs\"+CHAOCOLORS$((eggItem))+".png",256)
+							Else ;textured/jewel
+								DebugLog("tex/jewel " + CHAOCOLORS$(eggItem))
+								eggtexture=LoadTexture("ChaoWorld\Chao\Tex\tex_"+CHAOJEWEL$((eggItem))+".png",1+64+256)								;eggtexture=LoadTexture("ChaoWorld\Chao\Tex\tex_"+CHAOJEWEL$(eggItem)+".png",1+64+256)
+							End If
+							DebugLog(eggtexture)
+							EntityTexture Menu\Mesh[3], eggtexture, 0
 							FreeTexture eggtexture
 						Case 5: Menu\Mesh[3]=LoadMesh("ChaoWorld\Toys\"+TOYS_FILE$(Menu\CurrentItem)+".b3d", Game\Stage\Root)
 					End Select
@@ -496,9 +508,16 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 					Menu\Mesh[2] = CopyEntity(MESHES(Mesh_Empty), Game\Stage\Root)
 				Else
 					Menu\Mesh[2] = LoadAnimMesh("ChaoWorld\Chao\"+CHAOSIDES$(Menu\HeldChaoSide)+"."+CHAOSHAPES$(Menu\HeldChaoShape)+".b3d", Game\Stage\Root)
-					bodytexture=LoadTexture("ChaoWorld\Chao\"+CHAOCOLORS$(Menu\HeldChaoColor)+"\"+CHAOSIDES$(Menu\HeldChaoSide)+".body."+CHAOCOLORS$(Menu\HeldChaoColor)+"."+CHAOSHAPES$(Menu\HeldChaoShape)+".png",256)
+					If Menu\HeldChaoTextured>0 Then
+				 		bodytexture=LoadTexture("ChaoWorld\Chao\Tex\tex_"+CHAOJEWEL$(Menu\HeldChaoColor)+".png",1+64+256)
+					ElseIf Menu\HeldChaoMonotone>0 Then
+						bodytexture=LoadTexture("ChaoWorld\Chao\"+CHAOCOLORS$(Menu\HeldChaoColor)+"\"+CHAOCOLORS$(Menu\HeldChaoColor)+".png",256)
+					Else
+						bodytexture=LoadTexture("ChaoWorld\Chao\"+CHAOCOLORS$(Menu\HeldChaoColor)+"\"+CHAOSIDES$(Menu\HeldChaoSide)+".body."+CHAOCOLORS$(Menu\HeldChaoColor)+"."+CHAOSHAPES$(Menu\HeldChaoShape)+".png",256)
+					EndIf
 					officetexture=LoadTexture("ChaoWorld\Chao\Office\"+CHAOSIDES$(Menu\HeldChaoSide)+".office."+CHAOSHAPES$(Menu\HeldChaoShape)+".png",256)
-					bodyglaretexture=LoadTexture("ChaoWorld\Chao\0.blackglare2.png",1+64) : TextureBlend(bodyglaretexture,3)
+					If Menu\HeldChaoShiny>0 Then bodyglaretexture=LoadTexture("ChaoWorld\Chao\0.blackglare2.Shiny.png",1+64) Else bodyglaretexture=LoadTexture("ChaoWorld\Chao\0.blackglare2.png",1+64)
+					TextureBlend(bodyglaretexture,3)
 					officeglaretexture=LoadTexture("ChaoWorld\Chao\0.chaoref.png",1+64) : TextureBlend(officeglaretexture,3)
 
 					ApplyMeshTextureLayer(Menu\Mesh[2], CHAOSIDES$(Menu\HeldChaoSide)+".body.celeste.png", bodytexture)

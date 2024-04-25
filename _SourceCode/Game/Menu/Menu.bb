@@ -210,6 +210,9 @@ Type tMenu
 	Field HeldChaoAge
 	Field HeldChaoPersona
 	Field HeldChaoColor
+	Field HeldChaoShiny
+	Field HeldChaoTextured
+	Field HeldChaoMonotone
 	Field HeldChaoShape
 	Field HeldChaoSide
 	Field HeldChaoSkills[7]
@@ -225,6 +228,9 @@ Type tMenu
 	Field BuddyChaoAge
 	Field BuddyChaoPersona
 	Field BuddyChaoColor
+	Field BuddyChaoShiny
+	Field BuddyChaoTextured
+	Field BuddyChaoMonotone
 	Field BuddyChaoShape
 	Field BuddyChaoSide
 	Field BuddyChaoSkills[7]

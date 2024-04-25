@@ -232,7 +232,7 @@
 		ChaoManager_RemoveBoostedSkills(cc)
 	End Function
 	
-	Function Object_ChaoManager_Create.tChaoManager(number, o.tObject, born=False, color=0, takepos=False, x#=0, y#=0, z#=0, forcechao=False, forceage=0, forcepersona=0, forcecolor=0, forceshape=0, forceside=0, forcehat=0)
+	Function Object_ChaoManager_Create.tChaoManager(number, o.tObject, born=False, color=0, takepos=False, x#=0, y#=0, z#=0, forcechao=False, forceage=0, forcepersona=0, forcecolor=0, forceshape=0, forceside=0, forcehat=0, forcemono=0, forceshiny=0, forcetex=0)
 	
 		cc.tChaoManager = New tChaoManager
 		cc\Number=number
@@ -252,6 +252,9 @@
 			cc\Stats\Age=forceage
 			cc\Stats\Persona=forcepersona
 			cc\Stats\Color=forcecolor
+			cc\Stats\Monotone=forcemono
+			cc\Stats\Shiny=forceshiny
+			cc\Stats\Textured=forcetex
 			cc\Stats\Shape=forceshape
 			cc\Stats\Side=forceside
 			cc\Stats\Hat=forcehat
@@ -269,20 +272,26 @@
 			Case 0:
 				cc\Mesh = LoadAnimMesh("ChaoWorld\Eggs\egg.b3d", cc\Pivot)
 				ExtractAnimSeq(cc\Mesh,1,9)
-				cc\BodyTexture=LoadTexture("ChaoWorld\Eggs\"+CHAOCOLORS$(cc\Stats\Color)+".png",256)
+				If cc\Stats\Textured>0 Then
+				 	cc\BodyTexture=LoadTexture("ChaoWorld\Chao\Tex\tex_"+CHAOJEWEL$(cc\Stats\Color)+".png",1+64+256)
+				ElseIf cc\Stats\Monotone>0 Then
+					cc\BodyTexture=LoadTexture("ChaoWorld\Chao\"+CHAOCOLORS$(cc\Stats\Color)+"\"+CHAOCOLORS$(cc\Stats\Color)+".png",256)
+				Else
+					cc\BodyTexture=LoadTexture("ChaoWorld\Eggs\"+CHAOCOLORS$(cc\Stats\Color)+".png",256)
+				EndIf
 				EntityTexture cc\Mesh, cc\BodyTexture
 				FreeTexture cc\BodyTexture
 			Default:
 				cc\Mesh = LoadAnimMesh("ChaoWorld\Chao\"+CHAOSIDES$(cc\Stats\Side)+"."+CHAOSHAPES$(cc\Stats\Shape)+".b3d", cc\Pivot)
 				If cc\Stats\Textured>0 Then
-				 	cc\BodyTexture=LoadTexture("ChaoWorld\Chao\"+CHAOCOLORS$(cc\Stats\Color)+"\"+CHAOCOLORS$(cc\Stats\Color)+".png",1+64+256)
+				 	cc\BodyTexture=LoadTexture("ChaoWorld\Chao\Tex\tex_"+CHAOJEWEL$(cc\Stats\Color)+".png",1+64+256)
 				ElseIf cc\Stats\Monotone>0 Then
 					cc\BodyTexture=LoadTexture("ChaoWorld\Chao\"+CHAOCOLORS$(cc\Stats\Color)+"\"+CHAOCOLORS$(cc\Stats\Color)+".png",256)
 				Else
 					cc\BodyTexture=LoadTexture("ChaoWorld\Chao\"+CHAOCOLORS$(cc\Stats\Color)+"\"+CHAOSIDES$(cc\Stats\Side)+".body."+CHAOCOLORS$(cc\Stats\Color)+"."+CHAOSHAPES$(cc\Stats\Shape)+".png",256)
 				EndIf
 				cc\OfficeTexture=LoadTexture("ChaoWorld\Chao\Office\"+CHAOSIDES$(cc\Stats\Side)+".office."+CHAOSHAPES$(cc\Stats\Shape)+".png",256)
-				If cc\Stats\Shiny>0 Then cc\BodyGlareTexture=LoadTexture("ChaoWorld\Chao\0.chaoref.png",1+64) Else cc\BodyGlareTexture=LoadTexture("ChaoWorld\Chao\0.blackglare2.png",1+64)
+				If cc\Stats\Shiny>0 Then cc\BodyGlareTexture=LoadTexture("ChaoWorld\Chao\0.blackglare2.Shiny.png",1+64) Else cc\BodyGlareTexture=LoadTexture("ChaoWorld\Chao\0.blackglare2.png",1+64)
 				TextureBlend(cc\BodyGlareTexture,3)
 				cc\OfficeGlareTexture=LoadTexture("ChaoWorld\Chao\0.chaoref.png",1+64) : TextureBlend(cc\OfficeGlareTexture,3)
 

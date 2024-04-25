@@ -591,7 +591,7 @@
 		If Menu\ChaoGarden=1 Then
 			If Not(Menu\BlackMarketRandomizerTimer>0) Then
 				RandomizeDealersInventory()
-				Menu\BlackMarketRandomizerTimer=600*secs#
+				Menu\BlackMarketRandomizerTimer=300*secs#
 			Else
 				Menu\BlackMarketRandomizerTimer=Menu\BlackMarketRandomizerTimer-timervalue#
 			EndIf

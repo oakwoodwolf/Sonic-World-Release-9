@@ -841,8 +841,8 @@ End Function
 
 Function LoadGame_MenuChao(number, buddy=0)
 
-	LoadFileWithEncryption("CHAO"+number) : xmlin = xmlLoad(SaveDataTmp$)
-
+	;LoadFileWithEncryption("CHAO"+number) : xmlin = xmlLoad(SaveDataTmp$)
+	xmlin = xmlLoad(SaveDataPath$+"Chao"+number+SaveDataFormatUnencrypted$)
 	For cchild = 1 To xmlNodeChildCount(xmlin)
 
 	child = xmlNodeChild(xmlin, cchild)
@@ -851,7 +851,7 @@ Function LoadGame_MenuChao(number, buddy=0)
 			Case "name": Menu\HeldChaoName$ = xmlNodeAttributeValueGet(child, "is")
 			Case "age": Menu\HeldChaoAge = xmlNodeAttributeValueGet(child, "is")
 			Case "persona": Menu\HeldChaoPersona = xmlNodeAttributeValueGet(child, "is")
-			Case "color": Menu\HeldChaoColor = xmlNodeAttributeValueGet(child, "is")
+			Case "color": Menu\HeldChaoColor = xmlNodeAttributeValueGet(child, "is")  : Menu\HeldChaoMonotone = xmlNodeAttributeValueGet(child, "mono") : Menu\HeldChaoShiny = xmlNodeAttributeValueGet(child, "shiny") : Menu\HeldChaoTextured = xmlNodeAttributeValueGet(child, "tex")
 			Case "shape": Menu\HeldChaoShape = xmlNodeAttributeValueGet(child, "is")
 			Case "side": Menu\HeldChaoSide = xmlNodeAttributeValueGet(child, "is")
 
@@ -874,7 +874,7 @@ Function LoadGame_MenuChao(number, buddy=0)
 			Case "name": Menu\BuddyChaoName$ = xmlNodeAttributeValueGet(child, "is")
 			Case "age": Menu\BuddyChaoAge = xmlNodeAttributeValueGet(child, "is")
 			Case "persona": Menu\BuddyChaoPersona = xmlNodeAttributeValueGet(child, "is")
-			Case "color": Menu\BuddyChaoColor = xmlNodeAttributeValueGet(child, "is")
+			Case "color": Menu\BuddyChaoColor = xmlNodeAttributeValueGet(child, "is") : Menu\BuddyChaoMonotone = xmlNodeAttributeValueGet(child, "mono") : Menu\BuddyChaoShiny = xmlNodeAttributeValueGet(child, "shiny") : Menu\BuddyChaoTextured = xmlNodeAttributeValueGet(child, "tex")
 			Case "shape": Menu\BuddyChaoShape = xmlNodeAttributeValueGet(child, "is")
 			Case "side": Menu\BuddyChaoSide = xmlNodeAttributeValueGet(child, "is")
 
@@ -895,7 +895,7 @@ Function LoadGame_MenuChao(number, buddy=0)
 	End If
 	Next
 
-	xmlNodeDelete(xmlin) : CloseLoadedFileWithEncryption()
+	xmlNodeDelete(xmlin) ;: CloseLoadedFileWithEncryption()
 
 End Function
 
