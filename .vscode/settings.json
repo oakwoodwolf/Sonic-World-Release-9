@@ -1,4 +1,21 @@
 {
+    "launch": {
+        "configurations": [
+            {
+                "type": "blitz3d",
+                "request": "launch",
+                "name": "Debug Blitz program",
+                "bbfile": "Sonic World.bb"
+            },
+        {
+            "type": "blitz3d",
+            "request": "build",
+            "name": "Build blitz Program",
+            "bbfile": "Sonic World.bb",
+            "outfile": "Sonic World DX VSCODE.exe"
+        }
+        ]
+    },
     "blitz3d.outline.ParametersInOutline": true,
     "blitz3d.compilation.AutoCompilation": "Both"
 }

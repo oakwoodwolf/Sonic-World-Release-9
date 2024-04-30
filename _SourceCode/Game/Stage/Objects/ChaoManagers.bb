@@ -923,7 +923,7 @@
 		End Select
 
 		; Level up
-		If instage =1 Then gainamount = Rand(1,5) Else gainamount = 1
+		If instage =0 Then gainamount = Rand(1,5) Else gainamount = 1
 		If gainedstat>10 Then gainedstat=gainedstat/10 : gainamount = gainamount+5
 
 		For i=1 To gainamount

@@ -793,6 +793,12 @@ Function Menu_CharacterMeshOnScreen(d.tDeltaTime)
 					If Menu\OptionOrder2<3 Then
 						PositionEntity(Menu\Mesh[2],+0.4,CARD_PLACE#/100,0)
 						Menu_CharacterMeshOnScreen_RotateControl_Chao()
+						Menu\MeshChaoEmoActivated=2
+						Menu\MeshChaoEmo\Emotion=CHAOEMO_sad
+						
+						If Menu\OptionOrder2=2 Then
+							Menu\MeshChaoEmo\Emotion=CHAOEMO_scared
+						EndIf
 					Else
 						PositionEntity(Menu\Mesh[2],0,5,0)
 					EndIf
