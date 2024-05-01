@@ -378,6 +378,10 @@
 	Global Sound_ChaoMating			= cm : cm=cm+1
 	Global Sound_ChaoNeutralEvo		= cm : cm=cm+1
 	Global Sound_ChaoReincarnation		= cm : cm=cm+1
+	Global Sound_ChaoLevelUp			= cm : cm=cm+1
+	Global Sound_ChaoStatup			= cm : cm=cm+1
+	Global Sound_ChaoStatus			= cm : cm=cm+1
+	Global Sound_ChaoSwim			= cm : cm=cm+1
 
 	Global Sound_Whistle			= cm : cm=cm+1
 

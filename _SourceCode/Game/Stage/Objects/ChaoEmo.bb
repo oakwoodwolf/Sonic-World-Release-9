@@ -78,7 +78,9 @@
 		Global CHAOEMO_face_eye7	= 7
 		Global CHAOEMO_face_eye8	= 8
 		Global CHAOEMO_face_eye9	= 9
+		Global CHAOEMO_face_eye10	= 10
 
+		Global CHAOEMO_mouth_none	= 0
 		Global CHAOEMO_mouth_happy	= 1
 		Global CHAOEMO_mouth_sad	= 2
 		Global CHAOEMO_mouth_surprised	= 3
@@ -151,7 +153,7 @@
 				ce\FaceEmo=CHAOEMO_face_eye1
 				Select ce\Side
 				Case CHAOSIDE_DARK: ce\MouthEmo=CHAOEMO_mouth_wicked
-				Default: ce\MouthEmo=CHAOEMO_mouth_happy
+				Default: ce\MouthEmo=CHAOEMO_mouth_none
 				End Select
 				ce\OfficeEmo=CHAOEMO_office_default
 			Case CHAOEMO_happy:
@@ -167,7 +169,7 @@
 				ce\MouthEmo=CHAOEMO_mouth_shocked
 				ce\OfficeEmo=CHAOEMO_office_question
 			Case CHAOEMO_scared:
-				ce\FaceEmo=CHAOEMO_face_eye5
+				ce\FaceEmo=CHAOEMO_face_eye10
 				ce\MouthEmo=CHAOEMO_mouth_worried
 				ce\OfficeEmo=CHAOEMO_office_exclamation
 			Case CHAOEMO_surprised:
@@ -187,7 +189,7 @@
 				ce\MouthEmo=CHAOEMO_mouth_worried
 				ce\OfficeEmo=CHAOEMO_office_default
 			Case CHAOEMO_shocked:
-				ce\FaceEmo=CHAOEMO_face_eye1
+				ce\FaceEmo=CHAOEMO_face_eye10
 				ce\MouthEmo=CHAOEMO_mouth_shocked
 				ce\OfficeEmo=CHAOEMO_office_default
 			Case CHAOEMO_thrilled:
@@ -211,7 +213,7 @@
 				ce\MouthEmo=CHAOEMO_mouth_wicked
 				ce\OfficeEmo=CHAOEMO_office_exclamation
 			Case CHAOEMO_flirty:
-				ce\FaceEmo=CHAOEMO_face_eye3
+				ce\FaceEmo=CHAOEMO_face_eye9
 				ce\MouthEmo=CHAOEMO_mouth_surprised
 				ce\OfficeEmo=CHAOEMO_office_heart
 			Case CHAOEMO_curious:
@@ -265,6 +267,15 @@
 		EndIf
 
 		Select ce\MouthEmo
+			Case CHAOEMO_mouth_none:
+				ScaleEntity ce\Objects\happy,		0,0,0
+				ScaleEntity ce\Objects\sad,			0,0,0
+				ScaleEntity ce\Objects\surprised,	0,0,0
+				ScaleEntity ce\Objects\worried,		0,0,0
+				ScaleEntity ce\Objects\shocked,		0,0,0
+				ScaleEntity ce\Objects\thrilled,	0,0,0
+				ScaleEntity ce\Objects\joyful,		0,0,0
+				ScaleEntity ce\Objects\wicked,		0,0,0
 			Case CHAOEMO_mouth_happy:
 				ScaleEntity ce\Objects\happy,		1,1,1
 				ScaleEntity ce\Objects\sad,		0,0,0

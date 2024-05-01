@@ -381,13 +381,13 @@ Function Menu_Transporter_Name()
 
 	DrawSmartButtonT(1, "Backspace", GAME_WINDOW_W/2+(BUTTON_PLACE1#+180)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+15*GAME_WINDOW_SCALE#, 3)
 	DrawSmartButtonT(2, "Done", GAME_WINDOW_W/2+(BUTTON_PLACE1#+180)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+65*GAME_WINDOW_SCALE#, 3)
-
+	DrawSmartButtonT(3, "Pick for Me", GAME_WINDOW_W/2+(BUTTON_PLACE1#+180)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+115*GAME_WINDOW_SCALE#, 3)
 	Menu_Transporter_NameBox(GAME_WINDOW_W/2+(BUTTON_PLACE1#+117.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-70*GAME_WINDOW_SCALE#, 10, 2, 27.5/2)
 
 	If Input\Pressed\Right Then
 		PlaySmartSound(Sound_MenuMove)
 		Select Menu\Option
-			Case 1,2: Menu\Option=10
+			Case 1,2,3: Menu\Option=10
 			Case 19,29,39,49,59,69,79: Menu\Option=1
 			Default: Menu\Option=Menu\Option+1
 		End Select
@@ -396,7 +396,7 @@ Function Menu_Transporter_Name()
 	If Input\Pressed\Left Then
 		PlaySmartSound(Sound_MenuMove)
 		Select Menu\Option
-			Case 1,2: Menu\Option=19
+			Case 1,2,3: Menu\Option=19
 			Case 10,20,30,40,50,60,70: Menu\Option=1
 			Default: Menu\Option=Menu\Option-1
 		End Select
@@ -405,8 +405,9 @@ Function Menu_Transporter_Name()
 	If Input\Pressed\Up Then
 		PlaySmartSound(Sound_MenuMove)
 		Select Menu\Option
-			Case 1: Menu\Option=2
+			Case 1: Menu\Option=3
 			Case 2: Menu\Option=1
+			Case 3: Menu\Option=2
 			Default: Menu\Option=Menu\Option-10 : If Menu\Option<10 Then Menu\Option=Menu\Option+70
 		End Select
 	EndIf
@@ -415,7 +416,8 @@ Function Menu_Transporter_Name()
 		PlaySmartSound(Sound_MenuMove)
 		Select Menu\Option
 			Case 1: Menu\Option=2
-			Case 2: Menu\Option=1
+			Case 2: Menu\Option=3
+			Case 3: Menu\Option=1
 			Default: Menu\Option=Menu\Option+10 : If Menu\Option>79 Then Menu\Option=Menu\Option-70
 		End Select
 	EndIf
@@ -432,6 +434,9 @@ Function Menu_Transporter_Name()
 				Menu\Transition=1
 				Menu\NewOption=1
 				Menu\NewMenu2=0
+			Case 3:
+				PlaySmartSound(Sound_MenuAccept)
+				Menu\NewChaoName$= RandomChaoName()
 			Default:
 				If Len(Menu\NewChaoName$)<20 Then
 					PlaySmartSound(Sound_MenuAccept)
@@ -807,23 +812,23 @@ Function Menu_Transporter_Difficulty()
 
 	Menu\Background2=5
 
-	DrawRealText("Choose the power of your opponents.", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-137.5+17.5)*GAME_WINDOW_SCALE#, (Interface_Text_2), 1)
-	DrawSmartButtonT(1, "Level 1", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-100+10)*GAME_WINDOW_SCALE#, 5)
-	DrawSmartButtonT(2, "Level 2", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-50+10)*GAME_WINDOW_SCALE#, 5)
-	DrawSmartButtonT(3, "Level 3", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-0+10)*GAME_WINDOW_SCALE#, 5)
-	DrawSmartButtonT(4, "Level 4", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(50+10)*GAME_WINDOW_SCALE#, 5)
-	DrawSmartButtonT(5, "Level 5", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(100+10)*GAME_WINDOW_SCALE#, 5)
-
+	DrawRealText("Choose the power of your opponents.", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-162.5+17.5)*GAME_WINDOW_SCALE#, (Interface_Text_2), 1)
+	DrawSmartButtonT(1, "Level 1", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-125+10)*GAME_WINDOW_SCALE#, 5)
+	DrawSmartButtonT(2, "Level 2", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-75+10)*GAME_WINDOW_SCALE#, 5)
+	DrawSmartButtonT(3, "Level 3", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(-25+10)*GAME_WINDOW_SCALE#, 5)
+	DrawSmartButtonT(4, "Level 4", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(25+10)*GAME_WINDOW_SCALE#, 5)
+	DrawSmartButtonT(5, "Level 5", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(75+10)*GAME_WINDOW_SCALE#, 5)
+	DrawSmartButtonT(6, "Challenge", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(125+10)*GAME_WINDOW_SCALE#, 5)
 	If Input\Pressed\Down Then
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option+1
-		If Menu\Option>5 Then Menu\Option=1
+		If Menu\Option>6 Then Menu\Option=1
 	EndIf
 
 	If Input\Pressed\Up Then
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option-1
-		If Menu\Option<1 Then Menu\Option=5
+		If Menu\Option<1 Then Menu\Option=6
 	EndIf
 
 	If Input\Pressed\ActionJump Or Input\Pressed\Start Then

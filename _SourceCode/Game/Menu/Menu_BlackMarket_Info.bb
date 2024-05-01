@@ -8,7 +8,7 @@
 	End Type
 	Global TOTALITEMS
 
-	Function Item_Create.tItem(id#, type1#, type2#, type3#, isheld=false)
+	Function Item_Create.tItem(id#, type1#, type2#, type3#, isheld=False)
 		ii.tItem = New tItem
 		TOTALITEMS=TOTALITEMS+1
 		ii\ID=id#
@@ -53,12 +53,14 @@
 ;--------------------------------------------------------------------------------------------------------------------------
 
 Function GetShallExplodeInventory()
-	foundsomething=false
+	foundsomething=False
 	For cii.tCarriedItem=Each tCarriedItem
-		foundsomething=true
+
+		foundsomething=True
 	Next
 	For ii.tItem=Each tItem
-		If ii\IsHeld Then foundsomething=true
+
+		If ii\IsHeld Then foundsomething=True
 	Next
 	Game\Interface\ShallExplodeInventory=foundsomething
 End Function
@@ -69,11 +71,11 @@ End Function
 ;--------------------------------------------------------------------------------------------------------------------------
 
 	Dim ITEM_MAX(6)
-	ITEM_MAX(1)=51
-	ITEM_MAX(2)=64
+	ITEM_MAX(1)=52
+	ITEM_MAX(2)=88
 	ITEM_MAX(3)=74
 	ITEM_MAX(4)=2
-	ITEM_MAX(5)=13
+	ITEM_MAX(5)=15
 	ITEM_MAX(6)=1
 
 ;--------------------------------------------------------------------------------------------------------------------------
@@ -94,16 +96,16 @@ End Function
 		ITEM_AVAILABLE_HATS(1) = 1
 		ITEM_AVAILABLE_TOYS(1) = 1
 		Repeat
-			For i=5 to ITEM_MAX(1) : ITEM_AVAILABLE_FRUITS(i) = Rand(0,1) : Next
+			For i=5 To ITEM_MAX(1) : ITEM_AVAILABLE_FRUITS(i) = Rand(0,1) : Next
 		Until(CountDealersInventory(1)>=4)
 		Repeat
-			For i=2 to ITEM_MAX(2) : ITEM_AVAILABLE_HATS(i) = Rand(0,1) : Next
+			For i=2 To ITEM_MAX(2) : ITEM_AVAILABLE_HATS(i) = Rand(0,1) : Next
 		Until(CountDealersInventory(2)>=4)
 		Repeat
-			For i=1 to CHAOCOLORS_total : ITEM_AVAILABLE_EGGS(i) = Rand(1,11) : Next
+			For i=1 To CHAOCOLORS_total : ITEM_AVAILABLE_EGGS(i) = Rand(1,11) : Next
 		Until(CountDealersInventory(3)>=4)
 		Repeat
-			For i=2 to ITEM_MAX(5) : ITEM_AVAILABLE_TOYS(i) = Rand(0,1) : Next
+			For i=2 To ITEM_MAX(5) : ITEM_AVAILABLE_TOYS(i) = Rand(0,1) : Next
 		Until(CountDealersInventory(4)>=4)
 	End Function
 
@@ -111,19 +113,19 @@ End Function
 		j=0
 		Select mode
 			Case 1:
-				For i=1 to ITEM_MAX(1)
+				For i=1 To ITEM_MAX(1)
 					If ITEM_AVAILABLE_FRUITS(i)=1 Then j=j+1
 				Next
 			Case 2:
-				For i=1 to ITEM_MAX(2)
+				For i=1 To ITEM_MAX(2)
 					If ITEM_AVAILABLE_HATS(i)=1 Then j=j+1
 				Next
 			Case 3:
-				For i=1 to CHAOCOLORS_total
+				For i=1 To CHAOCOLORS_total
 					If ITEM_AVAILABLE_EGGS(i)>0 Then j=j+1
 				Next
 			Case 4:
-				For i=1 to ITEM_MAX(5)
+				For i=1 To ITEM_MAX(5)
 					If ITEM_AVAILABLE_TOYS(i)=1 Then j=j+1
 				Next
 		End Select
@@ -152,15 +154,15 @@ End Function
 
 		Select mode
 			Case 1:
-				For i=1 to ITEM_MAX(mode)
+				For i=1 To ITEM_MAX(mode)
 					If ITEM_AVAILABLE_FRUITS(i)=1 Then dii.tDealerItem = DealerItem_Create(TOTALDEALERITEMS+1, i)
 				Next
 			Case 2:
-				For i=1 to ITEM_MAX(mode)
+				For i=1 To ITEM_MAX(mode)
 					If ITEM_AVAILABLE_HATS(i)=1 Then dii.tDealerItem = DealerItem_Create(TOTALDEALERITEMS+1, i)
 				Next
 			Case 3:
-				For i=1 to CHAOCOLORS_total
+				For i=1 To CHAOCOLORS_total
 					DebugLog(ITEM_AVAILABLE_EGGS(i))
 					Select ITEM_AVAILABLE_EGGS(i):
 						Case 3,4,5: dii.tDealerItem = DealerItem_Create(TOTALDEALERITEMS+1, i+(CHAOCOLORS_total*1))
@@ -172,7 +174,7 @@ End Function
 					
 				Next
 			Case 5:
-				For i=1 to ITEM_MAX(mode)
+				For i=1 To ITEM_MAX(mode)
 					If ITEM_AVAILABLE_TOYS(i)=1 Then dii.tDealerItem = DealerItem_Create(TOTALDEALERITEMS+1, i)
 				Next
 		End Select
@@ -469,6 +471,7 @@ End Function
 	Global FRUIT_CHOCOLATE	= fm : fm=fm+1
 	Global FRUIT_PIE	= fm : fm=fm+1
 	Global FRUIT_GOLDEN	= fm : fm=fm+1
+	Global FRUIT_BRIGHT	= fm : fm=fm+1
 
 	Dim FRUITS$(ITEM_MAX(1))
 	FRUITS$(FRUIT_ROUND)		= "Round"
@@ -522,6 +525,7 @@ End Function
 	FRUITS$(FRUIT_CHOCOLATE)	= "Chocolate"
 	FRUITS$(FRUIT_PIE)		= "Pie"
 	FRUITS$(FRUIT_GOLDEN)		= "Golden"
+	FRUITS$(FRUIT_BRIGHT)		= "Bright"
 
 	Dim FRUITS_TYPE$(ITEM_MAX(1))
 	FRUITS_TYPE$(FRUIT_ROUND)	= "fruit"
@@ -575,6 +579,7 @@ End Function
 	FRUITS_TYPE$(FRUIT_CHOCOLATE)	= "bar"
 	FRUITS_TYPE$(FRUIT_PIE)		= "cake"
 	FRUITS_TYPE$(FRUIT_GOLDEN)	= "fruit"
+	FRUITS_TYPE$(FRUIT_BRIGHT)	= "fruit"
 
 ;--------------------------------------------------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------------
@@ -659,6 +664,30 @@ End Function
 	Global HAT_HEADBAND_2	= fm : fm=fm+1
 	Global HAT_HEADBAND_3	= fm : fm=fm+1
 	Global HAT_HEADBAND_4	= fm : fm=fm+1
+	Global HAT_HOOD_0	= fm : fm=fm+1
+	Global HAT_HOOD_1	= fm : fm=fm+1
+	Global HAT_PUMPKIN_0	= fm : fm=fm+1
+	Global HAT_TURBAN_0	= fm : fm=fm+1
+	Global HAT_EGGMAN_0	= fm : fm=fm+1
+	Global HAT_EGGMAN_1	= fm : fm=fm+1
+	Global HAT_SONICMAN_0	= fm : fm=fm+1
+	Global HAT_SONICMAN_1	= fm : fm=fm+1
+	Global HAT_PRINCIPAL_0	= fm : fm=fm+1
+	Global HAT_PRINCIPAL_1	= fm : fm=fm+1
+	Global HAT_PRINCIPAL_2	= fm : fm=fm+1
+	Global HAT_DEALER_0	= fm : fm=fm+1
+	Global HAT_DEALER_1	= fm : fm=fm+1
+	Global HAT_SNORKEL_0	= fm : fm=fm+1
+	Global HAT_GOHAN_0	= fm : fm=fm+1
+	Global HAT_GOHAN_1	= fm : fm=fm+1
+	Global HAT_GOHAN_2	= fm : fm=fm+1
+	Global HAT_GOHAN_3	= fm : fm=fm+1
+	Global HAT_GOHAN_4	= fm : fm=fm+1
+	Global HAT_GOHAN_5	= fm : fm=fm+1
+	Global HAT_GOHAN_6	= fm : fm=fm+1
+	Global HAT_KNIGHT_0	= fm : fm=fm+1
+	Global HAT_KNIGHT_1	= fm : fm=fm+1
+	Global HAT_KNIGHT_2	= fm : fm=fm+1
 
 	Dim HATS$(ITEM_MAX(2))
 	HATS$(HAT_CAT_0)	= "Cat ears"
@@ -725,6 +754,31 @@ End Function
 	HATS$(HAT_HEADBAND_2)	= "Headband"
 	HATS$(HAT_HEADBAND_3)	= "Headband"
 	HATS$(HAT_HEADBAND_4)	= "Headband"
+	HATS$(HAT_HOOD_0)	= "Snow Parka"
+	HATS$(HAT_HOOD_1)	= "Snow Parka"
+	HATS$(HAT_PUMPKIN_0)	= "Pumpkin"
+	HATS$(HAT_TURBAN_0)	= "Turban"
+	HATS$(HAT_EGGMAN_0)	= "Eggman Glasses"
+	HATS$(HAT_EGGMAN_1)	= "Eggman Cosplay"
+	HATS$(HAT_SONICMAN_0)	= "SonicMan Helmet"
+	HATS$(HAT_SONICMAN_1)	= "SonicMan Helmet"
+	HATS$(HAT_PRINCIPAL_0)	= "Principal Cosplay"
+	HATS$(HAT_PRINCIPAL_1)	= "Principal's Beard"
+	HATS$(HAT_PRINCIPAL_2)	= "Principal's Specs"
+	HATS$(HAT_DEALER_0)	= "Dealer's Cosplay"
+	HATS$(HAT_DEALER_1)	= "Face Covering"
+	HATS$(HAT_SNORKEL_0)	= "Snorkel"
+	HATS$(HAT_GOHAN_0)	= "Emerald Hat"
+	HATS$(HAT_GOHAN_1)	= "Emerald Hat"
+	HATS$(HAT_GOHAN_2)	= "Emerald Hat"
+	HATS$(HAT_GOHAN_3)	= "Emerald Hat"
+	HATS$(HAT_GOHAN_4)	= "Emerald Hat"
+	HATS$(HAT_GOHAN_5)	= "Emerald Hat"
+	HATS$(HAT_GOHAN_6)	= "Emerald Hat"
+	HATS$(HAT_KNIGHT_0)	= "Helmet"
+	HATS$(HAT_KNIGHT_1)	= "Helmet"
+	HATS$(HAT_KNIGHT_2)	= "Helmet"
+
 
 	Dim HATS_FILE$(ITEM_MAX(2))
 	HATS_FILE$(HAT_CAT_0)		= "CatEars0"
@@ -791,6 +845,30 @@ End Function
 	HATS_FILE$(HAT_HEADBAND_2)	= "Headband2"
 	HATS_FILE$(HAT_HEADBAND_3)	= "Headband3"
 	HATS_FILE$(HAT_HEADBAND_4)	= "Headband4"
+	HATS_FILE$(HAT_HOOD_0)	= "Hood0"
+	HATS_FILE$(HAT_HOOD_1)	= "Hood1"
+	HATS_FILE$(HAT_TURBAN_0)	= "Turban0"
+	HATS_FILE$(HAT_PUMPKIN_0)	= "Pumpkin0"
+	HATS_FILE$(HAT_EGGMAN_0)	= "EggGlasses0"
+	HATS_FILE$(HAT_EGGMAN_1)	= "EggGlasses1"
+	HATS_FILE$(HAT_SONICMAN_0)	= "Sonicman0"
+	HATS_FILE$(HAT_SONICMAN_1)	= "Sonicman1"
+	HATS_FILE$(HAT_PRINCIPAL_0)	= "Principal0"
+	HATS_FILE$(HAT_PRINCIPAL_1)	= "Principal1"
+	HATS_FILE$(HAT_PRINCIPAL_2)	= "Principal2"
+	HATS_FILE$(HAT_DEALER_0)	= "Dealer0"
+	HATS_FILE$(HAT_DEALER_1)	= "Dealer1"
+	HATS_FILE$(HAT_SNORKEL_0)	= "Snorkel0"
+	HATS_FILE$(HAT_GOHAN_0)	= "Gohan0"
+	HATS_FILE$(HAT_GOHAN_1)	= "Gohan1"
+	HATS_FILE$(HAT_GOHAN_2)	= "Gohan2"
+	HATS_FILE$(HAT_GOHAN_3)	= "Gohan3"
+	HATS_FILE$(HAT_GOHAN_4)	= "Gohan4"
+	HATS_FILE$(HAT_GOHAN_5)	= "Gohan5"
+	HATS_FILE$(HAT_GOHAN_6)	= "Gohan6"
+	HATS_FILE$(HAT_KNIGHT_0)	= "Knight0"
+	HATS_FILE$(HAT_KNIGHT_1)	= "Knight1"
+	HATS_FILE$(HAT_KNIGHT_2)	= "Knight2"
 
 ;--------------------------------------------------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------------
@@ -811,6 +889,9 @@ End Function
 	Global TOY_RATTLE	= fm : fm=fm+1
 	Global TOY_TOYCAR	= fm : fm=fm+1
 	Global TOY_PILLOW	= fm : fm=fm+1
+	Global TOY_SNOOT0	= fm : fm=fm+1
+	Global TOY_TV	= fm : fm=fm+1
+
 
 	Dim TOYS$(ITEM_MAX(5))
 	TOYS$(TOY_BEACHBALL)	= "Beach ball"
@@ -826,6 +907,8 @@ End Function
 	TOYS$(TOY_RATTLE)	= "Rattle"
 	TOYS$(TOY_TOYCAR)	= "Toy car"
 	TOYS$(TOY_PILLOW)	= "Pillow"
+	TOYS$(TOY_SNOOT0)	= "Unlicensed Doll"
+	TOYS$(TOY_TV)	= "TV"
 
 	Dim TOYS_FILE$(ITEM_MAX(5))
 	TOYS_FILE$(TOY_BEACHBALL)	= "BeachBall"
@@ -841,6 +924,8 @@ End Function
 	TOYS_FILE$(TOY_RATTLE)		= "Rattle"
 	TOYS_FILE$(TOY_TOYCAR)		= "ToyCar"
 	TOYS_FILE$(TOY_PILLOW)		= "Pillow"
+	TOYS_FILE$(TOY_SNOOT0)		= "Snoot0"
+	TOYS_FILE$(TOY_TV)		= "tv"
 
 ;--------------------------------------------------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------------
@@ -899,6 +984,7 @@ End Function
 	FRUITS_PRICES(FRUIT_CHOCOLATE)	= 25
 	FRUITS_PRICES(FRUIT_PIE)	= 30
 	FRUITS_PRICES(FRUIT_GOLDEN)	= 1500
+	FRUITS_PRICES(FRUIT_BRIGHT)	= 1000
 
 	Dim EGGS_PRICES(CHAOEGGCOLORS_total)
 	EGGS_PRICES(CHAOEGGCOLOR_CELESTE)	= 100
@@ -1046,6 +1132,30 @@ End Function
 	HATS_PRICES(HAT_HEADBAND_2)	= 200
 	HATS_PRICES(HAT_HEADBAND_3)	= 200
 	HATS_PRICES(HAT_HEADBAND_4)	= 200
+	HATS_PRICES(HAT_HOOD_0)	= 200
+	HATS_PRICES(HAT_HOOD_1)	= 200
+	HATS_PRICES(HAT_PUMPKIN_0)	= 50
+	HATS_PRICES(HAT_TURBAN_0)	= 200
+	HATS_PRICES(HAT_EGGMAN_0)	= 250
+	HATS_PRICES(HAT_EGGMAN_1)	= 500
+	HATS_PRICES(HAT_SONICMAN_0)	= 250
+	HATS_PRICES(HAT_SONICMAN_1)	= 250
+	HATS_PRICES(HAT_PRINCIPAL_0)	= 200
+	HATS_PRICES(HAT_PRINCIPAL_1)	= 200
+	HATS_PRICES(HAT_PRINCIPAL_2)	= 200
+	HATS_PRICES(HAT_DEALER_0)	= 10
+	HATS_PRICES(HAT_DEALER_1)	= 10
+	HATS_PRICES(HAT_SNORKEL_0)	= 150
+	HATS_PRICES(HAT_GOHAN_0)	= 700
+	HATS_PRICES(HAT_GOHAN_1)	= 700
+	HATS_PRICES(HAT_GOHAN_2)	= 700
+	HATS_PRICES(HAT_GOHAN_3)	= 700
+	HATS_PRICES(HAT_GOHAN_4)	= 700
+	HATS_PRICES(HAT_GOHAN_5)	= 700
+	HATS_PRICES(HAT_GOHAN_6)	= 700
+	HATS_PRICES(HAT_KNIGHT_0)	= 750
+	HATS_PRICES(HAT_KNIGHT_1)	= 750
+	HATS_PRICES(HAT_KNIGHT_2)	= 750
 
 	Dim TOYS_PRICES(ITEM_MAX(5))
 	TOYS_PRICES(TOY_BEACHBALL)	= 200
@@ -1061,6 +1171,8 @@ End Function
 	TOYS_PRICES(TOY_RATTLE)		= 250
 	TOYS_PRICES(TOY_TOYCAR)		= 500
 	TOYS_PRICES(TOY_PILLOW)		= 200
+	TOYS_PRICES(TOY_SNOOT0)	= 150
+	TOYS_PRICES(TOY_TV)	= 500
 
 ;--------------------------------------------------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------------

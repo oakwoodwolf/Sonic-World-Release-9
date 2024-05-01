@@ -58,6 +58,17 @@ Function DrawChaoStats(cc.tChaoManager, x#, y#)
 	SetColor(255*j#,255*j#,255*j#)
 	DrawImageEx(INTERFACE(Interface_Icons), x#-22.5*GAME_WINDOW_SCALE#, y#+(boxspacing#*7)*GAME_WINDOW_SCALE#, 31)
 	SetColor(255,255,255)
+	;Hatch
+	j# = (cc\HatchTimer/100/10)
+	SetColor(255,255,255)
+	DrawImageEx(INTERFACE(Interface_Icons), x#+38*GAME_WINDOW_SCALE#, y#+(boxspacing#*7)*GAME_WINDOW_SCALE#, 11)
+	DrawRealText(j#, x#+55*GAME_WINDOW_SCALE#, y#+(boxspacing#*7)*GAME_WINDOW_SCALE#, Interface_Text_2,2,0,255,255,255,1.35)
+	SetColor(255,255,255)
+	;Character
+	j# = (cc\Stats\CharacterLove[pp(1)\Character]+100)/200.0
+	SetColor(255*j#,255*j#,255*j#)	
+	Interface_DrawHead(x#-45*GAME_WINDOW_SCALE#, y#+(boxspacing#*8)*GAME_WINDOW_SCALE#, pp(1)\Character)
+	SetColor(255,255,255)
 End Function
 
 Function DrawChaoStats_Menu(x#, y#)
@@ -65,15 +76,16 @@ Function DrawChaoStats_Menu(x#, y#)
 	DrawRealText(Menu\HeldChaoName$, x#-58*GAME_WINDOW_SCALE#, y#-26*GAME_WINDOW_SCALE#, Interface_TextTitleChao_1, 0, 0, 63, 63, 63, 1.65)
 	For i = 1 To 7
 		Select i
-		Case 1: DrawStatsBox("Run:",Menu\HeldChaoSkills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
-		Case 2: DrawStatsBox("Swim:",Menu\HeldChaoSkills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
-		Case 3: DrawStatsBox("Fly:",Menu\HeldChaoSkills[i],x#,y#+(+boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
+		Case 1: DrawStatsBox("Run/Speed:",Menu\HeldChaoSkills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
+		Case 2: DrawStatsBox("Swim/Defense:",Menu\HeldChaoSkills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
+		Case 3: DrawStatsBox("Fly/Stealth:",Menu\HeldChaoSkills[i],x#,y#+(+boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
 		Case 4: DrawStatsBox("Strength:",Menu\HeldChaoSkills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
 		Case 5: DrawStatsBox("Stamina:",Menu\HeldChaoSkills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
 		Case 6: DrawStatsBox("Intelligence:",Menu\HeldChaoSkills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
 		Case 7: DrawStatsBox("Luck:",Menu\HeldChaoSkills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
 		End Select
 		DrawStats(Menu\HeldChaoCurrentSkills[i], x#-47*GAME_WINDOW_SCALE#, y#+(6.5+boxspacing#*(i-1))*GAME_WINDOW_SCALE#, i)
+		DrawRealText("Likes " + FRUITS(Menu\HeldChaoFavouriteFood), x#*GAME_WINDOW_SCALE#, y#+(boxspacing#*7)*GAME_WINDOW_SCALE#, Interface_Text_2,2,0,255,255,255,1.35)
 	Next
 End Function
 
@@ -167,7 +179,7 @@ Function DrawKarateHealth(health, x#, y#, backwards=false)
 
 	If health<0 Then health=0
 
-	spacefactor#=0.90909
+	spacefactor#=0.8
 	If backwards Then spacefactor#=-spacefactor#
 
 	For i=health+1 to 250
@@ -252,7 +264,7 @@ Function DrawKarateZeal(zeal, x#, y#, backwards=false)
 
 	If zeal<0 Then zeal=0
 
-	spacefactor#=0.90909
+	spacefactor#=0.8
 	If backwards Then spacefactor#=-spacefactor#
 
 	For i=zeal+1 to 285
@@ -381,8 +393,9 @@ Function Interface_Render_Stage_Chao(p.tPlayer,d.tDeltatime)
 		DrawRealText("TIME", GAME_WINDOW_W/2, 28*GAME_WINDOW_SCALE#, Interface_Text_2, 1)
 		SetColor(255,255,255)
 		DrawRealText(Int(Game\Interface\RaceTime/secs#), GAME_WINDOW_W/2, 47*GAME_WINDOW_SCALE#, Interface_TextButtons_1, 1)
-		DrawKarateHealth(Game\Interface\KarateHealth#[1]*12.5, GAME_WINDOW_W/2-36*GAME_WINDOW_SCALE#, 31*GAME_WINDOW_SCALE#, true)
-		DrawKarateHealth(Game\Interface\KarateHealth#[2]*12.5, GAME_WINDOW_W/2+36*GAME_WINDOW_SCALE#, 31*GAME_WINDOW_SCALE#, false)
+		DrawKarateHealth(Game\Interface\KarateHealth#[1]*12.5, GAME_WINDOW_W/2-36*GAME_WINDOW_SCALE#+3, 31*GAME_WINDOW_SCALE#, True)
+		DrawRealText(Menu\HeldChaoName, GAME_WINDOW_W/4*GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#-60, Interface_Text_2, 0,0,0,0,0,1)
+		DrawKarateHealth(Game\Interface\KarateHealth#[2]*12.5, GAME_WINDOW_W/2+36*GAME_WINDOW_SCALE#-3, 31*GAME_WINDOW_SCALE#, False)
 
 		DrawImageEx(INTERFACE(Interface_Karate), GAME_WINDOW_W/2, GAME_WINDOW_H-26*GAME_WINDOW_SCALE#, 1)
 		DrawRealText("Zeal", GAME_WINDOW_W/2, GAME_WINDOW_H-18.5*GAME_WINDOW_SCALE#, Interface_Text_2, 1)

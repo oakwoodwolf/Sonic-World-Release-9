@@ -630,44 +630,127 @@ End Function
 ;===============================================================================================================================================================
 
 Function Menu_Pause_Update()
-	StartDraw()
-	SetBlend(FI_ALPHABLEND)
-	SetAlpha(1.0)
-	SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
-	SetColor(255, 255, 255)
+Select Menu\PauseOptions
+	Case 2:
+		If Menu\Option=0 Then Menu\Option=1
+		DrawRealText("Warp", GAME_WINDOW_W/2-0*GAME_WINDOW_SCALE#, 27.5*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 1, 0, 36, 81, 143)
 
-	DrawSmartButton(1, "Continue", GAME_WINDOW_W/2, GAME_WINDOW_H/2-50*GAME_WINDOW_SCALE#)
-	Select Menu\ChaoGarden
-		Case 0:
-			DrawSmartButton(2, "Restart", GAME_WINDOW_W/2, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#)
-		Case 1:
-			DrawSmartButton(2, "Restart", GAME_WINDOW_W/2, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#,false,false,true)
-	End Select
-	DrawSmartButton(3, "Quit", GAME_WINDOW_W/2, GAME_WINDOW_H/2+50*GAME_WINDOW_SCALE#)
 
-	DrawRealText("PAUSE", GAME_WINDOW_W/2, GAME_WINDOW_H/2-92.5*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 1, 0, 63, 63, 63)
+		xspacing=75
+		DrawSmartButton(1, "Mystic Ruins", GAME_WINDOW_W/2-xspacing*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-60*GAME_WINDOW_SCALE#,False,True)
+		DrawSmartButton(2, "Black Market", GAME_WINDOW_W/2-xspacing*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-30*GAME_WINDOW_SCALE#,False,True)
+		DrawSmartButton(3, "Hero Garden", GAME_WINDOW_W/2-xspacing*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#,False,True)
+		DrawSmartButton(4, "Farmland", GAME_WINDOW_W/2-xspacing*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+30*GAME_WINDOW_SCALE#,False,True)
+		DrawSmartButton(5, "Crash Site", GAME_WINDOW_W/2-xspacing*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+60*GAME_WINDOW_SCALE#,False,True)
 
-	If Input\Pressed\Down and Menu\Transition=0 Then
-		PlaySmartSound(Sound_MenuMove)
-		Menu\Option=Menu\Option+1
-		If Menu\ChaoGarden=1 and Menu\Option=2 Then Menu\Option=Menu\Option+1
-		If Menu\Option>3 Then Menu\Option=1
-	EndIf
+		DrawSmartButton(6, "Principal's", GAME_WINDOW_W/2+xspacing*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-60*GAME_WINDOW_SCALE#,False,True)
+		DrawSmartButton(7, "Hotel Door", GAME_WINDOW_W/2+xspacing*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-30*GAME_WINDOW_SCALE#,False,True)
+		DrawSmartButton(8, "Hotel Stadium", GAME_WINDOW_W/2+xspacing*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#,False,True)
+		DrawSmartButton(9, "Hotel Market", GAME_WINDOW_W/2+xspacing*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+30*GAME_WINDOW_SCALE#,False,True)
+		DrawSmartButton(10, "Egg Bunker", GAME_WINDOW_W/2+xspacing*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+60*GAME_WINDOW_SCALE#,False,True)
 
-	If Input\Pressed\Up and Menu\Transition=0 Then
-		PlaySmartSound(Sound_MenuMove)
-		Menu\Option=Menu\Option-1
-		If Menu\ChaoGarden=1 and Menu\Option=2 Then Menu\Option=Menu\Option-1
-		If Menu\Option<1 Then Menu\Option=3
-	EndIf
+			If (Input\Pressed\ActionJump) And Menu\Transition=0 Then
+				Select Menu\Option:
+					Case 1:
+						x# = 0 		: y# = -13  	:z# = 0  	: dir = 0
+					Case 2:
+						x# = -311 	: y# = -13  	:z# = 58  	: dir = 0
+					Case 3:
+						x# = -733 	: y# = +3.5     :z# = 126  	: dir = -15
+					Case 4:
+						x# = -259 	: y# = -12.5    :z# = 625  	: dir = -45
+					Case 5:
+						x# = 406 	: y# = -8  		:z# = 273  	: dir = 90
+					Case 6:
+						x# = 118 	: y# = -8  		:z# = 823  	: dir = -150
+					Case 7:
+						x# = 6395 	: y# = -17  	:z# = 2957  : dir = 180
+					Case 8:
+						x# = 6387 	: y# = -17  	:z# = 2652  : dir = 180
+					Case 9:
+						x# = 6431 	: y# = -17  	:z# = 2944  : dir = 0
+					Case 10:
+						x# = 4727 	: y# = -14  	:z# = 2766  : dir = 90
+					Default:
+						x# = 0 		: y# = -13  	:z# = 0  	: dir = 0
+				End Select
+				Game\ControlLock=0.25*secs#
+				PostEffect_Create_FadeIn(0.050, 128, 255, 255)
+				Player_Spawn(x#,y#,z#,dir)
+				PlaySmartSound(Sound_Teleport)
+			EndIf
+			If Input\Pressed\ActionRoll Then
+				Menu\PauseOptions=0
+				Menu\Option=2
+			EndIf
+			If Input\Pressed\Down And Menu\Transition=0 Then
+				PlaySmartSound(Sound_MenuMove)
+				If Menu\Option=5 Then
+					Menu\Option=1
+				ElseIf Menu\Option=10
+					Menu\Option=6
+				Else
+					Menu\Option=Menu\Option+1
+				EndIf
+			EndIf
 
-	If (Input\Pressed\ActionJump Or Input\Pressed\Start) and Menu\Transition=0 Then
-		PlaySmartSound(Sound_MenuAccept)
-		If Menu\Option=3 Or (Menu\Option=2 and Menu\ChaoGarden=0) Then Game_Stage_Quit(Menu\Option)
-		Menu\Transition=1
-	EndIf
+			If Input\Pressed\Up And Menu\Transition=0 Then
+				PlaySmartSound(Sound_MenuMove)
+				If Menu\Option=1 Then
+					Menu\Option=5
+				ElseIf Menu\Option=6
+					Menu\Option=10
+				Else
+					Menu\Option=Menu\Option-1
+				EndIf
+			EndIf
+			If Input\Pressed\Right And Menu\Transition=0 Then
+				PlaySmartSound(Sound_MenuMove)
+				If Menu\Option>5 Then Menu\Option=Menu\Option-5 Else Menu\Option=Menu\Option+5	
+			EndIf
+			If Input\Pressed\Left And Menu\Transition=0 Then
+				PlaySmartSound(Sound_MenuMove)
+				If Menu\Option<=5 Then Menu\Option=Menu\Option+5 Else Menu\Option=Menu\Option-5	
+		EndIf	
+	Default:
+		StartDraw()
+		SetBlend(FI_ALPHABLEND)
+		SetAlpha(1.0)
+		SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
+		SetColor(255, 255, 255)
 
-	EndDraw()
+		DrawSmartButton(1, "Continue", GAME_WINDOW_W/2, GAME_WINDOW_H/2-50*GAME_WINDOW_SCALE#)
+		Select Menu\ChaoGarden
+			Case 0:
+				DrawSmartButton(2, "Restart", GAME_WINDOW_W/2, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#)
+			Case 1:
+				DrawSmartButton(2, "Warp", GAME_WINDOW_W/2, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#)
+		End Select
+		DrawSmartButton(3, "Quit", GAME_WINDOW_W/2, GAME_WINDOW_H/2+50*GAME_WINDOW_SCALE#)
+
+		DrawRealText("PAUSE", GAME_WINDOW_W/2, GAME_WINDOW_H/2-92.5*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 1, 0, 63, 63, 63)
+
+		If Input\Pressed\Down and Menu\Transition=0 Then
+			PlaySmartSound(Sound_MenuMove)
+			Menu\Option=Menu\Option+1
+			If Menu\Option>3 Then Menu\Option=1
+		EndIf
+
+		If Input\Pressed\Up and Menu\Transition=0 Then
+			PlaySmartSound(Sound_MenuMove)
+			Menu\Option=Menu\Option-1
+			If Menu\Option<1 Then Menu\Option=3
+		EndIf
+
+		If (Input\Pressed\ActionJump Or Input\Pressed\Start) and Menu\Transition=0 Then
+			PlaySmartSound(Sound_MenuAccept)
+			If Menu\Option=3 Or (Menu\Option=2 and Menu\ChaoGarden=0) Then Game_Stage_Quit(Menu\Option)
+			If Menu\Option=2 And Menu\ChaoGarden=1 Then Menu\PauseOptions=2 : Menu\Option=0
+			Menu\Transition=1
+		EndIf
+
+		EndDraw()
+End Select
 End Function
 
 ;===============================================================================================================================================================

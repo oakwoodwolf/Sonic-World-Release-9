@@ -13,6 +13,8 @@
 		Field Mesh
 		Field Mesh_horn1
 		Field Mesh_horn2
+		Field HandL
+		Field HandR
 		Field CocoonMesh
 		Field HatMesh
 		Field Action
@@ -43,6 +45,8 @@
 		Field VoiceEmo
 		Field PreviousVoiceEmo
 		Field Channel_Voice
+		Field Channel_Swim
+		Field Channel_Think
 		Field VoiceTimer
 		Field PlayOrder
 		Field LetGoTarget
@@ -91,6 +95,7 @@
 	End Type
 
 	Type tChaoManager_Stats
+		Field Body#
 		Field Age
 		Field Persona
 		Field Color
@@ -127,6 +132,8 @@
 		Field HeroLove#
 		Field DarkLove#
 		Field Love[2]
+		Field CharacterLove[CHAR_NONMODPLAYABLECOUNT]
+		Field FavouriteFood
 		Field MateSeason
 		Field Hat
 		Field CompetitionsWon
@@ -173,7 +180,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_ChaoManager_NewChao(cc.tChaoManager, Color=0, makepos=True)
+	Function Object_ChaoManager_NewChao(cc.tChaoManager, Color=0, makepos=True,mono=0,shiny=0,tex=0)
 		cc\Stats\Age=0
 		cc\Stats\Persona=1
 		If makepos Then Object_ChaoManager_RandomBeginPos(cc, True)
@@ -188,15 +195,16 @@
 			cc\Stats\Color=Color Mod CHAOCOLORS_total
 			If cc\Stats\Color=0 Then cc\Stats\Color=CHAOCOLORS_total
 		EndIf
-		If (Color>(CHAOCOLORS_total*1) And Color<=(CHAOCOLORS_total*2)) Or (Color>(CHAOCOLORS_total*3) And Color<=(CHAOCOLORS_total*4)) Then
+		If mono=1 Or (Color>(CHAOCOLORS_total*1) And Color<=(CHAOCOLORS_total*2)) Or (Color>(CHAOCOLORS_total*3) And Color<=(CHAOCOLORS_total*4)) Then
 			cc\Stats\Monotone=1
 		EndIf
-		If (Color>(CHAOCOLORS_total*2) And Color<=(CHAOCOLORS_total*4)) Then
+		If shiny=1 Or (Color>(CHAOCOLORS_total*2) And Color<=(CHAOCOLORS_total*4)) Then
 			cc\Stats\Shiny=1
 		EndIf
-		If Color>(CHAOCOLORS_total*4) Then
+		If tex=1 Or Color>(CHAOCOLORS_total*4) Then
 			cc\Stats\Textured=1
 		EndIf
+		cc\Stats\FavouriteFood=Rand(FRUIT_CUBICLE,FRUIT_RADISH)
 	End Function
 
 	Function Object_ChaoManager_RandomBeginPos(cc.tChaoManager, frominventory=False)
@@ -216,15 +224,15 @@
 		cc\g\Motion\Direction#=Rand(-180,180)
 	End Function
 
-	Function Object_ChaoManager_SpawnNewChao(color=0,takepos=False,x#=0,y#=0,z#=0)
+	Function Object_ChaoManager_SpawnNewChao(color=0,takepos=False,x#=0,y#=0,z#=0,mono%=0,shiny%=0,jewel%=0)
 		CHAOSUM(1)=CHAOSUM(1)+1 : CHAOSLOTS(1,CHAOSUM(1))=1
-		Object_CreateChao(CHAOSUM(1),Color,takepos,x#,y#,z#)
+		Object_CreateChao(CHAOSUM(1),Color,takepos,x#,y#,z#,mono,shiny,jewel)
 		SaveGame_AllChaoStuff()
 	End Function
 
 	Function Object_ChaoManager_HornInHat(hattype)
 		Select hattype
-			Case HAT_STRAW_0,HAT_WOOL_0,HAT_WOOL_1,HAT_WOOL_2,HAT_WOOL_3,HAT_FORMAL_0,HAT_FORMAL_1,HAT_SKULL_0,HAT_BUCKET_0,HAT_TUNIC_0,HAT_TUNIC_1,HAT_TUNIC_2,HAT_TUNIC_3,HAT_BEANIE_0,HAT_BEANIE_1,HAT_BEANIE_2,HAT_BEANIE_3,HAT_FPOT_0,HAT_CARDBOARD_0,HAT_SHELL_0,HAT_PLUMBER_0,HAT_PLUMBER_1,HAT_PLUMBER_2,HAT_PLUMBER_3,HAT_PLUMBER_4,HAT_BANDANA_0,HAT_BANDANA_1,HAT_BANDANA_2,HAT_BANDANA_3,HAT_BANDANA_4:
+			Case HAT_KNIGHT_0,HAT_KNIGHT_1,HAT_KNIGHT_2,HAT_PUMPKIN_0,HAT_SONICMAN_0,HAT_SONICMAN_1,HAT_STRAW_0,HAT_WOOL_0,HAT_WOOL_1,HAT_WOOL_2,HAT_WOOL_3,HAT_FORMAL_0,HAT_FORMAL_1,HAT_SKULL_0,HAT_BUCKET_0,HAT_TUNIC_0,HAT_TUNIC_1,HAT_TUNIC_2,HAT_TUNIC_3,HAT_BEANIE_0,HAT_BEANIE_1,HAT_BEANIE_2,HAT_BEANIE_3,HAT_FPOT_0,HAT_CARDBOARD_0,HAT_SHELL_0,HAT_PLUMBER_0,HAT_PLUMBER_1,HAT_PLUMBER_2,HAT_PLUMBER_3,HAT_PLUMBER_4,HAT_BANDANA_0,HAT_BANDANA_1,HAT_BANDANA_2,HAT_BANDANA_3,HAT_BANDANA_4, HAT_TURBAN_0, HAT_HOOD_0, HAT_HOOD_1, HAT_GOHAN_0,HAT_GOHAN_1,HAT_GOHAN_2,HAT_GOHAN_3,HAT_GOHAN_4,HAT_GOHAN_5,HAT_GOHAN_6:
 				Return True
 			Default:
 				Return False
@@ -247,7 +255,7 @@
 		ChaoManager_RemoveBoostedSkills(cc)
 	End Function
 	
-	Function Object_ChaoManager_Create.tChaoManager(number, o.tObject, born=False, color=0, takepos=False, x#=0, y#=0, z#=0, forcechao=False, forceage=0, forcepersona=0, forcecolor=0, forceshape=0, forceside=0, forcehat=0, forcemono=0, forceshiny=0, forcetex=0, forcebright=0)
+	Function Object_ChaoManager_Create.tChaoManager(number, o.tObject, born=False, color=0, takepos=False, x#=0, y#=0, z#=0, forcechao=False, forceage=0, forcepersona=0, forcecolor=0, forceshape=0, forceside=0, forcehat=0, forcemono=0, forceshiny=0, forcetex=0, forcebright=0, forcebody=0)
 	
 		cc.tChaoManager = New tChaoManager
 		cc\Number=number
@@ -258,7 +266,7 @@
 
 		If forcechao=False Then
 			If Not(FileType(SaveDataPath$+"Chao"+cc\Number+".xml")=1) Then
-				Object_ChaoManager_NewChao(cc,Color,True)
+				Object_ChaoManager_NewChao(cc,Color,True,forcemono,forceshiny,forcetex)
 				If takepos Then cc\Position\x#=x# : cc\Position\y#=y# : cc\Position\z#=z#
 				SaveGame_Chao(cc)
 			EndIf
@@ -276,78 +284,145 @@
 			cc\Stats\Hat=forcehat
 			If takepos Then cc\InitialPosition\x#=x# : cc\InitialPosition\y#=y# : cc\InitialPosition\z#=z#
 		EndIf
-
+		If cc\Stats\FavouriteFood<2 Then cc\Stats\FavouriteFood = Rand(FRUIT_CUBICLE, FRUIT_RADISH)
 		cc\obj=o
 		o\ChaoObj\targetcc=cc
-
+		cc\Stats\Body = forcebody
 		cc\Pivot = CreatePivot()
 		PositionEntity(cc\Pivot, cc\InitialPosition\x#, cc\InitialPosition\y#, cc\InitialPosition\z#)
 		RotateEntity cc\Pivot, 0, cc\InitialDirection#, 0
+		If forcebody=0 Then
+			Select cc\Stats\Age
+				Case 0:
+					cc\Mesh = LoadAnimMesh("ChaoWorld\Eggs\egg.b3d", cc\Pivot)
+					ExtractAnimSeq(cc\Mesh,1,9)
+					If cc\Stats\Textured>0 Then
+						cc\BodyTexture=LoadTexture("ChaoWorld\Chao\Tex\tex_"+CHAOJEWEL$(cc\Stats\Color)+".png",1+64+256)
+					ElseIf cc\Stats\Monotone>0 Then
+						cc\BodyTexture=LoadTexture("ChaoWorld\Chao\"+CHAOCOLORS$(cc\Stats\Color)+"\"+CHAOCOLORS$(cc\Stats\Color)+".png",256)
+					Else
+						cc\BodyTexture=LoadTexture("ChaoWorld\Eggs\"+CHAOCOLORS$(cc\Stats\Color)+".png",256)
+					EndIf
+					EntityTexture cc\Mesh, cc\BodyTexture
+					FreeTexture cc\BodyTexture
+				Default:
+					cc\Mesh = LoadAnimMesh("ChaoWorld\Chao\"+CHAOSIDES$(cc\Stats\Side)+"."+CHAOSHAPES$(cc\Stats\Shape)+".b3d", cc\Pivot)
+					If cc\Stats\Textured>0 Then
+						cc\BodyTexture=LoadTexture("ChaoWorld\Chao\Tex\tex_"+CHAOJEWEL$(cc\Stats\Color)+".png",1+64+256)
+					ElseIf cc\Stats\Monotone>0 Then
+						cc\BodyTexture=LoadTexture("ChaoWorld\Chao\"+CHAOCOLORS$(cc\Stats\Color)+"\"+CHAOCOLORS$(cc\Stats\Color)+".png",256)
+					Else
+						cc\BodyTexture=LoadTexture("ChaoWorld\Chao\"+CHAOCOLORS$(cc\Stats\Color)+"\"+CHAOSIDES$(cc\Stats\Side)+".body."+CHAOCOLORS$(cc\Stats\Color)+"."+CHAOSHAPES$(cc\Stats\Shape)+".png",256)
+					EndIf
+					cc\OfficeTexture=LoadTexture("ChaoWorld\Chao\Office\"+CHAOSIDES$(cc\Stats\Side)+".office."+CHAOSHAPES$(cc\Stats\Shape)+".png",256)
+					If cc\Stats\Shiny>0 Then cc\BodyGlareTexture=LoadTexture("ChaoWorld\Chao\0.blackglare2.Shiny.png",1+64) Else cc\BodyGlareTexture=LoadTexture("ChaoWorld\Chao\0.blackglare2.png",1+64)
+					TextureBlend(cc\BodyGlareTexture,3)
+					cc\OfficeGlareTexture=LoadTexture("ChaoWorld\Chao\0.chaoref.png",1+64) : TextureBlend(cc\OfficeGlareTexture,3)
 
-		Select cc\Stats\Age
-			Case 0:
-				cc\Mesh = LoadAnimMesh("ChaoWorld\Eggs\egg.b3d", cc\Pivot)
-				ExtractAnimSeq(cc\Mesh,1,9)
-				If cc\Stats\Textured>0 Then
-				 	cc\BodyTexture=LoadTexture("ChaoWorld\Chao\Tex\tex_"+CHAOJEWEL$(cc\Stats\Color)+".png",1+64+256)
-				ElseIf cc\Stats\Monotone>0 Then
-					cc\BodyTexture=LoadTexture("ChaoWorld\Chao\"+CHAOCOLORS$(cc\Stats\Color)+"\"+CHAOCOLORS$(cc\Stats\Color)+".png",256)
-				Else
-					cc\BodyTexture=LoadTexture("ChaoWorld\Eggs\"+CHAOCOLORS$(cc\Stats\Color)+".png",256)
-				EndIf
-				EntityTexture cc\Mesh, cc\BodyTexture
-				FreeTexture cc\BodyTexture
-			Default:
-				cc\Mesh = LoadAnimMesh("ChaoWorld\Chao\"+CHAOSIDES$(cc\Stats\Side)+"."+CHAOSHAPES$(cc\Stats\Shape)+".b3d", cc\Pivot)
-				If cc\Stats\Textured>0 Then
-				 	cc\BodyTexture=LoadTexture("ChaoWorld\Chao\Tex\tex_"+CHAOJEWEL$(cc\Stats\Color)+".png",1+64+256)
-				ElseIf cc\Stats\Monotone>0 Then
-					cc\BodyTexture=LoadTexture("ChaoWorld\Chao\"+CHAOCOLORS$(cc\Stats\Color)+"\"+CHAOCOLORS$(cc\Stats\Color)+".png",256)
-				Else
-					cc\BodyTexture=LoadTexture("ChaoWorld\Chao\"+CHAOCOLORS$(cc\Stats\Color)+"\"+CHAOSIDES$(cc\Stats\Side)+".body."+CHAOCOLORS$(cc\Stats\Color)+"."+CHAOSHAPES$(cc\Stats\Shape)+".png",256)
-				EndIf
-				cc\OfficeTexture=LoadTexture("ChaoWorld\Chao\Office\"+CHAOSIDES$(cc\Stats\Side)+".office."+CHAOSHAPES$(cc\Stats\Shape)+".png",256)
-				If cc\Stats\Shiny>0 Then cc\BodyGlareTexture=LoadTexture("ChaoWorld\Chao\0.blackglare2.Shiny.png",1+64) Else cc\BodyGlareTexture=LoadTexture("ChaoWorld\Chao\0.blackglare2.png",1+64)
-				TextureBlend(cc\BodyGlareTexture,3)
-				cc\OfficeGlareTexture=LoadTexture("ChaoWorld\Chao\0.chaoref.png",1+64) : TextureBlend(cc\OfficeGlareTexture,3)
+					ApplyMeshTextureLayer(cc\Mesh, CHAOSIDES$(cc\Stats\Side)+".body.celeste.png", cc\BodyTexture)
+					If cc\Stats\Bright=1 Then
+						TextureBlend(cc\BodyTexture,3)
+						ApplyMeshTextureLayer(cc\Mesh, CHAOSIDES$(cc\Stats\Side)+".body.celeste.png", cc\BodyTexture,true)
+					EndIf
+					ApplyMeshTextureLayer(cc\Mesh, CHAOSIDES$(cc\Stats\Side)+".office.normal.png", cc\OfficeTexture)
+					ApplyMeshTextureLayer(cc\Mesh, CHAOSIDES$(cc\Stats\Side)+".body."+CHAOCOLORS$(cc\Stats\Color)+"."+CHAOSHAPES$(cc\Stats\Shape)+".png", cc\BodyGlareTexture, True)
+					ApplyMeshTextureLayer(cc\Mesh, CHAOSIDES$(cc\Stats\Side)+".office."+CHAOSHAPES$(cc\Stats\Shape)+".png", cc\OfficeGlareTexture, True)
+					FreeTexture cc\BodyTexture
+					FreeTexture cc\OfficeTexture
+					FreeTexture cc\BodyGlareTexture
+					FreeTexture cc\OfficeGlareTexture
 
-				ApplyMeshTextureLayer(cc\Mesh, CHAOSIDES$(cc\Stats\Side)+".body.celeste.png", cc\BodyTexture)
-				If cc\Stats\Bright=1 Then
-					TextureBlend(cc\BodyTexture,3)
-					ApplyMeshTextureLayer(cc\Mesh, CHAOSIDES$(cc\Stats\Side)+".body.celeste.png", cc\BodyTexture,true)
-				EndIf
-				ApplyMeshTextureLayer(cc\Mesh, CHAOSIDES$(cc\Stats\Side)+".office.normal.png", cc\OfficeTexture)
-				ApplyMeshTextureLayer(cc\Mesh, CHAOSIDES$(cc\Stats\Side)+".body."+CHAOCOLORS$(cc\Stats\Color)+"."+CHAOSHAPES$(cc\Stats\Shape)+".png", cc\BodyGlareTexture, True)
-				ApplyMeshTextureLayer(cc\Mesh, CHAOSIDES$(cc\Stats\Side)+".office."+CHAOSHAPES$(cc\Stats\Shape)+".png", cc\OfficeGlareTexture, True)
-				FreeTexture cc\BodyTexture
-				FreeTexture cc\OfficeTexture
-				FreeTexture cc\BodyGlareTexture
-				FreeTexture cc\OfficeGlareTexture
+					cc\Mesh_horn1 = FindChild(cc\Mesh, "horn1")
+					cc\Mesh_horn2 = FindChild(cc\Mesh, "horn2")
+					cc\HandL = FindChild(cc\Mesh, "handL")
+					cc\HandR = FindChild(cc\Mesh, "handR")
+			End Select
+			
+			If ChaoManager_ChaoAlive(cc) Or ChaoManager_ChaoCocoonAlive(cc) Then ExtractAllCharacterAnimations_PetChao(cc\Mesh)
 
-				cc\Mesh_horn1 = FindChild(cc\Mesh, "horn1")
-				cc\Mesh_horn2 = FindChild(cc\Mesh, "horn2")
-		End Select
-		If ChaoManager_ChaoAlive(cc) Or ChaoManager_ChaoCocoonAlive(cc) Then ExtractAllCharacterAnimations_PetChao(cc\Mesh)
+			Select cc\Stats\Age
+				Case 2:
+					cc\CocoonMesh = LoadAnimMesh("ChaoWorld\Cocoons\Cocoon.b3d", cc\Pivot)
+				Case 4:
+					Select cc\Stats\ReviveAble
+					Case 0: cc\CocoonMesh = LoadAnimMesh("ChaoWorld\Cocoons\Cocoon3.b3d", cc\Pivot)
+					Case 1: cc\CocoonMesh = LoadAnimMesh("ChaoWorld\Cocoons\Cocoon2.b3d", cc\Pivot)
+					End Select
+			End Select
+			
+			If ChaoManager_ChaoAlive(cc) Or ChaoManager_ChaoCocoonAlive(cc) Then cc\Emo = Object_ChaoEmo_Create.tChaoEmo(cc\Mesh, cc\Stats\Side, False, cc\Stats\ReviveEternal)
 
-		Select cc\Stats\Age
-			Case 2:
-				cc\CocoonMesh = LoadAnimMesh("ChaoWorld\Cocoons\Cocoon.b3d", cc\Pivot)
-			Case 4:
-				Select cc\Stats\ReviveAble
-				Case 0: cc\CocoonMesh = LoadAnimMesh("ChaoWorld\Cocoons\Cocoon3.b3d", cc\Pivot)
-				Case 1: cc\CocoonMesh = LoadAnimMesh("ChaoWorld\Cocoons\Cocoon2.b3d", cc\Pivot)
+
+			If born Then ChaoManager_GetBorn(cc)
+		ElseIf forcebody=2 Then
+				wispname$="Purple"
+				Select cc\Stats\Color
+					Case CHAOCOLOR_AZURE
+						wispname = "Cyan"
+					Case CHAOCOLOR_WHITE
+						wispname = "White"
+					Case CHAOCOLOR_BLUE
+						wispname = "Blue"
+					Case CHAOCOLOR_BLACK
+						wispname = "Black"
+					Case CHAOCOLOR_GREY
+						wispname = "Ivory"
+					Case CHAOCOLOR_BROWN
+						wispname = "Crimson"
+					Case CHAOCOLOR_RED
+						wispname = "Red"
+					Case CHAOCOLOR_ORANGE
+						wispname = "Orange"
+					Case CHAOCOLOR_YELLOW
+						wispname = "Yellow"
+					Case CHAOCOLOR_GREEN
+						wispname = "Gray"
+					Case CHAOCOLOR_LIME
+						wispname = "Green"
+					Case CHAOCOLOR_PURPLE
+						wispname = "Indigo"
+					Case CHAOCOLOR_PINK
+						wispname = "Pink"
+					Case CHAOCOLOR_TRANS
+						wispname = "Magenta"
+					Case CHAOCOLOR_CELESTE
+						wispname = "Violet"
 				End Select
-		End Select
-
+				cc\Mesh = LoadAnimMesh("Objects\Wisps\Wisp"+wispname+".b3d", cc\Pivot)
+				ScaleEntity cc\Mesh,3.0,3.0,3.0
+				PositionEntity cc\Mesh, 0.0,0.5,0.0
+				cc\Mesh_horn2 = FindChild(cc\Mesh, "horn2")
+		ElseIf forcebody=3 Then
+				flickyname=0
+				Select cc\Stats\Color
+					Case CHAOCOLOR_PURPLE, CHAOCOLOR_PINK, CHAOCOLOR_BROWN:
+						flickyname = 2
+					Case CHAOCOLOR_RED, CHAOCOLOR_ORANGE, CHAOCOLOR_YELLOW:
+						flickyname = 3
+					Case CHAOCOLOR_GREEN, CHAOCOLOR_LIME, CHAOCOLOR_WHITE:
+						flickyname = 4
+					Default:
+						flickyname = 1
+				End Select
+				cc\Mesh = LoadAnimMesh("Objects\Flickies\Flicky"+flickyname+".b3d", cc\Pivot)
+				ScaleEntity cc\Mesh,0.8,0.8,0.8
+				PositionEntity cc\Mesh, 0.0,0.5,0.0
+				ExtractAnimSeq(cc\Mesh,1,9)
+				cc\Mesh_horn1 = FindChild(cc\Mesh, "Hair01")
+				cc\Mesh_horn2 = FindChild(cc\Mesh, "Hair01")
+		Else
+			cc\Mesh = LoadAnimMesh("ChaoWorld\Chao\Special\"+forcebody+".b3d", cc\Pivot)
+			ExtractAllCharacterAnimations_PetChao(cc\Mesh)
+			cc\Mesh_horn1 = FindChild(cc\Mesh, "horn1")
+			cc\Mesh_horn2 = FindChild(cc\Mesh, "horn2")
+		EndIf
+		If cc\Stats\Hat>0 And forcebody=4 Then cc\Stats\Hat=0
 		If cc\Stats\Hat>0 Then Object_ChaoManager_LoadHat(cc)
-
+		If cc\Stats\Hat>0 And forcebody=2 Then ScaleEntity cc\HatMesh,0.33,0.33,0.33 : MoveEntity cc\HatMesh,0.0,-1.2,0.0
 		EntityType(cc\Pivot,COLLISION_OBJECT2)
-
-		If ChaoManager_ChaoAlive(cc) Or ChaoManager_ChaoCocoonAlive(cc) Then cc\Emo = Object_ChaoEmo_Create.tChaoEmo(cc\Mesh, cc\Stats\Side, False, cc\Stats\ReviveEternal)
-
 		If Menu\Settings\Shadows#>0 Then cc\ShadowCircle = Init_CircleShadow(cc\Pivot, cc\Mesh, 1.5)
-
-		If born Then ChaoManager_GetBorn(cc)
+		
+	
 
 		cc\VoiceTimer=(4.5575+Rand(-0.5,0.5))*secs#
 
@@ -415,7 +490,10 @@
 		If cc\Stats\DarkLove#<0 Then cc\Stats\DarkLove#=0
 		If cc\Stats\HeroLove#>100 Then cc\Stats\HeroLove#=100
 		If cc\Stats\DarkLove#>100 Then cc\Stats\DarkLove#=100
-
+		For i=1 To CHAR_NONMODPLAYABLECOUNT
+			If cc\Stats\CharacterLove[i]<-100 Then cc\Stats\CharacterLove[i]=-100
+			If cc\Stats\CharacterLove[i]>100 Then cc\Stats\CharacterLove[i]=100
+		Next
 		; Reference stats
 		For i=1 To 7
 		Select i
@@ -473,19 +551,26 @@
 
 		; Animate
 		If ChaoManager_ChaoAlive(cc) Or ChaoManager_ChaoCocoonAlive(cc) Then
-		If cc\PreviousAnimation<>cc\Animation Then
-			Select cc\Animation
-				Case CHAOANIMATION_RUN,CHAOANIMATION_RUNAIR,CHAOANIMATION_INTIMIDATE,CHAOANIMATION_THROWN:
-					Animate (cc\Mesh,1,0.3188,cc\Animation,10)
-				Case CHAOANIMATION_EXCLAMATION,CHAOANIMATION_QUESTIONING,CHAOANIMATION_EXCLAMATIONAIR,CHAOANIMATION_QUESTIONINGAIR,CHAOANIMATION_DANCE:
-					Animate (cc\Mesh,1,0.1275,cc\Animation,10)
-				Case CHAOANIMATION_KICKR,CHAOANIMATION_KICKL,CHAOANIMATION_PUNCHR,CHAOANIMATION_PUNCHL:
-					Animate (cc\Mesh,3,0.455,cc\Animation,10)
-				Default:
-					Animate (cc\Mesh,1,0.255,cc\Animation,10)
-			End Select
-			cc\PreviousAnimation=cc\Animation
-		EndIf
+			If Not(ChaoManager_UsesUniqueAnims(cc)) Then
+				If cc\PreviousAnimation<>cc\Animation Then
+					Select cc\Animation
+						Case CHAOANIMATION_RUN,CHAOANIMATION_RUNAIR,CHAOANIMATION_INTIMIDATE,CHAOANIMATION_THROWN:
+							Animate (cc\Mesh,1,0.3188,cc\Animation,10)
+						Case CHAOANIMATION_EXCLAMATION,CHAOANIMATION_QUESTIONING,CHAOANIMATION_EXCLAMATIONAIR,CHAOANIMATION_QUESTIONINGAIR,CHAOANIMATION_DANCE:
+							Animate (cc\Mesh,1,0.1275,cc\Animation,10)
+						Case CHAOANIMATION_KICKR,CHAOANIMATION_KICKL,CHAOANIMATION_PUNCHR,CHAOANIMATION_PUNCHL:
+							Animate (cc\Mesh,3,0.455,cc\Animation,10)
+						Default:
+							Animate (cc\Mesh,1,0.255,cc\Animation,10)
+					End Select
+					cc\PreviousAnimation=cc\Animation
+				EndIf
+			Else
+				If cc\PreviousAnimation<>cc\Animation Then
+					Animate (cc\Mesh,1,0.255,0,0)
+					cc\PreviousAnimation=cc\Animation
+				EndIf
+			EndIf
 		EndIf
 
 		; Look for target
@@ -720,7 +805,7 @@
 						Case 3: gainedstat = 4
 						End Select
 					Case FRUIT_HEART:
-						If eatcycle=0 Then
+						If eatcycle=0 And cc\Stats\Age>2 Then
 							cc\MateTimer=0
 						EndIf
 						Select(Rand(1,2))
@@ -899,6 +984,15 @@
 						End Select
 					Case FRUIT_PIE:
 						gainedstat = 5
+					Case FRUIT_BRIGHT:
+						If eatcycle=0 Then
+							If cc\Stats\Bright=0 Then
+								Game\Channel_ChaoEffect=PlaySmartSound(Sound_ChaoReincarnation)
+								Interface_CreateChaoNamedMsg("will go bright.",cc\Name$,245,245,0)
+								cc\Stats\Bright=1
+							EndIf
+						EndIf
+						gainedstat = 5
 					Case FRUIT_GOLDEN:
 						If eatcycle=0 Then
 							If cc\Stats\ReviveEternal=0 Then
@@ -924,6 +1018,7 @@
 
 		; Level up
 		If instage =0 Then gainamount = Rand(1,5) Else gainamount = 1
+		If (gaintype2=cc\Stats\FavouriteFood And gaintype1=1) Then gainamount = gainamount*1.5
 		If gainedstat>10 Then gainedstat=gainedstat/10 : gainamount = gainamount+5
 
 		For i=1 To gainamount
@@ -968,9 +1063,9 @@
 		; Affect hunger
 		If gaintype1=1 Then
 			cc\Stats\Hunger#=cc\Stats\Hunger#-1
-			cc\Stats\TooFull#=cc\Stats\TooFull#+1
+			If gaintype2<>cc\Stats\FavouriteFood Then cc\Stats\TooFull#=cc\Stats\TooFull#+1 Else cc\Stats\TooFull#=cc\Stats\TooFull#+Rand(0,1)
 		EndIf
-		
+		cc\HatchTimer = cc\HatchTimer-5*secs#
 
 		; Auto-save
 		cc\StatChange=cc\StatChange+1
@@ -1000,38 +1095,53 @@
 			Case 15,16:	Return CHAOEMO_bored
 			Case 17:	Return CHAOEMO_cheerful
 			Case 18,19:	Return CHAOEMO_lovely
-			Case 20,21,22:	Return CHAOEMO_default
+			Case 20:	Return CHAOEMO_flirty
+			Case 21,22:	Return CHAOEMO_default
 		End Select
 	End Function
 
 	; =========================================================================================================
 	; =========================================================================================================
 
-	Function ChaoManager_GetHappy(cc.tChaomanager)
-		cc\Stats\Happiness#=cc\Stats\Happiness#+1
+	Function ChaoManager_GetHappy(cc.tChaomanager,value=1)
+		cc\Stats\Happiness#=cc\Stats\Happiness#+value
 		If cc\Stats\Happiness#>=90 Then
 			Select(Rand(1,5))
 			Case 1: Interface_CreateChaoNamedMsg("is very happy.",cc\Name$,10,241,255)
 			Default:
 			End Select
 		EndIf
+		cc\Stats\CharacterLove[pp(1)\Character]=cc\Stats\CharacterLove[pp(1)\Character]+value
+		If cc\Stats\CharacterLove[pp(1)\Character]>=75 Then
+			Select(Rand(1,5))
+			Case 1,2: Interface_CreateChaoNamedMsg("really likes " + SingleCharNames(pp(1)\Character),cc\Name$,10,241,255)
+			Default:
+			End Select
+		EndIf
 		Select CHARSIDES(InterfaceChar(pp(1)\Character))
-			Case 1: cc\Stats\HeroLove#=cc\Stats\HeroLove#+1
-			Case 2: cc\Stats\DarkLove#=cc\Stats\DarkLove#+1
+			Case 1: cc\Stats\HeroLove#=cc\Stats\HeroLove#+value
+			Case 2: cc\Stats\DarkLove#=cc\Stats\DarkLove#+value
 		End Select
 		cc\JustGotHappyTimer=1.25*secs#
 	End Function
-	Function ChaoManager_GetSad(cc.tChaomanager)
-		cc\Stats\Happiness#=cc\Stats\Happiness#-1
+	Function ChaoManager_GetSad(cc.tChaomanager,value=1)
+		cc\Stats\Happiness#=cc\Stats\Happiness#-value
 		If cc\Stats\Happiness#<=-90 Then
 			Select(Rand(1,5))
 			Case 1: Interface_CreateChaoNamedMsg("is very sad.",cc\Name$,76,67,149)
 			Default:
 			End Select
 		EndIf
+		cc\Stats\CharacterLove[pp(1)\Character]=cc\Stats\CharacterLove[pp(1)\Character]-value
+		If cc\Stats\CharacterLove[pp(1)\Character]<=-75 Then
+			Select(Rand(1,5))
+			Case 1,2: Interface_CreateChaoNamedMsg("really hates " + SingleCharNames(pp(1)\Character),cc\Name$,76,67,149)
+			Default:
+			End Select
+		EndIf
 		Select CHARSIDES(InterfaceChar(pp(1)\Character))
-			Case 1: cc\Stats\HeroLove#=cc\Stats\HeroLove#-1
-			Case 2: cc\Stats\DarkLove#=cc\Stats\DarkLove#-1
+			Case 1: cc\Stats\HeroLove#=cc\Stats\HeroLove#-value
+			Case 2: cc\Stats\DarkLove#=cc\Stats\DarkLove#-value
 		End Select
 		cc\JustGotSadTimer=1.25*secs#
 	End Function
@@ -1067,7 +1177,14 @@
 		Next
 
 	End Function
-
+	Function ChaoManager_UsesUniqueAnims(cc.tChaoManager)
+		Select cc\Stats\Body
+			Case 2,3:
+				Return True
+			Default:
+				Return False
+		End Select
+	End Function
 	Function ChaoManager_RemoveBoostedSkills(cc.tChaoManager)
 
 		For skillno=1 To 7
@@ -1094,11 +1211,11 @@
 				ChaoManager_BoostSkill(cc, 7)
 			Case HAT_STRAW_0:
 				ChaoManager_BoostSkill(cc, 4)
-			Case HAT_WOOL_0,HAT_WOOL_1,HAT_WOOL_2,HAT_WOOL_3:
+			Case HAT_WOOL_0,HAT_WOOL_1,HAT_WOOL_2,HAT_WOOL_3, HAT_HOOD_0, HAT_HOOD_1, HAT_TURBAN_0:
 				ChaoManager_BoostSkill(cc, 5)
 			Case HAT_FORMAL_0,HAT_FORMAL_1:
 				ChaoManager_BoostSkill(cc, 3)
-			Case HAT_SKULL_0:
+			Case HAT_SKULL_0, HAT_GOHAN_0, HAT_GOHAN_1, HAT_GOHAN_2, HAT_GOHAN_3, HAT_GOHAN_4, HAT_GOHAN_5, HAT_GOHAN_6:
 				ChaoManager_BoostSkill(cc, 4)
 			Case HAT_BUCKET_0:
 				ChaoManager_BoostSkill(cc, 2)
@@ -1106,7 +1223,7 @@
 				ChaoManager_BoostSkill(cc, 1)
 			Case HAT_BOW_0,HAT_BOW_1,HAT_BOW_2,HAT_BOW_3:
 				ChaoManager_BoostSkill(cc, 7)
-			Case HAT_TUNIC_0,HAT_TUNIC_1,HAT_TUNIC_2,HAT_TUNIC_3:
+			Case HAT_TUNIC_0,HAT_TUNIC_1,HAT_TUNIC_2,HAT_TUNIC_3, HAT_PUMPKIN_0:
 				ChaoManager_BoostSkill(cc, 4)
 			Case HAT_BEANIE_0,HAT_BEANIE_1,HAT_BEANIE_2,HAT_BEANIE_3:
 				ChaoManager_BoostSkill(cc, 2)
@@ -1120,9 +1237,9 @@
 				ChaoManager_BoostSkill(cc, 7)
 			Case HAT_CARDBOARD_0:
 				ChaoManager_BoostSkill(cc, 5)
-			Case HAT_SHELL_0:
+			Case HAT_SHELL_0, HAT_KNIGHT_1, HAT_KNIGHT_2, HAT_KNIGHT_0:
 				ChaoManager_BoostSkill(cc, 4)
-			Case HAT_BUNNY_0,HAT_BUNNY_1:
+			Case HAT_BUNNY_0,HAT_BUNNY_1, HAT_SONICMAN_0,HAT_SONICMAN_1:
 				ChaoManager_BoostSkill(cc, 1)
 			Case HAT_STACHE_0:
 				ChaoManager_BoostSkill(cc, 6)
@@ -1130,7 +1247,7 @@
 				ChaoManager_BoostSkill(cc, 4)
 			Case HAT_TOPHAT_0:
 				ChaoManager_BoostSkill(cc, 6)
-			Case HAT_GLASSES_0,HAT_GLASSES_1,HAT_GLASSES_2,HAT_GLASSES_3:
+			Case HAT_GLASSES_0,HAT_GLASSES_1,HAT_GLASSES_2,HAT_GLASSES_3, HAT_EGGMAN_0, HAT_EGGMAN_1:
 				ChaoManager_BoostSkill(cc, 6)
 			Case HAT_HEADPHONES_0,HAT_HEADPHONES_1:
 				ChaoManager_BoostSkill(cc, 4)
@@ -1140,13 +1257,28 @@
 				ChaoManager_BoostSkill(cc, 3)
 			Case HAT_HEADBAND_0,HAT_HEADBAND_1,HAT_HEADBAND_2,HAT_HEADBAND_3,HAT_HEADBAND_4:
 				ChaoManager_BoostSkill(cc, 4)
+			Case HAT_PRINCIPAL_0,HAT_PRINCIPAL_1,HAT_PRINCIPAL_2:
+				ChaoManager_BoostSkill(cc, 6)
+			Case HAT_DEALER_0:
+				ChaoManager_BoostSkill(cc, 7)
+			Case HAT_DEALER_1:
+				ChaoManager_BoostSkill(cc, 1)
+			Case HAT_SNORKEL_0:
+				ChaoManager_BoostSkill(cc, 2)
 		End Select
 
 	End Function
 
 	; =========================================================================================================
 	; =========================================================================================================
+	Function ChaoManager_OffspringMono%(parent1,parent2)
+		If parent1 > 0 Or parent1 > 0
+			Return Rand(0, 1)
+		Else
+			Return 1
+		EndIf
 
+	End Function
 	Function ChaoManager_OffspringColor(parent1,parent2)
 		Select parent1
 			Case CHAOCOLOR_CELESTE:

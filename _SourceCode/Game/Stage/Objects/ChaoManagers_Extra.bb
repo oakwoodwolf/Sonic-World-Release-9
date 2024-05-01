@@ -36,7 +36,10 @@ Function LoadChaoVoices()
 	LoadGoodSound(Sound_ChaoMating,1,"Sounds/ChaoMating.ogg")
 	LoadGoodSound(Sound_ChaoNeutralEvo,1,"Sounds/ChaoNeutralEvo.ogg")
 	LoadGoodSound(Sound_ChaoReincarnation,1,"Sounds/ChaoReincarnation.ogg")
-
+	LoadGoodSound(Sound_ChaoStatup,3,"Sounds/ChaoStatup.ogg")
+	LoadGoodSound(Sound_ChaoLevelUp,1,"Sounds/ChaoLevelUp.ogg")
+	LoadGoodSound(Sound_ChaoStatus,3,"Sounds/ChaoStatus.ogg")
+	LoadGoodSound(Sound_ChaoSwim,3,"Sounds/ChaoSwim.ogg")
 	LoadGoodSound(Sound_Whistle,1,"Sounds/Whistle.ogg")
 
 	If Menu\Stage=998 Then
@@ -220,11 +223,11 @@ Function Object_CreateRaceChao()
 	x#=-88.5
 	y#=31.25
 	z#=-2
-
+	If Menu\Settings\StadiumDifficulty=6 Then body =Rand(1,4) Else body = 0
 	For i=1 to 8
 		Select i
 		Case 1: Object_CreateRaceChao_Held(i,x#,y#,z#)
-		Default: Object_CreateRaceChao_Random(i,x#,y#,z#)
+		Default: Object_CreateRaceChao_Random(i,x#,y#,z#,body)
 		End Select
 		z#=z#-5
 
@@ -360,7 +363,7 @@ EndIf
 Return racecc
 End Function
 
-Function Object_CreateRaceChao_Random(chaonumber,x#,y#,z#)
+Function Object_CreateRaceChao_Random(chaonumber,x#,y#,z#,body=0)
 
 	raceage=Menu\HeldChaoAge
 	racepersona=ChaoManager_GiveRandomFace()
@@ -378,9 +381,9 @@ Function Object_CreateRaceChao_Random(chaonumber,x#,y#,z#)
 	Select(Rand(1,3))
 		Case 1: racehat=Rand(1,ITEM_MAX(2))
 	End Select
-
+	If Menu\Settings\StadiumDifficulty=6 Then racebody=body
 	obj.tObject = Object_Chao_Create(0, 0, 0, 0)
-	racecc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, false, 0, true, x#, y#, z#, true, raceage, racepersona, racecolor, raceshape, raceside, racehat, racemono, raceshiny, racetex)
+	racecc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, false, 0, true, x#, y#, z#, true, raceage, racepersona, racecolor, raceshape, raceside, racehat, racemono, raceshiny, racetex, 0, racebody)
 
 	For h=1 to 7
 		downlimit#=Menu\HeldChaoSkills[h]-5 : uplimit#=Menu\HeldChaoSkills[h]+2*Menu\Settings\StadiumDifficulty#
@@ -554,15 +557,15 @@ Function ChaoManager_Race_EndRace(cc.tChaoManager)
 			cc\WinningChao=i
 			If i>3 Then endedrace=2 Else endedrace=1
 			If i>=8 Then ChaoManager_Race_EndRace_End()
-			If cc\Number=1 Then Game\Interface\YourWinningChao=i : Game\ResultRingsForBank=2500.0*(abs(i-8)/7.0)*(Menu\RaceType/4.0)*(Menu\Settings\StadiumDifficulty#/5.0)
+			If cc\Number=1 Then Game\Interface\YourWinningChao=i : Game\ResultRingsForBank=2500.0*(Abs(i-8)/7.0)*(Menu\Settings\StadiumDifficulty#/5.0)		
 		EndIf
 	Next
 
 	Select endedrace
 		Case 1: cc\Action=CHAOACTION_RACE_WIN
-			If cc\Number=1 Then Menu\HeldChaoCompetitionsWon=Menu\HeldChaoCompetitionsWon+1 : Menu\SaveChaoCompetitions=1
+			If cc\Number=1 Then Menu\HeldChaoCompetitionsWon=Menu\HeldChaoCompetitionsWon+1 : Menu\SaveChaoCompetitions=1 : ChaoManager_GetHappy(cc,5)
 		Case 2: cc\Action=CHAOACTION_RACE_LOSE
-			If cc\Number=1 Then Menu\HeldChaoCompetitionsLost=Menu\HeldChaoCompetitionsLost+1 : Menu\SaveChaoCompetitions=1
+			If cc\Number=1 Then Menu\HeldChaoCompetitionsLost=Menu\HeldChaoCompetitionsLost+1 : Menu\SaveChaoCompetitions=1 : ChaoManager_GetSad(cc)
 	End Select
 
 End Function
@@ -789,9 +792,9 @@ Function ChaoManager_Karate_EndRace()
 		For karatecc.tChaoManager = Each tChaoManager
 			Select karatecc\Number
 			Case 1: karatecc\Action=CHAOACTION_KARATE_LOSE
-				If karatecc\Number=1 Then Menu\HeldChaoCompetitionsLost=Menu\HeldChaoCompetitionsLost+1 : Menu\SaveChaoCompetitions=1
+				If karatecc\Number=1 Then Menu\HeldChaoCompetitionsLost=Menu\HeldChaoCompetitionsLost+1 : Menu\SaveChaoCompetitions=1  : ChaoManager_GetSad(karatecc)
 			Case 2: karatecc\Action=CHAOACTION_KARATE_WIN
-				If karatecc\Number=1 Then Menu\HeldChaoCompetitionsWon=Menu\HeldChaoCompetitionsWon+1 : Menu\SaveChaoCompetitions=1
+				If karatecc\Number=1 Then Menu\HeldChaoCompetitionsWon=Menu\HeldChaoCompetitionsWon+1 : Menu\SaveChaoCompetitions=1 
 			End Select
 		Next
 		Game\Interface\YourWinningChao=0
@@ -800,7 +803,7 @@ Function ChaoManager_Karate_EndRace()
 		For karatecc.tChaoManager = Each tChaoManager
 			Select karatecc\Number
 			Case 1: karatecc\Action=CHAOACTION_KARATE_WIN
-				If karatecc\Number=1 Then Menu\HeldChaoCompetitionsWon=Menu\HeldChaoCompetitionsWon+1 : Menu\SaveChaoCompetitions=1
+				If karatecc\Number=1 Then Menu\HeldChaoCompetitionsWon=Menu\HeldChaoCompetitionsWon+1 : Menu\SaveChaoCompetitions=1  : ChaoManager_GetHappy(karatecc,5)
 			Case 2: karatecc\Action=CHAOACTION_KARATE_LOSE
 				If karatecc\Number=1 Then Menu\HeldChaoCompetitionsLost=Menu\HeldChaoCompetitionsLost+1 : Menu\SaveChaoCompetitions=1
 			End Select
@@ -872,6 +875,8 @@ Function ChaoManager_Karate_Manage(cc.tChaoManager, d.tDeltaTime)
 		End Select
 
 		If Not(cc\Action=CHAOACTION_KARATE_BEGIN) Then
+			If cc\Position\y#<-1 Then Game\Interface\KarateHealth[cc\Number]=0
+
 			If Game\Interface\KarateZeal#[cc\Number]<=-1 Then
 				If Game\Interface\KarateTurn=cc\Number Then
 					If Game\Interface\KarateTurn=1 Then Game\Interface\KarateTurn=2 Else Game\Interface\KarateTurn=1
@@ -976,7 +981,175 @@ Function OverwriteGardenAndCreateRandomChao()
 	FreeEntity gardenoverwriter
 
 	For cc.tChaoManager=Each tChaoManager
+		cc\Name = RandomChaoName()
 		SaveGame_Chao(cc)
 	Next
 	SaveGame_ChaoGarden()
+End Function
+Function RandomChaoName$()
+number = Rand(0,80)
+Select number
+	Case 0:
+		Return "Ajax"
+	Case 1:
+		Return "Atom"
+	Case 2:
+		Return "Bingo"
+	Case 3:
+		Return "Brandy"
+	Case 4:
+		Return "Bruno"
+	Case 5:
+		Return "Bubbles"
+	Case 6:
+		Return "Buddy"
+	Case 7:
+		Return "Buzzy"
+	Case 8:
+		Return "Cash"
+	Case 9:
+		Return "Casino"
+	Case 10:
+		Return "Chacha"
+	Case 11:
+		Return "Chacky"
+	Case 12:
+		Return "Chaggy"
+	Case 13:
+		Return "Chai"
+	Case 14:
+		Return "Chalulu"
+	Case 15:
+		Return "Cham"
+	Case 16:
+		Return "Champ"
+	Case 17:
+		Return "Chang"
+	Case 18:
+		Return "Chaofun"
+	Case 19:
+		Return "Chaoko"
+	Case 20:
+		Return "Chaolin"
+	Case 21:
+		Return "Chaorro"
+	Case 22:
+		Return "Chaosky"
+	Case 23:
+		Return "Chap"
+	Case 24:
+		Return "Chapon"
+	Case 25:
+		Return "Chappy"
+	Case 26:
+		Return "Charon"
+	Case 27:
+		Return "Chasm"
+	Case 28:
+		Return "Chaz"
+	Case 29:
+		Return "Cheng"
+	Case 30:
+		Return "Choc"
+	Case 31:
+		Return "Cholly"
+	Case 32:
+		Return "Chucky"
+	Case 33:
+		Return "Cody"
+	Case 34:
+		Return "Cuckoo"
+	Case 35:
+		Return "DEJIME"
+	Case 36:
+		Return "Dash"
+	Case 37:
+		Return "Dingy"
+	Case 38:
+		Return "Dino"
+	Case 39:
+		Return "Dixie"
+	Case 40:
+		Return "Echo"
+	Case 41:
+		Return "Edge"
+	Case 42:
+		Return "Elvis"
+	Case 43:
+		Return "Emmy"
+	Case 44:
+		Return "Fuzzie"
+	Case 45:
+		Return "Groom"
+	Case 46:
+		Return "HITM"
+	Case 47:
+		Return "Hiya"
+	Case 48:
+		Return "Honey"
+	Case 49:
+		Return "Jojo"
+	Case 50:
+		Return "Keno"
+	Case 51:
+		Return "Kosmo"
+	Case 52:
+		Return "Loose"
+	Case 53:
+		Return "Melody"
+	Case 54:
+		Return "NAGOSHI"
+	Case 55:
+		Return "OVER"
+	Case 56:
+		Return "Papoose"
+	Case 57:
+		Return "Peaches"
+	Case 58:
+		Return "Pebbles"
+	Case 59:
+		Return "Pinky"
+	Case 60:
+		Return "Quartz"
+	Case 61:
+		Return "Quincy"
+	Case 62:
+		Return "ROSSO"
+	Case 63:
+		Return "Rascal"
+	Case 64:
+		Return "Rocky"
+	Case 65:
+		Return "Rover"
+	Case 66:
+		Return "Roxy"
+	Case 67:
+		Return "Rusty"
+	Case 68:
+		Return "SMILEB"
+	Case 69:
+		Return "SOUL"
+	Case 70:
+		Return "Spike"
+	Case 71:
+		Return "Star"
+	Case 72:
+		Return "Tango"
+	Case 73:
+		Return "Tiny"
+	Case 74:
+		Return "WOW"
+	Case 75:
+		Return "Woody"
+	Case 76:
+		Return "YS"
+	Case 77:
+		Return "Zack"
+	Case 78:
+		Return "Zippy"	
+	Case 79:
+		Return "Wisp"	
+	Case 80:
+		Return "Koco"	
+End Select
 End Function

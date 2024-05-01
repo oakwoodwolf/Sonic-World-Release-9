@@ -25,6 +25,7 @@
 	Global CHAOACTION_DRIVE		= i : i=i+1
 	Global CHAOACTION_DRIVEDUCK	= i : i=i+1
 	Global CHAOACTION_PILLOWSLEEP	= i : i=i+1
+	Global CHAOACTION_WATCH	= i : i=i+1
 	Global CHAOACTION_PETTED	= i : i=i+1
 	Global CHAOACTION_RACE_BEGIN	= i : i=i+1
 	Global CHAOACTION_RACE_COMMON	= i : i=i+1
@@ -88,6 +89,8 @@
 				ChaoManager_Action_Breed(cc)
 			Case CHAOACTION_PLAY:
 				ChaoManager_Action_Play(cc)
+			Case CHAOACTION_WATCH:
+				ChaoManager_Action_Watch(cc)
 			Case CHAOACTION_BALL:
 				ChaoManager_Action_Ball(cc,d)
 			Case CHAOACTION_TEDDYBEAR:
@@ -144,7 +147,7 @@
 		If ChaoManager_ChaoAlive(cc) Then
 		Select cc\Action
 			Case CHAOACTION_PICKEDUP:
-				cc\Animation=CHAOANIMATION_IDLEAIR
+				If cc\Stats\CharacterLove[pp(1)\Character] >= -50 Then cc\Animation=CHAOANIMATION_IDLEAIR Else cc\Animation=CHAOANIMATION_DROWN			
 			Case CHAOACTION_COMMON,CHAOACTION_RACE_COMMON,CHAOACTION_RACE_BEGIN,CHAOACTION_KARATE_BEGIN:
 				Select cc\g\Motion\Ground
 				Case True:
@@ -160,7 +163,13 @@
 						If cc\Stats\Age<=1 and cc\Stats\Run#<4 Then
 							cc\Animation=CHAOANIMATION_SIT
 						Else
-							cc\Animation=CHAOANIMATION_IDLE
+							If cc\WhistleLoveTimer>0 Then
+								cc\Animation=CHAOANIMATION_SHY
+							ElseIf cc\WhistleThinkTimer>0 Then
+								cc\Animation=CHAOANIMATION_THINK
+							Else
+								cc\Animation=CHAOANIMATION_IDLE
+							EndIf
 						EndIf
 					EndIf
 				Case False:
@@ -224,6 +233,11 @@
 					Case 2: cc\Animation=CHAOANIMATION_EXCLAMATION
 					Case 3: cc\Animation=CHAOANIMATION_RUN
 				End Select
+			Case CHAOACTION_WATCH:
+				Select cc\PlayOrder
+					Case 1: cc\Animation=CHAOANIMATION_IDLE
+					Case 2: cc\Animation=CHAOANIMATION_SIT
+				End Select
 			Case CHAOACTION_DRIVE:
 				Select cc\PlayOrder
 					Case 1: cc\Animation=CHAOANIMATION_RUN
@@ -286,7 +300,7 @@
 		EndIf
 
 		;emotion determine
-		If ChaoManager_ChaoAlive(cc) Then
+		If ChaoManager_ChaoAlive(cc) And cc\Stats\Body=0 Then
 			If cc\obj\ObjPickedUp=1 Then cc\Emo\CenterOffice=True Else cc\Emo\CenterOffice=False
 
 			If cc\HurtTimer>0 Then
@@ -307,8 +321,8 @@
 						End Select
 					Case CHAOACTION_EAT,CHAOACTION_SUCK:
 						Select cc\EatingWaiting
-							Case 1:	cc\Emo\Emotion=CHAOEMO_happy
-							Case 3:	cc\Emo\Emotion=CHAOEMO_disgusted
+							Case 1:	If cc\Stats\FavouriteFood<>cc\Target\ChaoObj\FruitType Then cc\Emo\Emotion=CHAOEMO_happy Else cc\Emo\Emotion=CHAOEMO_thrilled
+							Case 3:	If cc\Stats\FavouriteFood<>cc\Target\ChaoObj\FruitType Then cc\Emo\Emotion=CHAOEMO_disgusted Else cc\Emo\Emotion=CHAOEMO_joyful
 							Default: cc\Emo\Emotion=CHAOEMO_default
 						End Select
 					Case CHAOACTION_SLEEP,CHAOACTION_PILLOWSLEEP:
@@ -330,6 +344,14 @@
 							Case 1: cc\Emo\Emotion=CHAOEMO_joyful
 							Case 2: cc\Emo\Emotion=CHAOEMO_happy
 						End Select
+					Case CHAOACTION_PICKEDUP:
+						If cc\Stats\CharacterLove[pp(1)\Character]> 50 Then
+							cc\Emo\Emotion=CHAOEMO_cheerful
+						ElseIf cc\Stats\CharacterLove[pp(1)\Character]<-50 Then
+							cc\Emo\Emotion=CHAOEMO_scared
+						Else
+							cc\Emo\Emotion=ChaoManager_GetDefaultPersona(cc)
+						EndIf
 					Case CHAOACTION_TEDDYBEAR,CHAOACTION_SING:
 						cc\Emo\Emotion=CHAOEMO_cheerful
 					Case CHAOACTION_RATTLE:
@@ -358,7 +380,7 @@
 							If cc\WhistleLoveTimer>0 Then
 								cc\Emo\Emotion=CHAOEMO_lovely
 							ElseIf cc\WhistleThinkTimer>0 Then
-								cc\Emo\Emotion=CHAOEMO_curious
+								If cc\Stats\CharacterLove[pp(1)\Character] > -50 Then cc\Emo\Emotion=CHAOEMO_curious Else cc\Emo\Emotion=CHAOEMO_angry
 							Else
 								cc\Emo\Emotion=ChaoManager_GetDefaultPersona(cc)
 							EndIf
@@ -368,12 +390,20 @@
 				End Select
 			EndIf
 		Else
-			If ChaoManager_ChaoCocoonAlive(cc) Then cc\Emo\Emotion=CHAOEMO_drowsy
+			If ChaoManager_ChaoCocoonAlive(cc) And cc\Stats\Body=0 Then cc\Emo\Emotion=CHAOEMO_drowsy
 		EndIf
 
 		;voice determine
-		If ChaoManager_ChaoAlive(cc) Then
+		If ChaoManager_ChaoAlive(cc) And cc\Stats\Body=0 Then
 			Select cc\Action
+				Case CHAOACTION_PICKEDUP:
+					If cc\Stats\CharacterLove[pp(1)\Character]> 50 Then
+							cc\VoiceEmo=CHAOVOICEEMO_LAUGHING
+						ElseIf cc\Stats\CharacterLove[pp(1)\Character]<-50 Then
+							cc\VoiceEmo=CHAOVOICEEMO_REFUSING
+						Else
+							cc\VoiceEmo=CHAOVOICEEMO_CASUAL
+						EndIf
 				Case CHAOACTION_BUDDY: 
 					Select cc\targetp\Action
 						Case ACTION_THROW, ACTION_GATLING, ACTION_THRUST, ACTION_SHOOT, ACTION_SHOOTHOVER, ACTION_PUNCH, ACTION_UPPERCUT, ACTION_PSYCHO, ACTION_SPRINT:
@@ -413,10 +443,10 @@
 					If cc\EatingWaiting=1 Then
 						cc\VoiceEmo=CHAOVOICEEMO_EATING
 					ElseIf cc\EatingWaiting=3 Then
-						cc\VoiceEmo=CHAOVOICEEMO_DISGUSTED
+						If cc\Stats\FavouriteFood=cc\Target\ChaoObj\FruitType Then cc\VoiceEmo=CHAOVOICEEMO_SATISFIED Else cc\VoiceEmo=CHAOVOICEEMO_DISGUSTED
 					Else
 						If cc\FoundTarget Then
-							cc\VoiceEmo=CHAOVOICEEMO_CASUAL
+							If cc\Stats\FavouriteFood=cc\Target\ChaoObj\FruitType Then cc\VoiceEmo=CHAOVOICEEMO_FIGURED Else cc\VoiceEmo=CHAOVOICEEMO_CASUAL
 						Else
 							cc\VoiceEmo=CHAOVOICEEMO_SATISFIED
 						EndIf
@@ -469,7 +499,7 @@
 				Case CHAOACTION_KARATE_DODGE:
 					cc\VoiceEmo=CHAOVOICEEMO_REFUSING
 				Default:
-					cc\VoiceEmo=CHAOVOICEEMO_CASUAL
+					If cc\Stats\Happiness >-25 Then cc\VoiceEmo=CHAOVOICEEMO_CASUAL Else cc\VoiceEmo=CHAOVOICEEMO_SAD
 			End Select
 			ChaoManager_UpdateVoice(cc)
 		EndIf
@@ -482,7 +512,7 @@
 			cc\g\Motion\WallWasHitTimer=0
 			cc\g\Motion\ChangedWallTimer=1*secs#
 		EndIf
-
+		
 		; Control needs
 		If ChaoManager_ChaoAlive(cc) and Menu\Stage=999 Then
 			If (Not(cc\GetHungryTimer>0)) and (Not(cc\Action=CHAOACTION_EAT)) Then
@@ -564,7 +594,7 @@
 
 	Function ChaoManager_GetDefaultPersona(cc.tChaomanager)
 		Select cc\Stats\Persona
-			Case CHAOEMO_happy,CHAOEMO_sad,CHAOEMO_angry,CHAOEMO_hurt,CHAOEMO_worried,CHAOEMO_shocked,CHAOEMO_thrilled,CHAOEMO_joyful,CHAOEMO_wicked,CHAOEMO_drowsy,CHAOEMO_bored,CHAOEMO_cheerful,CHAOEMO_lovely:
+			Case CHAOEMO_happy,CHAOEMO_sad,CHAOEMO_angry,CHAOEMO_hurt,CHAOEMO_worried,CHAOEMO_shocked,CHAOEMO_thrilled,CHAOEMO_joyful,CHAOEMO_wicked,CHAOEMO_drowsy,CHAOEMO_bored,CHAOEMO_cheerful,CHAOEMO_lovely,CHAOEMO_flirty:
 				Return cc\Stats\Persona
 			Default:
 				Return CHAOEMO_default
@@ -666,10 +696,11 @@
 				If cc\g\Motion\Direction#>cc\WanderDirection Then cc\g\Motion\Direction#=cc\g\Motion\Direction#-cc\WanderDirectionSpeed*d\Delta
 			Else
 				ChaoManager_NoAutonomousCommonActions(cc)
-				cc\g\Motion\Direction#=(DeltaYaw#(pp(1)\Objects\Entity,cc\Pivot) - 180)
+				If cc\Stats\CharacterLove[pp(1)\Character] < -50 Then dir = 0 Else dir = 180
+				cc\g\Motion\Direction#=(DeltaYaw#(pp(1)\Objects\Entity,cc\Pivot) - dir)
 				If EntityDistance(pp(1)\Objects\Entity,cc\Pivot)<5 Then
 					cc\FollowWhistleTimer=0 : cc\WillWanderTimer=4*secs# : cc\WanderTimer=0*secs#
-					If CHARSIDES(InterfaceChar(pp(1)\Character))=ChaoManager_GetHighestSide(cc) Then cc\WhistleLoveTimer=0.75*secs# Else cc\WhistleThinkTimer=0.75*secs#
+					If cc\Stats\CharacterLove[pp(1)\Character] > 50 Then cc\WhistleLoveTimer=0.75*secs# Else cc\WhistleThinkTimer=0.75*secs#
 				EndIf
 			EndIf
 		EndIf
@@ -713,6 +744,7 @@
 	Function ChaoManager_React(cc.tChaoManager)
 
 		If cc\FoundTarget Then
+			cc\Channel_Think=EmitSmartSound(Sound_ChaoStatus, cc\Pivot)
 			cc\Action=CHAOACTION_COMMON
 			Select cc\Target\ObjType
 				Case OBJTYPE_FRUIT: ChaoManager_EatorSuck(cc, true)
@@ -847,7 +879,7 @@
 
 		;Start dancing
 		If Not(cc\DanceTimer>0) Then cc\DanceTimer=(8+Rand(1,5))*secs#
-		If cc\WanderTimer<5*secs# and (cc\DanceTimer<1*secs# and cc\DanceTimer>0*secs#) Then cc\DanceTimer=(3+Rand(1,3))*secs : cc\Action=CHAOACTION_DANCE
+		If cc\Stats\Happiness#>20 And cc\WanderTimer<5*secs# And (cc\DanceTimer<1*secs# And cc\DanceTimer>0*secs#) Then cc\DanceTimer=(3+Rand(3,7))*secs : cc\Action=CHAOACTION_DANCE
 
 		;Start swimming
 		If cc\Underwater=1 Then
@@ -872,7 +904,7 @@
 
 		;Start thinking
 		If Not(cc\ThinkingTimer>0) Then cc\ThinkingTimer=(10+Rand(1,4))*secs#
-		If cc\WanderTimer<5*secs# and (cc\ThinkingTimer<1*secs# and cc\ThinkingTimer>0*secs#) Then cc\ThinkingTimer=(6+Rand(0,2))*secs : cc\Action=CHAOACTION_THINK
+		If cc\WanderTimer<5*secs# and (cc\ThinkingTimer<1*secs# and cc\ThinkingTimer>0*secs#) Then cc\ThinkingTimer=(6+Rand(0,2))*secs : cc\Action=CHAOACTION_THINK  : cc\Channel_Think=EmitSmartSound(Sound_ChaoStatus, cc\Pivot) 
 
 		;Start waiting breed
 		If cc\Stats\MateSeason=1 and cc\FoundTarget=False Then
@@ -1033,7 +1065,7 @@
 		End Select
 
 		If cc\g\Motion\Ground Then
-			ChaoManager_GetSad(cc)
+			ChaoManager_GetSad(cc,5)
 			If cc\Stats\Hat>0 Then Object_ChaoManager_TakeOffHat(cc)
 			cc\Action=CHAOACTION_HURT
 			If cc\Stats\Age=0 Then cc\Stats\ShellGrit#=cc\Stats\ShellGrit#-1
@@ -1115,7 +1147,7 @@
 		If (Not(cc\EatTimer>0)) Then
 			Select cc\EatingWaiting
 				Case 1:
-					cc\EatTimer=(1+Rand(1,4)/2.0)*secs#
+					If cc\Target\ChaoObj\FruitType<>cc\Stats\FavouriteFood Then cc\EatTimer=(1+Rand(1,4)/2.0)*secs# Else cc\EatTimer=(1+Rand(1,2)/2.0)*secs#
 					cc\EatingWaiting=2
 					cc\Target\ChaoObj\EatCycle=cc\Target\ChaoObj\EatCycle-1
 					ChaoManager_Gain(1, cc\Target\ChaoObj\FruitType, cc, cc\Target\ChaoObj\EatCycle)
@@ -1283,6 +1315,7 @@
 					Case TOY_DUMBBELL1,TOY_DUMBBELL2,TOY_DUMBBELL3,TOY_DUMBBELL4,TOY_DUMBBELL5: If (cc\Stats\Strength#>=(cc\Target\ChaoObj\ToyType-TOY_DUMBBELL1-1)*10) Then cc\Action=CHAOACTION_LIFT Else gotit=false
 					Case TOY_RATTLE: cc\Action=CHAOACTION_RATTLE : Animate cc\Target\Entity,1,0.15,1,10
 					Case TOY_PILLOW: cc\Action=CHAOACTION_PILLOWSLEEP : cc\SleepTimer=12*secs# : Interface_CreateChaoNamedMsg("is asleep.",cc\Name$,105,202,33)
+					Case TOY_TV: cc\Action=CHAOACTION_WATCH
 				End Select
 			Else
 				gotit=false
@@ -1303,7 +1336,7 @@
 				Else
 					Interface_CreateChaoNamedMsg("needs more intelligence to play with toys.",cc\Name$,105,202,33)
 				EndIf
-				cc\Target\ObjPickedUp=6
+				If Not cc\Target\ChaoObj\ToyType = TOY_TV Then cc\Target\ObjPickedUp=6
 				cc\Target\ChaoObj\ChaoTargetedThis=False
 				cc\FoundTarget=False
 				cc\Action=CHAOACTION_COMMON
@@ -1318,6 +1351,29 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
+	Function ChaoManager_Action_Watch(cc.tChaoManager)
+
+		If cc\g\Motion\Ground=False Then cc\Action=CHAOACTION_COMMON : cc\LetGoTarget=True
+
+		If (Not(cc\PlayedEnoughTimer>0)) Then cc\Action=CHAOACTION_COMMON : cc\LetGoTarget=True
+
+		Select cc\PlayOrder
+			Case 0:
+				cc\PlayOrder=1
+				cc\PlayTimer=(1+Rand(1,2))*secs#
+			Case 1:
+				If Not(cc\PlayTimer>0) Then
+					cc\PlayOrder=2
+					cc\PlayTimer=(30+Rand(1,4))*secs#
+				EndIf
+			Case 2:
+				If Not(cc\PlayTimer>0) Then
+					cc\PlayOrder=0
+				EndIf
+		End Select
+
+	End Function
+	
 	Function ChaoManager_Action_Ball(cc.tChaoManager, d.tDeltaTime)
 
 		If cc\g\Motion\Ground=False Then cc\Action=CHAOACTION_COMMON : cc\LetGoTarget=True
@@ -1650,12 +1706,15 @@
 					dodgechance=Rand(1,oppcc\Stats\Fly#)
 					If dodgechance>(50-0.75*oppcc\Stats\Fly#) Then
 						oppcc\Action=CHAOACTION_KARATE_DODGE
+						Create_AfterImage.tAfterImage(oppcc\Mesh,oppcc\Pivot,500,96,96,96,1,0,1.5,oppcc\Animation,True,False,Texture_Trail)
+						oppcc\Channel_Swim = EmitSmartSound(Sound_Dodge, oppcc\Pivot)
 						oppcc\g\Motion\Ground=False : oppcc\g\Motion\Speed\y#=0.14
 						oppcc\FlyTimer=0.245*secs#
 					Else
 						oppcc\Action=CHAOACTION_KARATE_THROWN
-						oppcc\g\Motion\Ground=False : oppcc\g\Motion\Speed\y#=0.2
+						oppcc\g\Motion\Ground=False : oppcc\g\Motion\Speed\y#=0.2+cc\Stats\Strength#/100.0 cc\g\Motion\Speed\z#=-0.2-cc\Stats\Strength#/50.0
 						oppcc\HurtTimer=0.365*secs#
+						ParticleTemplate_Call(oppcc\Particle, PARTICLE_OBJECT_FLAMYBLOOD,oppcc\Pivot)
 						Game\Interface\KarateHealth#[oppcc\Number]=Game\Interface\KarateHealth#[oppcc\Number]-(Rand(0,4)/4.0+0.5+cc\Stats\Strength#/20.0-oppcc\Stats\Swim#/100.0+Game\Interface\KarateZeal#[cc\Number]/60.0)
 					EndIf
 				EndIf

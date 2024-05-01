@@ -745,7 +745,7 @@ Function SaveGame_Chao(cc.tChaoManager)
 	WriteLine(CurrentOpenFile,"<intelligence level="+Chr$(34)+cc\Stats\Intelligence#+Chr$(34)+" current="+Chr$(34)+cc\Stats\CurrentIntelligence#+Chr$(34)+" boost="+Chr$(34)+cc\Stats\BoostSkills[6]+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<luck level="+Chr$(34)+cc\Stats\Luck#+Chr$(34)+" current="+Chr$(34)+cc\Stats\CurrentLuck#+Chr$(34)+" boost="+Chr$(34)+cc\Stats\BoostSkills[7]+Chr$(34)+"/>")
 
-	WriteLine(CurrentOpenFile,"<hunger need="+Chr$(34)+cc\Stats\Hunger#+Chr$(34)+" antineed="+Chr$(34)+cc\Stats\TooFull#+Chr$(34)+"/>")
+	WriteLine(CurrentOpenFile,"<hunger need="+Chr$(34)+cc\Stats\Hunger#+Chr$(34)+" antineed="+Chr$(34)+cc\Stats\TooFull#+Chr$(34)+"  fav="+Chr$(34)+cc\Stats\FavouriteFood#+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<sleep need="+Chr$(34)+cc\Stats\Sleep#+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<hungry timer="+Chr$(34)+cc\GetHungryTimer+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<sleepy timer="+Chr$(34)+cc\GetSleepyTimer+Chr$(34)+"/>")
@@ -761,7 +761,9 @@ Function SaveGame_Chao(cc.tChaoManager)
 	WriteLine(CurrentOpenFile,"<hat is="+Chr$(34)+cc\Stats\Hat+Chr$(34)+"/>")
 
 	WriteLine(CurrentOpenFile,"<competitions won="+Chr$(34)+cc\Stats\CompetitionsWon+Chr$(34)+" lost="+Chr$(34)+cc\Stats\CompetitionsLost+Chr$(34)+"/>")
-
+	For c=1 To CHAR_NONMODPLAYABLECOUNT
+		WriteLine(CurrentOpenFile,"<"+ShortCharNames$(c,1)+" love="+Chr$(34)+cc\Stats\CharacterLove[c]+Chr$(34)+"/>")
+	Next
 	CloseWrittenFileWithoutEncryption()
 
 End Function
@@ -795,7 +797,7 @@ Function LoadGame_Chao(cc.tChaoManager)
 		Case "intelligence": cc\Stats\Intelligence# = xmlNodeAttributeValueGet(child, "level") : cc\Stats\CurrentIntelligence# = xmlNodeAttributeValueGet(child, "current") : cc\Stats\BoostSkills[6] = xmlNodeAttributeValueGet(child, "boost")
 		Case "luck": cc\Stats\Luck# = xmlNodeAttributeValueGet(child, "level") : cc\Stats\CurrentLuck# = xmlNodeAttributeValueGet(child, "current") : cc\Stats\BoostSkills[7] = xmlNodeAttributeValueGet(child, "boost")
 
-		Case "hunger": cc\Stats\Hunger# = xmlNodeAttributeValueGet(child, "need") : cc\Stats\TooFull# = xmlNodeAttributeValueGet(child, "antineed")
+		Case "hunger": cc\Stats\Hunger# = xmlNodeAttributeValueGet(child, "need") : cc\Stats\TooFull# = xmlNodeAttributeValueGet(child, "antineed")  : cc\Stats\FavouriteFood# = xmlNodeAttributeValueGet(child, "fav")
 		Case "sleep": cc\Stats\Sleep# = xmlNodeAttributeValueGet(child, "need")
 		Case "hungry": cc\GetHungryTimer = xmlNodeAttributeValueGet(child, "timer")
 		Case "sleepy": cc\GetSleepyTimer = xmlNodeAttributeValueGet(child, "timer")
@@ -811,6 +813,12 @@ Function LoadGame_Chao(cc.tChaoManager)
 		Case "hat": cc\Stats\Hat = xmlNodeAttributeValueGet(child, "is")
 
 		Case "competitions": cc\Stats\CompetitionsWon = xmlNodeAttributeValueGet(child, "won") : cc\Stats\CompetitionsLost = xmlNodeAttributeValueGet(child, "lost")
+		Default
+			For c = 1 To CHAR_NONMODPLAYABLECOUNT	
+					If xmlNodeNameGet$(child)=ShortCharNames$(c,1) Then 
+						cc\Stats\CharacterLove[c] = xmlNodeAttributeValueGet(child, "love")
+					EndIf
+				Next
 	End Select
 
 	Next
@@ -866,7 +874,7 @@ Function LoadGame_MenuChao(number, buddy=0)
 			Case "stamina": Menu\HeldChaoSkills[5] = xmlNodeAttributeValueGet(child, "level") : Menu\HeldChaoCurrentSkills[5] = xmlNodeAttributeValueGet(child, "current")
 			Case "intelligence": Menu\HeldChaoSkills[6] = xmlNodeAttributeValueGet(child, "level") : Menu\HeldChaoCurrentSkills[6] = xmlNodeAttributeValueGet(child, "current")
 			Case "luck": Menu\HeldChaoSkills[7] = xmlNodeAttributeValueGet(child, "level") : Menu\HeldChaoCurrentSkills[7] = xmlNodeAttributeValueGet(child, "current")
-
+			Case "hunger": Menu\HeldChaoFavouriteFood# = xmlNodeAttributeValueGet(child, "fav")
 			Case "revive": Menu\HeldChaoEternal = xmlNodeAttributeValueGet(child, "eternal")
 
 			Case "hat": Menu\HeldChaoHat = xmlNodeAttributeValueGet(child, "is")
@@ -988,9 +996,9 @@ Function SaveGame_ChaoGarden()
 
 		Case OBJTYPE_SEED:
 		If o\ChaoObj\SeedMode>0 Then
-			WriteLine(CurrentOpenFile,"<seed type="+Chr$(34)+o\ChaoObj\FruitType+Chr$(34)+" x="+Chr$(34)+o\Position\x#+Chr$(34)+" y="+Chr$(34)+o\Position\y#+Chr$(34)+" z="+Chr$(34)+o\Position\z#+Chr$(34)+" mode="+Chr$(34)+1+Chr$(34)+" growth1="+Chr$(34)+o\ChaoObj\FruitGrowth[1]+Chr$(34)+" growth2="+Chr$(34)+o\ChaoObj\FruitGrowth[2]+Chr$(34)+" growth3="+Chr$(34)+o\ChaoObj\FruitGrowth[3]+Chr$(34)+" growth4="+Chr$(34)+o\ChaoObj\FruitGrowth[4]+Chr$(34)+" treegrowth="+Chr$(34)+o\ChaoObj\TreeGrowth+Chr$(34)+"/>")
+			WriteLine(CurrentOpenFile,"<seed type="+Chr$(34)+o\ChaoObj\FruitType+Chr$(34)+" x="+Chr$(34)+o\Position\x#+Chr$(34)+" y="+Chr$(34)+(o\Position\y#+0.05)+Chr$(34)+" z="+Chr$(34)+o\Position\z#+Chr$(34)+" mode="+Chr$(34)+1+Chr$(34)+" growth1="+Chr$(34)+o\ChaoObj\FruitGrowth[1]+Chr$(34)+" growth2="+Chr$(34)+o\ChaoObj\FruitGrowth[2]+Chr$(34)+" growth3="+Chr$(34)+o\ChaoObj\FruitGrowth[3]+Chr$(34)+" growth4="+Chr$(34)+o\ChaoObj\FruitGrowth[4]+Chr$(34)+" treegrowth="+Chr$(34)+o\ChaoObj\TreeGrowth+Chr$(34)+"/>")
 		Else
-			WriteLine(CurrentOpenFile,"<seed type="+Chr$(34)+o\ChaoObj\FruitType+Chr$(34)+" x="+Chr$(34)+o\Position\x#+Chr$(34)+" y="+Chr$(34)+o\Position\y#+Chr$(34)+" z="+Chr$(34)+o\Position\z#+Chr$(34)+" mode="+Chr$(34)+0+Chr$(34)+" growth1="+Chr$(34)+o\ChaoObj\FruitGrowth[1]+Chr$(34)+" growth2="+Chr$(34)+o\ChaoObj\FruitGrowth[2]+Chr$(34)+" growth3="+Chr$(34)+o\ChaoObj\FruitGrowth[3]+Chr$(34)+" growth4="+Chr$(34)+o\ChaoObj\FruitGrowth[4]+Chr$(34)+" treegrowth="+Chr$(34)+o\ChaoObj\TreeGrowth+Chr$(34)+"/>")
+			WriteLine(CurrentOpenFile,"<seed type="+Chr$(34)+o\ChaoObj\FruitType+Chr$(34)+" x="+Chr$(34)+o\Position\x#+Chr$(34)+" y="+Chr$(34)+(o\Position\y#+0.05)+Chr$(34)+" z="+Chr$(34)+o\Position\z#+Chr$(34)+" mode="+Chr$(34)+0+Chr$(34)+" growth1="+Chr$(34)+o\ChaoObj\FruitGrowth[1]+Chr$(34)+" growth2="+Chr$(34)+o\ChaoObj\FruitGrowth[2]+Chr$(34)+" growth3="+Chr$(34)+o\ChaoObj\FruitGrowth[3]+Chr$(34)+" growth4="+Chr$(34)+o\ChaoObj\FruitGrowth[4]+Chr$(34)+" treegrowth="+Chr$(34)+o\ChaoObj\TreeGrowth+Chr$(34)+"/>")
 		EndIf
 
 	End Select
@@ -1040,16 +1048,16 @@ Function LoadGame_ChaoGarden()
 		Stage_ForceUpdateCyclingSkyBox()
 
 		Case "fruit":
-		obj.tObject = Object_Fruit_Create(xmlNodeAttributeValueGet(child, "type"), xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y"), xmlNodeAttributeValueGet(child, "z"), xmlNodeAttributeValueGet(child, "growth"))
+		obj.tObject = Object_Fruit_Create(xmlNodeAttributeValueGet(child, "type"), xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y")+27, xmlNodeAttributeValueGet(child, "z"), xmlNodeAttributeValueGet(child, "growth"))
 
 		Case "shell":
-		obj.tObject = Object_Shell_Create(xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y"), xmlNodeAttributeValueGet(child, "z"), xmlNodeAttributeValueGet(child, "dir"), xmlNodeAttributeValueGet(child, "type"), xmlNodeAttributeValueGet(child, "type2"))
+		obj.tObject = Object_Shell_Create(xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y")+25, xmlNodeAttributeValueGet(child, "z"), xmlNodeAttributeValueGet(child, "dir"), xmlNodeAttributeValueGet(child, "type"), xmlNodeAttributeValueGet(child, "type2"))
 
 		Case "hat":
-		obj.tObject = Object_Hat_Create(xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y"), xmlNodeAttributeValueGet(child, "z"), xmlNodeAttributeValueGet(child, "type"))
+		obj.tObject = Object_Hat_Create(xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y")+25, xmlNodeAttributeValueGet(child, "z"), xmlNodeAttributeValueGet(child, "type"))
 
 		Case "toy":
-		obj.tObject = Object_Toy_Create(xmlNodeAttributeValueGet(child, "type"), xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y"), xmlNodeAttributeValueGet(child, "z"))
+		obj.tObject = Object_Toy_Create(xmlNodeAttributeValueGet(child, "type"), xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y")+27, xmlNodeAttributeValueGet(child, "z"))
 
 		Case "tree":
 		For o.tObject = Each tObject

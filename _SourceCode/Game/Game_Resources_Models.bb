@@ -1,61 +1,5 @@
 
-;; The short names, usually used for filename detection
-Dim ShortCharNames$(CHAR_FULLCOUNT,2)
-ShortCharNames$(CHAR_SON,1) = "Son"
-ShortCharNames$(CHAR_TAI,1) = "Tai" : ShortCharNames$(CHAR_TAI,2) = "Tmh"
-ShortCharNames$(CHAR_KNU,1) = "Knu"
-ShortCharNames$(CHAR_AMY,1) = "Amy"
-ShortCharNames$(CHAR_SHA,1) = "Sha"
-ShortCharNames$(CHAR_ROU,1) = "Rou"
-ShortCharNames$(CHAR_CRE,1) = "Cre"
-ShortCharNames$(CHAR_BLA,1) = "Bla"
-ShortCharNames$(CHAR_SIL,1) = "Sil"
-ShortCharNames$(CHAR_OME,1) = "Ome"
-ShortCharNames$(CHAR_ESP,1) = "Esp"
-ShortCharNames$(CHAR_CHA,1) = "Cha"
-ShortCharNames$(CHAR_VEC,1) = "Vec"
-ShortCharNames$(CHAR_BIG,1) = "Big"
-ShortCharNames$(CHAR_MAR,1) = "Mar"
-ShortCharNames$(CHAR_MIG,1) = "Mig"
-ShortCharNames$(CHAR_RAY,1) = "Ray"
-ShortCharNames$(CHAR_CHO,1) = "Cho"
-ShortCharNames$(CHAR_TIK,1) = "Tik"
-ShortCharNames$(CHAR_NAC,1) = "Nac"
-ShortCharNames$(CHAR_BEA,1) = "Bea"
-ShortCharNames$(CHAR_BAR,1) = "Bar"
-ShortCharNames$(CHAR_JET,1) = "Jet"
-ShortCharNames$(CHAR_WAV,1) = "Wav"
-ShortCharNames$(CHAR_STO,1) = "Sto"
-ShortCharNames$(CHAR_TIA,1) = "Tia"
-ShortCharNames$(CHAR_HON,1) = "Hon"
-ShortCharNames$(CHAR_SHD,1) = "Shd"
-ShortCharNames$(CHAR_MPH,1) = "Mph"
-ShortCharNames$(CHAR_HBO,1) = "Hbo"
-ShortCharNames$(CHAR_GAM,1) = "Gam"
-ShortCharNames$(CHAR_EME,1) = "Eme"
-ShortCharNames$(CHAR_MET,1) = "Met"
-ShortCharNames$(CHAR_TDL,1) = "Tdl"
-ShortCharNames$(CHAR_MKN,1) = "Mkn"
-ShortCharNames$(CHAR_EGG,1) = "Egg" : ShortCharNames$(CHAR_EGG,2) = "Egw"
-ShortCharNames$(CHAR_BET,1) = "Bet"
-ShortCharNames$(CHAR_MT3,1) = "Mt3"
-ShortCharNames$(CHAR_GME,1) = "Gme"
-ShortCharNames$(CHAR_PRS,1) = "Prs"
-ShortCharNames$(CHAR_COM,1) = "Com"
-ShortCharNames$(CHAR_CHW,1) = "Chw"
-ShortCharNames$(CHAR_EGR,1) = "Egr"
-ShortCharNames$(CHAR_INF,1) = "Inf"
-ShortCharNames$(CHAR_TRI,1) = "Tri"
-;---
-ShortCharNames$(CHAR_OBT,1) = "Obt"
-ShortCharNames$(CHAR_CBT,1) = "Cbt"
-ShortCharNames$(CHAR_EGN,1) = "Egn"
-ShortCharNames$(CHAR_MIA,1) = "Mia"
-ShortCharNames$(CHAR_VAN,1) = "Van"
-;---
-ShortCharNames$(CHAR_CHE,1) = "Che"
-ShortCharNames$(CHAR_CHC,1) = "Chc"
-ShortCharNames$(CHAR_FRO,1) = "Fro"
+
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
@@ -688,10 +632,10 @@ ShortCharNames$(CHAR_FRO,1) = "Fro"
 		ExtractAnimSeq(mesh,				d,	-1+d+17) : d=d+17	;Embrace
 		ExtractAnimSeq(mesh,				d,	-1+d+17) : d=d+17	;Sorry
 		ExtractAnimSeq(mesh,				d,	-1+d+17) : d=d+17	;Shy
-		If Menu\Stage=998 Or Menu\Stage=997 Then
+		If Menu\Stage=998 Or Menu\Stage=997 Or (Menu\Stage<997 And Menu\BuddyChaoNumber>0) Then
 		ExtractAnimSeq(mesh,				d,	-1+d+17) : d=d+17	;Win
 		EndIf
-		If Menu\Stage=997 Then
+		If Menu\Stage=997 Or (Menu\Stage<997 And Menu\BuddyChaoNumber>0) Then
 		ExtractAnimSeq(mesh,				d,	-1+d+9) : d=d+9		;KickR
 		ExtractAnimSeq(mesh,				d,	-1+d+9) : d=d+9		;KickL
 		ExtractAnimSeq(mesh,				d,	-1+d+9) : d=d+9		;PunchR

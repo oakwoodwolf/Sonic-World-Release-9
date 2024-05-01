@@ -389,7 +389,7 @@
 			Next
 			If Menu\ChaoGarden>=0 Then
 				For cc.tChaoManager=Each tChaoManager
-					If ChaoManager_ChaoAlive(cc) Or ChaoManager_ChaoCocoonAlive(cc) Then
+					If (ChaoManager_ChaoAlive(cc) Or ChaoManager_ChaoCocoonAlive(cc))  And cc\Stats\Body=0 Then
 						Object_ChaoEmo_Update(cc\Mesh, cc\Emo, d)
 						If cc\Stats\Hat>0 and cc\HatCoversHorn Then
 							ScaleEntity cc\Mesh_horn2, 0, 0, 0

@@ -48,11 +48,11 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_CreateChao(i,color=0,takepos=false,x#=0,y#=0,z#=0)
+	Function Object_CreateChao(i,color=0,takepos=false,x#=0,y#=0,z#=0,mono=0, shiny=0, jewel=0)
 		If CHAOSLOTS(1,i)=1 Or (i<=3 and CHAOFIRSTTIMER(1)=0) Then
 			CHAOSLOTS(1,i)=1
 			obj.tObject = Object_Chao_Create(0, 0, 0, 0)
-			cc.tChaoManager = Object_ChaoManager_Create(i, obj, false, color, takepos, x#, y#, z#)
+			cc.tChaoManager = Object_ChaoManager_Create(i, obj, false, color, takepos, x#, y#, z#, False, 0,0,0,0,0,0,mono,shiny,jewel)
 		EndIf
 	End Function
 
@@ -121,7 +121,7 @@
 			If o\ChaoObj\ChaoTargetedThis Then o\ChaoObj\targetcc\FoundTarget=False
 			o\ChaoObj\ForceDelete=True
 			Select o\ChaoObj\FruitType
-				Case FRUIT_ROUND,FRUIT_CUBICLE,FRUIT_TRIANGULAR,FRUIT_HEART,FRUIT_APPLE,FRUIT_ORANGE,FRUIT_BANANA,FRUIT_PEAR,FRUIT_GRAPE,FRUIT_WATERMELON,FRUIT_MANGO,FRUIT_LEMON,FRUIT_MANDARINE,FRUIT_STRAWBERRY,FRUIT_COCONUT,FRUIT_PINEAPPLE,FRUIT_KIWI,FRUIT_APRICOT,FRUIT_PEACH,FRUIT_PITAYA,FRUIT_CHERRY,FRUIT_BLACKBERRY,FRUIT_CARAMBOLA,FRUIT_PLUM,FRUIT_COBALT,FRUIT_JUICY,FRUIT_CARROT,FRUIT_TOMATO,FRUIT_POTATO,FRUIT_CORN,FRUIT_PEPPER,FRUIT_LETTUCE,FRUIT_CUCUMBER,FRUIT_ONION,FRUIT_RADISH,FRUIT_GOLDEN:
+				Case FRUIT_BRIGHT,FRUIT_ROUND,FRUIT_CUBICLE,FRUIT_TRIANGULAR,FRUIT_HEART,FRUIT_APPLE,FRUIT_ORANGE,FRUIT_BANANA,FRUIT_PEAR,FRUIT_GRAPE,FRUIT_WATERMELON,FRUIT_MANGO,FRUIT_LEMON,FRUIT_MANDARINE,FRUIT_STRAWBERRY,FRUIT_COCONUT,FRUIT_PINEAPPLE,FRUIT_KIWI,FRUIT_APRICOT,FRUIT_PEACH,FRUIT_PITAYA,FRUIT_CHERRY,FRUIT_BLACKBERRY,FRUIT_CARAMBOLA,FRUIT_PLUM,FRUIT_COBALT,FRUIT_JUICY,FRUIT_CARROT,FRUIT_TOMATO,FRUIT_POTATO,FRUIT_CORN,FRUIT_PEPPER,FRUIT_LETTUCE,FRUIT_CUCUMBER,FRUIT_ONION,FRUIT_RADISH,FRUIT_GOLDEN:
 					spawnseed#=Rand(1,10)
 					If spawnseed#=1 Then
 						If (Not(SEEDSUM(1)>=20)) Then
@@ -281,8 +281,11 @@
 
 		TOYSUM(1) = TOYSUM(1) + 1
 
-		Object_CreateHitBox(HITBOXTYPE_BOX,o,4,4,4)
-
+		If (toytype=TOY_TV) Then
+			Object_CreateHitBox(HITBOXTYPE_BOX,o,10,10,10)
+		Else 
+			Object_CreateHitBox(HITBOXTYPE_BOX,o,4,4,4)
+		EndIf
 		Object_Acquire_Position(o,x#,y#,z#)
 		Object_Acquire_Rotation(o,0,Rand(1,360),0)
 
@@ -294,6 +297,10 @@
 			Case TOY_BEACHBALL: ExtractAnimSeq(o\Entity,1,9)
 			Case TOY_SOCCERBALL: ExtractAnimSeq(o\Entity,1,17)
 			Case TOY_RATTLE: ExtractAnimSeq(o\Entity,1,9)
+			Case TOY_TV:
+				o\ExtraTexture =  LoadTexture("ChaoWorld/Toys/TV.png",1+256) : o\HasExtraTexture=1 : TextureBlend(o\ExtraTexture, 3)
+				o\Entity2 = LoadAnimMesh("ChaoWorld\Toys\"+TOYS_FILE$(toytype)+"1.b3d", Game\Stage\Root) : o\HasEntity2=True
+				EntityTexture(o\Entity2, o\ExtraTexture)
 		End Select
 		EntityType(o\Pivot,0)
 		RotateEntity o\Pivot, 0, o\InitialRotation\y#, 0
@@ -312,7 +319,10 @@
 		; Position mesh
 		PositionEntity o\Entity, o\Position\x#, o\Position\y#, o\Position\z#
 		RotateEntity o\Entity, o\Rotation\x#, o\Rotation\y#, o\Rotation\z#
-
+		If o\HasEntity2 Then
+			PositionEntity o\Entity2, o\Position\x#, o\Position\y#, o\Position\z#
+			RotateEntity o\Entity2, o\Rotation\x#, o\Rotation\y#, o\Rotation\z#
+		EndIf
 		If o\ChaoObj\ChaoTargetedThis=False Then
 			Select o\ChaoObj\ToyType
 				Case TOY_BEACHBALL,TOY_SOCCERBALL:
@@ -332,10 +342,13 @@
 		; Obj pick up
 		Object_EnforceObjPickUp(o,p)
 
-		; Attack
-		If p\Flags\Attacking and p\Flags\CantAttackChao=False and o\Hit Then o\ObjPickedUp=-1
-		If o\BombHit Then o\ObjPickedUp=-1 : o\BombHit=False
-
+		If Not(o\ChaoObj\ToyType=TOY_TV) Then
+			; Attack
+			If p\Flags\Attacking And p\Flags\CantAttackChao=False And o\Hit Then o\ObjPickedUp=-1
+			If o\BombHit Then o\ObjPickedUp=-1 : o\BombHit=False
+		Else
+		 	PositionTexture(o\ExtraTexture, 0, 0.2*Game\Gameplay\Time)
+		EndIf
 		; Enforce force delete
 		Object_EnforceForceDeleteChaoObj(o)
 		
@@ -357,7 +370,7 @@
 		Select fruittype
 			Case FRUIT_ROUND,FRUIT_CUBICLE,FRUIT_TRIANGULAR,FRUIT_HEART,FRUIT_BANANA,FRUIT_COCONUT,FRUIT_PITAYA,FRUIT_COBALT,FRUIT_JUICY,FRUIT_GOLDEN:
 				o\ChaoObj\TreeType=1
-			Case FRUIT_APPLE,FRUIT_ORANGE,FRUIT_PEAR,FRUIT_MANGO,FRUIT_LEMON,FRUIT_MANDARINE,FRUIT_KIWI,FRUIT_APRICOT,FRUIT_PEACH,FRUIT_CHERRY,FRUIT_PLUM:
+			Case FRUIT_BRIGHT,FRUIT_APPLE,FRUIT_ORANGE,FRUIT_PEAR,FRUIT_MANGO,FRUIT_LEMON,FRUIT_MANDARINE,FRUIT_KIWI,FRUIT_APRICOT,FRUIT_PEACH,FRUIT_CHERRY,FRUIT_PLUM:
 				o\ChaoObj\TreeType=2
 			Case FRUIT_GRAPE,FRUIT_WATERMELON,FRUIT_STRAWBERRY,FRUIT_PINEAPPLE,FRUIT_BLACKBERRY,FRUIT_CARAMBOLA,FRUIT_CARROT,FRUIT_TOMATO,FRUIT_POTATO,FRUIT_CORN,FRUIT_PEPPER,FRUIT_LETTUCE,FRUIT_CUCUMBER,FRUIT_ONION,FRUIT_RADISH:
 				o\ChaoObj\TreeType=3
@@ -476,7 +489,7 @@
 			Animate o\Entity,1,0,1,10
 			Animate o\Entity2,1,0,1,10
 			Select o\ChaoObj\FruitType
-				Case FRUIT_GOLDEN,FRUIT_ROUND,FRUIT_CUBICLE,FRUIT_TRIANGULAR,FRUIT_HEART,FRUIT_APPLE,FRUIT_ORANGE,FRUIT_BANANA,FRUIT_PEAR,FRUIT_GRAPE,FRUIT_WATERMELON,FRUIT_MANGO,FRUIT_LEMON,FRUIT_MANDARINE,FRUIT_STRAWBERRY,FRUIT_COCONUT,FRUIT_PINEAPPLE,FRUIT_KIWI,FRUIT_APRICOT,FRUIT_PEACH,FRUIT_PITAYA,FRUIT_CHERRY,FRUIT_BLACKBERRY,FRUIT_CARAMBOLA,FRUIT_PLUM,FRUIT_COBALT,FRUIT_JUICY:
+				Case FRUIT_GOLDEN,FRUIT_BRIGHT,FRUIT_ROUND,FRUIT_CUBICLE,FRUIT_TRIANGULAR,FRUIT_HEART,FRUIT_APPLE,FRUIT_ORANGE,FRUIT_BANANA,FRUIT_PEAR,FRUIT_GRAPE,FRUIT_WATERMELON,FRUIT_MANGO,FRUIT_LEMON,FRUIT_MANDARINE,FRUIT_STRAWBERRY,FRUIT_COCONUT,FRUIT_PINEAPPLE,FRUIT_KIWI,FRUIT_APRICOT,FRUIT_PEACH,FRUIT_PITAYA,FRUIT_CHERRY,FRUIT_BLACKBERRY,FRUIT_CARAMBOLA,FRUIT_PLUM,FRUIT_COBALT,FRUIT_JUICY:
 					planttype$="fruits"
 				Case FRUIT_CARROT,FRUIT_TOMATO,FRUIT_POTATO,FRUIT_CORN,FRUIT_PEPPER,FRUIT_LETTUCE,FRUIT_CUCUMBER,FRUIT_ONION,FRUIT_RADISH:
 					planttype$="veggies"
@@ -948,9 +961,12 @@
 					If offspringchance1#>=5 and offspringchance2#>=5 Then
 						Interface_CreateChaoNamedMsg("mated with another chao and produced offspring.",o\ChaoObj\targetcc\Name$,0,141,240)
 						offspringcolor=ChaoManager_OffspringColor(o\ChaoObj\targetcc\Stats\Color,o\ChaoObj\targetcc2\Stats\Color)
+						offspringmono=ChaoManager_OffspringMono(o\ChaoObj\targetcc\Stats\Monotone,o\ChaoObj\targetcc2\Stats\Monotone)
+						offspringshiny=o\ChaoObj\targetcc\Stats\Color Or  o\ChaoObj\targetcc2\Stats\Shiny
+						offspringjewel=o\ChaoObj\targetcc\Stats\Textured Or  o\ChaoObj\targetcc2\Stats\Textured
 						If (Not(CHAOSUM(1)>=CHAOCOUNT)) Then
-							Object_ChaoManager_SpawnNewChao(offspringcolor, true, o\ChaoObj\targetcc\Position\x#, o\ChaoObj\targetcc\Position\y#, o\ChaoObj\targetcc\Position\z#)
-						Else
+							Object_ChaoManager_SpawnNewChao(offspringcolor, True, o\ChaoObj\targetcc\Position\x#, o\ChaoObj\targetcc\Position\y#, o\ChaoObj\targetcc\Position\z#, offspringmono, offspringshiny, offspringjewel)						
+							Else
 							Interface_Create2ChaoMsg("But there are already too many chao in the garden.","The egg has been sent to your inventory.",0,141,240)
 							ii.tItem = Item_Create(TOTALITEMS+1, 3, offspringcolor, 0, false)
 						EndIf
@@ -1146,7 +1162,7 @@
 			o\ChaoObj\FruitGrowth[4]=growth4#
 			o\ChaoObj\TreeGrowth=treegrowth#
 		EndIf
-
+		If seedmode<2 Then o\g = Object_Gravity_Create.tGravity() : o\HasGravity=True
 		Return o
 	End Function
 	
@@ -1179,7 +1195,7 @@
 
 				; Enforce force delete
 				Object_EnforceForceDeleteChaoObj(o)
-			Case 1:
+			Case 1: ;seed
 				If o\ChaoObj\TreeGrowthTimer>0 Then
 					o\ChaoObj\TreeGrowthTimer=o\ChaoObj\TreeGrowthTimer-timervalue#
 				Else
@@ -1190,7 +1206,7 @@
 					EntityAlpha(o\Entity,0)
 					o\ChaoObj\SeedMode=2
 				EndIf
-			Case 2:
+			Case 2: ; tree
 				If Game\Interface\ShallExplodeInventory=False and EntityDistance(p\Objects\Entity,o\Entity)<4.25 and p\ObjPickUp=0 and (Not(o\ChaoObj\SeedsTree\ChaoObj\TreeGrowth=-1)) Then
 					Interface_ActivateGardenAction(1, CONTROLTIPS$(TIP_DEMOLISH)+"  ")
 					p\MayNotWhistleTimer=0.5*secs#

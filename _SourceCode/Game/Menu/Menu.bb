@@ -62,6 +62,7 @@ Type tMenu
 	Field Settings.tMenu_Settings
 
 	Field Pause
+	Field PauseOptions
 
 	Field Stage
 	Field SelectedStage
@@ -219,6 +220,7 @@ Type tMenu
 	Field HeldChaoSkills[7]
 	Field HeldChaoCurrentSkills[7]
 	Field HeldChaoEternal
+	Field HeldChaoFavouriteFood
 	Field HeldChaoHat
 	Field HeldChaoCompetitionsWon
 	Field HeldChaoCompetitionsLost

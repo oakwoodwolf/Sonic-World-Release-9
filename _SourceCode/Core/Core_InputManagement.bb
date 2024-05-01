@@ -192,7 +192,7 @@ End Function
 		ElseIf Menu\Pause=1 And (((Input\Pressed\Start Or Input\Pressed\ActionJump) And Menu\Option=1) Or (Input\Pressed\ActionRoll Or Input\Pressed\ActionSkill1 Or Input\Pressed\Back)) Then
 			Input_Lock = True
 			PlaySmartSound(Sound_MenuBack)
-			Menu\Pause=0 : Input_ResetAllInput() : Game\SmartCameraRangeDontAffectTimer=3*secs#
+			Menu\Pause=0 : Menu\PauseOptions=0 : Input_ResetAllInput() : Game\SmartCameraRangeDontAffectTimer=3*secs#
 			FlushMouse()
 			If Menu\ChaoGarden=1 Then
 				For i=1 to 3 : Game\Interface\GardenActionTimer[i]=0 : Next
