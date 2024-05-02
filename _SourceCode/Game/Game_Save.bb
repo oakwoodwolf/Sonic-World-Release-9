@@ -736,7 +736,7 @@ Function SaveGame_Chao(cc.tChaoManager)
 	WriteLine(CurrentOpenFile,"<shell grit="+Chr$(34)+cc\Stats\ShellGrit#+Chr$(34)+"/>")
 
 	WriteLine(CurrentOpenFile,"<pos x="+Chr$(34)+cc\Position\x#+Chr$(34)+" y="+Chr$(34)+cc\Position\y#+Chr$(34)+" z="+Chr$(34)+cc\Position\z#+Chr$(34)+" dir="+Chr$(34)+cc\g\Motion\Direction#+Chr$(34)+"/>")
-
+	DebugLog(cc\Position\x# + " " + cc\Position\y# + " " + cc\Position\z# + " ")
 	WriteLine(CurrentOpenFile,"<run level="+Chr$(34)+cc\Stats\Run#+Chr$(34)+" current="+Chr$(34)+cc\Stats\CurrentRun#+Chr$(34)+" boost="+Chr$(34)+cc\Stats\BoostSkills[1]+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<swim level="+Chr$(34)+cc\Stats\Swim#+Chr$(34)+" current="+Chr$(34)+cc\Stats\CurrentSwim#+Chr$(34)+" boost="+Chr$(34)+cc\Stats\BoostSkills[2]+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<fly level="+Chr$(34)+cc\Stats\Fly#+Chr$(34)+" current="+Chr$(34)+cc\Stats\CurrentFly#+Chr$(34)+" boost="+Chr$(34)+cc\Stats\BoostSkills[3]+Chr$(34)+"/>")
@@ -835,6 +835,7 @@ Function LoadGame_ResetMenuChao()
 	Menu\HeldChaoAge = 0
 	Menu\HeldChaoPersona = 0
 	Menu\HeldChaoColor = 0
+	Menu\HeldChaoBody = 0
 	Menu\HeldChaoMonotone = 0
 	Menu\HeldChaoShiny = 0
 	Menu\HeldChaoTextured = 0
@@ -864,7 +865,7 @@ Function LoadGame_MenuChao(number, buddy=0)
 			Case "age": Menu\HeldChaoAge = xmlNodeAttributeValueGet(child, "is")
 			Case "persona": Menu\HeldChaoPersona = xmlNodeAttributeValueGet(child, "is")
 			Case "color": Menu\HeldChaoColor = xmlNodeAttributeValueGet(child, "is")  : Menu\HeldChaoMonotone = xmlNodeAttributeValueGet(child, "mono") : Menu\HeldChaoShiny = xmlNodeAttributeValueGet(child, "shiny") : Menu\HeldChaoTextured = xmlNodeAttributeValueGet(child, "tex") : Menu\HeldChaoBright = xmlNodeAttributeValueGet(child, "bright")
-			Case "shape": Menu\HeldChaoShape = xmlNodeAttributeValueGet(child, "is")
+			Case "shape": Menu\HeldChaoShape = xmlNodeAttributeValueGet(child, "is") : Menu\HeldChaoBody = xmlNodeAttributeValueGet(child, "body")
 			Case "side": Menu\HeldChaoSide = xmlNodeAttributeValueGet(child, "is")
 
 			Case "run": Menu\HeldChaoSkills[1] = xmlNodeAttributeValueGet(child, "level") : Menu\HeldChaoCurrentSkills[1] = xmlNodeAttributeValueGet(child, "current")
@@ -887,7 +888,7 @@ Function LoadGame_MenuChao(number, buddy=0)
 			Case "age": Menu\BuddyChaoAge = xmlNodeAttributeValueGet(child, "is")
 			Case "persona": Menu\BuddyChaoPersona = xmlNodeAttributeValueGet(child, "is")
 			Case "color": Menu\BuddyChaoColor = xmlNodeAttributeValueGet(child, "is") : Menu\BuddyChaoMonotone = xmlNodeAttributeValueGet(child, "mono") : Menu\BuddyChaoShiny = xmlNodeAttributeValueGet(child, "shiny") : Menu\BuddyChaoTextured = xmlNodeAttributeValueGet(child, "tex") : Menu\BuddyChaoBright = xmlNodeAttributeValueGet(child, "bright")
-			Case "shape": Menu\BuddyChaoShape = xmlNodeAttributeValueGet(child, "is")
+			Case "shape": Menu\BuddyChaoShape = xmlNodeAttributeValueGet(child, "is") : Menu\BuddyChaoBody = xmlNodeAttributeValueGet(child, "body")
 			Case "side": Menu\BuddyChaoSide = xmlNodeAttributeValueGet(child, "is")
 
 			Case "run": Menu\BuddyChaoSkills[1] = xmlNodeAttributeValueGet(child, "level") : Menu\BuddyChaoCurrentSkills[1] = xmlNodeAttributeValueGet(child, "current")
@@ -1091,7 +1092,7 @@ End Function
 
 Function SaveGame_AllChaoStuff()
 	For cc.tChaoManager=Each tChaoManager
-		If FileType(SaveDataPath$+"CHAO"+cc\Number+SaveDataFormat$)=1 Then SaveGame_Chao(cc)
+		If FileType(SaveDataPath$+"CHAO"+cc\Number+SaveDataFormatUnencrypted$)=1 Then SaveGame_Chao(cc)
 	Next
 	SaveGame_ChaoGarden()
 End Function

@@ -395,7 +395,7 @@
 			End Select
 
 			If ChaoManager_ChaoAlive(cc) Or ChaoManager_ChaoCocoonAlive(cc) Then ExtractAllCharacterAnimations_PetChao(cc\Mesh)
-			
+			cc\Stats\ReviveEternal=1 ; Make omochao immortal
 			Select cc\Stats\Age
 				Case 2:
 					cc\CocoonMesh = LoadAnimMesh("ChaoWorld\Cocoons\Cocoon.b3d", cc\Pivot)
@@ -1073,7 +1073,7 @@
 		If instage =0 Then gainamount = Rand(1,5) Else gainamount = 1
 		If (gaintype2=cc\Stats\FavouriteFood And gaintype1=1) Then gainamount = gainamount*1.5
 		If gainedstat>10 Then gainedstat=gainedstat/10 : gainamount = gainamount+5
-
+		EmitSmartSound(Sound_ChaoStatup,cc\Pivot)
 		For i=1 To gainamount
 			Select gainedstat
 				Case 1: cc\Stats\CurrentRun#=cc\Stats\CurrentRun#+1 : DebugLog("run")
@@ -1087,29 +1087,36 @@
 
 			If cc\Stats\CurrentRun#>10 And cc\Stats\Run#<50 Then
 				cc\Stats\Run#=cc\Stats\Run#+1 : cc\Stats\CurrentRun#=cc\Stats\CurrentRun#-11 : Interface_CreateChaoNamedMsg("has leveled up in run.",cc\Name$,233,233,233)
+				Game\Channel_ChaoEffect=PlaySmartSound(Sound_ChaoLevelUp)
 				If cc\Stats\Age<=1 And cc\Stats\Run#=4 Then Interface_CreateChaoNamedMsg("learned to walk.",cc\Name$,220,220,220)
 			EndIf
 			If cc\Stats\CurrentSwim#>10 And cc\Stats\Swim#<50 Then
 				cc\Stats\Swim#=cc\Stats\Swim#+1 : cc\Stats\CurrentSwim#=cc\Stats\CurrentSwim#-11 : Interface_CreateChaoNamedMsg("has leveled up in swim.",cc\Name$,233,233,233)
+				Game\Channel_ChaoEffect=PlaySmartSound(Sound_ChaoLevelUp)
 				If cc\Stats\Swim#=3 Then Interface_CreateChaoNamedMsg("learned to swim.",cc\Name$,220,220,220)
 			EndIf
 			If cc\Stats\CurrentFly#>10 And cc\Stats\Fly#<50 Then
 				cc\Stats\Fly#=cc\Stats\Fly#+1 : cc\Stats\CurrentFly#=cc\Stats\CurrentFly#-11 : Interface_CreateChaoNamedMsg("has leveled up in fly.",cc\Name$,233,233,233)
+				Game\Channel_ChaoEffect=PlaySmartSound(Sound_ChaoLevelUp)
 				If cc\Stats\Fly#=6 Then Interface_CreateChaoNamedMsg("learned to fly.",cc\Name$,220,220,220)
 			EndIf
 			If cc\Stats\CurrentStrength#>10 And cc\Stats\Strength#<50 Then
+				Game\Channel_ChaoEffect=PlaySmartSound(Sound_ChaoLevelUp)
 				cc\Stats\Strength#=cc\Stats\Strength#+1 : cc\Stats\CurrentStrength#=cc\Stats\CurrentStrength#-11 : Interface_CreateChaoNamedMsg("has leveled up in strength.",cc\Name$,233,233,233)
 			EndIf
 			If cc\Stats\CurrentStamina#>10 And cc\Stats\Stamina#<50 Then
+				Game\Channel_ChaoEffect=PlaySmartSound(Sound_ChaoLevelUp)
 				cc\Stats\Stamina#=cc\Stats\Stamina#+1 : cc\Stats\CurrentStamina#=cc\Stats\CurrentStamina#-11 : Interface_CreateChaoNamedMsg("has leveled up in stamina.",cc\Name$,233,233,233)
 			EndIf
 			If cc\Stats\CurrentIntelligence#>10 And cc\Stats\Intelligence#<50 Then
 				cc\Stats\Intelligence#=cc\Stats\Intelligence#+1 : cc\Stats\CurrentIntelligence#=cc\Stats\CurrentIntelligence#-11 : Interface_CreateChaoNamedMsg("has leveled up in intelligence.",cc\Name$,233,233,233)
+				Game\Channel_ChaoEffect=PlaySmartSound(Sound_ChaoLevelUp)
 				If cc\Stats\Intelligence#=2 Then Interface_CreateChaoNamedMsg("learned to play with toys.",cc\Name$,220,220,220)
 				If cc\Stats\Intelligence#=4 Then Interface_CreateChaoNamedMsg("learned to put on hats.",cc\Name$,220,220,220)
 			EndIf
 			If cc\Stats\CurrentLuck#>10 And cc\Stats\Luck#<50 Then
 				cc\Stats\Luck#=cc\Stats\Luck#+1 : cc\Stats\CurrentLuck#=cc\Stats\CurrentLuck#-11 : Interface_CreateChaoNamedMsg("has leveled up in luck.",cc\Name$,233,233,233)
+				Game\Channel_ChaoEffect=PlaySmartSound(Sound_ChaoLevelUp)
 			EndIf
 		Next
 
@@ -1124,6 +1131,7 @@
 		cc\StatChange=cc\StatChange+1
 		If cc\StatChange>=10 And instage=0 Then
 			SaveGame_AllChaoStuff()
+			
 			Game\Interface\AutoSaveShowTimer=0.5*secs#
 			cc\StatChange=0
 		EndIf

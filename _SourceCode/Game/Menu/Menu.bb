@@ -215,6 +215,7 @@ Type tMenu
 	Field HeldChaoBright
 	Field HeldChaoTextured
 	Field HeldChaoMonotone
+	Field HeldChaoBody
 	Field HeldChaoShape
 	Field HeldChaoSide
 	Field HeldChaoSkills[7]
@@ -236,6 +237,7 @@ Type tMenu
 	Field BuddyChaoTextured
 	Field BuddyChaoMonotone
 	Field BuddyChaoShape
+	Field BuddyChaoBody
 	Field BuddyChaoSide
 	Field BuddyChaoSkills[7]
 	Field BuddyChaoCurrentSkills[7]

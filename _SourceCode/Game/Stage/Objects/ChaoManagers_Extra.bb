@@ -288,9 +288,10 @@ If (Not( Menu\Stage=0)) Then
 	raceshape=Menu\HeldChaoShape
 	raceside=Menu\HeldChaoSide
 	racehat=Menu\HeldChaoHat
-
+	racebody=Menu\HeldChaoBody
+	racebright=Menu\HeldChaoBright
 	obj.tObject = Object_Chao_Create(0, 0, 0, 0)
-	racecc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, false, 0, true, x#, y#, z#, true, raceage, racepersona, racecolor, raceshape, raceside, racehat, racemono, raceshiny, racetex)
+	racecc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, false, 0, true, x#, y#, z#, true, raceage, racepersona, racecolor, raceshape, raceside, racehat, racemono, raceshiny, racetex, racebright, racebody)
 
 	racecc\Stats\Run# = Menu\HeldChaoSkills[1] : racecc\Stats\CurrentRun# = Menu\HeldChaoCurrentSkills[1]
 	racecc\Stats\Swim# = Menu\HeldChaoSkills[2] : racecc\Stats\CurrentSwim# = Menu\HeldChaoCurrentSkills[2]
@@ -303,8 +304,7 @@ If (Not( Menu\Stage=0)) Then
 	racecc\HatchTimer=1800*secs#
 	racecc\MateTimer=1800*secs#
 	racecc\Stats\ReviveEternal=Menu\HeldChaoEternal
-	racecc\Emo\Eternal=racecc\Stats\ReviveEternal
-
+	If racebody=0 Then racecc\Emo\Eternal=racecc\Stats\ReviveEternal
 	Select Menu\Stage
 	Case 998: racecc\Action=CHAOACTION_RACE_BEGIN
 	Case 997: racecc\Action=CHAOACTION_KARATE_BEGIN
@@ -331,9 +331,10 @@ If (Not( Menu\Stage=0)) Then
 	raceshape=Menu\BuddyChaoShape
 	raceside=Menu\BuddyChaoSide
 	racehat=Menu\BuddyChaoHat
+	racebody=Menu\BuddyChaoBody
 
 	obj.tObject = Object_Chao_Create(0, 0, 0, 0)
-	racecc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, false, 0, true, x#, y#, z#, true, raceage, racepersona, racecolor, raceshape, raceside, racehat, racemono, raceshiny, racetex, racebright)
+	racecc.tChaoManager = Object_ChaoManager_Create(chaonumber, obj, false, 0, true, x#, y#, z#, true, raceage, racepersona, racecolor, raceshape, raceside, racehat, racemono, raceshiny, racetex, racebright, racebody)
 
 	racecc\Stats\Run# = Menu\BuddyChaoSkills[1] : racecc\Stats\CurrentRun# = Menu\BuddyChaoCurrentSkills[1]
 	racecc\Stats\Swim# = Menu\BuddyChaoSkills[2] : racecc\Stats\CurrentSwim# = Menu\BuddyChaoCurrentSkills[2]
@@ -343,16 +344,12 @@ If (Not( Menu\Stage=0)) Then
 	racecc\Stats\Intelligence# = Menu\BuddyChaoSkills[6] : racecc\Stats\CurrentIntelligence# = Menu\BuddyChaoCurrentSkills[6]
 	racecc\Stats\Luck# = Menu\BuddyChaoSkills[7] : racecc\Stats\CurrentLuck# = Menu\BuddyChaoCurrentSkills[7]
 
-	racecc\HatchTimer=1800*secs#
-	racecc\MateTimer=1800*secs#
+	racecc\HatchTimer=18800*secs#
+	racecc\MateTimer=18800*secs#
 	racecc\Stats\ReviveEternal=Menu\BuddyChaoEternal
-	racecc\Emo\Eternal=racecc\Stats\ReviveEternal
+	If racebody=0 Then racecc\Emo\Eternal=racecc\Stats\ReviveEternal
 
 	Select Menu\Stage
-	Case 998: racecc\Action=CHAOACTION_RACE_BEGIN
-	Case 997: racecc\Action=CHAOACTION_KARATE_BEGIN
-			Game\Interface\KarateHealth#[1]=20
-			Game\Interface\KarateZeal#[1]=racecc\Stats\Stamina#+racecc\Stats\Luck#/2.0
 	Case 999:
 	Default: 
 	If Menu\ChaoGarden=0 And Menu\Stage>0 Then 

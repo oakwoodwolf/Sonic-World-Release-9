@@ -545,7 +545,7 @@
 		EndIf
 
 		; Mate timing
-		If cc\Stats\Age=3 and Menu\Stage=999 Then
+		If cc\Stats\Age=3 and Menu\Stage=999 And cc\Stats\Body=0 Then
 			If (Not(cc\MateTimer>0)) Then
 				cc\Stats\MateSeason=abs(cc\Stats\MateSeason-1)
 				Select cc\Stats\MateSeason
@@ -945,35 +945,27 @@
 			Select p\Action
 				Case ACTION_THROW, ACTION_THRUST, ACTION_SHOOT, ACTION_SHOOTHOVER:
 					cc\Animation=CHAOANIMATION_EXCLAMATIONAIR
-					cc\Emo\Emotion=CHAOEMO_angry
 				Case ACTION_PUNCH, ACTION_UPPERCUT, ACTION_PSYCHO:
 					cc\Animation=CHAOANIMATION_PUNCHL
-					cc\Emo\Emotion=CHAOEMO_angry
 				Case ACTION_SPRINT:
 					cc\Animation=CHAOANIMATION_RUNAIR
-					cc\Emo\Emotion=CHAOEMO_angry
 				Case ACTION_HURT:
-					cc\Emo\Emotion=CHAOEMO_hurt
 					cc\Animation=CHAOANIMATION_THROWN
 				Case ACTION_DIE:
-					cc\Emo\Emotion=CHAOEMO_hurt
 					cc\Animation=CHAOANIMATION_HURT
 				Case ACTION_VICTORY, ACTION_VICTORYHOLD:
 					cc\Animation=CHAOANIMATION_WIN
-					cc\Emo\Emotion=CHAOEMO_cheerful
 				Default:
 					If (cc\Underwater=1) Then
 						If cc\Stats\Swim#<3 Then
 							ParticleTemplate_Call(cc\Particle, PARTICLE_PLAYER_BUBBLEBREATHE, cc\Pivot, 0.1, 0, 0, 0, 0, Rand(1,5)/2.0)
 							cc\Animation=CHAOANIMATION_DROWN
-							cc\Emo\Emotion=CHAOEMO_disgusted
 						Else
 							ParticleTemplate_Call(cc\Particle, PARTICLE_PLAYER_BUBBLEBREATHE, cc\Pivot, 0.1, 0, 0, 0, 0, Rand(1,5)/8.0)
 							cc\Animation=CHAOANIMATION_SWIM
-							cc\Emo\Emotion=CHAOEMO_bored
 						EndIf
 					Else
-						cc\Emo\Emotion=ChaoManager_GetDefaultPersona(cc)
+						
 						If (Not(p\Motion\Ground)) Or cc\Stats\Fly>6 Then
 							If p\SpeedLength#>2 Then
 								cc\Animation=CHAOANIMATION_RUNAIR
@@ -1009,7 +1001,34 @@
 					EndIf
 			End Select
 		EndIf
-		
+		;emo
+		If cc\Stats\Body=0 Then
+		Select p\Action
+			Case ACTION_THROW, ACTION_THRUST, ACTION_SHOOT, ACTION_SHOOTHOVER:
+				cc\Emo\Emotion=CHAOEMO_angry
+			Case ACTION_PUNCH, ACTION_UPPERCUT, ACTION_PSYCHO:
+				cc\Emo\Emotion=CHAOEMO_angry
+			Case ACTION_SPRINT:
+				cc\Emo\Emotion=CHAOEMO_angry
+			Case ACTION_HURT, ACTION_FLOAT:
+				cc\Emo\Emotion=CHAOEMO_confused
+			Case ACTION_DIE:
+				cc\Emo\Emotion=CHAOEMO_surprised
+			Case ACTION_VICTORY, ACTION_VICTORYHOLD:
+				cc\Emo\Emotion=CHAOEMO_thrilled
+			Default:
+				If (p\Underwater=1) Then
+					If cc\Stats\Swim#<3 Then
+						cc\Emo\Emotion=CHAOEMO_disgusted
+					Else
+						cc\Emo\Emotion=CHAOEMO_curious
+					EndIf
+				Else
+					ChaoManager_GetDefaultPersona(cc)
+				EndIf
+				
+		End Select
+	EndIf
 
 		; Movement
 		If Game\CheeseTimer>0 and (Not(p\Flags\HomingTarget\x#=99999 and p\Flags\HomingTarget\y#=99999 and p\Flags\HomingTarget\z#=99999)) Then
@@ -1707,14 +1726,15 @@
 					If dodgechance>(50-0.75*oppcc\Stats\Fly#) Then
 						oppcc\Action=CHAOACTION_KARATE_DODGE
 						Create_AfterImage.tAfterImage(oppcc\Mesh,oppcc\Pivot,500,96,96,96,1,0,1.5,oppcc\Animation,True,False,Texture_Trail)
-						oppcc\Channel_Swim = EmitSmartSound(Sound_Dodge, oppcc\Pivot)
+						oppcc\Channel_Swim = EmitSmartSound(Sound_CharacterChange, oppcc\Pivot)
 						oppcc\g\Motion\Ground=False : oppcc\g\Motion\Speed\y#=0.14
 						oppcc\FlyTimer=0.245*secs#
 					Else
 						oppcc\Action=CHAOACTION_KARATE_THROWN
 						oppcc\g\Motion\Ground=False : oppcc\g\Motion\Speed\y#=0.2+cc\Stats\Strength#/100.0 cc\g\Motion\Speed\z#=-0.2-cc\Stats\Strength#/50.0
 						oppcc\HurtTimer=0.365*secs#
-						ParticleTemplate_Call(oppcc\Particle, PARTICLE_OBJECT_FLAMYBLOOD,oppcc\Pivot)
+						oppcc\Channel_Swim = EmitSmartSound(Sound_Swipe, oppcc\Pivot)
+						ParticleTemplate_Call(oppcc\Particle, PARTICLE_PLAYER_BULLETHEAT,oppcc\Pivot)
 						Game\Interface\KarateHealth#[oppcc\Number]=Game\Interface\KarateHealth#[oppcc\Number]-(Rand(0,4)/4.0+0.5+cc\Stats\Strength#/20.0-oppcc\Stats\Swim#/100.0+Game\Interface\KarateZeal#[cc\Number]/60.0)
 					EndIf
 				EndIf
@@ -1733,6 +1753,7 @@
 		cc\g\Motion\Speed\z#=-0.2
 
 		If cc\g\Motion\Ground Then
+			cc\Channel_Swim=EmitSmartSound(Sound_ChaoStatus, cc\Pivot)
 			cc\Action=CHAOACTION_KARATE_HURT
 			cc\HurtTimer=1.2*secs#
 		EndIf
