@@ -61,13 +61,13 @@ Function DrawChaoStats(cc.tChaoManager, x#, y#)
 	;Hatch
 	j# = (cc\HatchTimer/100/10)
 	SetColor(255,255,255)
-	DrawImageEx(INTERFACE(Interface_Icons), x#+38*GAME_WINDOW_SCALE#, y#+(boxspacing#*7)*GAME_WINDOW_SCALE#, 11)
+	DrawImageEx(INTERFACE(Interface_Icons), x#+38*GAME_WINDOW_SCALE#, y#+(boxspacing#*7)*GAME_WINDOW_SCALE#, 15)
 	DrawRealText(j#, x#+55*GAME_WINDOW_SCALE#, y#+(boxspacing#*7)*GAME_WINDOW_SCALE#, Interface_Text_2,2,0,255,255,255,1.35)
 	SetColor(255,255,255)
 	;Character
 	j# = (cc\Stats\CharacterLove[pp(1)\Character]+100)/200.0
 	SetColor(255*j#,255*j#,255*j#)	
-	Interface_DrawHead(x#-45*GAME_WINDOW_SCALE#, y#+(boxspacing#*8)*GAME_WINDOW_SCALE#, pp(1)\Character)
+	Interface_DrawHead(x#-45*GAME_WINDOW_SCALE#, y#+(boxspacing#*8)*GAME_WINDOW_SCALE#, pp(1)\Character-1)
 	SetColor(255,255,255)
 End Function
 

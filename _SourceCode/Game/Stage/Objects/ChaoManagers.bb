@@ -95,7 +95,7 @@
 	End Type
 
 	Type tChaoManager_Stats
-		Field Body#
+		Field Body
 		Field Age
 		Field Persona
 		Field Color
@@ -282,16 +282,19 @@
 			cc\Stats\Shape=forceshape
 			cc\Stats\Side=forceside
 			cc\Stats\Hat=forcehat
+			cc\Stats\Bright=forcebright
+			cc\Stats\Body=forcebody
 			If takepos Then cc\InitialPosition\x#=x# : cc\InitialPosition\y#=y# : cc\InitialPosition\z#=z#
 		EndIf
 		If cc\Stats\FavouriteFood<2 Then cc\Stats\FavouriteFood = Rand(FRUIT_CUBICLE, FRUIT_RADISH)
 		cc\obj=o
 		o\ChaoObj\targetcc=cc
-		cc\Stats\Body = forcebody
+		
 		cc\Pivot = CreatePivot()
 		PositionEntity(cc\Pivot, cc\InitialPosition\x#, cc\InitialPosition\y#, cc\InitialPosition\z#)
 		RotateEntity cc\Pivot, 0, cc\InitialDirection#, 0
-		If forcebody=0 Then
+		Select cc\Stats\Body:
+		Case 0:
 			Select cc\Stats\Age
 				Case 0:
 					cc\Mesh = LoadAnimMesh("ChaoWorld\Eggs\egg.b3d", cc\Pivot)
@@ -354,71 +357,121 @@
 
 
 			If born Then ChaoManager_GetBorn(cc)
-		ElseIf forcebody=2 Then
-				wispname$="Purple"
-				Select cc\Stats\Color
-					Case CHAOCOLOR_AZURE
-						wispname = "Cyan"
-					Case CHAOCOLOR_WHITE
-						wispname = "White"
-					Case CHAOCOLOR_BLUE
-						wispname = "Blue"
-					Case CHAOCOLOR_BLACK
-						wispname = "Black"
-					Case CHAOCOLOR_GREY
-						wispname = "Ivory"
-					Case CHAOCOLOR_BROWN
-						wispname = "Crimson"
-					Case CHAOCOLOR_RED
-						wispname = "Red"
-					Case CHAOCOLOR_ORANGE
-						wispname = "Orange"
-					Case CHAOCOLOR_YELLOW
-						wispname = "Yellow"
-					Case CHAOCOLOR_GREEN
-						wispname = "Gray"
-					Case CHAOCOLOR_LIME
-						wispname = "Green"
-					Case CHAOCOLOR_PURPLE
-						wispname = "Indigo"
-					Case CHAOCOLOR_PINK
-						wispname = "Pink"
-					Case CHAOCOLOR_TRANS
-						wispname = "Magenta"
-					Case CHAOCOLOR_CELESTE
-						wispname = "Violet"
-				End Select
-				cc\Mesh = LoadAnimMesh("Objects\Wisps\Wisp"+wispname+".b3d", cc\Pivot)
-				ScaleEntity cc\Mesh,3.0,3.0,3.0
-				PositionEntity cc\Mesh, 0.0,0.5,0.0
-				cc\Mesh_horn2 = FindChild(cc\Mesh, "horn2")
-		ElseIf forcebody=3 Then
-				flickyname=0
-				Select cc\Stats\Color
-					Case CHAOCOLOR_PURPLE, CHAOCOLOR_PINK, CHAOCOLOR_BROWN:
-						flickyname = 2
-					Case CHAOCOLOR_RED, CHAOCOLOR_ORANGE, CHAOCOLOR_YELLOW:
-						flickyname = 3
-					Case CHAOCOLOR_GREEN, CHAOCOLOR_LIME, CHAOCOLOR_WHITE:
-						flickyname = 4
-					Default:
-						flickyname = 1
-				End Select
-				cc\Mesh = LoadAnimMesh("Objects\Flickies\Flicky"+flickyname+".b3d", cc\Pivot)
-				ScaleEntity cc\Mesh,0.8,0.8,0.8
-				PositionEntity cc\Mesh, 0.0,0.5,0.0
-				ExtractAnimSeq(cc\Mesh,1,9)
-				cc\Mesh_horn1 = FindChild(cc\Mesh, "Hair01")
-				cc\Mesh_horn2 = FindChild(cc\Mesh, "Hair01")
-		Else
-			cc\Mesh = LoadAnimMesh("ChaoWorld\Chao\Special\"+forcebody+".b3d", cc\Pivot)
+		Case 1:
+			Select cc\Stats\Age
+				Case 0:
+					cc\Mesh = LoadAnimMesh("ChaoWorld\Eggs\egg.b3d", cc\Pivot)
+					ExtractAnimSeq(cc\Mesh,1,9)
+					If cc\Stats\Textured>0 Then
+						cc\BodyTexture=LoadTexture("ChaoWorld\Chao\Tex\tex_"+CHAOJEWEL$(cc\Stats\Color)+".png",1+64+256)
+					ElseIf cc\Stats\Monotone>0 Then
+						cc\BodyTexture=LoadTexture("ChaoWorld\Chao\"+CHAOCOLORS$(cc\Stats\Color)+"\"+CHAOCOLORS$(cc\Stats\Color)+".png",256)
+					Else
+						cc\BodyTexture=LoadTexture("ChaoWorld\Eggs\"+CHAOCOLORS$(cc\Stats\Color)+".png",256)
+					EndIf
+					EntityTexture cc\Mesh, cc\BodyTexture
+					FreeTexture cc\BodyTexture
+				Default:
+					cc\Mesh = LoadAnimMesh("ChaoWorld\Chao\Special\"+cc\Stats\Body+"\"+cc\Stats\Body+".b3d", cc\Pivot)
+					If cc\Stats\Textured>0 Then
+						cc\BodyTexture=LoadTexture("ChaoWorld\Chao\Tex\tex_"+CHAOJEWEL$(cc\Stats\Color)+".png",1+64+256)
+					ElseIf cc\Stats\Monotone>0 Then
+						cc\BodyTexture=LoadTexture("ChaoWorld\Chao\"+CHAOCOLORS$(cc\Stats\Color)+"\"+CHAOCOLORS$(cc\Stats\Color)+".png",256)
+					Else
+						cc\BodyTexture=LoadTexture("ChaoWorld\Chao\Special\"+cc\Stats\Body+"\chr_omochao_body_"+CHAOCOLORS$(cc\Stats\Color)+".png",256)
+					EndIf
+					If cc\Stats\Shiny>0 Then cc\BodyGlareTexture=LoadTexture("ChaoWorld\Chao\0.blackglare2.Shiny.png",1+64) Else cc\BodyGlareTexture=LoadTexture("ChaoWorld\Chao\0.brightshoeref.png",1+64)
+					TextureBlend(cc\BodyGlareTexture,3)
+					ApplyMeshTextureLayer(cc\Mesh, "chr_omochao_body_dif.png", cc\BodyTexture)
+					If cc\Stats\Bright=1 Then
+						TextureBlend(cc\BodyTexture,3)
+						ApplyMeshTextureLayer(cc\Mesh, "chr_omochao_body_dif.png", cc\BodyTexture,true)
+					EndIf
+					ApplyMeshTextureLayer(cc\Mesh,  "chr_omochao_body_dif.png", cc\BodyGlareTexture, True)					
+					cc\Mesh_horn1 = FindChild(cc\Mesh, "horn1")
+					cc\Mesh_horn2 = FindChild(cc\Mesh, "horn2")	
+					cc\HandL = FindChild(cc\Mesh, "handL")
+					cc\HandR = FindChild(cc\Mesh, "handR")
+			End Select
+
+			If ChaoManager_ChaoAlive(cc) Or ChaoManager_ChaoCocoonAlive(cc) Then ExtractAllCharacterAnimations_PetChao(cc\Mesh)
+			
+			Select cc\Stats\Age
+				Case 2:
+					cc\CocoonMesh = LoadAnimMesh("ChaoWorld\Cocoons\Cocoon.b3d", cc\Pivot)
+				Case 4:
+					Select cc\Stats\ReviveAble
+					Case 0: cc\CocoonMesh = LoadAnimMesh("ChaoWorld\Cocoons\Cocoon3.b3d", cc\Pivot)
+					Case 1: cc\CocoonMesh = LoadAnimMesh("ChaoWorld\Cocoons\Cocoon2.b3d", cc\Pivot)
+					End Select
+			End Select	
+			EntityType(cc\Pivot,COLLISION_OBJECT2)
+			If born Then ChaoManager_GetBorn(cc)
+		Case 2:
+			wispname$="Purple"
+			Select cc\Stats\Color
+				Case CHAOCOLOR_AZURE
+					wispname = "Cyan"
+				Case CHAOCOLOR_WHITE
+					wispname = "White"
+				Case CHAOCOLOR_BLUE
+					wispname = "Blue"
+				Case CHAOCOLOR_BLACK
+					wispname = "Black"
+				Case CHAOCOLOR_GREY
+					wispname = "Ivory"
+				Case CHAOCOLOR_BROWN
+					wispname = "Crimson"
+				Case CHAOCOLOR_RED
+					wispname = "Red"
+				Case CHAOCOLOR_ORANGE
+					wispname = "Orange"
+				Case CHAOCOLOR_YELLOW
+					wispname = "Yellow"
+				Case CHAOCOLOR_GREEN
+					wispname = "Gray"
+				Case CHAOCOLOR_LIME
+					wispname = "Green"
+				Case CHAOCOLOR_PURPLE
+					wispname = "Indigo"
+				Case CHAOCOLOR_PINK
+					wispname = "Pink"
+				Case CHAOCOLOR_TRANS
+					wispname = "Magenta"
+				Case CHAOCOLOR_CELESTE
+					wispname = "Violet"
+			End Select
+			cc\Mesh = LoadAnimMesh("Objects\Wisps\Wisp"+wispname+".b3d", cc\Pivot)
+			ScaleEntity cc\Mesh,3.0,3.0,3.0
+			PositionEntity cc\Mesh, 0.0,0.5,0.0
+			cc\Mesh_horn2 = FindChild(cc\Mesh, "horn2")
+		Case 3:
+			flickyname=0
+			Select cc\Stats\Color
+				Case CHAOCOLOR_PURPLE, CHAOCOLOR_PINK, CHAOCOLOR_BROWN:
+					flickyname = 2
+				Case CHAOCOLOR_RED, CHAOCOLOR_ORANGE, CHAOCOLOR_YELLOW:
+					flickyname = 3
+				Case CHAOCOLOR_GREEN, CHAOCOLOR_LIME, CHAOCOLOR_WHITE:
+					flickyname = 4
+				Default:
+					flickyname = 1
+			End Select
+			cc\Mesh = LoadAnimMesh("Objects\Flickies\Flicky"+flickyname+".b3d", cc\Pivot)
+			ScaleEntity cc\Mesh,0.8,0.8,0.8
+			PositionEntity cc\Mesh, 0.0,0.5,0.0
+			ExtractAnimSeq(cc\Mesh,1,9)
+			cc\Mesh_horn1 = FindChild(cc\Mesh, "Hair01")
+			cc\Mesh_horn2 = FindChild(cc\Mesh, "Hair01")
+		Default
+			cc\Mesh = LoadAnimMesh("ChaoWorld\Chao\Special\"+cc\Stats\Body+"\"+cc\Stats\Body+".b3d", cc\Pivot)
 			ExtractAllCharacterAnimations_PetChao(cc\Mesh)
 			cc\Mesh_horn1 = FindChild(cc\Mesh, "horn1")
 			cc\Mesh_horn2 = FindChild(cc\Mesh, "horn2")
-		EndIf
-		If cc\Stats\Hat>0 And forcebody=4 Then cc\Stats\Hat=0
+		End Select
+		If cc\Stats\Hat>0 And cc\Stats\Body=4 Then cc\Stats\Hat=0
 		If cc\Stats\Hat>0 Then Object_ChaoManager_LoadHat(cc)
-		If cc\Stats\Hat>0 And forcebody=2 Then ScaleEntity cc\HatMesh,0.33,0.33,0.33 : MoveEntity cc\HatMesh,0.0,-1.2,0.0
+		If cc\Stats\Hat>0 And cc\Stats\Body=2 Then ScaleEntity cc\HatMesh,0.33,0.33,0.33 : MoveEntity cc\HatMesh,0.0,-1.2,0.0
 		EntityType(cc\Pivot,COLLISION_OBJECT2)
 		If Menu\Settings\Shadows#>0 Then cc\ShadowCircle = Init_CircleShadow(cc\Pivot, cc\Mesh, 1.5)
 		
@@ -431,7 +484,7 @@
 		cc\Particle = ParticleTemplate_Create.tParticleTemplate()
 
 		Return cc
-		
+
 	End Function
 	
 	; =========================================================================================================

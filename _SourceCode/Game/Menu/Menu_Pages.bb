@@ -630,11 +630,15 @@ End Function
 ;===============================================================================================================================================================
 
 Function Menu_Pause_Update()
+StartDraw()
+SetBlend(FI_ALPHABLEND)
+SetAlpha(1.0)
+SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
+SetColor(255, 255, 255)
 Select Menu\PauseOptions
 	Case 2:
 		If Menu\Option=0 Then Menu\Option=1
-		DrawRealText("Warp", GAME_WINDOW_W/2-0*GAME_WINDOW_SCALE#, 27.5*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 1, 0, 36, 81, 143)
-
+		DrawRealText("WARP", GAME_WINDOW_W/2, GAME_WINDOW_H/2-92.5*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 1, 0, 63, 63, 63)
 
 		xspacing=75
 		DrawSmartButton(1, "Mystic Ruins", GAME_WINDOW_W/2-xspacing*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-60*GAME_WINDOW_SCALE#,False,True)
@@ -713,11 +717,7 @@ Select Menu\PauseOptions
 				If Menu\Option<=5 Then Menu\Option=Menu\Option+5 Else Menu\Option=Menu\Option-5	
 		EndIf	
 	Default:
-		StartDraw()
-		SetBlend(FI_ALPHABLEND)
-		SetAlpha(1.0)
-		SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
-		SetColor(255, 255, 255)
+		
 
 		DrawSmartButton(1, "Continue", GAME_WINDOW_W/2, GAME_WINDOW_H/2-50*GAME_WINDOW_SCALE#)
 		Select Menu\ChaoGarden
@@ -749,8 +749,9 @@ Select Menu\PauseOptions
 			Menu\Transition=1
 		EndIf
 
-		EndDraw()
+		
 End Select
+EndDraw()
 End Function
 
 ;===============================================================================================================================================================

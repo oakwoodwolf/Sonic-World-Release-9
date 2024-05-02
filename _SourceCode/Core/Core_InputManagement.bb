@@ -189,7 +189,7 @@ End Function
 				Game\Interface\ShowChaoItems=5
 			EndIf
 			PauseAllChannels()
-		ElseIf Menu\Pause=1 And (((Input\Pressed\Start Or Input\Pressed\ActionJump) And Menu\Option=1) Or (Input\Pressed\ActionRoll Or Input\Pressed\ActionSkill1 Or Input\Pressed\Back)) Then
+		ElseIf Menu\Pause=1 And (((Input\Pressed\Start Or Input\Pressed\ActionJump) And Menu\Option=1 And Menu\PauseOptions=0) Or (Input\Pressed\ActionRoll Or Input\Pressed\ActionSkill1 Or Input\Pressed\Back)) Then
 			Input_Lock = True
 			PlaySmartSound(Sound_MenuBack)
 			Menu\Pause=0 : Menu\PauseOptions=0 : Input_ResetAllInput() : Game\SmartCameraRangeDontAffectTimer=3*secs#

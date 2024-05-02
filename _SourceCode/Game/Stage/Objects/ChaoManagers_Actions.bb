@@ -585,7 +585,7 @@
 			Select cc\Stats\Age
 				Case 0: If (Not(cc\HatchTimer>0)) Then cc\Stats\ShellGrit#=cc\Stats\ShellGrit#-1 : cc\HatchTimer=Rand(30,60)*secs#
 					If (Not(cc\Stats\ShellGrit#>0)) Then ChaoManager_AgeUp(cc, True)
-				Case 3: If (Not(cc\HatchTimer>0)) and cc\Stats\ReviveEternal=0 Then ChaoManager_AgeUp(cc)
+				Case 3: If (Not(cc\HatchTimer>0)) and cc\Stats\ReviveEternal=0 and cc\Stats\Body=0 Then ChaoManager_AgeUp(cc)
 				Default: If (Not(cc\HatchTimer>0)) Then ChaoManager_AgeUp(cc)
 			End Select
 		EndIf
