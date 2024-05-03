@@ -912,7 +912,7 @@ Function Object_CreateRandomChao(chaonumber,x#,y#,z#)
 	randomchaocolor=Rand(1,CHAOCOLORS_total)
 	randomchaomono=Rand(0,1)
 	randomchaoshiny=Rand(0,1)
-	randomchaotex=Rand(0,1)
+	tex=Rand(1,5) : If tex=5 Then randomchaotex=1 else randomchaotex=0
 	If randomchaoage>=3 Then
 		randomchaoshape=Rand(1,5)
 		randomchaoside=Rand(1,3)

@@ -1723,7 +1723,7 @@
 			For oppcc.tChaoManager=Each tChaoManager
 				If oppcc\Number=karateopponent Then
 					dodgechance=Rand(1,oppcc\Stats\Fly#)
-					If dodgechance>(50-0.75*oppcc\Stats\Fly#) Then
+					If dodgechance>(50-0.75*oppcc\Stats\Fly#) And (Not(oppcc\Action=CHAOACTION_KARATE_MEDITATE)) Then
 						oppcc\Action=CHAOACTION_KARATE_DODGE
 						Create_AfterImage.tAfterImage(oppcc\Mesh,oppcc\Pivot,500,96,96,96,1,0,1.5,oppcc\Animation,True,False,Texture_Trail)
 						oppcc\Channel_Swim = EmitSmartSound(Sound_CharacterChange, oppcc\Pivot)
