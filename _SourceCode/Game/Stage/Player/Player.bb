@@ -884,13 +884,20 @@
 	; =========================================================================================================
 	; =========================================================================================================
 	Function Player_Destroy(p.tPlayer)
+		If p\Online\IsLocal = False Then FreeEntity(p\Online\Collision) : FreeEntity(p\Online\CamPivot)
 		FreeEntity(p\Objects\Entity)
 		FreeEntity(p\Objects\Mesh)
 		If p\Objects\Shield<>0 Then FreeEntity(p\Objects\Shield)
-		
+		p\Online\Connected=False
+
 		Delete p\Motion\Speed
 		Delete p\Motion\Align
 		Delete p\Animation\Align
+		Delete p\Online\CurrentPos
+		Delete p\Online\CurrentRot
+		Delete p\Online\Pos : Delete p\Online\PrevPos
+		Delete p\Online\Rot : Delete p\Online\PrevRot
+		Delete p\Online
 		Delete p\Objects
 		Delete p\Motion
 		Delete p\Animation

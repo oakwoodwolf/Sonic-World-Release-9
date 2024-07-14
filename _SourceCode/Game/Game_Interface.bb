@@ -88,6 +88,21 @@ Type tGame_Interface
 	Field ControlTipPickUpTimer
 	Field ControlTipTypePickUp
 End Type
+; Chat Structure
+Type tChat
+	Field Allowed
+	Field Txt$
+	Field PrevTxt$
+	Field TxtHandle$
+	Field Position#
+	Field FirstWord
+	Field SecondWord
+	Field Sentence$[2]
+	Field Cursor$
+	Field Scale
+	Field SlideVel#
+	Field CursorInterval
+End Type
 ; Info/Message Structure
 Type Info
 	Field txt$
@@ -96,6 +111,10 @@ Type Info
 	field randcolor
 	field No
 End Type
+
+Global Chatting.tChat = New tChat
+Chatting\Scale=3
+Const CHAT_LENGTH=28
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
@@ -347,7 +366,7 @@ End Function
 		DrawNumber((Game\Gameplay\Time/10) Mod 60, 158*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#, 2)
 
 		Interface_RingCounter(d)
-
+		Interface_DrawChat(5*GAME_WINDOW_SCALE#, (GraphicsHeight()-(ImageHeightEx(Interface_1Chatbox)*(Chatting\Scale+1)))*GAME_WINDOW_SCALE#,Chatting\Scale)
 		Update_Monitor_Icons(d)
 
 		If Game\Interface\FlashCheckTimerTimer>0 Then
@@ -1136,6 +1155,88 @@ Function Info(t$,r=255,g=255,b=255, font_type$="normal", randcolor=false)
 	i\randcolor=randcolor
 	Insert i Before First Info
 End Function
+
+Function Interface_DrawChat(x#=0, y#=0, csize=1, orientation=1)
+	
+	; fix the chat limit consequently to the size.
+	if csize>5 then csize=5
+	fitbox=(5-3)+(3*csize)
+
+	select orientation
+		case 0: txtpos#=0
+		case 1: txtpos#=(ImageHeightEx(Interface_1ChatBox)*csize)+30
+	end select
+
+	; the background for the chatbox (chatbox itself.)
+	SetAlpha(0.175)
+	DrawImageEx(Interface_1Chatbox, x#, y#, 0) ; top
+	for bi=1 to csize-1
+		DrawImageEx(Interface_1Chatbox, x#, y#+(ImageHeightEx(Interface_1Chatbox))*bi, 1)
+	next
+	DrawImageEx(Interface_1Chatbox, x#, y#+(ImageHeightEx(Interface_1Chatbox)*csize), 2) ; bottom	
+	SetAlpha(1.0)
+
+	; the backing for the input text.
+	if Chatting\Allowed=True
+	SetColor(5,5,5) : DrawOval(x#+4.5, (y#)+txtpos#, 20, 20)
+	SetCustomColor ARGB(1, 5, 5, 5), ARGB(0, 5, 5, 5), ARGB(0, 5, 5, 5), ARGB(1, 5, 5, 5)
+	DrawRect(x#+10+4.5, (y#)+txtpos#, 250, 20, 1)
+	SetColor(255,255,255)
+	EndIf
+	
+	; the little cursor to indicate you are in chat mode.
+	if Chatting\Allowed then
+		If MilliSecs()-Chatting\CursorInterval > 500
+			If Chatting\Cursor = "_" Then Chatting\Cursor = "" : Else : Chatting\Cursor = "_"
+			Chatting\CursorInterval = MilliSecs()
+		EndIf
+	Else
+		Chatting\Cursor = ""
+	EndIf
+	SetImageFont(OnlineFont)
+	DrawText(">:"+Chatting\Txt$+Chatting\Cursor$,x#+5,y#+txtpos#)
+
+	; a little slide effect for chat text.
+	slidechat#=slidechat#+1.25*Game\DeltaTime\Delta#
+	if slidechat#>=18 then slidechat#=18
+	textcounter = textcounter - slidechat#
+
+	; a counter to check if over the limit of the chatbox.
+	Counter = 0
+	For i.Info = Each Info
+		Counter = Counter + 1
+		If Counter > fitbox Then
+			Delete i
+		Else
+			If i\alpha#<1.0 Then i\alpha#=i\alpha#+0.0425*Game\DeltaTime\Delta#
+			SetAlpha(i\Alpha#)
+			;SetColor i\r-textcounter/1.5, i\g-textcounter/1.5, i\b-textcounter/1.5			
+			If i\randcolor=True Then SeedRnd(millisecs()) : i\r=rnd(100,255): i\g=rnd(100,255): i\b=rnd(100,255)
+			SetColor(i\r, i\g, i\b)
+			select i\Font$
+				;Case "bold": DrawOutlineText(i\Txt, x#+5,(y#+txtpos#)+1*textcounter, false, false, i\r, i\g, i\b)
+				;Case "italic":  DrawTextRect% (i\Txt, x#+5,(y#+txtpos#)+1*textcounter, StringWidthEx(i\Txt), 20, 0, 0, 3)
+				Default : 
+					If BP_GetMessagePart(i\Txt, 2, ":")<>"" Then
+						SetColor(i\r, i\g, i\b)
+						;SetColor(onlineplayer(1)\Online\PrevColorR, onlineplayer(1)\Online\PrevColorG, onlineplayer(1)\Online\PrevColorB)
+						DrawText(BP_GetMessagePart(i\Txt, 1, ":"), x#+5,(y#+txtpos#)+1*textcounter, false, false)
+						SetColor(255,255,255)
+						DrawText(BP_GetMessagePart(i\Txt, 2, ":"), x#+5+StringWidthEx(BP_GetMessagePart(i\Txt, 1, ":")),(y#+txtpos#)+1*textcounter, false, false)
+					Else
+						SetColor(i\r, i\g, i\b)
+						DrawText(i\Txt, x#+5,(y#+txtpos#)+1*textcounter, false, false)
+					endif
+			end Select
+			textcounter = textcounter - 20
+		End If
+	Next
+	; finalize and go back to default.
+	SetColor(255,255,255):SetAlpha(1.0)
+	SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
+	; cancel chat
+	if KeyHit(KEY_DELETE) and Chatting\Allowed>0 Then Chatting\Txt$="" : Chatting\Allowed=0 : FlushKeys()
+end function
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

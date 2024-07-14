@@ -5,10 +5,8 @@ Function Player_CreateOnlineData(p.tPlayer, pname$, pid%, no%, localplayer%=True
 	; build players online type.
 	p\Online = New tPlayer_Online
 	; the position/rotation vector.
-	;p\Online\PrevPos 	= Vector(0, -999999, 0) : p\Online\PrevRot 	= Vector(0, -999999, 0)
-	p\Online\PrevPos 	= Vector(0, 1, 0) : p\Online\PrevRot 	= Vector(0, 0, 0)
-	;p\Online\Pos 		= Vector(0, -999999, 0) : p\Online\Rot 		= Vector(0, -999999, 0)
-	p\Online\Pos 		= Vector(0, 1, 0) : p\Online\Rot 		= Vector(0, 0, 0)
+	p\Online\PrevPos 	= Vector(0, -999999, 0) : p\Online\PrevRot 	= Vector(0, -999999, 0)
+	p\Online\Pos 		= Vector(0, -999999, 0) : p\Online\Rot 		= Vector(0, -999999, 0)
 	p\Online\CurrentPos = Vector(0, 1, 0);
 	p\Online\CurrentRot = Vector(0, 90, 0);
 	; online player values
@@ -28,18 +26,18 @@ Function Player_CreateOnlineData(p.tPlayer, pname$, pid%, no%, localplayer%=True
 		p\Online\Collision = CreateCylinder():EntityAlpha(p\Online\Collision,0)
 		;EntityRadius(p\Online\Collision, 8.5, 8.5)		
 		;EntityType(p\Online\Collision, COLLISION_ONLINE_PLAYER)	
-		EntityType(p\Objects\Mesh, COLLISION_ONLINE_PLAYER)
+		EntityType(p\Objects\Mesh, COLLISION_PLAYER)
 	EndIf		
 	; name the player by their ID.
 	NameEntity(p\Objects\Entity, p\Online\NetID)
-	DebugLog("ID No:"+EntityName(p\Objects\Entity)) ; debugging
+	DebugLog("ID No:"+EntityName(p\Objects\Entity) + " " + p\Online\Name) ; debugging
 	; tag bubble for Tag Game Mode. (will change to a sprite circle.)
 	p\Online\TagBubble = CreateSphere(16, p\Objects\Mesh)
 	Textures_Shield					= LoadTexture("Textures/shield.png", 1+2)
 	EntityTexture(p\Online\TagBubble, Textures_Shield)
 	ScaleEntity(p\Online\TagBubble, 7.5, 7.5, 7.5)
 	EntityAlpha(p\Online\TagBubble, 0.45)
-	;EntityBlend(p\Online\TagBubble, 3)
+	EntityBlend(p\Online\TagBubble, 3)
 	EntityFx(p\Online\TagBubble, 1)
 End Function
 
