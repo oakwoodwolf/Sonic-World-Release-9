@@ -818,7 +818,7 @@
 		EndIf
 	EndIf
 	; Manage Networking if you are Online.
-		If Game\Online\Online And Menu\Stage>0 Then	; Network Management
+		If Game\Online\Online And Menu\Stage>0 And Game\State = GAME_STATE_STEP Then	; Network Management
 			; ---------------------------------------------------------------	
 			; update the network, and handle the message packets
 			BP_UpdateNetwork()
@@ -826,7 +826,7 @@
 			; ---------------------------------------------------------------	
 			; send packets, but handle the amount send.
 			Game\Online\SendCount = Game\Online\SendCount - 1
-			If Game\Online\SendCount<=0 And Game\State = GAME_STATE_STEP Then
+			If Game\Online\SendCount<=0 Then
 				Game\Online\SendCount = Game\Online\SendFreq	
 				If Game\Online\SendUpdates Then	
 					p.tPlayer = First tPlayer		
