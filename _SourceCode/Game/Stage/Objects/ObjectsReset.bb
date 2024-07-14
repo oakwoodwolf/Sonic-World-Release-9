@@ -38,7 +38,7 @@ Function Objects_Reset_All()
 
 			p\DontGetHurtTimer=0.5*secs#
 
-			If p\No#<0 Then
+			If p\No#<0 And p\Online\Connected=False Then
 				Player_SetPosition(p, p\Rival\InitialPositionX#, p\Rival\InitialPositionY#, p\Rival\InitialPositionZ#, p\Rival\InitialRotationY#)
 				Player_ResetAllTimers(p)
 				p\Rival\Health=5

@@ -674,12 +674,13 @@
 		; Create new player object
 		p.tPlayer 	= New tPlayer
 		p\No#=no#
-		onlineplayer(no)=p
+		ono=Abs(no)
+		onlineplayer(ono)=p
 		If no#>0 Then
 			pp(no#)=p
 			Player_DetermineChar(p,Menu\Character[p\No#])
 			If (Not(p\Character=CHAR_TMH)) Then p\JumpActionMode=JUMPAMODE[p\RealCharacter]
-		Else
+		Else If localplayer Then
 			Game\RivalAmount=Game\RivalAmount+1 : ppe(Game\RivalAmount)=p
 			p\Rival = New tPlayer_Rival : p\Rival\Health=5
 			p\Rival\Running=rivalrun#
@@ -772,6 +773,9 @@
 				End Select
 			EndIf
 			Player_DetermineChar(p,p\Character)
+		
+		Else
+			p\Character = rivalfixed : p\RealCharacter = rivalfixed
 		EndIf
 
 		; Create objects
@@ -1079,7 +1083,7 @@
 			Player_Animate(p, d)
 
 			; Rival
-			If p\No#<0 Then Player_Rival(p,d)
+			If p\No#<0 And (Not p\Online\Connected) Then Player_Rival(p,d)
 		Else
 			Player_Motion_Placements(p)
 		EndIf

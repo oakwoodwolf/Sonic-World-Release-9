@@ -793,7 +793,7 @@
 								DrawPlayerTag(c\Entity, p\Objects\Mesh, p\Online\Name$+" - Time:"+p\Online\TagTimer, p\Online\NetID, 3, p\Online\ColorR,p\Online\ColorG,p\Online\ColorB);000, 0, 255)
 							EndIf
 						Else
-							DrawPlayerTag(c\Entity, p\Objects\Mesh, p\Online\Name$, p\Online\NetID, 	3, p\Online\ColorR,p\Online\ColorG,p\Online\ColorB)
+							DrawPlayerTag(c\Entity, p\Objects\Mesh, p\Online\Name$, p\Online\NetID, 	3, Interface_Lives_R[InterfaceChar(p\RealCharacter)],Interface_Lives_G[InterfaceChar(p\RealCharacter)],Interface_Lives_B[InterfaceChar(p\RealCharacter)])
 						EndIf
 					EndIf
 				Next ;!	
@@ -1010,13 +1010,14 @@ Function HandleMessages()
 				ochar = Instr(msg\msgData,"/",oname+1)
 				PlayerNo=PlayerNo+1
 				plyname$ = Left(msg\msgData,oname-1)
-				plychar$ = Mid(msg\msgData,oname+1,ochar-oname-1)
-				p.tPlayer = Player_Create(plychar$, False, plyname$, msg\msgFrom, PlayerNo)	; create new player						
+				plychar = Int(Mid(msg\msgData,oname+1,ochar-oname-1))
+				DebugLog("plychar: " + plychar)
+				p.tPlayer = Player_Create(-PlayerNo,0,2, False, plyname$,  msg\msgFrom)	; create new player						
 				nInfo.NetInfo = BP_FindID(p\Online\NetID) 			; send info the net							
 				; finished 	; inform the joined party
 				If Game\Online\ShowMsg=False Then BP_UDPMessage(0,25, Game\Online\MsgOfTheDay$) : Game\Online\ShowMsg=True
 				If BP_My_ID = BP_Host_ID Then : Info("**" + p\Online\Name$ + " has joined Session!",0,255,0, "bold") : Else : Info("**" + p\Online\Name$ + " is in Session!",0,255,0, "bold") : EndIf
-				Channel_LoggedIn=PlaySound(Sound_LoggedIn) 								; sound for comformation			
+				Game\Channel_1Up=PlaySmartSound(Sound_CharacterChange) 								; sound for comformation			
 				;Next						
 			;------------------------------------------------------
 			Case 254 ;A player has left..
@@ -1025,11 +1026,11 @@ Function HandleMessages()
 				If p<>Null Then
 					nInfo.NetInfo = BP_FindID(p\Online\NetID) 			; send info the net		
 					If (msg\msgData = True) Then 
-						Info("**" + p\Online\Name$ + " has left!",0,0,255, "bold") 
-						Channel_LoggedOut=PlaySound(Sound_LoggedOut)
+						Info("**" + p\Online\Name$ + " has left!",0,0,255, "bold") : DebugLog("**" + p\Online\Name$ + " left!")
+						Game\Channel_1Up=PlaySmartSound(Sound_Die)
 					Else 
-						Info("**" + p\Online\Name$ + " lagged out!",0,0,255, "bold")
-						Channel_LaggedOut=PlaySound(Sound_LaggedOut)
+						Info("**" + p\Online\Name$ + " lagged out!",0,0,255, "bold") : DebugLog("**" + p\Online\Name$ + " lagged out!")
+						Game\Channel_1Up=PlaySmartSound(Sound_GameOver)
 					EndIf
 					Player_Destroy(p)
 					;Delete nInfo;
@@ -1047,10 +1048,10 @@ Function HandleMessages()
 				
 				If msg\msgData = True Then 
 					Info("**The host ended the game!", 0, 0, 255, "bold") 
-					Channel_LoggedOut=PlaySound(Sound_LoggedOut)
+						Game\Channel_1Up=PlaySmartSound(Sound_Die)
 				Else 
 					Info("**No reply from host in " + (BP_TimeoutPeriod / 1000) + " seconds. Exiting game..", 255, 255, 0, "bold")
-					Channel_LaggedOut=PlaySound(Sound_LaggedOut)
+					Game\Channel_1Up=PlaySmartSound(Sound_GameOver)
 				EndIf
 			;------------------------------------------------------	
 			Case 252	;Someone got kicked/banned
@@ -1107,6 +1108,7 @@ Function HandleMessages()
 					p\Online\Rot\x 			= Float(BP_GetMessagePart(msg\msgData, 4, "/"))
 					p\Online\Rot\y 			= Float(BP_GetMessagePart(msg\msgData, 5, "/"))
 					p\Online\Rot\z 			= Float(BP_GetMessagePart(msg\msgData, 6, "/"))
+					DebugLog("**"+ p\Online\Pos\x + p\Online\Pos\y + " " + p\Online\Pos\z)
 			;------------------------------------------------------			
 			Case 77 ; Player Color
 			;------------------------------------------------------							

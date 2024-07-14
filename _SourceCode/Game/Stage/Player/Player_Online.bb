@@ -5,8 +5,10 @@ Function Player_CreateOnlineData(p.tPlayer, pname$, pid%, no%, localplayer%=True
 	; build players online type.
 	p\Online = New tPlayer_Online
 	; the position/rotation vector.
-	p\Online\PrevPos 	= Vector(0, -999999, 0) : p\Online\PrevRot 	= Vector(0, -999999, 0)
-	p\Online\Pos 		= Vector(0, -999999, 0) : p\Online\Rot 		= Vector(0, -999999, 0)
+	;p\Online\PrevPos 	= Vector(0, -999999, 0) : p\Online\PrevRot 	= Vector(0, -999999, 0)
+	p\Online\PrevPos 	= Vector(0, 1, 0) : p\Online\PrevRot 	= Vector(0, 0, 0)
+	;p\Online\Pos 		= Vector(0, -999999, 0) : p\Online\Rot 		= Vector(0, -999999, 0)
+	p\Online\Pos 		= Vector(0, 1, 0) : p\Online\Rot 		= Vector(0, 0, 0)
 	p\Online\CurrentPos = Vector(0, 1, 0);
 	p\Online\CurrentRot = Vector(0, 90, 0);
 	; online player values
@@ -185,27 +187,20 @@ End Function
 
 
 ; draw players name tag and number.
-Function DrawPlayerTag(Cam%, Entity, label$, no=1, height#=3, r=255, g=255, b=255)
-	If EntityInView(Entity, cam%) Then
+Function DrawPlayerTag(Cam%, entity, label$, no=1, height#=3, r=255, g=255, b=255)
+	If EntityInView(entity, cam%) Then
+  		CameraProject(Cam%, EntityX (entity), EntityY (entity)+height#, EntityZ (entity))
+  		x = ProjectedX () - 1
+  		y = ProjectedY () - 64
  		StartDraw()	
 		; Setup rendering methods
 		SetBlend(FI_ALPHABLEND)
+		SetAlpha(1.0)
 		SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
-  		CameraProject(Cam%, EntityX(entity), EntityY(entity)+height#, EntityZ(entity))
-  		w = StringWidth(label$)
-  		h = StringHeight(label$)
-  		x = ProjectedX () - (w / 2) - 1
-  		y = ProjectedY () - (h / 2) - 1
-  		SetColor(0, 0, 0)
-  		DrawRect x, y-41, w + 6, h + 2, 1
-  		SetColor(255, 255, 255)	
-  		nx = ProjectedX () - (StringWidthEx ("") / 2) - 1
-  		ny = ProjectedY () - (StringHeight ("") / 2) - 1
-		DrawImageEx(Interface_PlayerNo,nx, ny-50,no-1)
-		SetCustomColor ARGB(1, 255, 255, 255), ARGB(1, 255, 255, 255), ARGB(0, r, g, b), ARGB(0, r, b, g)
-		SetImageFont(KimberleyFont)
-  		DrawText(label$, ProjectedX(), y-41, 1, 0)
-  		SetImageFont(OnlineFont)
+		SetColor(r, g, b)
+		DrawImageEx(INTERFACE(Interface_Indicator), x, y)
+		SetColor(255, 255, 255)
+		DrawRealText(label$, x, y, Interface_TextTitle_1, 1, 0, 63, 63, 63, 1.65)
 		EndDraw()
 	EndIf
 End Function

@@ -170,35 +170,6 @@ End Function
 ;_________________________________________________________________________________________________________
 ;_________________________________________________________________________________________________________
 
-Function LabelEntity (camera, entity, label$, no=1, y#=3, r=255, g=255, b=255)
-	If EntityInView (entity, camera) and EntityDistance(entity,camera)<750
- 		StartDraw()	
-		; Setup rendering methods
-		SetBlend(FI_ALPHABLEND)
-		SetAlpha(1.0)
-		SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
-		SetColor(255, 255, 255)
-  		CameraProject(camera, EntityX (entity), EntityY (entity)+y#, EntityZ (entity))
-  		w = StringWidth (label$)
-  		h = StringHeight (label$)
-  		x = ProjectedX () - (w / 2) - 1
-  		y = ProjectedY () - (h / 2) - 1
-  		SetColor(0, 0, 0)
-  		;DrawRect(x, y-40, w + 2, h + 2, 1)
-  		SetColor(255, 255, 255)	
-		nw = StringWidthEx ("")
-  		nh = StringHeight ("")
-  		nx = ProjectedX () - (nw / 2) - 1
-  		ny = ProjectedY () - (nh / 2) - 1
-		DrawImageEx(INTERFACE(Interface_Indicator), x, y)
-		;SetColor(r,g,b)
-		SetCustomColor ARGB(1, 255, 255, 255), ARGB(1, 255, 255, 255), ARGB(1, r, g, b), ARGB(1, r, b, g)
-		SetColor(255, 255, 255)
-		DrawRealText(label$, ProjectedX(), y-41, Interface_TextTitleChao_1, 1, 0, 63, 63, 63, 1.65)
-		EndDraw()
- EndIf
-End Function
-
 Function Chao_Interface_NameTag(cc.tChaoManager, c.tCamera)
 	If EntityInView(cc\Mesh,c\Entity) and EntityDistance(cc\Mesh,c\Entity)<750 Then
 		height# = MeshHeight#(cc\Mesh)+0.5

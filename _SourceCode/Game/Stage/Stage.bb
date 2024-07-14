@@ -660,10 +660,13 @@ Next
 										Game\Gameplay\CheckY#=Game\Stage\Properties\StartY#
 										Game\Gameplay\CheckZ#=Game\Stage\Properties\StartZ#
 										Game\Gameplay\CheckDirection#=Game\Stage\Properties\StartDirection#
-
+										If Game\Online\Online=0 Then
 										If Menu\Members>2 Then p3.tPlayer = Player_Create(3)
 										If Menu\Members>1 Then p2.tPlayer = Player_Create(2)
 										p1.tPlayer = Player_Create(1)
+										Else
+											p1.tPlayer = Player_Create(1,0,0,True,PlayerName,BP_My_ID)
+										EndIf
 										ch.tCheese = Object_Cheese_Create.tCheese()
 										f.tFroggy = Object_Froggy_Create.tFroggy()
 										Player_Spawn(Game\Gameplay\CheckX#,Game\Gameplay\CheckY#,Game\Gameplay\CheckZ#,Game\Gameplay\CheckDirection#)

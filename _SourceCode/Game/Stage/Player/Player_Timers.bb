@@ -101,7 +101,7 @@ If Menu\ChaoGarden=1 Then
 	If p\MayNotCheerTimer>0 Then p\MayNotCheerTimer=p\MayNotCheerTimer-timervalue#
 EndIf
 
-If p\No#<0 Then
+If p\No#<0 and Game\Online\Connected=0 Then
 	If p\Rival\MoveTimer>0 Then p\Rival\MoveTimer=p\Rival\MoveTimer-timervalue#
 	If (Not(p\Rival\MoveTimer>0)) and p\Rival\DontMoveTimer>0 Then p\Rival\DontMoveTimer=p\Rival\DontMoveTimer-timervalue#
 	If p\Rival\MakeJumpTimer>0 Then p\Rival\MakeJumpTimer=p\Rival\MakeJumpTimer-timervalue#
@@ -213,7 +213,7 @@ p\JustGrabbedPulleyTimer=0
 p\ForceBeingAbleToChangeLeaderTimer=0
 p\CantJumpTimer=0
 
-If p\No#<0 Then
+If p\No#<0 And Game\Online\Connected=0 Then
 	p\Rival\MoveTimer=0
 	p\Rival\DontMoveTimer=1*secs#
 	p\Rival\MakeJumpTimer=1*secs#
