@@ -207,7 +207,8 @@ End Function
 		Field	Stage.tGame_Stage
 		Field	Others.tGame_Others
 		Field   Interface.tGame_Interface
-
+		Field	Mode, NewMode
+		Field	Online.tGame_Online
 		Field	State
 		Field	MustQuitStage
 		Field	CinemaMode
@@ -305,6 +306,29 @@ End Function
 
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
+	Dim onlineplayer.tPlayer(6)
+	; ---------------------------------------------------------------------------------------------------------
+	; tGame_Online
+	; ---------------------------------------------------------------------------------------------------------
+	Type tGame_Online
+		Field	Online
+		Field	Connected
+		Field	IP$
+		Field	Port
+		Field	Hosting, ReJoin
+		Field	Status, JoinTimer
+		Field 	Debug, ViewPlayer, ViewName$
+
+		FIeld 	SendCount
+		Field   SendFreq% = 4
+		Field  	ShowInfo
+		Field   SendUpdates%
+		Field  	Logging%
+		Field   GameType%
+
+		Field   MsgOfTheDay$, ShowMsg, ShowCommands
+	End Type
+
 	Type tGame_Gameplay
 		Field	Character
 		Field 	Lives
@@ -463,6 +487,17 @@ End Function
 	; --- World constants ---
 	Const		GAME_SCALE#			=	0.1
 
+		; --- Online Game Types ----
+	Const		GAME_TYPE_FREE		=	0
+	Const  		GAME_TYPE_TAG 		= 	1
+	Const		GAME_TYPE_HIDENSEEK	=	2
+	Const  		GAME_TYPE_RACE		=	3
+	Const		GAME_TYPE_KOTH		=	4
+	Const		GAME_TYPE_RING		=	5
+	Const		GAME_TYPE_BATTLE	=	6
+	Const		GAME_TYPE_TEAMS		= 	7
+	Const		GAME_TYPE_ALTITUDE	=	8
+
 	Const FPS_LIMIT = 60
 	
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
@@ -601,6 +636,7 @@ End Function
 	Game\Stage\Properties			= New tGame_StageProperties
 	Game\Others				= New tGame_Others
 	Game\Interface 				= New tGame_Interface
+	Game\Online					= New tGame_Online
 
 ;-------------------------------------------------------------------------------------------------
 ;-------------------------------------------------------------------------------------------------

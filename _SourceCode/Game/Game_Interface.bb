@@ -88,7 +88,14 @@ Type tGame_Interface
 	Field ControlTipPickUpTimer
 	Field ControlTipTypePickUp
 End Type
-
+; Info/Message Structure
+Type Info
+	Field txt$
+	Field r,g,b, alpha#
+	Field font$
+	field randcolor
+	field No
+End Type
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
@@ -1118,6 +1125,17 @@ Function DrawTitleCardStuff(inmenu=false)
 
 End Function
 
+Function Info(t$,r=255,g=255,b=255, font_type$="normal", randcolor=false)
+	;SetColor r,g,b
+	i.Info=New Info
+	slidechat#=1
+	i\r=r : i\g=g : i\b=b
+	i\font$	= "normal"
+	i\font$ = font_type$
+	i\txt$=t$ : i\alpha#=0.0
+	i\randcolor=randcolor
+	Insert i Before First Info
+End Function
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

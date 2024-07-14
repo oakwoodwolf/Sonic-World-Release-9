@@ -780,6 +780,24 @@
 						If o\State=0 Or o\State=-2 Object_Flicky_Tag(o, cam)
 				End Select
 			Next
+			If Game\Online\Online And Menu\Stage>0 Then	; Network Management
+			; display message of the day
+			Game_OnlineMsgOfTheDay()
+			; ---------------------------------------------------------------
+			; draw name-tags
+				For p.tPlayer = Each tPlayer ;!
+					;ViewOtherPlayer(p, c)
+					If p\Online\Connected And p\Online\ShowTag=True Then 
+						If p\Online\TagMode=TAG_IS_IT And Game\Online\GameType=GAME_TYPE_TAG
+							If p\Online\TagTimer<>"" Then
+								DrawPlayerTag(c\Entity, p\Objects\Mesh, p\Online\Name$+" - Time:"+p\Online\TagTimer, p\Online\NetID, 3, p\Online\ColorR,p\Online\ColorG,p\Online\ColorB);000, 0, 255)
+							EndIf
+						Else
+							DrawPlayerTag(c\Entity, p\Objects\Mesh, p\Online\Name$, p\Online\NetID, 	3, p\Online\ColorR,p\Online\ColorG,p\Online\ColorB)
+						EndIf
+					EndIf
+				Next ;!	
+			EndIf
 		EndIf
 	Next
 
@@ -799,7 +817,34 @@
 			Stage_ForceUpdateCyclingSkyBox()
 		EndIf
 	EndIf
-		
+	; Manage Networking if you are Online.
+		If Game\Online\Online And Menu\Stage>0 Then	; Network Management
+			; ---------------------------------------------------------------	
+			; update the network, and handle the message packets
+			BP_UpdateNetwork()
+			HandleMessages()
+			; ---------------------------------------------------------------	
+			; send packets, but handle the amount send.
+			Game\Online\SendCount = Game\Online\SendCount - 1
+			If Game\Online\SendCount<=0 And Game\State = GAME_STATE_STEP Then
+				Game\Online\SendCount = Game\Online\SendFreq	
+				If Game\Online\SendUpdates Then	
+					p.tPlayer = First tPlayer		
+					; send movement packet	
+						position = String$(EntityX(p\Objects\Mesh)+"/"+EntityY(p\Objects\Mesh)+"/"+EntityZ(p\Objects\Mesh),1)
+						rotation = String$(EntityPitch(p\Objects\Mesh)+"/"+EntityYaw(p\Objects\Mesh)+"/"+EntityRoll(p\Objects\Mesh),1)
+						movement = String$(position + "/" + rotation,1)
+					BP_UDPMessage(0, UDPMSG_PLAYERMOVEMENT, movement)	
+
+					; send attributes packet
+					BP_UDPMessage(0, UDPMSG_PLAYERATTRIBUTES, p\Action+"/"+p\Animation\Animation+"/"+p\SpeedLength+"/"+p\Motion\Ground)
+					; deal the tag and race attributes
+					If Game\Online\GameType=1 Then BP_UDPMessage(0,20,onlineplayer(1)\Online\TagMode+"/"+onlineplayer(1)\Online\TagTimer+"/"+onlineplayer(1)\Online\TagCoolDown)
+					If Game\Online\GameType=3 Then BP_UDPMessage(0,21,onlineplayer(1)\Online\RacePosition+"/"+onlineplayer(1)\Online\FinishedRace);+"/"+onlineplayer(1)\Online\RaceTimer)
+				EndIf
+			EndIf
+			; ---------------------------------------------------------------	
+		EndIf
 	Flip(GAME_WINDOW_VSYNC)
 
 	End Function
@@ -948,3 +993,250 @@ End Function
 	Function DummyDebug()
 		PlaySmartSound(Sound_AmbientAlarm)
 	End Function
+
+
+; ---------------------------------------------------------------------------------------------------------
+; Handle Online Packets
+; ---------------------------------------------------------------------------------------------------------
+
+Function HandleMessages()
+	; handle the messages/packets
+	For msg.MsgInfo = Each MsgInfo ;!!!!
+		Select msg\msgType
+			;------------------------------------------------------		
+			Case 255 ;A new player has joined!
+			;------------------------------------------------------
+				oname = Instr(msg\msgData,"/",1)
+				ochar = Instr(msg\msgData,"/",oname+1)
+				PlayerNo=PlayerNo+1
+				plyname$ = Left(msg\msgData,oname-1)
+				plychar$ = Mid(msg\msgData,oname+1,ochar-oname-1)
+				p.tPlayer = Player_Create(plychar$, False, plyname$, msg\msgFrom, PlayerNo)	; create new player						
+				nInfo.NetInfo = BP_FindID(p\Online\NetID) 			; send info the net							
+				; finished 	; inform the joined party
+				If Game\Online\ShowMsg=False Then BP_UDPMessage(0,25, Game\Online\MsgOfTheDay$) : Game\Online\ShowMsg=True
+				If BP_My_ID = BP_Host_ID Then : Info("**" + p\Online\Name$ + " has joined Session!",0,255,0, "bold") : Else : Info("**" + p\Online\Name$ + " is in Session!",0,255,0, "bold") : EndIf
+				Channel_LoggedIn=PlaySound(Sound_LoggedIn) 								; sound for comformation			
+				;Next						
+			;------------------------------------------------------
+			Case 254 ;A player has left..
+			;------------------------------------------------------
+				p.tPlayer = FindPlayerData(msg\msgFrom)		
+				If p<>Null Then
+					nInfo.NetInfo = BP_FindID(p\Online\NetID) 			; send info the net		
+					If (msg\msgData = True) Then 
+						Info("**" + p\Online\Name$ + " has left!",0,0,255, "bold") 
+						Channel_LoggedOut=PlaySound(Sound_LoggedOut)
+					Else 
+						Info("**" + p\Online\Name$ + " lagged out!",0,0,255, "bold")
+						Channel_LaggedOut=PlaySound(Sound_LaggedOut)
+					EndIf
+					Player_Destroy(p)
+					;Delete nInfo;
+					Delete p		
+					PlayerNo=PlayerNo-1		
+				End If
+			;------------------------------------------------------	
+			Case 253 ;The host has disconnected
+			;------------------------------------------------------
+				PlayerNo=PlayerNo-1
+				For p.tPlayer = Each tPlayer 
+					;nInfo.NetInfo = BP_FindID(p\Online\NetID) : Delete nInfo
+					If p\Online\NetID <> BP_My_ID Then Player_Destroy(p) : Delete p 	; delete the player
+				Next
+				
+				If msg\msgData = True Then 
+					Info("**The host ended the game!", 0, 0, 255, "bold") 
+					Channel_LoggedOut=PlaySound(Sound_LoggedOut)
+				Else 
+					Info("**No reply from host in " + (BP_TimeoutPeriod / 1000) + " seconds. Exiting game..", 255, 255, 0, "bold")
+					Channel_LaggedOut=PlaySound(Sound_LaggedOut)
+				EndIf
+			;------------------------------------------------------	
+			Case 252	;Someone got kicked/banned
+			;------------------------------------------------------
+				p.tPlayer = FindPlayerData(msg\msgFrom)
+				; was it you breh
+				If p\Online\NetID = BP_My_ID Then	;It was -me-??				
+					;If msg\msgData = False Then : Info("**You have been kicked!", 255, 153, 0, "bold") : Else : Info("**You have been banned!", 255, 0 ,0, "bold") : EndIf
+					Channel_Kicked=PlaySound(Sound_Kicked)
+					For p.tPlayer = Each tPlayer
+						If p\Online\NetID <> BP_My_ID Then
+							Player_Destroy(p)
+							Delete p
+						End If
+					Next				
+				Else				;It wasn't? Ok then.
+					;If msg\msgData = False Then : Info("**" + p\Online\Name$ + " has been kicked!", 255, 153, 0, "bold") : Else : Info("**" + p\Online\Name$ + " has been banned!",255,0,0, "bold") : EndIf
+					Channel_Kicked=PlaySound(Sound_Kicked)
+					Player_Destroy(p)
+					Delete p
+					PlayerNo=PlayerNo-1
+				End If
+			;------------------------------------------------------	
+			Case 11,95 ; Chat Packet
+			;------------------------------------------------------
+            	p.tPlayer = FindPlayerData(msg\msgFrom)
+            	;If  msg\msgType=11 Then Info (p\Online\name$ + ":" + msg\msgData, 255,255,255, "normal")
+				;If  msg\msgType=95 Then Info (msg\msgData, 255,255,255, "normal")
+				If ChannelPlaying(Channel_Message) Then StopChannel(Channel_Message)
+            	Channel_Message=PlaySound(Sound_Message)
+			;------------------------------------------------------
+            Case 12 ; Info/Message Packet
+			;------------------------------------------------------
+            	p.tPlayer = FindPlayerData(msg\msgFrom)
+            	If msg\msgData = "ALL HAIL WIZG!!!" Or msg\msgData = "420 Blaze It!!!!" Then
+            		Info (msg\msgData,255,255,0, "bold", true)
+            	Else
+            		Info (msg\msgData,255,255,0, "bold", false)
+            	endif
+            	If ChannelPlaying(Channel_Message) Then StopChannel(Channel_Message)
+				Channel_Message=PlaySound(Sound_Message)
+			;------------------------------------------------------			
+			Case 1 ; Player Movement
+			;------------------------------------------------------							
+					; set to player
+					p.tPlayer = FindPlayerData(msg\msgFrom)
+					; position
+					Vector_SetFromVector(p\Online\PrevPos, p\Online\Pos)
+					p\Online\Pos\x 				= Float(BP_GetMessagePart(msg\msgData, 1, "/"))
+					p\Online\Pos\y		 		= Float(BP_GetMessagePart(msg\msgData, 2, "/"))
+					p\Online\Pos\z 				= Float(BP_GetMessagePart(msg\msgData, 3, "/"))
+					; rotation	
+					Vector_SetFromVector(p\Online\PrevRot, p\Online\Rot)						
+					p\Online\Rot\x 			= Float(BP_GetMessagePart(msg\msgData, 4, "/"))
+					p\Online\Rot\y 			= Float(BP_GetMessagePart(msg\msgData, 5, "/"))
+					p\Online\Rot\z 			= Float(BP_GetMessagePart(msg\msgData, 6, "/"))
+			;------------------------------------------------------			
+			Case 77 ; Player Color
+			;------------------------------------------------------							
+					; set to player
+					p.tPlayer = FindPlayerData(msg\msgFrom)
+					p\Online\PrevColorR			= Int(BP_GetMessagePart(msg\msgData, 1, "|"))
+					p\Online\PrevColorG		 	= Int(BP_GetMessagePart(msg\msgData, 2, "|"))
+					p\Online\PrevColorB 		= Int(BP_GetMessagePart(msg\msgData, 3, "|"))
+			;------------------------------------------------------
+			Case 2 ; Player Attributes
+			;------------------------------------------------------
+				; set to player
+				p.tPlayer = FindPlayerData(msg\msgFrom)
+				If p\Online\NetID<>BP_My_ID Then
+				; set attributes
+					p\Action 					= Int(BP_GetMessagePart(msg\msgData, 1, "/"))
+					p\Animation\Animation 		= Int(BP_GetMessagePart(msg\msgData, 2, "/"))
+					p\SpeedLength# 				= Float(BP_GetMessagePart(msg\msgData, 3, "/"))
+					p\Motion\Ground 			= Int(BP_GetMessagePart(msg\msgData, 4, "/"))
+				EndIf
+			;------------------------------------------------------
+			Case 20 ; handle tag
+			;------------------------------------------------------
+				; set values
+				p.tPlayer = FindPlayerData(msg\msgFrom)				
+				p\Online\TagMode 				= Int(BP_GetMessagePart(msg\msgData, 1))
+				p\Online\TagTimer 				= Float(BP_GetMessagePart(msg\msgData, 2))
+				p\Online\TagCoolDown 			= Int(BP_GetMessagePart(msg\msgData, 3))
+			;------------------------------------------------------	
+			Case 21 ; handle race
+			;------------------------------------------------------
+				; set values
+				p.tPlayer = FindPlayerData(msg\msgFrom)
+				p\Online\RacePosition 			= Int(BP_GetMessagePart(msg\msgData, 1))
+				p\Online\FinishedRace 			= Int(BP_GetMessagePart(msg\msgData, 2))
+				;p\Online\RaceTimer 			= Float(BP_GetMessagePart(msg\msgData, 3))
+			;------------------------------------------------------	
+			Case 22
+			;------------------------------------------------------
+				p.tPlayer = FindPlayerData(msg\msgFrom)
+				p\Online\InYourRadius			= (msg\msgData)
+			;------------------------------------------------------
+			Case 24
+			;------------------------------------------------------
+				p.tPlayer = FindPlayerData(msg\msgFrom)
+				p\Online\ShowTag				= (msg\msgData)
+			;------------------------------------------------------
+			Case 25
+			;------------------------------------------------------
+				Game\Online\MsgOfTheDay$=msg\msgData
+				If Game\Online\ShowMsg=False Then Info(Game\Online\MsgOfTheDay$, 0,255,255); : Game\Online\ShowMsg=True
+				Info(Game\Online\MsgOfTheDay$, 0,255,255)
+			;------------------------------------------------------
+			Case 26 ; Game Mode
+			;------------------------------------------------------
+				Game\Online\GameType=msg\msgData
+				BP_GameType=msg\msgData
+				Select Game\Online\GameType
+					Case 1 : DebugLog("Game Mode is 'Tag'")
+					Case 2 : DebugLog("Game Mode is 'Hide and Seek'")
+					Case 3 : DebugLog("Game Mode is 'Racing'")
+					Case 4 : DebugLog("Game Mode is 'Free'")
+				End Select
+			;------------------------------------------------------
+			Case 3 ; Various Packet
+			;------------------------------------------------------
+				p.tPlayer = FindPlayerData(msg\msgFrom)
+				Select msg\msgData
+					Case "respawn" : EntityType(p\Objects\Entity,0) : EntityType(p\Objects\Entity, COLLISION_PLAYER)
+					Case "teleport" : Channel_Teleport=PlaySound(Sound_Teleport)
+					Case "teleport all"				
+						EntityType(onlineplayer(1)\Objects\Entity, 0)			
+						PositionEntity(onlineplayer(1)\Objects\Entity, EntityX(p\Objects\Entity), EntityY(p\Objects\Entity), EntityZ(p\Objects\Entity))
+						EntityType(onlineplayer(1)\Objects\Entity, COLLISION_PLAYER)
+						Channel_Teleport=PlaySound(Sound_Teleport)
+					Case "respawn all"
+						Vector_Set(onlineplayer(1)\Motion\Speed, 0, 0, 0)
+						PositionEntity(onlineplayer(1)\Objects\Entity, 0, 10, 0)
+						PositionEntity(onlineplayer(1)\Objects\Mesh, 0, 10, 0)
+						ResetEntity(onlineplayer(1)\Objects\Entity)
+					Case "tagged"
+						;p.tPlayer = First tPlayer
+						onlineplayer(1)\Online\TagMode=TAG_IS_IT
+						If onlineplayer(1)\Online\TagMode=TAG_IS_IT Then onlineplayer(1)\Online\TagTimer=TAG_TIMER
+					case "cleared"
+						onlineplayer(1)\Online\TagMode=0;TAG_NOT_IT
+						onlineplayer(1)\Online\TagTimer=0
+					Default ; name change
+						p\Online\Name$=msg\msgData
+						If ChannelPlaying(Channel_NameChange) Then StopChannel(Channel_NameChange)
+						Channel_NameChange=PlaySound(Sound_NameChange)
+				End Select
+			;------------------------------------------------------		
+			Case 55	; GAG Stuff
+			;------------------------------------------------------	
+				If ChannelPlaying(Channel_Gag) Then StopChannel(Channel_Gag)	
+				Select msg\msgData
+					case 1 : Channel_Gag=PlaySound(Sound_NoUse)
+					case 2 : Channel_Gag=PlaySound(Sound_OhNo)
+					case 3 : Channel_Gag=PlaySound(Sound_TooSlow)
+					case 4 : Channel_Gag=PlaySound(Sound_StepItUp)
+					case 5 : Channel_Gag=PlaySound(Sound_Hi)
+					case 6 : Channel_Gag=PlaySound(Sound_Fart)
+					case 7 : Channel_Gag=PlaySound(Sound_Pingas)
+				End Select
+			;------------------------------------------------------			
+			Case 4 ; Spawn Object
+			;------------------------------------------------------
+				; apply the values
+				objtype_$  						= BP_GetMessagePart(msg\msgData, 1)
+				posx#		 					= Float(BP_GetMessagePart(msg\msgData, 2))
+				posy#							= Float(BP_GetMessagePart(msg\msgData, 3))
+				posz#							= Float(BP_GetMessagePart(msg\msgData, 4))
+				; what obj was it
+				Select objtype_
+					Case "ring"
+						obj.tObject = Object_Ring_Create(posx#, posY#, posZ#)
+					Case "monitor"
+						obj.tObject = Object_Monitor_Create(0, posX#, posY#, posZ#)
+				End Select
+			;------------------------------------------------------			
+			Case 5 ; Camera
+			;------------------------------------------------------
+				; apply the values
+				p.tPlayer = FindPlayerData(msg\msgFrom)
+				p\Online\CamX#  				=  Float(BP_GetMessagePart(msg\msgData, 1))
+				p\Online\CamY#		 			=  Float(BP_GetMessagePart(msg\msgData, 2))
+				p\Online\CamZ#					=  Float(BP_GetMessagePart(msg\msgData, 3))
+		End Select
+		Delete msg
+	Next ;!!!!
+
+End Function 

@@ -18,6 +18,9 @@
 		Field Collision.tPlayer_Collision
 		Field Rival.tPlayer_Rival
 
+
+		; Online values
+		Field Online.tPlayer_Online
 		; Debug object placer values
 		Field ObjType
 
@@ -230,7 +233,16 @@
 		Field SuperAuraParticle.tParticleTemplate
 		Field BubbleBreatheParticle.tParticleTemplate
 	End Type
+	; tag mode constants
+	Const 	TAG_BUBBLE_LOCAL		= 1
+	Const 	TAG_BUBBLE_RIVAL		= 2
+	Const 	TAG_IS_IT 				= 1
+	Const 	TAG_NOT_IT 				= 2
+	Const 	TAG_RADIUS#				= 14.50
+	Const   TAG_TIMER				= 150 ;2 mins
+	Const   TAG_SAFE				= 0
 
+	Const   PlayerRadius#=2.20
 	; ---------------------------------------------------------------------------------------------------------	
 	; ---------------------------------------------------------------------------------------------------------
 	;; Player objects and entities
@@ -528,7 +540,39 @@
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+	Type tPlayer_Online
+		Field Connected
+		Field NetID
+		Field Ping
+		Field No#
+		Field Name$
+		Field IsLocal
+		Field Pos.tVector, PrevPos.tVector
+		Field CurrentPos.tVector
+		Field Rot.tVector, PrevRot.tVector
+		Field CurrentRot.tVector
+		Field Collision
+		Field InRadius
+		Field InYourRadius
 
+		Field Joined, ShowTag=True
+
+		FIeld camx#,camy#,camz#, campivot, camera
+
+		; Tag
+		Field TagBubble, TagTimer, TagTimerInterval, TagMode, TagCoolDown, TagStarted
+
+		; Hide and Seek
+
+		; Racing
+		Field RaceTimer, RacePosition, FinishedRace
+
+		Field ColorR=255, ColorG=255, ColorB=255
+		Field PrevColorR=255, PrevColorG=255, PrevColorB=255
+	End Type
+; ---------------------------------------------------------------------------------------------------------	
+; ---------------------------------------------------------------------------------------------------------
+	
 	; Action constants
 	i = -3
 	Global ACTION_DEBUG				= i : i=i+1
@@ -626,10 +670,11 @@
 
 	; =========================================================================================================
 	; =========================================================================================================
-	Function Player_Create.tPlayer(no#,rivalrun#=0,rivalfixed#=0)
+	Function Player_Create.tPlayer(no#,rivalrun#=0,rivalfixed#=0,localplayer=True,pname$="",pid%=1)
 		; Create new player object
 		p.tPlayer 	= New tPlayer
 		p\No#=no#
+		onlineplayer(no)=p
 		If no#>0 Then
 			pp(no#)=p
 			Player_DetermineChar(p,Menu\Character[p\No#])
@@ -822,6 +867,9 @@
 
 		; Load sounds and voices
 		If Menu\Stage<>0 Then Player_LoadVoices(p)
+		
+		; Online Handle
+		If BP_Online Then Player_CreateOnlineData(p, pname$, pid%, no, localplayer)
 
 		; Done
 		p\Action = ACTION_FALL
