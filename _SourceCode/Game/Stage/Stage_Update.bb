@@ -830,11 +830,9 @@
 				Game\Online\SendCount = Game\Online\SendFreq	
 				If Game\Online\SendUpdates Then	
 					p.tPlayer = First tPlayer		
-					; send movement packet	
-						position = String$(EntityX(p\Objects\Mesh)+"/"+EntityY(p\Objects\Mesh)+"/"+EntityZ(p\Objects\Mesh),1)
-						rotation = String$(EntityPitch(p\Objects\Mesh)+"/"+EntityYaw(p\Objects\Mesh)+"/"+EntityRoll(p\Objects\Mesh),1)
-						movement = String$(position + "/" + rotation,1)
-					BP_UDPMessage(0, UDPMSG_PLAYERMOVEMENT, movement)	
+					; send movement packet
+					DebugLog("sending packet for movement" + String$(EntityX(p\Objects\Mesh)+"/"+EntityY(p\Objects\Mesh)+"/"+EntityZ(p\Objects\Mesh)+"/"+EntityPitch(p\Objects\Mesh)+"/"+EntityYaw(p\Objects\Mesh)+"/"+EntityRoll(p\Objects\Mesh),1))	
+					BP_UDPMessage(0, UDPMSG_PLAYERMOVEMENT, String$(EntityX(p\Objects\Mesh)+"/"+EntityY(p\Objects\Mesh)+"/"+EntityZ(p\Objects\Mesh)+"/"+EntityPitch(p\Objects\Mesh)+"/"+EntityYaw(p\Objects\Mesh)+"/"+EntityRoll(p\Objects\Mesh),1))	
 
 					; send attributes packet
 					BP_UDPMessage(0, UDPMSG_PLAYERATTRIBUTES, p\Action+"/"+p\Animation\Animation+"/"+p\SpeedLength+"/"+p\Motion\Ground)
@@ -1108,7 +1106,7 @@ Function HandleMessages()
 					p\Online\Rot\x 			= Float(BP_GetMessagePart(msg\msgData, 4, "/"))
 					p\Online\Rot\y 			= Float(BP_GetMessagePart(msg\msgData, 5, "/"))
 					p\Online\Rot\z 			= Float(BP_GetMessagePart(msg\msgData, 6, "/"))
-					DebugLog(msg\msgData)
+					DebugLog(msg\msgData + " X: " + BP_GetMessagePart(msg\msgData, 1, "/") + "y" + BP_GetMessagePart(msg\msgData, 2, "/") + "z" + BP_GetMessagePart(msg\msgData, 3, "/") + "pitch" + BP_GetMessagePart(msg\msgData, 4, "/") + "yaw" + BP_GetMessagePart(msg\msgData, 5, "/") + "roll" + BP_GetMessagePart(msg\msgData, 6, "/") )
 			;------------------------------------------------------			
 			Case 77 ; Player Color
 			;------------------------------------------------------							

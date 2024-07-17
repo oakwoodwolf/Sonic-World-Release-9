@@ -1092,5 +1092,6 @@ Function BP_UpdateLog (txt$)
 ;-=-=-=Updates the log file, checks to see if its been started
 	If BP_Log Then
 		WriteLine BP_Log, txt$
+		DebugLog(txt$)
 	End If
 End Function

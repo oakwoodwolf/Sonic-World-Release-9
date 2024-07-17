@@ -7,8 +7,7 @@ Function Player_CreateOnlineData(p.tPlayer, pname$, pid%, no%, localplayer%=True
 	; the position/rotation vector.
 	p\Online\PrevPos 	= Vector(0, -999999, 0) : p\Online\PrevRot 	= Vector(0, -999999, 0)
 	p\Online\Pos 		= Vector(0, -999999, 0) : p\Online\Rot 		= Vector(0, -999999, 0)
-	p\Online\CurrentPos = Vector(0, 1, 0);
-	p\Online\CurrentRot = Vector(0, 90, 0);
+	p\Online\CurrentPos = Vector(0, 1, 0) 		: p\Online\CurrentRot = Vector(0, 90, 0)
 	; online player values
 	p\Online\Name$ = PName$ 
 	p\Online\NetID = PID% 			
@@ -26,7 +25,7 @@ Function Player_CreateOnlineData(p.tPlayer, pname$, pid%, no%, localplayer%=True
 		p\Online\Collision = CreateCylinder():EntityAlpha(p\Online\Collision,0)
 		;EntityRadius(p\Online\Collision, 8.5, 8.5)		
 		;EntityType(p\Online\Collision, COLLISION_ONLINE_PLAYER)	
-		EntityType(p\Objects\Mesh, COLLISION_PLAYER)
+		EntityType(p\Objects\Mesh, COLLISION_OBJECT_GOTHRU)
 	EndIf		
 	; name the player by their ID.
 	NameEntity(p\Objects\Entity, p\Online\NetID)
