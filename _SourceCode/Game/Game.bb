@@ -325,7 +325,7 @@ End Function
 		Field   SendUpdates%
 		Field  	Logging%
 		Field   GameType%
-
+		Field 	RaceFinished
 		Field   MsgOfTheDay$, ShowMsg, ShowCommands
 	End Type
 

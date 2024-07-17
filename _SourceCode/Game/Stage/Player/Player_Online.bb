@@ -23,15 +23,15 @@ Function Player_CreateOnlineData(p.tPlayer, pname$, pid%, no%, localplayer%=True
 		p\Online\CamPivot=CreatePivot()
 		p\Online\Camera = CreateCamera(p\Online\campivot):HideEntity(p\Online\Camera)
 		p\Online\Collision = CreateCylinder():EntityAlpha(p\Online\Collision,0)
-		EntityRadius(p\Online\Collision, 8.5, 8.5)		
-		EntityType(p\Online\Collision, COLLISION_PLAYER)	
-		EntityType(p\Objects\Mesh, COLLISION_OBJECT_GOTHRU)
+		;EntityRadius(p\Online\Collision, 8.5, 8.5)		
+		;EntityType(p\Online\Collision, COLLISION_PLAYER)	
+		EntityType(p\Objects\Mesh, COLLISION_PLAYER)
 	EndIf		
 	; name the player by their ID.
 	NameEntity(p\Objects\Entity, p\Online\NetID)
 	DebugLog("ID No:"+EntityName(p\Objects\Entity) + " " + p\Online\Name) ; debugging
 	; tag bubble for Tag Game Mode. (will change to a sprite circle.)
-	p\Online\TagBubble = CreateSphere(16, p\Objects\Mesh)
+	p\Online\TagBubble = CreateSphere(12, p\Objects\Mesh)
 	Textures_Shield					= LoadTexture("Textures/shield.png", 1+2)
 	EntityTexture(p\Online\TagBubble, Textures_Shield)
 	ScaleEntity(p\Online\TagBubble, 7.5, 7.5, 7.5)
@@ -47,9 +47,6 @@ Function FindPlayerData.tPlayer(ID)
 	For p.tPlayer = Each tPlayer
 		If p\Online\NetID = ID Then Return p
 	Next
-End Function
-
-Function AreYouTheLocalPlayer(p.tPlayer)
 End Function
 
 ; same as above but returns as object.
@@ -150,7 +147,7 @@ Function Player_BringAllToHost()
 		if p<>null and p\Online\NetID<>BP_My_ID then
 			EntityType(p\Objects\Entity, 0)			
 			PositionEntity(p\Objects\Entity, EntityX(onlineplayer(1)\Objects\Entity), EntityY(onlineplayer(1)\Objects\Entity), EntityZ(onlineplayer(1)\Objects\Entity))
-			;EntityType(p\Objects\Entity, COLLISION_PLAYER)
+			EntityType(p\Objects\Entity, COLLISION_PLAYER)
 		endif
 	next
 	Channel_Teleport=PlaySound(Sound_Teleport)

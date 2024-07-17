@@ -214,7 +214,7 @@ End Function
 		EndIf
 
 		; ---- Update digital input -----
-		If Menu\Pause=1 Or (  (Not(Game\ControlLock>0)) and (Not(Game\StartoutLock>0)) and Game\Victory=0  ) Then
+		If (Menu\Pause=1 Or (  (Not(Game\ControlLock>0)) and (Not(Game\StartoutLock>0)) and Game\Victory=0  )) And Chatting\Allowed=0  Then
 			Input\Pressed\Up 		 	= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_UP)) And (Input\Hold\Up = 0)
 			Input\Pressed\Down		 	= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_DOWN)) And (Input\Hold\Down = 0)
 			Input\Pressed\Left 			= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_LEFT)) And (Input\Hold\Left = 0)

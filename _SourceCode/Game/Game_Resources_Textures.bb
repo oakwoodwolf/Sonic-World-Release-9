@@ -9,7 +9,7 @@
 	Dim INTERFACE_TEXTURE(INTERFACE_TOTAL)
 	Dim INTERFACE(INTERFACE_TOTAL)
 	Dim INTERFACE_EXISTS(INTERFACE_TOTAL)
-
+	
 	Function SmartImage(x)
 		If INTERFACE_EXISTS(x)=false Then LoadSmartImage(x)
 		Return x

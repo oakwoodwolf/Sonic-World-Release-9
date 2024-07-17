@@ -180,41 +180,42 @@
 				RotateEntity p\Objects\FollowerPlace[3-1], EntityPitch(p\Objects\Follower), EntityYaw(p\Objects\Follower), EntityRoll(p\Objects\Follower), 1
 			EndIf
 		EndIf
-
-	If p\Online\NetID = BP_My_ID Then		
-			RotateEntity(p\Objects\Mesh, 0, p\Animation\Direction#-180, 0)
-			AlignToVector(p\Objects\Mesh, p\Animation\Align\x#, p\Animation\Align\y#, p\Animation\Align\z#, 2)
-			; Now, just move over the character to the new position, based on it's speed.
-			If (p\Motion\Ground=True) Then
-				MoveEntity(p\Objects\Entity, p\Motion\Speed\x#*d\Delta, p\Motion\Speed\y#*d\Delta-(0.015+(Vector_Length#(p\Motion\Speed)*0.33*d\Delta)), p\Motion\Speed\z#*d\Delta)
-			Else	
-				MoveEntity(p\Objects\Entity, p\Motion\Speed\x#*d\Delta, p\Motion\Speed\y#*d\Delta, p\Motion\Speed\z*d\Delta)
-			EndIf
-		Else
-			; fixate the yaw rotation
-			If p\Online\PrevRot\y < 0 Then p\Online\PrevRot\y = p\Online\PrevRot\y + 360
-			If p\Online\Rot\y < 0 Then p\Online\Rot\y = p\Online\Rot\y + 360
-			If Abs(p\Online\Rot\y-p\Online\PrevRot\y-180) > 180
-				If p\Online\Rot\y > p\Online\Rot\y
-					p\Online\PrevRot\y = p\Online\PrevRot\y + 360
-				Else
-					p\Online\PrevRot\y = p\Online\PrevRot\y - 360
+	If (Game\Online\Connected) Then
+		If p\Online\NetID = BP_My_ID Then		
+				RotateEntity(p\Objects\Mesh, 0, p\Animation\Direction#-180, 0)
+				AlignToVector(p\Objects\Mesh, p\Animation\Align\x#, p\Animation\Align\y#, p\Animation\Align\z#, 2)
+				; Now, just move over the character to the new position, based on it's speed.
+				If (p\Motion\Ground=True) Then
+					MoveEntity(p\Objects\Entity, p\Motion\Speed\x#*d\Delta, p\Motion\Speed\y#*d\Delta-(0.015+(Vector_Length#(p\Motion\Speed)*0.33*d\Delta)), p\Motion\Speed\z#*d\Delta)
+				Else	
+					MoveEntity(p\Objects\Entity, p\Motion\Speed\x#*d\Delta, p\Motion\Speed\y#*d\Delta, p\Motion\Speed\z*d\Delta)
 				EndIf
-			EndIf		
+			Else
+				; fixate the yaw rotation
+				If p\Online\PrevRot\y < 0 Then p\Online\PrevRot\y = p\Online\PrevRot\y + 360
+				If p\Online\Rot\y < 0 Then p\Online\Rot\y = p\Online\Rot\y + 360
+				If Abs(p\Online\Rot\y-p\Online\PrevRot\y-180) > 180
+					If p\Online\Rot\y > p\Online\Rot\y
+						p\Online\PrevRot\y = p\Online\PrevRot\y + 360
+					Else
+						p\Online\PrevRot\y = p\Online\PrevRot\y - 360
+					EndIf
+				EndIf		
 
-			; set the position for online player
-			p\Online\CurrentPos\X = p\Online\PrevPos\X+(p\Online\Pos\X-p\Online\PrevPos\X)*d\Delta;
-			p\Online\CurrentPos\Y = p\Online\PrevPos\Y+(p\Online\Pos\Y-p\Online\PrevPos\Y)*d\Delta;
-			p\Online\CurrentPos\Z = p\Online\PrevPos\Z+(p\Online\Pos\Z-p\Online\PrevPos\Z)*d\Delta;
-			PositionEntity(p\Objects\Entity,p\Online\CurrentPos\X, p\Online\CurrentPos\Y, p\Online\CurrentPos\Z);
+				; set the position for online player
+				p\Online\CurrentPos\X = p\Online\PrevPos\X+(p\Online\Pos\X-p\Online\PrevPos\X)*d\Delta;
+				p\Online\CurrentPos\Y = p\Online\PrevPos\Y+(p\Online\Pos\Y-p\Online\PrevPos\Y)*d\Delta;
+				p\Online\CurrentPos\Z = p\Online\PrevPos\Z+(p\Online\Pos\Z-p\Online\PrevPos\Z)*d\Delta;
+				PositionEntity(p\Objects\Entity,p\Online\CurrentPos\X, p\Online\CurrentPos\Y, p\Online\CurrentPos\Z);
 
-			RotateEntity(p\Objects\Entity,p\Online\PrevRot\x+(p\Online\Rot\x-p\Online\PrevRot\x)*d\Delta,p\Online\PrevRot\y+(p\Online\Rot\y-p\Online\PrevRot\y)*d\Delta,p\Online\PrevRot\z+(p\Online\Rot\z-p\Online\PrevRot\z)*d\Delta)
-			RotateEntity(p\Objects\Mesh, EntityPitch(p\Objects\Entity), EntityYaw(p\Objects\Entity), EntityRoll(p\Objects\Entity))
-			
-			; set up camera pivot for online player viewing.
-			PositionEntity(p\Online\CamPivot, EntityX(p\Objects\Entity), EntityY(p\Objects\Entity), EntityZ(p\Objects\Entity))
-			RotateEntity(p\Online\CamPivot, EntityPitch(p\Objects\Entity), EntityYaw(p\Objects\Entity), EntityRoll(p\Objects\Entity))
-			MoveEntity(p\Online\CamPivot, 0, 1, -15)
+				RotateEntity(p\Objects\Entity,p\Online\PrevRot\x+(p\Online\Rot\x-p\Online\PrevRot\x)*d\Delta,p\Online\PrevRot\y+(p\Online\Rot\y-p\Online\PrevRot\y)*d\Delta,p\Online\PrevRot\z+(p\Online\Rot\z-p\Online\PrevRot\z)*d\Delta)
+				RotateEntity(p\Objects\Mesh, EntityPitch(p\Objects\Entity), EntityYaw(p\Objects\Entity), EntityRoll(p\Objects\Entity))
+				
+				; set up camera pivot for online player viewing.
+				PositionEntity(p\Online\CamPivot, EntityX(p\Objects\Entity), EntityY(p\Objects\Entity), EntityZ(p\Objects\Entity))
+				RotateEntity(p\Online\CamPivot, EntityPitch(p\Objects\Entity), EntityYaw(p\Objects\Entity), EntityRoll(p\Objects\Entity))
+				MoveEntity(p\Online\CamPivot, 0, 1, -15)
+			EndIf
 		EndIf
 	End Function
 

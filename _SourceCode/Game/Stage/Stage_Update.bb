@@ -2,12 +2,12 @@
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
 	Function Game_Stage_Step(d.tDeltaTime)
-
+		;If ((KeyHit(KEY_T)) And Game\Online\Connected=1) And Chatting\Allowed=0 Then FlushKeys() : Chatting\Allowed=1 : FlushKeys() : DebugLog(Chatting\Allowed)
 		;deal with mouse
 		HidePointer()
 			Input\AllowMouse=False
 			If Menu\Stage<>0 Then
-				If Menu\Pause=0 And (Menu\ChaoGarden=0 Or Menu\Stage=999) Then Input\AllowMouse=True
+				If (Menu\Pause=0 And (Menu\ChaoGarden=0 Or Menu\Stage=999)) Or Chatting\Allowed=1 Then Input\AllowMouse=True
 			Else
 				If Menu\Menu=MENU_CHARACTERS# Or Menu\Menu=MENU_BIOS# Or (Menu\Menu=MENU_TRANSPORTER# And (Menu\Menu2=MENU_TRANSPORTER_GOODBYE# Or Menu\Menu2=MENU_TRANSPORTER_STADIUM#)) Then Input\AllowMouse=True
 			EndIf
@@ -404,7 +404,7 @@
 		Else
 			If Menu\MeshChaoEmoActivated>0 Then Object_ChaoEmo_Update(Menu\Mesh[2], Menu\MeshChaoEmo, d)
 		EndIf
-
+		Update_GameModes()
 		; Update timers
 		If Game\StartoutLock>0 Then Game\StartoutLock=Game\StartoutLock-timervalue#
 		If Game\ControlLock>0 Then Game\ControlLock=Game\ControlLock-timervalue#
@@ -595,7 +595,12 @@
 				Menu\BlackMarketRandomizerTimer=Menu\BlackMarketRandomizerTimer-timervalue#
 			EndIf
 		EndIf
-
+		; handle game mode meshes
+		For i=1 To 6
+			If onlineplayer(i)<>Null Then
+			 ;If Game\Online\GameType=1 Then ShowEntity(onlineplayer(i)\Online\TagBubble) Else HideEntity(onlineplayer(i)\Online\TagBubble)
+			EndIf
+		Next
 	EndIf
 
 	; Render menu
@@ -835,7 +840,7 @@
 					BP_UDPMessage(0, UDPMSG_PLAYERATTRIBUTES, String$(p\Action+"/"+p\Animation\Animation+"/"+p\SpeedLength+"/"+p\Motion\Ground+"/",1))
 					; deal the tag and race attributes
 					If Game\Online\GameType=1 Then BP_UDPMessage(0,20,onlineplayer(1)\Online\TagMode+"/"+onlineplayer(1)\Online\TagTimer+"/"+onlineplayer(1)\Online\TagCoolDown)
-					If Game\Online\GameType=3 Then BP_UDPMessage(0,21,onlineplayer(1)\Online\RacePosition+"/"+onlineplayer(1)\Online\FinishedRace);+"/"+onlineplayer(1)\Online\RaceTimer)
+					If Game\Online\GameType=3 Then BP_UDPMessage(0,21,onlineplayer(1)\Online\RacePosition+"/"+onlineplayer(1)\Online\FinishedRace+"/"+onlineplayer(1)\Online\RaceTimer)
 				EndIf
 			EndIf
 			; ---------------------------------------------------------------	
@@ -1082,9 +1087,8 @@ Function HandleMessages()
             	Else
             		Info (msg\msgData,255,255,0, "bold", False)
             	EndIf
-            	If ChannelPlaying(Channel_Message) Then StopChannel(Channel_Message)
-				Channel_Message=PlaySound(Sound_Message)
-				Message=PlaySound(Sound_Message)
+				DebugLog("INFO: " + msg\msgData)
+				EmitSmartSound(Sound_Hint,p\Objects\Entity)
 			;------------------------------------------------------			
 			Case 1 ; Player Movement
 			;------------------------------------------------------							
@@ -1113,7 +1117,6 @@ Function HandleMessages()
 			;------------------------------------------------------
 				; set to player
 				p.tPlayer = FindPlayerData(msg\msgFrom)
-				DebugLog("PLAYER ATTRIBUTES " + msg\msgData)
 				If p\Online\NetID<>BP_My_ID Then
 				; set attributes
 					p\Action 					= Int(BP_GetMessagePart(msg\msgData, 1, "/"))
@@ -1246,5 +1249,83 @@ Function HandleMessages()
 	Next ;!!!!
 
 End Function 
+Function Update_GameModes()
+	Select Game\Online\GameType
+		Case GAME_TYPE_TAG
+			; handle tag values
+			p.tPlayer = First tPlayer
+			If KeyHit(KEY_0) Then p\Online\TagMode=0 : p\Online\TagTimer=0 : BP_UDPMessage(0,12, p\Online\Name$+" is safe.")
+			If KeyHit(KEY_HYPHEN) Then p\Online\TagMode=TAG_NOT_IT : p\Online\TagTimer=0 : BP_UDPMessage(0,12, p\Online\Name$+" is Clear!")
+			If KeyHit(KEY_EQUAL) Then p\Online\TagMode=TAG_IS_IT : p\Online\TagTimer=TAG_TIMER : BP_UDPMessage(0,12, p\Online\Name$+" is It!")
+			If KeyHit(Key_F10) Then p\Online\TagTimer=20
+
+			; handle tag timer, and be clear once it's over
+			If p\Online\TagMode=TAG_IS_IT Then
+				; count the timer
+				If p\Online\TagTimer>0 Then
+					If p\Online\TagTimerInterval<MilliSecs() Then
+						p\Online\TagTimer=p\Online\TagTimer-1
+						p\Online\TagTimerInterval=MilliSecs()+1000
+					EndIf
+				Else
+					p\Online\TagMode=0
+					BP_UDPMessage(0, 3, "cleared")	
+					Info("You ran out of time. You Lose.")
+					BP_UDPMessage(0, 12, p\Online\Name$+" Lost. Ran out of time.")
+				EndIf
+			Else
+				p\Online\TagTimer=0
+			EndIf
+
+			; find closest player to tag
+			Local closestPlayer.tPlayer = GetClosestPlayer(TAG_RADIUS#);
+
+			If closestPlayer<>Null Then 
+				If GAME\ONLINE\DEBUG=True Then DebugLog(Handle(closestPlayer)) : TheRName$=closestPlayer\Online\NetID
+				;tag someone in your radius, and be cleared.		
+				If onlineplayer(1)\Online\TagMode=TAG_IS_IT And onlineplayer(1)\Online\TagCoolDown<MilliSecs() And closestPlayer\Online\TagCoolDown<MilliSecs() And closestPlayer\Online\TagMode=TAG_NOT_IT Then
+					; clear yourself of being it
+					onlineplayer(1)\Online\TagMode=TAG_NOT_IT : BP_UDPMessage(0, UDPMSG_MESSAGE, onlineplayer(1)\Online\Name$+" is Clear!")
+					; make online player it.
+					Player_SetTagMode(closestPlayer)						
+					BP_UDPMessage(closestPlayer\Online\NetID, UDPMSG_MESSAGE, onlineplayer(1)\Online\Name$+" has Tagged you!")
+					; apply a wait timer
+					onlineplayer(1)\Online\TagCoolDown=MilliSecs()+5500
+				EndIf	
+			EndIf;!
+
+
+
+
+
+
+		Case GAME_TYPE_HIDENSEEK
+		; >---------
+		Case GAME_TYPE_RACE
+			; handle race mode
+			; did everyone finish the race...
+			me_p.tPlayer=First tPlayer
+			;other_p.tPlayer After tPlayer
+			If me_p\Online\FinishedRace>0 Then
+				Info("Race Has Finished!", 255,20,128)	
+				Game\Online\RaceFinished=True
+			Else
+				Game\Online\RaceFinished=False
+			End if
+			DrawRealText("Race Finished:"+Game\Online\RaceFinished, GAME_WINDOW_W-35*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#,Interface_TextControls_2)
+		
+			;			PositionEntity p\Objects\Entity, 0, 10, 0
+			;;;			PositionEntity p\Objects\Mesh, 0, 10, 0	
+			;			Vector_Set(p\Motion\Speed, 0, 0 ,0)
+			;			ResetEntity(p\Objects\Entity)	
+			;			BP_UDPMessage(0,3,"respawn all");Player_BringAllToHost()		
+			;;			p\Online\RacePosition=0
+			;			p\Online\FinishedRace=0	
+			;		EndIf
+			;	EndIf
+			;Next		
+		Default	
+	End Select
+End Function
 ;~IDEal Editor Parameters:
 ;~C#Blitz3D

@@ -205,175 +205,190 @@ Menu\GameStarted=1
 			
 			If KeyHit(Key_Y) Then Game\Online\Hosting=True : Finished=1
 			If KeyHit(Key_N) Then Game\Online\Hosting=False : Finished=1
+			If KeyHit(Key_O) Then Game\Online\Hosting=False : Online=0 : Finished=1
 			If KeyHit(Key_Escape) Then End
 			
 			Text(GraphicsWidth()/2, 250, "(Y)=Yes",1,0)
 			Text(GraphicsWidth()/2, 300, "(N)=No",1,0)
-			Text(GraphicsWidth()/2, 350, "(Esc)=Exit",1,0)
+			Text(GraphicsWidth()/2, 350, "(O)=Offline",1,0)
+			Text(GraphicsWidth()/2, 400, "(Esc)=Exit",1,0)
 			
 			Flip()
 		Until Finished=1
 		Finished=0 : FlushKeys() : Delay(175)
-
-		Repeat 
-			Cls()
-			For i=1 To 255 : Color(i,i,0) : Rect(0,i,GraphicsWidth(),GraphicsHeight(),1) : Next ; red gradient
-			Color(255,255,255)	
-			SetFont(BigFont)
-			Text(GraphicsWidth()/2,25,"Welcome to BlitzSonic Online!",1,0)
-			Text(GraphicsWidth()/2,75,"From here, you'll enter info to",1, 0)
-			Text(GraphicsWidth()/2,125,"join others worldwide, or peer to peer.",1,0)	
-			
-			key=GetKey()
-			If key Then 
-				If key=13 Then
-					If txt$<>"" Then
-						PlayerName$ = txt$
-						txt$=""
-					Else
-						PlayerName$ ="Online_Name"
-						txt$=""
-					End If
-					FlushKeys()
-					Finished=1
-				Else If key=8
-					If Len(txt$)>0 Then txt$=Left$(txt$,Len(txt$)-1)
-				Else If key>=32 And key<127
-					if len(txt$)<=11 then txt$=txt$+Chr$(key)
-				EndIf
-			EndIf
-			
-			Text(GraphicsWidth()/2,150+FontHeight(),"Online Name : "+txt$,1,0)
-			;If Finished=1 Then Text(GraphicsWidth()/2,205,"Welcome, "+PlayerName$+"!",1,0)
-			Flip()
-		Until Finished=1
-		Finished=0 : FlushKeys() : Delay(275)
-
-		If Game\Online\Hosting=False Then
-		Repeat 
-			Cls()
-			For i=1 To 255 : Color(0,i,i) : Rect(0,i,GraphicsWidth(),GraphicsHeight(),1) : Next ; blue gradient
-			Color(255,255,255)	
-			SetFont(BigFont)
-			Text(GraphicsWidth()/2,25,"Welcome, "+PlayerName$+"!",1,0)
-			Text(GraphicsWidth()/2,75,"Enter Host's IP",1, 0)
-			Text(GraphicsWidth()/2,125,"0=localhost",1,0)	
-			
-			If Finished = 0 Then
-			key=GetKey()
-			If key Then 
-				If key=13 Then
-					If txt$<>"" Then
-						If txt$="0" Then txt$=BP_GetMyIP$()
-						Game\Online\IP$ = txt$
-						txt$=""
+		If Online=1 Then
+			Repeat 
+				Cls()
+				For i=1 To 255 : Color(i,i,0) : Rect(0,i,GraphicsWidth(),GraphicsHeight(),1) : Next ; red gradient
+				Color(255,255,255)	
+				SetFont(BigFont)
+				Text(GraphicsWidth()/2,25,"Welcome to BlitzSonic Online!",1,0)
+				Text(GraphicsWidth()/2,75,"From here, you'll enter info to",1, 0)
+				Text(GraphicsWidth()/2,125,"join others worldwide, or peer to peer.",1,0)	
+				
+				key=GetKey()
+				If key Then 
+					If key=13 Then
+						If txt$<>"" Then
+							PlayerName$ = txt$
+							txt$=""
+						Else
+							PlayerName$ ="Online_Name"
+							txt$=""
+						End If
 						FlushKeys()
 						Finished=1
-					End If
-				Else If key=8
-					If Len(txt$)>0 Then txt$=Left$(txt$,Len(txt$)-1)
-				Else If key>=32 And key<127
-					txt$=txt$+Chr$(key)
+					Else If key=8
+						If Len(txt$)>0 Then txt$=Left$(txt$,Len(txt$)-1)
+					Else If key>=32 And key<127
+						if len(txt$)<=11 then txt$=txt$+Chr$(key)
+					EndIf
 				EndIf
-			EndIf
+				
+				Text(GraphicsWidth()/2,150+FontHeight(),"Online Name : "+txt$,1,0)
+				;If Finished=1 Then Text(GraphicsWidth()/2,205,"Welcome, "+PlayerName$+"!",1,0)
+				Flip()
+			Until Finished=1
+			Finished=0 : FlushKeys() : Delay(275)
+		
+			If Game\Online\Hosting=False Then
+			Repeat 
+				Cls()
+				For i=1 To 255 : Color(0,i,i) : Rect(0,i,GraphicsWidth(),GraphicsHeight(),1) : Next ; blue gradient
+				Color(255,255,255)	
+				SetFont(BigFont)
+				Text(GraphicsWidth()/2,25,"Welcome, "+PlayerName$+"!",1,0)
+				Text(GraphicsWidth()/2,75,"Enter Host's IP",1, 0)
+				Text(GraphicsWidth()/2,125,"0=localhost",1,0)	
+				
+				If Finished = 0 Then
+				key=GetKey()
+				If key Then 
+					If key=13 Then
+						If txt$<>"" Then
+							If txt$="0" Then txt$=BP_GetMyIP$()
+							Game\Online\IP$ = txt$
+							txt$=""
+							FlushKeys()
+							Finished=1
+						End If
+					Else If key=8
+						If Len(txt$)>0 Then txt$=Left$(txt$,Len(txt$)-1)
+					Else If key>=32 And key<127
+						txt$=txt$+Chr$(key)
+					EndIf
+				EndIf
 
-			
-			Text(GraphicsWidth()/2,150+FontHeight(),"Enter Host's IP:"+txt$,1,0)	
-			ElseIf Finished=2
-			key=GetKey()
-			If key Then 
-				If key=13 Then
-					If txt$<>"" Then
-						Game\Online\Port = txt$
-						txt$=""
-						FlushKeys()
-						Finished=1
-					End If
-				Else If key=8
-					If Len(txt$)>0 Then txt$=Left$(txt$,Len(txt$)-1)
-				Else If key>=32 And key<127
-					txt$=txt$+Chr$(key)
+				
+				Text(GraphicsWidth()/2,150+FontHeight(),"Enter Host's IP:"+txt$,1,0)	
+				ElseIf Finished=2
+				key=GetKey()
+				If key Then 
+					If key=13 Then
+						If txt$<>"" Then
+							Game\Online\Port = txt$
+							txt$=""
+							FlushKeys()
+							Finished=1
+						End If
+					Else If key=8
+						If Len(txt$)>0 Then txt$=Left$(txt$,Len(txt$)-1)
+					Else If key>=32 And key<127
+						txt$=txt$+Chr$(key)
+					EndIf
 				EndIf
+				If KeyHit(Key_Enter) Then Finished=1
+				Text(GraphicsWidth()/2,150+FontHeight(),"Enter Host's IP:"+Game\Online\IP$,1,0)	
+				Text(GraphicsWidth()/2,200+FontHeight(),"Enter a Port to use:"+txt$,1,0)
+				EndIf
+				
+				Flip()
+			Until Finished=1
+			Finished=0 : FlushKeys() : Delay(275)
 			EndIf
-			If KeyHit(Key_Enter) Then Finished=1
-			Text(GraphicsWidth()/2,150+FontHeight(),"Enter Host's IP:"+Game\Online\IP$,1,0)	
-			Text(GraphicsWidth()/2,200+FontHeight(),"Enter a Port to use:"+txt$,1,0)
-			EndIf
-			
+			connecttimer=millisecs()+1750
+			Game\Online\Connected=1 ;!!!!!!!!!!!!
+			Game\Online\SendUpdates=True
+			Cls
+			For i=1 To 255 : Color(i,0,i) : Rect(0,i,GraphicsWidth(),GraphicsHeight(),1) : Next
+			Color(255,255,255) 
+			Text 0,0,"Starting"
 			Flip()
-		Until Finished=1
-		Finished=0 : FlushKeys() : Delay(275)
-		EndIf
-		connecttimer=millisecs()+1750
-		Game\Online\Connected=1 ;!!!!!!!!!!!!
-		Game\Online\SendUpdates=True
-		If Game\Online\Hosting=True Then Game\Online\Status=BP_HostSession (PlayerName$,6,1,2222,100)  
-		If Game\Online\Hosting=False Then Game\Online\Status=BP_JoinSession (PlayerName$,Game\Online\Port,Game\Online\IP,2222)
+			If Game\Online\Hosting=True Then Game\Online\Status=BP_HostSession (PlayerName$,6,3,2222,100)  
+			If Game\Online\Hosting=False Then Game\Online\Status=BP_JoinSession (PlayerName$,Game\Online\Port,Game\Online\IP,2222)
 
-		Game\Online\GameType=BP_GameType
+			Game\Online\GameType=BP_GameType
 
-		Game\Online\Debug=False
-		; may have connected, but see if it's possible to continue
-		If Game\Online\Hosting=False Then
-		SetFont(BigFont)
-			Select Game\Online\Status
-				;Handle any of the reasons if we couldn't join.
-				Case BP_NOREPLY
-					Cls
-					For i=1 To 255 : Color(i,0,0) : Rect(0,i,GraphicsWidth(),GraphicsHeight(),1) : Next 
-					Color(255,255,255)
-					Text 0,0,"No reply in specified timeout period.. exiting"
-					Flip()
-					WaitKey
-					End
-				Case BP_IAMBANNED
-					Cls
-					For i=1 To 255 : Color(i,0,0) : Rect(0,i,GraphicsWidth(),GraphicsHeight(),1) : Next 
-					Color(255,255,255)
-					Text 0,0,"You have been banned from joining this game.. exiting"
-					Flip()
-					WaitKey
-					End
-				Case BP_GAMEISFULL
-					Cls
-					For i=1 To 255 : Color(i,0,0) : Rect(0,i,GraphicsWidth(),GraphicsHeight(),1) : Next 
-					Color(255,255,255)
-					Text 0,0,"The game is full.. exiting"
-					Flip()
-					WaitKey
-					End
-				Case BP_PORTNOTAVAILABLE
-					Cls
-					For i=1 To 255 : Color(i,0,0) : Rect(0,i,GraphicsWidth(),GraphicsHeight(),1) : Next
-					Color(255,255,255) 
-					Text 0,0,"Port: " + Game\Online\Port + " was not available.. exiting"
-					Flip()
-					WaitKey
-					End
-				Case BP_USERABORT
-					Cls
-					For i=1 To 255 : Color(i,0,0) : Rect(0,i,GraphicsWidth(),GraphicsHeight(),1) : Next 
-					Color(255,255,255)
-					Text 0,0,"Connection attempt aborted!"
-					WaitKey
-					End
-				Default
-					repeat
-					Cls
-					For i=1 To 255 : Color(0,i,0) : Rect(0,i,GraphicsWidth(),GraphicsHeight(),1) : Next 
-					Color(255,255,255)
-					SetFont(BigFont)
-					Text GraphicsWidth()/2,50,"Connecting! (Hit [esc] to cancel)",True,True
-					Text(GraphicsWidth()/2,225,"Online gameplay experience may change",True,True)
-					Text(GraphicsWidth()/2,275,"from the original gameplay. Be very",True,True)
-					Text(GraphicsWidth()/2,325,"responsible and think before doing",True,True)
-					Text(GraphicsWidth()/2,375,"anything.",True,True)
-					if keyhit(KEY_ESCAPE) then end
-					Flip()
-					until connecttimer<millisecs()
-					;Delay(1500)
-			End Select
+			Game\Online\Debug=False
+			; may have connected, but see if it's possible to continue
+			If Game\Online\Hosting=False Then
+			SetFont(BigFont)
+				Select Game\Online\Status
+					;Handle any of the reasons if we couldn't join.
+					Case BP_NOREPLY
+						Cls
+						For i=1 To 255 : Color(i,0,0) : Rect(0,i,GraphicsWidth(),GraphicsHeight(),1) : Next 
+						Color(255,255,255)
+						Text 0,0,"No reply in specified timeout period.. exiting"
+						Flip()
+						WaitKey
+						End
+					Case BP_IAMBANNED
+						Cls
+						For i=1 To 255 : Color(i,0,0) : Rect(0,i,GraphicsWidth(),GraphicsHeight(),1) : Next 
+						Color(255,255,255)
+						Text 0,0,"You have been banned from joining this game.. exiting"
+						Flip()
+						WaitKey
+						End
+					Case BP_GAMEISFULL
+						Cls
+						For i=1 To 255 : Color(i,0,0) : Rect(0,i,GraphicsWidth(),GraphicsHeight(),1) : Next 
+						Color(255,255,255)
+						Text 0,0,"The game is full.. exiting"
+						Flip()
+						WaitKey
+						End
+					Case BP_PORTNOTAVAILABLE
+						Cls
+						For i=1 To 255 : Color(i,0,0) : Rect(0,i,GraphicsWidth(),GraphicsHeight(),1) : Next
+						Color(255,255,255) 
+						Text 0,0,"Port: " + Game\Online\Port + " was not available.. exiting"
+						Flip()
+						WaitKey
+						End
+					Case BP_USERABORT
+						Cls
+						For i=1 To 255 : Color(i,0,0) : Rect(0,i,GraphicsWidth(),GraphicsHeight(),1) : Next 
+						Color(255,255,255)
+						Text 0,0,"Connection attempt aborted!"
+						WaitKey
+						End
+					Default
+						repeat
+						Cls
+						For i=1 To 255 : Color(0,i,0) : Rect(0,i,GraphicsWidth(),GraphicsHeight(),1) : Next 
+						Color(255,255,255)
+						SetFont(BigFont)
+						Text GraphicsWidth()/2,50,"Connecting! (Hit [esc] to cancel)",True,True
+						Text(GraphicsWidth()/2,225,"Online gameplay experience may change",True,True)
+						Text(GraphicsWidth()/2,275,"from the original gameplay. Be very",True,True)
+						Text(GraphicsWidth()/2,325,"responsible and think before doing",True,True)
+						Text(GraphicsWidth()/2,375,"anything.",True,True)
+						if keyhit(KEY_ESCAPE) then end
+						Flip()
+						until connecttimer<millisecs()
+						;Delay(1500)
+				End Select
+			EndIf
 		EndIf
+	Else
+		Cls
+			For i=1 To 255 : Color(i,0,i) : Rect(0,i,GraphicsWidth(),GraphicsHeight(),1) : Next
+			Color(255,255,255) 
+			Text 0,0,"Starting Offline"
+			Flip()
+		Game\Online\Connected=0
 	EndIf
 
 	Function GetInput(stri$="")

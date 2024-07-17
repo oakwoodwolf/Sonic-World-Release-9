@@ -180,7 +180,10 @@ Const CHAT_LENGTH=28
 		Else
 			Interface_Render_Stage(p,d)
 		EndIf
-
+		Interface_DrawChat(5*GAME_WINDOW_SCALE#, (GraphicsHeight()-(427*(Chatting\Scale+1)))*GAME_WINDOW_SCALE#,Chatting\Scale)
+		If Chatting\Allowed>0 Then
+			AboutToChat()
+		EndIf
 		EndDraw()
 	End Function
 
@@ -366,7 +369,6 @@ End Function
 		DrawNumber((Game\Gameplay\Time/10) Mod 60, 158*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#, 2)
 
 		Interface_RingCounter(d)
-		Interface_DrawChat(5*GAME_WINDOW_SCALE#, (GraphicsHeight()-(ImageHeightEx(Interface_1Chatbox)*(Chatting\Scale+1)))*GAME_WINDOW_SCALE#,Chatting\Scale)
 		Update_Monitor_Icons(d)
 
 		If Game\Interface\FlashCheckTimerTimer>0 Then
@@ -1143,7 +1145,105 @@ Function DrawTitleCardStuff(inmenu=false)
 	DrawRealText(Menu\MissionInfo2$, GAME_WINDOW_W/2-50*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(200*Menu\TitleCardTimer/secs#+35)*GAME_WINDOW_SCALE#, (Interface_Text_2))
 
 End Function
+Function AboutToChat()
+	key=GetKey()
+	if keyhit(KEY_ARROW_UP) then Chatting\Txt$=Chatting\PrevTxt$
+	If key
+		If key=13 And Chatting\Txt$<>"" then
+			If Mid(Chatting\Txt$,1,1)<>"/" Then
+				p.tPlayer = First tPlayer 
+				If Len(Chatting\Txt$)>CHAT_LENGTH+8 Then
+					For l=1 To Len(Chatting\Txt$)/2 : Chatting\Sentence[1] = Left$(Chatting\Txt$, l) : Next
+					Chatting\Sentence[2] =Mid$(Chatting\Txt$,1+(Len(Chatting\Txt$)/2),Len(Chatting\Txt$))
+					BP_UDPMessage (0,11,Chatting\Sentence[1])	
+					BP_UDPMessage (0,95,Chatting\Sentence[2])												
+					Info(p\Online\Name$+":"+Chatting\Sentence[1],p\Online\PrevColorR,p\Online\PrevColorG, p\Online\PrevColorB, "normal")
+					Info(Chatting\Sentence[2],255,255,255, "normal")
+				Else
+					BP_UDPMessage (0,11,Chatting\Txt$)				
+					Info(p\Online\Name$ + ":" + Chatting\Txt$,p\Online\PrevColorR,p\Online\PrevColorG, p\Online\PrevColorB, "normal")
+				EndIf
+				EmitSmartSound(Sound_Hint,p\Objects\Entity)
+			Else ; Chat Commands
+				chat = Instr(Chatting\Txt$," ",1)				
+				if Instr(Chatting\Txt$," ",1) then kicktxt$ = Left(Chatting\Txt$,chat-1) else : kicktxt$=Chatting\Txt$
+				;kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat)
+				;if kickname$="" then kickname$="z"
+				;Channel_Command=PlaySound(Sound_Command)
+				; commands for host only
+				If BP_My_ID = BP_Host_ID then	
+					Select kicktxt$
+						case "/welcome" : kicktxt$=kicktxt$+Chr$(32) : Game\Online\ShowMsg=False	
+						case "/kick" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : KickPlayer(kickname$, False)
+						case "/kickall" : kicktxt$=kicktxt$+Chr$(32) : KickPlayer("", False, True)
+						case "/ban" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : KickPlayer(kickname$, True)
+						Case "/unban" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : Info("You unbanned - "+kickname$,255,0,255,"bold") : If kickname$<>BP_GetMyIP$ Then BP_UnbanIP(BP_ConvertIp%(kickname$))
+						case "/hosttp" : kicktxt$=kicktxt$+Chr$(32) : Player_BringAllToHost()	
+						Case "/gametype","/gamemode"
+							kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat)
+							select kickname$
+								case "tag","1" : BP_SetGameType(1) : Game\Online\GameType=1 : Info("Gametype set to tag")
+								case "has","2" : BP_SetGameType(2) : Game\Online\GameType=2  : Info("Gametype set to Hide and Seek")
+								case "race","3" : BP_SetGameType(3) : Game\Online\GameType=3  : Info("Gametype set to Race")
+								case "free","4","0": BP_SetGameType(0) : Game\Online\GameType=0  : Info("Gametype set to Free")
+								default : BP_SetGameType(0) : Game\Online\GameType=0
+							end select
+							BP_UDPMessage (0,26, Game\Online\GameType)
+						;Default : kicktxt$=kicktxt$+Chr$(32) : Info("Command Doesn't Exist.", 255, 124, 5) : Info("Use /help to display commands", 255, 124, 5)
+					end select
+				Endif
+				; commands for all
+				select kicktxt$
+					Case "/help" : kicktxt$=kicktxt$+Chr$(32) : If Game\Online\ShowCommands<MilliSecs() Then Game\Online\ShowCommands=MilliSecs()+10000 : Else : Game\Online\ShowCommands=0
+					case "/nickname", "/changename" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : Player_ChangeName(kickname$)
+					case "/tp" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : TeleportToPlayer(kickname$)
+					case "/debug" : kicktxt$=kicktxt$+Chr$(32) : Game\Online\Debug=1-Game\Online\Debug
+					case "/log" : Game\Online\Logging=1-Game\Online\Logging : If Game\Online\Logging Then : BP_StartLogFile(PlayerName$+"'s Log"+".txt") : Else : BP_StopLogFile() : Endif
+					case "/update" : Game\Online\SendUpdates=1-Game\Online\SendUpdates
+					case "/clear", "/Clear" : For i.Info = Each Info : Delete i : next : FlushKeys()
+					case "/view" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : Game\Online\ViewName$=kickname$ : Game\Online\ViewPlayer=True
+					case "/viewoff" : Game\Online\ViewPlayer=False 
+					case "/logout","/logoff" : BP_UDPMessage (0,12,PlayerName$+" logged out...") : BP_EndSession()
+					case "/hidetag","/showtag" : if kicktxt$="/hidetag" Then : onlineplayer(1)\Online\ShowTag=False : else : onlineplayer(1)\Online\ShowTag=True : EndIf : BP_UDPMessage(0,24,onlineplayer(1)\Online\ShowTag)
+					case "/chatsize" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : Chatting\Scale=Int(kickname$)
+					case "/rejoin" : Game\Online\ReJoin=True : Info("Connecting, Please Wait...",255,255,0, "bold")
 
+					case "/color"
+						kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat)
+						onlineplayer(1)\Online\PrevColorR=BP_GetMessagePart(kickname$, 1, " ")
+						onlineplayer(1)\Online\PrevColorG=BP_GetMessagePart(kickname$, 2, " ")
+						onlineplayer(1)\Online\PrevColorB=BP_GetMessagePart(kickname$, 3, " ")
+						BP_UDPMessage(0, 77, onlineplayer(1)\Online\PrevColorR+"|"+onlineplayer(1)\Online\PrevColorG+"|"+onlineplayer(1)\Online\PrevColorB)			
+					;case "/object" : BP_UDPMessage(0, 4, BP_GetMessagePart(kicktxt$, 1, "/")+"/"+Float(BP_GetMessagePart(kicktxt$, 1, " "))+"/"+Float(BP_GetMessagePart(kicktxt$, 1, " "))+"/"+Float(BP_GetMessagePart(kicktxt$, 1, " ")))
+					; gag command!!
+
+					case "/nouse" : kicktxt$=kicktxt$+Chr$(32) : BP_UDPMessage(0,55, 1) : PlaySound(Sound_NoUse) 
+					case "/ohno","/knux" : kicktxt$=kicktxt$+Chr$(32) : BP_UDPMessage(0,55, 2) : PlaySound(Sound_OhNo)
+					case "/tooslow" : kicktxt$=kicktxt$+Chr$(32) : BP_UDPMessage(0,55, 3) : PlaySound(Sound_TooSlow)
+					case "/stepitup", "/cmon" : kicktxt$=kicktxt$+Chr$(32) : BP_UDPMessage(0,55, 4) : PlaySound(Sound_StepItUp)
+					case "/hi", "/hello" : kicktxt$=kicktxt$+Chr$(32) : BP_UDPMessage(0,55, 5) : PlaySound(Sound_Hi)
+					case "/fart" : kicktxt$=kicktxt$+Chr$(32) : BP_UDPMessage(0,55, 6) : PlaySound(Sound_Fart)
+					case "/wizg", "/WizG", "/WIZG" : kicktxt$=kicktxt$+Chr$(32) : Info("ALL HAIL WIZG!!!", 255,255,255, "bold", true) : BP_UDPMessage(0,12, "ALL HAIL WIZG!!!")
+					case "/420", "/blazeit" : kicktxt$=kicktxt$+Chr$(32) : Info("420 Blaze It!!!!", 255,255,255, "bold", true) : BP_UDPMessage(0,12, "420 Blaze It!!!!")
+					Case "/sh71","/SH71", "/Sh71" : kicktxt$=kicktxt$+Chr$(32) : Info("#off_topic", 255,0,255, "bold") : BP_UDPMessage(0,12, "#off_topic")
+					case "/yarcaz" : kicktxt$=kicktxt$+Chr$(32) : Info("...", 255,0,255, "bold") : BP_UDPMessage(0,12, "...")
+					case "/pingas" : kicktxt$=kicktxt$+Chr$(32) : BP_UDPMessage(0,55, 7) : PlaySound(Sound_Pingas)
+					;case "/headsize" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : FindChild(p\)
+					;case "/size"
+					;case "/unsize"
+					;Default : kicktxt$=kicktxt$+Chr$(32) : Info("Command Doesn't Exist.", 255, 124, 5) : Info("Use /help to display commands", 255, 124, 5)
+				End Select
+			endif
+			;PlaySound(Sound_Command)
+			Chatting\PrevTxt$=Chatting\Txt$
+			Chatting\Txt$="" : Chatting\Allowed=0
+		ElseIf key=8 And Chatting\Txt$<>"" then
+			If Len(Chatting\Txt$)>0 Then Chatting\Txt$=Left$(Chatting\Txt$,Len(Chatting\Txt$)-1)
+		ElseIf key>=32 And key<127 then
+			if Len(Chatting\Txt$)<63 Then Chatting\Txt$=Chatting\Txt$+Chr$(key)
+		EndIf
+	EndIf
+End Function
 Function Info(t$,r=255,g=255,b=255, font_type$="normal", randcolor=false)
 	;SetColor r,g,b
 	i.Info=New Info
@@ -1155,7 +1255,7 @@ Function Info(t$,r=255,g=255,b=255, font_type$="normal", randcolor=false)
 	i\randcolor=randcolor
 	Insert i Before First Info
 End Function
-
+global slidechat#=1
 Function Interface_DrawChat(x#=0, y#=0, csize=1, orientation=1)
 	
 	; fix the chat limit consequently to the size.
@@ -1164,17 +1264,9 @@ Function Interface_DrawChat(x#=0, y#=0, csize=1, orientation=1)
 
 	select orientation
 		case 0: txtpos#=0
-		case 1: txtpos#=(ImageHeightEx(Interface_1ChatBox)*csize)+30
+		case 1: txtpos#=(427*csize)+30
 	end select
 
-	; the background for the chatbox (chatbox itself.)
-	SetAlpha(0.175)
-	DrawImageEx(Interface_1Chatbox, x#, y#, 0) ; top
-	for bi=1 to csize-1
-		DrawImageEx(Interface_1Chatbox, x#, y#+(ImageHeightEx(Interface_1Chatbox))*bi, 1)
-	next
-	DrawImageEx(Interface_1Chatbox, x#, y#+(ImageHeightEx(Interface_1Chatbox)*csize), 2) ; bottom	
-	SetAlpha(1.0)
 
 	; the backing for the input text.
 	if Chatting\Allowed=True
@@ -1193,8 +1285,8 @@ Function Interface_DrawChat(x#=0, y#=0, csize=1, orientation=1)
 	Else
 		Chatting\Cursor = ""
 	EndIf
-	SetImageFont(OnlineFont)
-	DrawText(">:"+Chatting\Txt$+Chatting\Cursor$,x#+5,y#+txtpos#)
+	SetFont(MidFont)
+	Text(x#+5,y#+txtpos#, ">:"+Chatting\Txt$+Chatting\Cursor$)
 
 	; a little slide effect for chat text.
 	slidechat#=slidechat#+1.25*Game\DeltaTime\Delta#
@@ -1220,12 +1312,14 @@ Function Interface_DrawChat(x#=0, y#=0, csize=1, orientation=1)
 					If BP_GetMessagePart(i\Txt, 2, ":")<>"" Then
 						SetColor(i\r, i\g, i\b)
 						;SetColor(onlineplayer(1)\Online\PrevColorR, onlineplayer(1)\Online\PrevColorG, onlineplayer(1)\Online\PrevColorB)
-						DrawText(BP_GetMessagePart(i\Txt, 1, ":"), x#+5,(y#+txtpos#)+1*textcounter, false, false)
-						SetColor(255,255,255)
-						DrawText(BP_GetMessagePart(i\Txt, 2, ":"), x#+5+StringWidthEx(BP_GetMessagePart(i\Txt, 1, ":")),(y#+txtpos#)+1*textcounter, false, false)
+						Text(x#+5,(y#+txtpos#)+1*textcounter, BP_GetMessagePart(i\Txt, 1, ":"))
+						Color(255,255,255)
+						Text(x#+5+StringWidthEx(BP_GetMessagePart(i\Txt, 1, ":")),(y#+txtpos#)+1*textcounter, BP_GetMessagePart(i\Txt, 2, ":"))
+						Color(255,255,255)
 					Else
-						SetColor(i\r, i\g, i\b)
-						DrawText(i\Txt, x#+5,(y#+txtpos#)+1*textcounter, false, false)
+						Color(i\r, i\g, i\b)
+						Text( x#+5,(y#+txtpos#)+1*textcounter,i\Txt)
+						Color(255,255,255)
 					endif
 			end Select
 			textcounter = textcounter - 20
