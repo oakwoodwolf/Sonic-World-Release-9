@@ -832,9 +832,7 @@
 					p.tPlayer = First tPlayer		
 					; send movement packet
 					BP_UDPMessage(0, UDPMSG_PLAYERMOVEMENT, String$(EntityX(p\Objects\Mesh)+"/"+EntityY(p\Objects\Mesh)+"/"+EntityZ(p\Objects\Mesh)+"/"+EntityPitch(p\Objects\Mesh)+"/"+EntityYaw(p\Objects\Mesh)+"/"+EntityRoll(p\Objects\Mesh),1))	
-
-					; send attributes packet
-					BP_UDPMessage(0, UDPMSG_PLAYERATTRIBUTES, p\Action+"/"+p\Animation\Animation+"/"+p\SpeedLength+"/"+p\Motion\Ground)
+					BP_UDPMessage(0, UDPMSG_PLAYERATTRIBUTES, String$(p\Action+"/"+p\Animation\Animation+"/"+p\SpeedLength+"/"+p\Motion\Ground+"/",1))
 					; deal the tag and race attributes
 					If Game\Online\GameType=1 Then BP_UDPMessage(0,20,onlineplayer(1)\Online\TagMode+"/"+onlineplayer(1)\Online\TagTimer+"/"+onlineplayer(1)\Online\TagCoolDown)
 					If Game\Online\GameType=3 Then BP_UDPMessage(0,21,onlineplayer(1)\Online\RacePosition+"/"+onlineplayer(1)\Online\FinishedRace);+"/"+onlineplayer(1)\Online\RaceTimer)
@@ -1102,7 +1100,6 @@ Function HandleMessages()
 					p\Online\Rot\x 			= Float(BP_GetMessagePart(msg\msgData, 4, "/"))
 					p\Online\Rot\y 			= Float(BP_GetMessagePart(msg\msgData, 5, "/"))
 					p\Online\Rot\z 			= Float(BP_GetMessagePart(msg\msgData, 6, "/"))
-					DebugLog(msg\msgData + " X: " + BP_GetMessagePart(msg\msgData, 1, "/") + "y" + BP_GetMessagePart(msg\msgData, 2, "/") + "z" + BP_GetMessagePart(msg\msgData, 3, "/") + "pitch" + BP_GetMessagePart(msg\msgData, 4, "/") + "yaw" + BP_GetMessagePart(msg\msgData, 5, "/") + "roll" + BP_GetMessagePart(msg\msgData, 6, "/") )
 			;------------------------------------------------------			
 			Case 77 ; Player Color
 			;------------------------------------------------------							
@@ -1116,6 +1113,7 @@ Function HandleMessages()
 			;------------------------------------------------------
 				; set to player
 				p.tPlayer = FindPlayerData(msg\msgFrom)
+				DebugLog("PLAYER ATTRIBUTES " + msg\msgData)
 				If p\Online\NetID<>BP_My_ID Then
 				; set attributes
 					p\Action 					= Int(BP_GetMessagePart(msg\msgData, 1, "/"))
