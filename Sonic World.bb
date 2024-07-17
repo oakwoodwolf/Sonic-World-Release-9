@@ -256,7 +256,7 @@ Menu\GameStarted=1
 			Color(255,255,255)	
 			SetFont(BigFont)
 			Text(GraphicsWidth()/2,25,"Welcome, "+PlayerName$+"!",1,0)
-			Text(GraphicsWidth()/2,75,"Enter Host's IP, Or press F1-F3 To join..",1, 0)
+			Text(GraphicsWidth()/2,75,"Enter Host's IP",1, 0)
 			Text(GraphicsWidth()/2,125,"0=localhost",1,0)	
 			
 			If Finished = 0 Then
@@ -304,45 +304,11 @@ Menu\GameStarted=1
 		Until Finished=1
 		Finished=0 : FlushKeys() : Delay(275)
 		EndIf
-
-		Repeat 
-			Cls()
-			For i=1 To 255 : Color(i,0,0) : Rect(0,i,GraphicsWidth(),GraphicsHeight(),1) : Next ; red gradient
-			Color(255,255,255)	
-			SetFont(BigFont)
-			Text(GraphicsWidth()/2,25,"Finally, Select your Character.",1,0)
-			Text(GraphicsWidth()/2,75,"for example, son=Sonic, tai=Tails, etc",1, 0)
-			Text(GraphicsWidth()/2,125,"Warning(Typos will cause a crash)",1,0)	
-			
-			key=GetKey()
-			If key Then 
-				If key=13 Then
-					If txt$<>"" Then
-						char$ = txt$
-						txt$=""
-						FlushKeys()
-						Finished=1
-						failsafe=FileType("Characters/"+char$+".b3d")
-						if Not(failsafe) then char$="son"
-					Else
-						char$="son"	
-					End If
-				Else If key=8
-					If Len(txt$)>0 Then txt$=Left$(txt$,Len(txt$)-1)
-				Else If key>=32 And key<127
-					txt$=txt$+Chr$(key)
-				EndIf
-			EndIf
-			
-			Text(GraphicsWidth()/2,150+FontHeight(),"Character : "+txt$,1,0)
-			Flip()
-		Until Finished=1
-		Finished=0 : FlushKeys() : Delay(275)
 		connecttimer=millisecs()+1750
 		Game\Online\Connected=1 ;!!!!!!!!!!!!
 		Game\Online\SendUpdates=True
-		If Game\Online\Hosting=True Then Game\Online\Status=BP_HostSession (PlayerName$ + "/" + char$,6,1,2222,100)  
-		If Game\Online\Hosting=False Then Game\Online\Status=BP_JoinSession (PlayerName$ + "/" + char$,Game\Online\Port,Game\Online\IP,2222)
+		If Game\Online\Hosting=True Then Game\Online\Status=BP_HostSession (PlayerName$,6,1,2222,100)  
+		If Game\Online\Hosting=False Then Game\Online\Status=BP_JoinSession (PlayerName$,Game\Online\Port,Game\Online\IP,2222)
 
 		Game\Online\GameType=BP_GameType
 

@@ -557,7 +557,7 @@
 
 		Field Joined, ShowTag=True
 
-		FIeld camx#,camy#,camz#, campivot, camera
+		Field camx#,camy#,camz#, campivot, camera
 
 		; Tag
 		Field TagBubble, TagTimer, TagTimerInterval, TagMode, TagCoolDown, TagStarted
@@ -679,6 +679,7 @@
 		If no#>0 Then
 			pp(no#)=p
 			Player_DetermineChar(p,Menu\Character[p\No#])
+											
 			If (Not(p\Character=CHAR_TMH)) Then p\JumpActionMode=JUMPAMODE[p\RealCharacter]
 		Else If localplayer Then
 			Game\RivalAmount=Game\RivalAmount+1 : ppe(Game\RivalAmount)=p
@@ -687,7 +688,7 @@
 			randomrival#=0
 			If rivalfixed#>0 Then
 				i = 0
-				j = false
+				j = False
 				If (Not(IsCharMod(Menu\Character[1]))) Then char=Menu\Character[1] Else char=MODCHARS_TYPE(Menu\Character[1]-CHAR_MOD1+1)
 				Repeat
 					Select rivalfixed#
@@ -724,15 +725,15 @@
 							Case 4: i=i+1
 							End Select
 					End Select
-					j=true
-					If (p\Character=Menu\Character[1]) Or (Menu\Members>=2 and p\Character=Menu\Character[2]) Or (Menu\Members>=3 and p\Character=Menu\Character[3]) Then j=false
+					j=True
+					If (p\Character=Menu\Character[1]) Or (Menu\Members>=2 And p\Character=Menu\Character[2]) Or (Menu\Members>=3 And p\Character=Menu\Character[3]) Then j=False
 					If Game\RivalAmount>=2 Then
-						If (p\Character=ppe(1)\Character) Then j=false
+						If (p\Character=ppe(1)\Character) Then j=False
 					EndIf
 					If Game\RivalAmount>=3 Then
-						If (p\Character=ppe(2)\Character) Then j=false
+						If (p\Character=ppe(2)\Character) Then j=False
 					EndIf
-					If i=4 Then j=true
+					If i=4 Then j=True
 				Until j
 			Else
 				randomrival#=1
@@ -758,7 +759,7 @@
 								Case 3:
 								Repeat : p\Character = Menu_RandomNonmodChar() : Until Menu_RandomNonmodChar_RivalAcceptableAt3(p\Character,Menu\Character[1],Menu\Character[2],Menu\Character[3])
 							End Select
-						Until Menu_RandomNonmodChar_AcceptableAt2(ppe(1)\Character,p\Character,false)
+						Until Menu_RandomNonmodChar_AcceptableAt2(ppe(1)\Character,p\Character,False)
 					Case 3:
 						Repeat
 							Select Menu\Members
@@ -769,7 +770,7 @@
 								Case 3:
 								Repeat : p\Character = Menu_RandomNonmodChar() : Until Menu_RandomNonmodChar_RivalAcceptableAt3(p\Character,Menu\Character[1],Menu\Character[2],Menu\Character[3])
 							End Select
-						Until Menu_RandomNonmodChar_AcceptableAt3(ppe(1)\Character,ppe(2)\Character,p\Character,false)
+						Until Menu_RandomNonmodChar_AcceptableAt3(ppe(1)\Character,ppe(2)\Character,p\Character,False)
 				End Select
 			EndIf
 			Player_DetermineChar(p,p\Character)
@@ -790,7 +791,7 @@
 		p\Animation\Align = Vector(0, 1, 0)
 		p\Objects\Entity = CreatePivot(Game\Stage\Root)
 		p\Objects\Position = New tVector
-		For i=0 to 4 : p\Objects\PPivot[i] = CreatePivot(p\Objects\Entity) : ScaleEntity(p\Objects\PPivot[i],1.075,1.075,1.075) : Next
+		For i=0 To 4 : p\Objects\PPivot[i] = CreatePivot(p\Objects\Entity) : ScaleEntity(p\Objects\PPivot[i],1.075,1.075,1.075) : Next
 		p\Objects\TrailPivot = CreatePivot(p\Objects\Entity)
 
 		; Homing Attack flags
@@ -813,11 +814,12 @@
 		p\Objects\Staring=CreatePivot()
 		p\Objects\DestinationTarget=CreatePivot()
 		DeformCharacter(p)
+		BP_UDPMessage(0,4, String(p\RealCharacter,1)) ; send new name
 		p\Objects\JumpBall=CopyEntity(MESHES(Mesh_JumpBall), Game\Stage\Root) : Animate p\Objects\JumpBall,1,1 : HideEntity(p\Objects\JumpBall)
 		p\Objects\Stomp=CopyEntity(MESHES(Mesh_Stomp), Game\Stage\Root) : Animate p\Objects\Stomp,1,1 : HideEntity(p\Objects\Stomp)
 		p\Objects\Forth=CopyEntity(MESHES(Mesh_Forth), Game\Stage\Root) : Animate p\Objects\Forth,1,1 : HideEntity(p\Objects\Forth)
 		p\Objects\Scanner=CopyEntity(MESHES(Mesh_Scanner), Game\Stage\Root) : HideEntity(p\Objects\Scanner)
-		If Menu\Settings\Shadows#>0 and (Menu\ChaoGarden=0 Or Menu\Stage=999) Then p\Objects\ShadowCircle = Init_CircleShadow(p\Objects\Entity , p\Objects\Mesh, 1.25)
+		If Menu\Settings\Shadows#>0 And (Menu\ChaoGarden=0 Or Menu\Stage=999) Then p\Objects\ShadowCircle = Init_CircleShadow(p\Objects\Entity , p\Objects\Mesh, 1.25)
 
 		; Form places
 		p\Objects\Follower=CreatePivot()
@@ -847,7 +849,7 @@
 		TextureBlend p\Objects\LevitationGlowRuby,3
 
 		; Initiate camera target
-		If Menu\Stage<>0 and Player_IsPlayable(p) Then
+		If Menu\Stage<>0 And Player_IsPlayable(p) Then
 			For c.tCamera=Each tCamera : Camera_Bind(c,p) : Next
 		EndIf
 		
@@ -911,7 +913,7 @@
 	If p\No#=1 Or Game\Interface\DebugPlacerOn=0 Then
 
 		; Run cheats
-		If Menu\Settings\Debug#=1 and ((Menu\ChaoGarden=0 and Menu\Stage>0 and Menu\MarathonMode=0) Or Menu\Developer=1) Then Player_HandleCheats(p)
+		If Menu\Settings\Debug#=1 And ((Menu\ChaoGarden=0 And Menu\Stage>0 And Menu\MarathonMode=0) Or Menu\Developer=1) Then Player_HandleCheats(p)
 
 		If (Not(Game\CinemaMode=1)) Then
 			; Perform player's movement
@@ -1078,7 +1080,7 @@
 				For ee.tEmerald = Each tEmerald : Update_Emerald(ee, p, d) : Next
 			EndIf
 			For sp.tSpark = Each tSpark : Update_Spark(sp, p, d) : Next
-			If Menu\Settings\Shadows#>0 and (Menu\ChaoGarden=0 Or Menu\Stage=999) Then
+			If Menu\Settings\Shadows#>0 And (Menu\ChaoGarden=0 Or Menu\Stage=999) Then
 				If p\No#<0 Then
 					Update_CircleShadow(p\Objects\ShadowCircle, p\Objects\Mesh, pp(1)\Objects\Camera\Entity)
 				Else
@@ -1108,7 +1110,7 @@
 		If Menu\Members=1 Then p\Invisibility=0
 	End Function
 
-	Function DeformCharacter(p.tPlayer,dontstartoutlock=false)
+	Function DeformCharacter(p.tPlayer,dontstartoutlock=False)
 		p\Flags\LongTrailCreated=0
 		Player_FreeLongTrails(p,2)
 
@@ -1124,7 +1126,7 @@
 		If Menu\Stage=0 Then
 			p\Objects\Mesh=CopyEntity(MESHES(Mesh_Empty), Game\Stage\Root)
 		Else
-			If (Menu\Members>1 Or Game\CheaterChangedCharacter=0) and Player_IsPlayable(p) Then
+			If (Menu\Members>1 Or Game\CheaterChangedCharacter=0) And Player_IsPlayable(p) Then
 				If (Game\SuperForm=0 Or (Not(Player_IsPlayable(p)))) Then
 					Select p\RealCharacter
 						Case Menu\Character[1]: p\Objects\Mesh=CopyEntity(Game\CharacterMesh[1], Game\Stage\Root)
@@ -1168,7 +1170,7 @@
 			Default: p\Motion\Speed\y#=0.30*p\Physics\UNDERWATERTRIGGER#
 		End Select
 
-		If dontstartoutlock=False and p\No#=1 Then
+		If dontstartoutlock=False And p\No#=1 Then
 			Game\ControlLock=0.5*secs#
 		EndIf
 
@@ -1189,9 +1191,9 @@
 	Function Player_HasSuperModel(char)
 		Select char
 			Case CHAR_SON,CHAR_TAI,CHAR_KNU,CHAR_SHA,CHAR_SIL,CHAR_BLA:
-				Return true
+				Return True
 			Default:
-				Return false
+				Return False
 		End Select
 	End Function
 
@@ -1200,11 +1202,11 @@
 			Return 0
 		Else
 			If IsCharMod(char) Then
-				If superform=1 and CharModHasSuper(char) Then
+				If superform=1 And CharModHasSuper(char) Then
 					Return 1
-				ElseIf superform=2 and CharModHasHyper(char) Then
+				ElseIf superform=2 And CharModHasHyper(char) Then
 					Return 2
-				ElseIf superform=2 and CharModHasSuper(char) Then
+				ElseIf superform=2 And CharModHasSuper(char) Then
 					Return 1
 				Else
 					Return 0
@@ -1231,6 +1233,8 @@
 			DeformCharacter_DeleteTheBoneEntities(pp(1))
 			Player_DetermineChar(pp(1),newcharacter)
 			DeformCharacter(pp(1),True)
+			BP_UDPMessage(0,4, String(newcharacter,1)) ; send new name
+			BP_UDPMessage(0, UDPMSG_MESSAGE, " Is Now, "+ ShortCharNames(newcharacter,1)) ; tell everyone
 			Game\Vehicle=0
 			Player_SetRadius#(pp(1))
 		EndIf
@@ -1640,3 +1644,5 @@ End Function
 
 ;______________________________________________________________________________________________________________________________________________________________________
 ;______________________________________________________________________________________________________________________________________________________________________
+;~IDEal Editor Parameters:
+;~C#Blitz3D

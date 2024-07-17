@@ -831,7 +831,6 @@
 				If Game\Online\SendUpdates Then	
 					p.tPlayer = First tPlayer		
 					; send movement packet
-					DebugLog("sending packet for movement" + String$(EntityX(p\Objects\Mesh)+"/"+EntityY(p\Objects\Mesh)+"/"+EntityZ(p\Objects\Mesh)+"/"+EntityPitch(p\Objects\Mesh)+"/"+EntityYaw(p\Objects\Mesh)+"/"+EntityRoll(p\Objects\Mesh),1))	
 					BP_UDPMessage(0, UDPMSG_PLAYERMOVEMENT, String$(EntityX(p\Objects\Mesh)+"/"+EntityY(p\Objects\Mesh)+"/"+EntityZ(p\Objects\Mesh)+"/"+EntityPitch(p\Objects\Mesh)+"/"+EntityYaw(p\Objects\Mesh)+"/"+EntityRoll(p\Objects\Mesh),1))	
 
 					; send attributes packet
@@ -1004,12 +1003,9 @@ Function HandleMessages()
 			;------------------------------------------------------		
 			Case 255 ;A new player has joined!
 			;------------------------------------------------------
-				oname = Instr(msg\msgData,"/",1)
-				ochar = Instr(msg\msgData,"/",oname+1)
 				PlayerNo=PlayerNo+1
-				plyname$ = Left(msg\msgData,oname-1)
-				plychar = Int(Mid(msg\msgData,oname+1,ochar-oname-1))
-				p.tPlayer = Player_Create(-PlayerNo,0,2, False, plyname$,  msg\msgFrom)	; create new player						
+				plyname$ = msg\msgData
+				p.tPlayer = Player_Create(-PlayerNo,0,1, False, plyname$,  msg\msgFrom)	; create new player						
 				nInfo.NetInfo = BP_FindID(p\Online\NetID) 			; send info the net							
 				; finished 	; inform the joined party
 				If Game\Online\ShowMsg=False Then BP_UDPMessage(0,25, Game\Online\MsgOfTheDay$) : Game\Online\ShowMsg=True
@@ -1206,6 +1202,11 @@ Function HandleMessages()
 						If ChannelPlaying(Channel_NameChange) Then StopChannel(Channel_NameChange)
 						Channel_NameChange=PlaySound(Sound_NameChange)
 				End Select
+			Case 4
+				p.tPlayer = FindPlayerData(msg\msgFrom)
+				p\RealCharacter=Int(msg\msgData)
+				Player_DetermineChar(p, Int(msg\msgData))
+				DeformCharacter(p,True)
 			;------------------------------------------------------		
 			Case 55	; GAG Stuff
 			;------------------------------------------------------	

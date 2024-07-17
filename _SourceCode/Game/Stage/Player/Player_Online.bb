@@ -23,8 +23,8 @@ Function Player_CreateOnlineData(p.tPlayer, pname$, pid%, no%, localplayer%=True
 		p\Online\CamPivot=CreatePivot()
 		p\Online\Camera = CreateCamera(p\Online\campivot):HideEntity(p\Online\Camera)
 		p\Online\Collision = CreateCylinder():EntityAlpha(p\Online\Collision,0)
-		;EntityRadius(p\Online\Collision, 8.5, 8.5)		
-		;EntityType(p\Online\Collision, COLLISION_ONLINE_PLAYER)	
+		EntityRadius(p\Online\Collision, 8.5, 8.5)		
+		EntityType(p\Online\Collision, COLLISION_PLAYER)	
 		EntityType(p\Objects\Mesh, COLLISION_OBJECT_GOTHRU)
 	EndIf		
 	; name the player by their ID.

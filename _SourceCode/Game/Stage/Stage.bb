@@ -29,6 +29,7 @@
 	Const UDPMSG_KICKED				= 252
 	Const UDPMSG_PLAYERMOVEMENT 	= 1
 	Const UDPMSG_PLAYERATTRIBUTES	= 2
+	Const UDPMSG_PLAYERCHARACTER	= 4
 	Const UDPMSG_TAGVALUES			= 20
 	Const UDPMSG_RACEVALUES			= 21
 	Const UDPMSG_INRADIUS			= 22
@@ -4626,6 +4627,7 @@ Next
 			For p.tPlayer=Each tPlayer
 				If p\No#=1 Then
 					If Menu\ChaoGarden=0 Or Menu\Stage=999 Then Player_PlayTurnVoice(p)
+					BP_UDPMessage(0,4, String(p\Character,1))
 				EndIf
 			Next
 			Game\StartoutLock=1*secs#
