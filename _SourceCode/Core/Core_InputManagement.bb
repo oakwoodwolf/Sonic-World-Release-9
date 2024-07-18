@@ -175,7 +175,7 @@ End Function
 		maymove = ( (Not(Game\ControlLock>0)) And (Not(Game\StartoutLock>0)) And Game\Victory=0 And Chatting\Allowed=0 )
 
 		; ---- Check for input lock -----
-		If Menu\Pause=0 And (Input\Pressed\Start) And Menu\Stage<>0 And Game\Victory=0 And Menu\ExitedAStage=0 And Game\Interface\DebugPlacerOn=0 And (Menu\ChaoGarden=0 Or Menu\Stage=999) Then
+		If Menu\Pause=0 And (Input\Pressed\Start And Chatting\Allowed=0) And Menu\Stage<>0 And Game\Victory=0 And Menu\ExitedAStage=0 And Game\Interface\DebugPlacerOn=0 And (Menu\ChaoGarden=0 Or Menu\Stage=999) Then
 			Menu\Pause=1 : Input_ResetAllInput() : Game\SmartCameraRangeDontAffectTimer=3*secs#
 			Input_Lock = False
 			Menu\Option=1

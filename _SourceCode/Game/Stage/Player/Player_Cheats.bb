@@ -2,7 +2,7 @@
 	; =========================================================================================================
 
 Function Player_HandleCheats(p.tPlayer)
-If p\No#=1 Then
+If p\No#=1 And Chatting\Allowed=0 Then
 
 	;spawn at origin, or cinema mode playing
 	If (KeyHit(KEY_F1)) Then
