@@ -181,16 +181,7 @@
 			EndIf
 		EndIf
 	If (Game\Online\Online) Then
-		If p\Online\NetID = BP_My_ID Then		
-				RotateEntity(p\Objects\Mesh, 0, p\Animation\Direction#-180, 0)
-				AlignToVector(p\Objects\Mesh, p\Animation\Align\x#, p\Animation\Align\y#, p\Animation\Align\z#, 2)
-				; Now, just move over the character to the new position, based on it's speed.
-				If (p\Motion\Ground=True) Then
-					MoveEntity(p\Objects\Entity, p\Motion\Speed\x#*d\Delta, p\Motion\Speed\y#*d\Delta-(0.015+(Vector_Length#(p\Motion\Speed)*0.33*d\Delta)), p\Motion\Speed\z#*d\Delta)
-				Else	
-					MoveEntity(p\Objects\Entity, p\Motion\Speed\x#*d\Delta, p\Motion\Speed\y#*d\Delta, p\Motion\Speed\z*d\Delta)
-				EndIf
-			Else
+		If p\Online\NetID <> BP_My_ID Then		
 				; fixate the yaw rotation
 				If p\Online\PrevRot\y < 0 Then p\Online\PrevRot\y = p\Online\PrevRot\y + 360
 				If p\Online\Rot\y < 0 Then p\Online\Rot\y = p\Online\Rot\y + 360
@@ -452,57 +443,60 @@
 
 		; Change direction of the mesh
 		If Game\Interface\DebugPlacerOn=0 Then
-			RotateEntity(p\Objects\Mesh, 0, p\Animation\Direction#-180, 0)
-			AlignToVector(p\Objects\Mesh, p\Animation\Align\x#, p\Animation\Align\y#, p\Animation\Align\z#, 2)
-			If p\Action=ACTION_DRIFT Then
-				ScaleEntity(p\Objects\Mesh, 1, 1.3, 1.3)
-				If abs(p\Physics\DRIFT_ANGLE#)>5 Then p\Physics\DRIFT_ANGLE_ACTUAL#=p\Physics\DRIFT_ANGLE# Else p\Physics\DRIFT_ANGLE_ACTUAL#=0
-				TurnEntity(p\Objects\Mesh,0,0,p\Physics\DRIFT_ANGLE_ACTUAL#)
-			ElseIf p\Action=ACTION_CHARGE and p\ChargeTimer>0.125*secs# Then
-				ScaleEntity(p\Objects\Mesh, 1, 1.375, 1)
-				TurnEntity(p\Objects\Mesh,45.25,0,0)
-			Else
-				ScaleEntity(p\Objects\Mesh, 1, 1, 1)
-				If p\Physics\TRICK_ANGLE#>5 Then p\Physics\TRICK_ANGLE_ACTUAL#=p\Physics\TRICK_ANGLE# Else p\Physics\TRICK_ANGLE_ACTUAL#=0
-				If abs(p\Physics\LEAN_ANGLE#)>5 Then p\Physics\LEAN_ANGLE_ACTUAL#=p\Physics\LEAN_ANGLE# Else p\Physics\LEAN_ANGLE_ACTUAL#=0
-				If Not(p\Action=ACTION_FLOAT Or p\Action=ACTION_GLIDER) Then
-					If abs(p\Physics\UP_ANGLE#)>5 Then p\Physics\UP_ANGLE_ACTUAL#=p\Physics\UP_ANGLE# Else p\Physics\UP_ANGLE_ACTUAL#=0
-				Else
-					p\Physics\UP_ANGLE_ACTUAL#=p\Physics\UP_ANGLE#
-				EndIf
-
-				TurnEntity(p\Objects\Mesh,p\Physics\UP_ANGLE_ACTUAL#,0,p\Physics\LEAN_ANGLE_ACTUAL#)
-				If p\Physics\TRICK_ANGLE_ACTUAL#>0 Then TurnEntity(p\Objects\Mesh,0,p\Physics\TRICK_ANGLE_ACTUAL#,0)
-			EndIf
-
-			If p\HasVehicle>0 Then
-				If abs(p\Physics\DRIFT_ANGLE#)>10 Then p\Physics\DRIFT_ANGLE_ACTUAL#=p\Physics\DRIFT_ANGLE# Else p\Physics\DRIFT_ANGLE_ACTUAL#=0
-				If Game\Vehicle=9 Then
-					TurnEntity(p\Objects\Mesh,0,p\Physics\DRIFT_ANGLE_ACTUAL#,0)
-				Else
+			If Game\Online\Online=0 Or p\Online\NetID = BP_My_ID Then
+				RotateEntity(p\Objects\Mesh, 0, p\Animation\Direction#-180, 0)
+				AlignToVector(p\Objects\Mesh, p\Animation\Align\x#, p\Animation\Align\y#, p\Animation\Align\z#, 2)
+				If p\Action=ACTION_DRIFT Then
+					ScaleEntity(p\Objects\Mesh, 1, 1.3, 1.3)
+					If abs(p\Physics\DRIFT_ANGLE#)>5 Then p\Physics\DRIFT_ANGLE_ACTUAL#=p\Physics\DRIFT_ANGLE# Else p\Physics\DRIFT_ANGLE_ACTUAL#=0
 					TurnEntity(p\Objects\Mesh,0,0,p\Physics\DRIFT_ANGLE_ACTUAL#)
+				ElseIf p\Action=ACTION_CHARGE and p\ChargeTimer>0.125*secs# Then
+					ScaleEntity(p\Objects\Mesh, 1, 1.375, 1)
+					TurnEntity(p\Objects\Mesh,45.25,0,0)
+				Else
+					ScaleEntity(p\Objects\Mesh, 1, 1, 1)
+					If p\Physics\TRICK_ANGLE#>5 Then p\Physics\TRICK_ANGLE_ACTUAL#=p\Physics\TRICK_ANGLE# Else p\Physics\TRICK_ANGLE_ACTUAL#=0
+					If abs(p\Physics\LEAN_ANGLE#)>5 Then p\Physics\LEAN_ANGLE_ACTUAL#=p\Physics\LEAN_ANGLE# Else p\Physics\LEAN_ANGLE_ACTUAL#=0
+					If Not(p\Action=ACTION_FLOAT Or p\Action=ACTION_GLIDER) Then
+						If abs(p\Physics\UP_ANGLE#)>5 Then p\Physics\UP_ANGLE_ACTUAL#=p\Physics\UP_ANGLE# Else p\Physics\UP_ANGLE_ACTUAL#=0
+					Else
+						p\Physics\UP_ANGLE_ACTUAL#=p\Physics\UP_ANGLE#
+					EndIf
+
+					TurnEntity(p\Objects\Mesh,p\Physics\UP_ANGLE_ACTUAL#,0,p\Physics\LEAN_ANGLE_ACTUAL#)
+					If p\Physics\TRICK_ANGLE_ACTUAL#>0 Then TurnEntity(p\Objects\Mesh,0,p\Physics\TRICK_ANGLE_ACTUAL#,0)
 				EndIf
-				RotateEntity(p\Objects\Vehicle, EntityPitch(p\Objects\Mesh), EntityYaw(p\Objects\Mesh), EntityRoll(p\Objects\Mesh), 1)
-				Select Game\Vehicle
-					Case 2:
-						PositionEntity(p\Objects\Vehicle, (EntityX(p\Objects\HandR,1)+EntityX(p\Objects\HandL,1))/2.0, EntityY(p\Objects\HandR,1), (EntityZ(p\Objects\HandR,1)+EntityZ(p\Objects\HandL,1))/2.0, 1)
-					Default:
-						PositionEntity(p\Objects\Vehicle, EntityX(p\Objects\Mesh), EntityY(p\Objects\Mesh), EntityZ(p\Objects\Mesh), 1)
-				End Select
-				Select Game\Vehicle
-					Case 1:
-						MoveEntity p\Objects\Vehicle, 0, -2.2, 0
-					Case 2:
-						TurnEntity p\Objects\Vehicle, -60, 0, 0
-						MoveEntity p\Objects\Vehicle, 0, 0.25, 0.5
-					Case 3:
-						MoveEntity p\Objects\Vehicle, 0, 0.2+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
-					Case 4,9:
-						MoveEntity p\Objects\Vehicle, 0, 0.65+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
-					Case 5,8:
-						MoveEntity p\Objects\Vehicle, 0, 1.05+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
-				End Select
+
+				If p\HasVehicle>0 Then
+					If abs(p\Physics\DRIFT_ANGLE#)>10 Then p\Physics\DRIFT_ANGLE_ACTUAL#=p\Physics\DRIFT_ANGLE# Else p\Physics\DRIFT_ANGLE_ACTUAL#=0
+					If Game\Vehicle=9 Then
+						TurnEntity(p\Objects\Mesh,0,p\Physics\DRIFT_ANGLE_ACTUAL#,0)
+					Else
+						TurnEntity(p\Objects\Mesh,0,0,p\Physics\DRIFT_ANGLE_ACTUAL#)
+					EndIf
+					RotateEntity(p\Objects\Vehicle, EntityPitch(p\Objects\Mesh), EntityYaw(p\Objects\Mesh), EntityRoll(p\Objects\Mesh), 1)
+					Select Game\Vehicle
+						Case 2:
+							PositionEntity(p\Objects\Vehicle, (EntityX(p\Objects\HandR,1)+EntityX(p\Objects\HandL,1))/2.0, EntityY(p\Objects\HandR,1), (EntityZ(p\Objects\HandR,1)+EntityZ(p\Objects\HandL,1))/2.0, 1)
+						Default:
+							PositionEntity(p\Objects\Vehicle, EntityX(p\Objects\Mesh), EntityY(p\Objects\Mesh), EntityZ(p\Objects\Mesh), 1)
+					End Select
+					Select Game\Vehicle
+						Case 1:
+							MoveEntity p\Objects\Vehicle, 0, -2.2, 0
+						Case 2:
+							TurnEntity p\Objects\Vehicle, -60, 0, 0
+							MoveEntity p\Objects\Vehicle, 0, 0.25, 0.5
+						Case 3:
+							MoveEntity p\Objects\Vehicle, 0, 0.2+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
+						Case 4,9:
+							MoveEntity p\Objects\Vehicle, 0, 0.65+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
+						Case 5,8:
+							MoveEntity p\Objects\Vehicle, 0, 1.05+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
+					End Select
+				EndIf
 			EndIf
+			
 		Else
 			Select Game\Interface\DebugMenu
 				Case DEBUGMENU_ATTRIBUTES_CAMPOSITION#,DEBUGMENU_ATTRIBUTES_CAMROTATION#,DEBUGMENU_ATTRIBUTES_CAMZOOM#,DEBUGMENU_ATTRIBUTES_CAMSPEED#:

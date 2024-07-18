@@ -2,7 +2,7 @@
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
 	Function Game_Stage_Step(d.tDeltaTime)
-		;If ((KeyHit(KEY_T)) And Game\Online\Connected=1) And Chatting\Allowed=0 Then FlushKeys() : Chatting\Allowed=1 : FlushKeys() : DebugLog(Chatting\Allowed)
+		If ((Input\Pressed\Change) And Game\Online\Connected=1) And Chatting\Allowed=0 Then FlushKeys() : Chatting\Allowed=1 : FlushKeys() : DebugLog(Chatting\Allowed)
 		;deal with mouse
 		HidePointer()
 			Input\AllowMouse=False
