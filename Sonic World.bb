@@ -388,7 +388,7 @@ Menu\GameStarted=1
 			Color(255,255,255) 
 			Text 0,0,"Starting Offline"
 			Flip()
-		Game\Online\Connected=0
+		
 	EndIf
 
 	Function GetInput(stri$="")

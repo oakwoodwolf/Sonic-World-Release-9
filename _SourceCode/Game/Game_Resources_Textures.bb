@@ -178,6 +178,7 @@ Function LoadSmartImage(x)
 		Case Interface_TextControls_2:	LoadSmartFastImage("Interface/TextControls.png", x, (1440/16.0), (540/6.0), 0, 96, 2.75, 2.75)
 		Case Interface_Saving:		LoadSmartFastImage("Interface/Saving.png", x, 55, 70, 0, 1, 2.5, 2.5)
 		Case Interface_Indicator:	LoadSmartFastImage("Interface/Indicator.png", x, 256, 256, 0, 1, 4.95, 4.95)
+		Case Interface_Chatbox:	LoadSmartFastImage("Interface/Chatbox.png", x, 576/2.3, 142.33/2.3, 0, 3)
 		Case Interface_Sky:
 						Select Menu\Settings\Theme#
 						Case 14,26: LoadSmartFastImage("Interface/Sky"+Int(Menu\Settings\Theme#)+"a.png", x, 1440, 900, 0, 1, 0, 0, true, false, true)

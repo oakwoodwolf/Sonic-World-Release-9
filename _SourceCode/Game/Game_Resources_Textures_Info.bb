@@ -284,6 +284,7 @@
 	Global Interface_TextControls_2		= i : i=i+1
 	Global Interface_Saving			= i : i=i+1
 	Global Interface_Indicator		= i : i=i+1
+	Global Interface_Chatbox		= i : i=i+1
 
 	Global INTERFACE_ALWAYSTOTAL=i-1
 

@@ -44,7 +44,7 @@ If p\No#=1 Then
 	EndIf
 
 	;go debug placer
-	If (Menu\ChaoGarden=0 Or Menu\Developer=1) and (Not(p\Action=ACTION_DIE)) Then
+	If (Menu\ChaoGarden=0 Or Menu\Developer=1) and (Not(p\Action=ACTION_DIE)) and Chatting\Allowed=0 Then
 		If (KeyHit(KEY_DELETE)) Then Player_HandleCheats_DebugPlacer(p,1)
 		If (KeyHit(KEY_F3)) Then Player_HandleCheats_DebugPlacer(p,2)
 	EndIf
