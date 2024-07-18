@@ -180,7 +180,7 @@
 				RotateEntity p\Objects\FollowerPlace[3-1], EntityPitch(p\Objects\Follower), EntityYaw(p\Objects\Follower), EntityRoll(p\Objects\Follower), 1
 			EndIf
 		EndIf
-	If (Game\Online\Connected) Then
+	If (Game\Online\Online) Then
 		If p\Online\NetID = BP_My_ID Then		
 				RotateEntity(p\Objects\Mesh, 0, p\Animation\Direction#-180, 0)
 				AlignToVector(p\Objects\Mesh, p\Animation\Align\x#, p\Animation\Align\y#, p\Animation\Align\z#, 2)

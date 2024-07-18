@@ -517,13 +517,13 @@
 							Player_Goal(p,o\Mode,o\Teleporter\TeleporterNo,true)
 					End Select
 				Else
-					If Game\Online\GameType=3
+					If Game\Online\GameType=GAME_TYPE_RACE
 					Select Menu\Mission
 							Case MISSION_ENEMY#,MISSION_RING#,MISSION_HUNT#,MISSION_GOLD#,MISSION_BALLOONS#,MISSION_FREEROAM#,MISSION_RIVAL#,MISSION_CARNIVAL#,MISSION_BOSS#:
 								Object_Goal_Update_Teleport(o,p)
 							Case MISSION_FLICKY#:
 								If Game\Gameplay\Flickies>=5 Then
-									Goal_Online(o,p)
+									Goal_Online(p)
 									For o2.tObject = Each tObject
 										If o2\ObjType=OBJTYPE_FLICKY Then o2\State=-1
 									Next
@@ -531,7 +531,7 @@
 									Object_Goal_Update_Teleport(o,p)
 								EndIf
 							Default:
-								Goal_Online(o,p)
+								Goal_Online(p)
 						End Select
 					Else
 						Object_Goal_Update_Teleport(o,p)
@@ -573,28 +573,29 @@
 		PlaySmartSound(Sound_Warp)
 		DeformCharacter(p)
 	End Function
-	Function Goal_Online(o.tObject, p.tPlayer)
+	Function Goal_Online(p.tPlayer)
 		If onlineplayer(1)\Online\FinishedRace=0 Then
 			If p<>Null Then rcp.tPlayer = After First tPlayer
 				If rcp<>Null Then
 					if rcp\Online\RacePosition = 0 then 
 						onlineplayer(1)\Online\RacePosition = 1
-						Info("You got 1st Place!", 255, 71, 12) : BP_UDPMessage(0, 12, p\Online\Name+" got 1st Place!") : DebugLog("INFO: " + "You reached 1st")
+						Info("You got 1st Place!", 255, 71, 12) : BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name+" got 1st Place!") : DebugLog("INFO: " + "You reached 1st")
 					elseif rcp\Online\RacePosition = 1 then 
 						onlineplayer(1)\Online\RacePosition = 2
-						Info("You got 2nd Place!", 255, 71, 12) : BP_UDPMessage(0, 12, p\Online\Name+" got 2nd Place!") : DebugLog("INFO: " + "You reached 2nd")
+						Info("You got 2nd Place!", 255, 71, 12) : BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name+" got 2nd Place!") : DebugLog("INFO: " + "You reached 2nd")
 					elseif rcp\Online\RacePosition = 2 then 
 						onlineplayer(1)\Online\RacePosition = 3 : DebugLog("INFO: " + "You got 3rd Place!")
-						Info("You got 3rd Place!", 255, 71, 12) : BP_UDPMessage(0, 12, p\Online\Name+" got 3rd Place!")
+						Info("You got 3rd Place!", 255, 71, 12) : BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name+" got 3rd Place!")
 					else
 						onlineplayer(1)\Online\RacePosition = rcp\Online\RacePosition+1 : DebugLog("INFO: " + "You reached "+p\Online\RacePosition+"th Place!")
-						Info("You got "+p\Online\RacePosition+"th Place!", 255, 71, 12) : BP_UDPMessage(0, 12, p\Online\Name+" got "+p\Online\RacePosition+"th Place!")
+						Info("You got "+p\Online\RacePosition+"th Place!", 255, 71, 12) : BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name+" got "+p\Online\RacePosition+"th Place!")
 					endif
 				Else
-					Info("You reached the goal", 255, 71, 12) : BP_UDPMessage(0, 12, p\Online\Name+" got 1st Place!") : DebugLog("INFO: " + "You reached the goal")
+					Info("You reached the goal", 255, 71, 12) : BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name+" got 1st Place!") : DebugLog("INFO: " + "You reached the goal")
 				EndIf
 				onlineplayer(1)\Online\FinishedRace=1
-				BP_UDPMessage(0, 21, onlineplayer(1)\Online\RacePosition+"/"+onlineplayer(1)\Online\FinishedRace)
+				Menu\Mission=MISSION_FREEROAM#
+				BP_UDPMessage(0, UDPMSG_RACEVALUES, onlineplayer(1)\Online\RacePosition+"/"+onlineplayer(1)\Online\FinishedRace)
 		EndIf
 	End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/

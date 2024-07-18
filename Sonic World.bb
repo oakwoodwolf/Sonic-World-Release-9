@@ -314,7 +314,7 @@ Menu\GameStarted=1
 			Color(255,255,255) 
 			Text 0,0,"Starting"
 			Flip()
-			If Game\Online\Hosting=True Then Game\Online\Status=BP_HostSession (PlayerName$,6,3,2222,100)  
+			If Game\Online\Hosting=True Then Game\Online\Status=BP_HostSession (PlayerName$,6,GAME_TYPE_RACE,2222,100)  
 			If Game\Online\Hosting=False Then Game\Online\Status=BP_JoinSession (PlayerName$,Game\Online\Port,Game\Online\IP,2222)
 
 			Game\Online\GameType=BP_GameType

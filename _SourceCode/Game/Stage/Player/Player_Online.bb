@@ -181,11 +181,11 @@ End Function
 
 
 ; draw players name tag and number.
-Function DrawPlayerTag(Cam%, entity, label$, no=1, height#=3, r=255, g=255, b=255)
-	If EntityInView(entity, cam%) Then
-  		CameraProject(Cam%, EntityX (entity), EntityY (entity)+height#, EntityZ (entity))
+Function DrawPlayerTag(Cam%, p.tPlayer, label$, no=1, height#=3, r=255, g=255, b=255)
+	If EntityInView(p\Objects\Mesh, cam%) Then
+  		CameraProject(Cam%, EntityX (p\Objects\Mesh), EntityY (p\Objects\Mesh)+height#, EntityZ (p\Objects\Mesh))
   		x = ProjectedX () - 1
-  		y = ProjectedY () - 64
+  		y = ProjectedY () - 64-(GetCharScaleFactor(p\RealCharacter))
  		StartDraw()	
 		; Setup rendering methods
 		SetBlend(FI_ALPHABLEND)
@@ -195,6 +195,24 @@ Function DrawPlayerTag(Cam%, entity, label$, no=1, height#=3, r=255, g=255, b=25
 		DrawImageEx(INTERFACE(Interface_Indicator), x, y)
 		SetColor(255, 255, 255)
 		DrawRealText(label$, x, y, Interface_TextTitle_1, 1, 0, 63, 63, 63, 1.65)
+		Select Game\Online\GameType
+			Case GAME_TYPE_TAG:
+				Select p\Online\TagMode:
+					Case TAG_IS_IT: DrawRealText("Is It", x, y-64, Interface_TextControls_1, 1, 0, 255, 128, 64, 0)
+				End Select
+			Case GAME_TYPE_RACE:
+				Select p\Online\RacePosition:
+					Case 1:
+						suffix$="st" : rp=255 : gp=255 : bp=64
+					Case 2:
+						suffix$="nd" : rp=128 : gp=128 : bp=128
+					Case 3:
+						suffix$="rd" : rp=203 : gp=152 : bp=64
+					Default:
+						suffix$="th" : rp=255 : gp=128 : bp=64
+				End Select
+				If p\Online\FinishedRace=1 Then DrawRealText(p\Online\RacePosition+suffix$, x, y-64, Interface_TextControls_1, 1, 0, rp, gp, bp, 0)
+		End Select
 		EndDraw()
 	EndIf
 End Function

@@ -383,40 +383,74 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 
 	;mission management
 	If Game\Victory=0 and p\No#=1 Then
-		Select Menu\Mission
-			Case MISSION_ENEMY#,MISSION_CARNIVAL#:
-				If Game\Gameplay\Enemies>=Game\Gameplay\TotalEnemies Then Player_Goal(p)
-			Case MISSION_RING#:
-				If Game\Gameplay\Rings>=200 Then Player_Goal(p)
-			Case MISSION_HUNT#:
-				If Game\Gameplay\RedRings>=3 Then Player_Goal(p)
-			Case MISSION_GOLD#:
-				If Game\Gameplay\TotalGoldEnemies>0 and Game\Gameplay\GoldEnemies>=Game\Gameplay\TotalGoldEnemies Then Player_Goal(p)
-			Case MISSION_BALLOONS#:
-				If Game\Gameplay\Balloons>=Game\Gameplay\TotalBalloons Then Player_Goal(p)
-			Case MISSION_RIVAL#:
-				Select Game\RivalAmount
-					Case 1: If ppe(1)\Action=ACTION_RIVALDIE Then Player_Goal(p)
-					Case 2: If ppe(1)\Action=ACTION_RIVALDIE and ppe(2)\Action=ACTION_RIVALDIE Then Player_Goal(p)
-					Case 3: If ppe(1)\Action=ACTION_RIVALDIE and ppe(2)\Action=ACTION_RIVALDIE and ppe(3)\Action=ACTION_RIVALDIE Then Player_Goal(p)
+		If Game\Online\Online=False Then
+			Select Menu\Mission
+				Case MISSION_ENEMY#,MISSION_CARNIVAL#:
+					If Game\Gameplay\Enemies>=Game\Gameplay\TotalEnemies Then Player_Goal(p)
+				Case MISSION_RING#:
+					If Game\Gameplay\Rings>=200 Then Player_Goal(p)
+				Case MISSION_HUNT#:
+					If Game\Gameplay\RedRings>=3 Then Player_Goal(p)
+				Case MISSION_GOLD#:
+					If Game\Gameplay\TotalGoldEnemies>0 and Game\Gameplay\GoldEnemies>=Game\Gameplay\TotalGoldEnemies Then Player_Goal(p)
+				Case MISSION_BALLOONS#:
+					If Game\Gameplay\Balloons>=Game\Gameplay\TotalBalloons Then Player_Goal(p)
+				Case MISSION_RIVAL#:
+					Select Game\RivalAmount
+						Case 1: If ppe(1)\Action=ACTION_RIVALDIE Then Player_Goal(p)
+						Case 2: If ppe(1)\Action=ACTION_RIVALDIE and ppe(2)\Action=ACTION_RIVALDIE Then Player_Goal(p)
+						Case 3: If ppe(1)\Action=ACTION_RIVALDIE and ppe(2)\Action=ACTION_RIVALDIE and ppe(3)\Action=ACTION_RIVALDIE Then Player_Goal(p)
+					End Select
+				Case MISSION_BOSS#:
+					If Game\BossNotDefeated=0 Then Player_Goal(p)
+				Case MISSION_DECLINE#:
+					If Game\DeclineTime>0 Then
+						Game\DeclineTime=Game\DeclineTime-timervalue#
+					Else
+						If Menu\ExitedAStage=0 Then Game_Stage_Quit(5)
+					EndIf
+			End Select
+			If Menu\MissionTime=1 Then
+				If (Game\LimitTime-Game\Gameplay\Time)<0 and Menu\ExitedAStage=0 Then Game_Stage_Quit(5)
+			EndIf
+			If Menu\MissionMach=1 Or Game\MachLockTriggered=1 Then
+				Game\MachLock=1.5*secs#
+			EndIf
+			If Menu\MissionPerfect=1 Or Menu\Stage<0 Then
+				If p\Action=ACTION_DIE and Menu\ExitedAStage=0 Then Game_Stage_Quit(1)
+			EndIf
+		Else
+			If Game\Online\GameType=GAME_TYPE_RACE Then
+				Select Menu\Mission
+					Case MISSION_ENEMY#,MISSION_CARNIVAL#:
+						If Game\Gameplay\Enemies>=Game\Gameplay\TotalEnemies Then Goal_Online(p)
+					Case MISSION_RING#:
+						If Game\Gameplay\Rings>=100 Then Goal_Online(p)
+					Case MISSION_HUNT#:
+						If Game\Gameplay\RedRings>=3 Then Goal_Online(p)
+					Case MISSION_GOLD#:
+						If Game\Gameplay\TotalGoldEnemies>0 and Game\Gameplay\GoldEnemies>=Game\Gameplay\TotalGoldEnemies Then Goal_Online(p)
+					Case MISSION_BALLOONS#:
+						If Game\Gameplay\Balloons>=Game\Gameplay\TotalBalloons Then Goal_Online(p)
+					Case MISSION_RIVAL#:
+						Select Game\RivalAmount
+							Case 1: If ppe(1)\Action=ACTION_RIVALDIE Then Goal_Online(p)
+							Case 2: If ppe(1)\Action=ACTION_RIVALDIE and ppe(2)\Action=ACTION_RIVALDIE Then Goal_Online(p)
+							Case 3: If ppe(1)\Action=ACTION_RIVALDIE and ppe(2)\Action=ACTION_RIVALDIE and ppe(3)\Action=ACTION_RIVALDIE Then Goal_Online(p)
+						End Select
+					Case MISSION_BOSS#:
+						If Game\BossNotDefeated=0 Then Goal_Online(p)
+					Case MISSION_DECLINE#:
+						If Game\DeclineTime>0 Then
+							Game\DeclineTime=Game\DeclineTime-timervalue#
+						Else
+							If Menu\ExitedAStage=0 Then Game_Stage_Quit(5)
+						EndIf
 				End Select
-			Case MISSION_BOSS#:
-				If Game\BossNotDefeated=0 Then Player_Goal(p)
-			Case MISSION_DECLINE#:
-				If Game\DeclineTime>0 Then
-					Game\DeclineTime=Game\DeclineTime-timervalue#
-				Else
-					If Menu\ExitedAStage=0 Then Game_Stage_Quit(5)
+				If Menu\MissionMach=1 Or Game\MachLockTriggered=1 Then
+					Game\MachLock=1.5*secs#
 				EndIf
-		End Select
-		If Menu\MissionTime=1 Then
-			If (Game\LimitTime-Game\Gameplay\Time)<0 and Menu\ExitedAStage=0 Then Game_Stage_Quit(5)
-		EndIf
-		If Menu\MissionMach=1 Or Game\MachLockTriggered=1 Then
-			Game\MachLock=1.5*secs#
-		EndIf
-		If Menu\MissionPerfect=1 Or Menu\Stage<0 Then
-			If p\Action=ACTION_DIE and Menu\ExitedAStage=0 Then Game_Stage_Quit(1)
+			EndIf
 		EndIf
 	EndIf
 

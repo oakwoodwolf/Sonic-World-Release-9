@@ -814,7 +814,7 @@
 		p\Objects\Staring=CreatePivot()
 		p\Objects\DestinationTarget=CreatePivot()
 		DeformCharacter(p)
-		BP_UDPMessage(0,4, String(p\RealCharacter,1)) ; send new name
+		BP_UDPMessage(0,UDPMSG_PLAYERCHARACTER, String(p\RealCharacter,1)) ; send new name
 		p\Objects\JumpBall=CopyEntity(MESHES(Mesh_JumpBall), Game\Stage\Root) : Animate p\Objects\JumpBall,1,1 : HideEntity(p\Objects\JumpBall)
 		p\Objects\Stomp=CopyEntity(MESHES(Mesh_Stomp), Game\Stage\Root) : Animate p\Objects\Stomp,1,1 : HideEntity(p\Objects\Stomp)
 		p\Objects\Forth=CopyEntity(MESHES(Mesh_Forth), Game\Stage\Root) : Animate p\Objects\Forth,1,1 : HideEntity(p\Objects\Forth)
@@ -875,7 +875,13 @@
 		If Menu\Stage<>0 Then Player_LoadVoices(p)
 		
 		; Online Handle
-		If BP_Online Then Player_CreateOnlineData(p, pname$, pid%, no, localplayer)
+		If BP_Online Then
+			Player_CreateOnlineData(p, pname$, pid%, no, localplayer)
+		Else
+			p\Online = New tPlayer_Online
+			p\Online\Connected = False
+			p\Online\IsLocal = True
+		EndIf
 
 		; Done
 		p\Action = ACTION_FALL
@@ -1092,7 +1098,7 @@
 			Player_Animate(p, d)
 
 			; Rival
-			If p\No#<0 And (Not p\Online\Connected) Then Player_Rival(p,d)
+			If p\No#<0 And (Game\Online\Online=False) Then Player_Rival(p,d)
 		Else
 			Player_Motion_Placements(p)
 		EndIf
@@ -1233,7 +1239,7 @@
 			DeformCharacter_DeleteTheBoneEntities(pp(1))
 			Player_DetermineChar(pp(1),newcharacter)
 			DeformCharacter(pp(1),True)
-			BP_UDPMessage(0,4, String(newcharacter,1)) ; send new name
+			BP_UDPMessage(0,UDPMSG_PLAYERCHARACTER, String(newcharacter,1)) ; send new name
 			BP_UDPMessage(0, UDPMSG_MESSAGE, " Is Now, "+ ShortCharNames(newcharacter,1)) ; tell everyone
 			Game\Vehicle=0
 			Player_SetRadius#(pp(1))

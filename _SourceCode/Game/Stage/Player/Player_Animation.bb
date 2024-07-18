@@ -384,7 +384,7 @@ If Game\Interface\DebugPlacerOn=0 Then Player_UpdateBoneEntities(p)
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 		; Change animation depending on action
-		If p\Online\IsLocal<>False Then
+		If BP_Online=False Or p\Online\IsLocal<>False Then
 		Select p\Action
 			Case ACTION_DEBUG
 				If p\ObjType=0 Then p\Animation\Animation = ANIMATION_SPIN

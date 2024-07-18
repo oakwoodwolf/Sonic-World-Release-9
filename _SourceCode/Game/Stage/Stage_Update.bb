@@ -795,10 +795,10 @@
 					If p\Online\Connected And p\Online\ShowTag=True Then 
 						If p\Online\TagMode=TAG_IS_IT And Game\Online\GameType=GAME_TYPE_TAG
 							If p\Online\TagTimer<>"" Then
-								DrawPlayerTag(c\Entity, p\Objects\Mesh, p\Online\Name$+" - Time:"+p\Online\TagTimer, p\Online\NetID, 3, p\Online\ColorR,p\Online\ColorG,p\Online\ColorB);000, 0, 255)
+								DrawPlayerTag(c\Entity, p, p\Online\Name$+" - Time:"+p\Online\TagTimer, p\Online\NetID, 3, p\Online\ColorR,p\Online\ColorG,p\Online\ColorB);000, 0, 255)
 							EndIf
 						Else
-							DrawPlayerTag(c\Entity, p\Objects\Mesh, p\Online\Name$, p\Online\NetID, 	3, Interface_Lives_R[InterfaceChar(p\RealCharacter)],Interface_Lives_G[InterfaceChar(p\RealCharacter)],Interface_Lives_B[InterfaceChar(p\RealCharacter)])
+							DrawPlayerTag(c\Entity, p, p\Online\Name$, p\Online\NetID, 	3, Interface_Lives_R[InterfaceChar(p\RealCharacter)],Interface_Lives_G[InterfaceChar(p\RealCharacter)],Interface_Lives_B[InterfaceChar(p\RealCharacter)])
 						EndIf
 					EndIf
 				Next ;!	
@@ -839,8 +839,8 @@
 					BP_UDPMessage(0, UDPMSG_PLAYERMOVEMENT, String$(EntityX(p\Objects\Mesh)+"/"+EntityY(p\Objects\Mesh)+"/"+EntityZ(p\Objects\Mesh)+"/"+EntityPitch(p\Objects\Mesh)+"/"+EntityYaw(p\Objects\Mesh)+"/"+EntityRoll(p\Objects\Mesh),1))	
 					BP_UDPMessage(0, UDPMSG_PLAYERATTRIBUTES, String$(p\Action+"/"+p\Animation\Animation+"/"+p\SpeedLength+"/"+p\Motion\Ground+"/",1))
 					; deal the tag and race attributes
-					If Game\Online\GameType=1 Then BP_UDPMessage(0,20,onlineplayer(1)\Online\TagMode+"/"+onlineplayer(1)\Online\TagTimer+"/"+onlineplayer(1)\Online\TagCoolDown)
-					If Game\Online\GameType=3 Then BP_UDPMessage(0,21,onlineplayer(1)\Online\RacePosition+"/"+onlineplayer(1)\Online\FinishedRace+"/"+onlineplayer(1)\Online\RaceTimer)
+					If Game\Online\GameType=GAME_TYPE_TAG Then BP_UDPMessage(0,UDPMSG_TAGVALUES,onlineplayer(1)\Online\TagMode+"/"+onlineplayer(1)\Online\TagTimer+"/"+onlineplayer(1)\Online\TagCoolDown)
+					If Game\Online\GameType=GAME_TYPE_RACE Then BP_UDPMessage(0,UDPMSG_RACEVALUES,onlineplayer(1)\Online\RacePosition+"/"+onlineplayer(1)\Online\FinishedRace+"/"+onlineplayer(1)\Online\RaceTimer)
 				EndIf
 			EndIf
 			; ---------------------------------------------------------------	
@@ -1004,7 +1004,7 @@ Function HandleMessages()
 	For msg.MsgInfo = Each MsgInfo ;!!!!
 		Select msg\msgType
 			;------------------------------------------------------		
-			Case 255 ;A new player has joined!
+			Case UDPMSG_JOINED ;A new player has joined!
 			;------------------------------------------------------
 				PlayerNo=PlayerNo+1
 				plyname$ = msg\msgData
@@ -1016,7 +1016,7 @@ Function HandleMessages()
 				Game\Channel_1Up=PlaySmartSound(Sound_CharacterChange) 								; sound for comformation			
 				;Next						
 			;------------------------------------------------------
-			Case 254 ;A player has left..
+			Case UDPMSG_LEFT ;A player has left..
 			;------------------------------------------------------
 				p.tPlayer = FindPlayerData(msg\msgFrom)		
 				If p<>Null Then
@@ -1034,7 +1034,7 @@ Function HandleMessages()
 					PlayerNo=PlayerNo-1		
 				End If
 			;------------------------------------------------------	
-			Case 253 ;The host has disconnected
+			Case UDPMSG_HOSTLEFT ;The host has disconnected
 			;------------------------------------------------------
 				PlayerNo=PlayerNo-1
 				For p.tPlayer = Each tPlayer 
@@ -1050,7 +1050,7 @@ Function HandleMessages()
 					Game\Channel_1Up=PlaySmartSound(Sound_GameOver)
 				EndIf
 			;------------------------------------------------------	
-			Case 252	;Someone got kicked/banned
+			Case UDPMSG_KICKED	;Someone got kicked/banned
 			;------------------------------------------------------
 				p.tPlayer = FindPlayerData(msg\msgFrom)
 				; was it you breh
@@ -1071,7 +1071,7 @@ Function HandleMessages()
 					PlayerNo=PlayerNo-1
 				End If
 			;------------------------------------------------------	
-			Case 11,95 ; Chat Packet
+			Case UDPMSG_CHAT,95 ; Chat Packet
 			;------------------------------------------------------
             	p.tPlayer = FindPlayerData(msg\msgFrom)
             	If  msg\msgType=11 Then Info (p\Online\name$ + ":" + msg\msgData, 255,255,255, "normal")
@@ -1079,7 +1079,7 @@ Function HandleMessages()
 				If ChannelPlaying(Channel_Message) Then StopChannel(Channel_Message)
             	Channel_Message=PlaySound(Sound_Message)
 			;------------------------------------------------------
-            Case 12 ; Info/Message Packet
+            Case UDPMSG_MESSAGE ; Info/Message Packet
 			;------------------------------------------------------
             	p.tPlayer = FindPlayerData(msg\msgFrom)
             	If msg\msgData = "ALL HAIL WIZG!!!" Or msg\msgData = "420 Blaze It!!!!" Then
@@ -1090,7 +1090,7 @@ Function HandleMessages()
 				DebugLog("INFO: " + msg\msgData)
 				EmitSmartSound(Sound_Hint,p\Objects\Entity)
 			;------------------------------------------------------			
-			Case 1 ; Player Movement
+			Case UDPMSG_PLAYERMOVEMENT ; Player Movement
 			;------------------------------------------------------							
 					; set to player
 					p.tPlayer = FindPlayerData(msg\msgFrom)
@@ -1113,7 +1113,7 @@ Function HandleMessages()
 					p\Online\PrevColorG		 	= Int(BP_GetMessagePart(msg\msgData, 2, "|"))
 					p\Online\PrevColorB 		= Int(BP_GetMessagePart(msg\msgData, 3, "|"))
 			;------------------------------------------------------
-			Case 2 ; Player Attributes
+			Case UDPMSG_PLAYERATTRIBUTES ; Player Attributes
 			;------------------------------------------------------
 				; set to player
 				p.tPlayer = FindPlayerData(msg\msgFrom)
@@ -1125,7 +1125,7 @@ Function HandleMessages()
 					p\Motion\Ground 			= Int(BP_GetMessagePart(msg\msgData, 4, "/"))
 				EndIf
 			;------------------------------------------------------
-			Case 20 ; handle tag
+			Case UDPMSG_TAGVALUES ; handle tag
 			;------------------------------------------------------
 				; set values
 				p.tPlayer = FindPlayerData(msg\msgFrom)				
@@ -1133,7 +1133,7 @@ Function HandleMessages()
 				p\Online\TagTimer 				= Float(BP_GetMessagePart(msg\msgData, 2))
 				p\Online\TagCoolDown 			= Int(BP_GetMessagePart(msg\msgData, 3))
 			;------------------------------------------------------	
-			Case 21 ; handle race
+			Case UDPMSG_RACEVALUES ; handle race
 			;------------------------------------------------------
 				; set values
 				p.tPlayer = FindPlayerData(msg\msgFrom)
@@ -1141,7 +1141,7 @@ Function HandleMessages()
 				p\Online\FinishedRace 			= Int(BP_GetMessagePart(msg\msgData, 2))
 				;p\Online\RaceTimer 			= Float(BP_GetMessagePart(msg\msgData, 3))
 			;------------------------------------------------------	
-			Case 22
+			Case UDPMSG_INRADIUS
 			;------------------------------------------------------
 				p.tPlayer = FindPlayerData(msg\msgFrom)
 				p\Online\InYourRadius			= (msg\msgData)
@@ -1157,7 +1157,7 @@ Function HandleMessages()
 				If Game\Online\ShowMsg=False Then Info(Game\Online\MsgOfTheDay$, 0,255,255); : Game\Online\ShowMsg=True
 				Info(Game\Online\MsgOfTheDay$, 0,255,255)
 			;------------------------------------------------------
-			Case 26 ; Game Mode
+			Case UDPMSG_GAMETYPE ; Game Mode
 			;------------------------------------------------------
 				Game\Online\GameType=msg\msgData
 				BP_GameType=msg\msgData
@@ -1244,6 +1244,9 @@ Function HandleMessages()
 				p\Online\CamX#  				=  Float(BP_GetMessagePart(msg\msgData, 1))
 				p\Online\CamY#		 			=  Float(BP_GetMessagePart(msg\msgData, 2))
 				p\Online\CamZ#					=  Float(BP_GetMessagePart(msg\msgData, 3))
+			Case 6 ; Warp
+				Menu\SelectedStage=msg\msgData
+				Game_Stage_Quit(2)
 		End Select
 		Delete msg
 	Next ;!!!!
@@ -1254,9 +1257,9 @@ Function Update_GameModes()
 		Case GAME_TYPE_TAG
 			; handle tag values
 			p.tPlayer = First tPlayer
-			If KeyHit(KEY_0) Then p\Online\TagMode=0 : p\Online\TagTimer=0 : BP_UDPMessage(0,12, p\Online\Name$+" is safe.")
-			If KeyHit(KEY_HYPHEN) Then p\Online\TagMode=TAG_NOT_IT : p\Online\TagTimer=0 : BP_UDPMessage(0,12, p\Online\Name$+" is Clear!")
-			If KeyHit(KEY_EQUAL) Then p\Online\TagMode=TAG_IS_IT : p\Online\TagTimer=TAG_TIMER : BP_UDPMessage(0,12, p\Online\Name$+" is It!")
+			If KeyHit(KEY_0) Then p\Online\TagMode=0 : p\Online\TagTimer=0 : BP_UDPMessage(0,UDPMSG_MESSAGE, p\Online\Name$+" is safe.")
+			If KeyHit(KEY_PLUS) Then p\Online\TagMode=TAG_NOT_IT : p\Online\TagTimer=0 : BP_UDPMessage(0,UDPMSG_MESSAGE, p\Online\Name$+" is Clear!")
+			If KeyHit(KEY_HYPHEN) Then p\Online\TagMode=TAG_IS_IT : p\Online\TagTimer=TAG_TIMER : BP_UDPMessage(0,UDPMSG_MESSAGE, p\Online\Name$+" is It!") : DebugLog(p\Online\Name$+" is It!")
 			If KeyHit(Key_F10) Then p\Online\TagTimer=20
 
 			; handle tag timer, and be clear once it's over
@@ -1271,7 +1274,7 @@ Function Update_GameModes()
 					p\Online\TagMode=0
 					BP_UDPMessage(0, 3, "cleared")	
 					Info("You ran out of time. You Lose.")
-					BP_UDPMessage(0, 12, p\Online\Name$+" Lost. Ran out of time.")
+					BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name$+" Lost. Ran out of time.")
 				EndIf
 			Else
 				p\Online\TagTimer=0
@@ -1306,13 +1309,13 @@ Function Update_GameModes()
 			; did everyone finish the race...
 			me_p.tPlayer=First tPlayer
 			;other_p.tPlayer After tPlayer
-			If me_p\Online\FinishedRace>0 Then
-				Info("Race Has Finished!", 255,20,128)	
+			If HasEveryoneFinishedTheRace() Then
+				Info("Race Has Finished!", 255,20,128) : DebugLog("Race has FINISHED!")	
 				Game\Online\RaceFinished=True
 			Else
 				Game\Online\RaceFinished=False
 			End if
-			DrawRealText("Race Finished:"+Game\Online\RaceFinished, GAME_WINDOW_W-35*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#,Interface_TextControls_2)
+			;DrawRealText("Race Finished:"+ Game\Online\RaceFinished, GAME_WINDOW_W-35*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#,Interface_TextControls_2)
 		
 			;			PositionEntity p\Objects\Entity, 0, 10, 0
 			;;;			PositionEntity p\Objects\Mesh, 0, 10, 0	

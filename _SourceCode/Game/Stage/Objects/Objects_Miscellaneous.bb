@@ -1331,7 +1331,11 @@ End Function
  		If o\Hit Then
 			If Game\Victory=0 Then
 				PositionEntity p\Objects\Entity, o\Position\x#, o\Position\y#+5, o\Position\z#, 1
-				Player_Goal(p,0,0,true)
+				If Game\Online\Connected=0 Then
+					Player_Goal(p,0,0,true)
+				Else
+					If Game\Online\GameType=GAME_TYPE_RACE Then Goal_Online(p)
+				EndIf
 
 				EmitSmartSound(Sound_RobotPoof,o\Entity2)
 				ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_BOMB, o\Entity2)
