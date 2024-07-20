@@ -331,9 +331,9 @@ Function Menu_Transition(d.tDeltaTime)
 							Menu_ResetCards_Mid() : Menu_ResetButtonPlace1_LeftOut()
 						Case MENU_MAIN#:
 							Menu_ResetCards_Out() : Menu_ResetButtonPlace1_LeftOut()
-						Case MENU_OPTIONS#:
+						Case MENU_OPTIONS#,MENU_JOIN#:
 							Menu_ResetCards_Out() : Menu_ResetButtonPlace1_LeftOut()
-						Case MENU_PLAY#,MENU_BLACKMARKET#,MENU_TRANSPORTER#,MENU_PRINCIPAL#,MENU_MARATHON#,MENU_PLAYMARATHON#,MENU_ONLINE#,MENU_PLAYONLINE#,MENU_JOIN#:
+						Case MENU_PLAY#,MENU_BLACKMARKET#,MENU_TRANSPORTER#,MENU_PRINCIPAL#,MENU_MARATHON#,MENU_PLAYMARATHON#,MENU_ONLINE#,MENU_PLAYONLINE#:
 							Menu_ResetCards_Out() : Menu_ResetButtonPlace1_RightOut()
 						Case MENU_CHARACTERS#,MENU_CHARACTERS2#:
 							Menu_ResetCards_Out() : Menu_ResetButtonPlace1_RightOut()
@@ -353,14 +353,14 @@ Function Menu_Transition(d.tDeltaTime)
 							Menu_ResetCards_Mid() : Menu_ResetButtonPlace1_LeftOut()
 						Case MENU_START#,MENU_WELCOME#:
 							Menu_ResetCards_Mid() : Menu_ResetButtonPlace1_LeftOut()
-						Case MENU_CREDITS#,MENU_GAMEOVER#,MENU_EMBLEM#,MENU_MARATHONEND#:
+						Case MENU_CREDITS#,MENU_GAMEOVER#,MENU_PLAYONLINE#,MENU_EMBLEM#,MENU_MARATHONEND#:
 							Menu_ResetCards_Mid() : Menu_ResetButtonPlace1_RightOut()
 						Case MENU_BLACKMARKET#,MENU_PRINCIPAL#:
 							Menu_ResetCards_Out() : Menu_ResetButtonPlace1_RightOut()
 					End Select
 				Else
 					Select Menu\Menu
-						Case MENU_OPTIONS#:
+						Case MENU_OPTIONS#,MENU_PLAYONLINE#:
 							Menu_ResetCards_Out() : Menu_ResetButtonPlace2_RightOut()
 						Case MENU_BLACKMARKET#,MENU_TRANSPORTER#,MENU_PRINCIPAL#:
 							Menu_ResetCards_Out() : Menu_ResetButtonPlace1_RightOut()
@@ -388,7 +388,7 @@ Function Menu_Transition(d.tDeltaTime)
 							Menu_ResetCards_Out() : Menu_ResetButtonPlace1_LeftOut()
 						Case MENU_MAIN#,MENU_WELCOME#,MENU_TRANSPORTER#:
 							Menu_ResetCards_In() : Menu_TakeButton1Place_LeftOut() : Menu_ResetButtonPlace1_MidIn()
-						Case MENU_OPTIONS#:
+						Case MENU_OPTIONS#,MENU_JOIN#:
 							Menu_ResetCards_In() : Menu_TakeButton1Place_RightOut() : Menu_ResetButtonPlace1_LeftIn()
 						Case MENU_PLAY#,MENU_MARATHON#,MENU_PLAYMARATHON#,MENU_PLAYONLINE#,MENU_ONLINE#,MENU_JOIN#:
 							Menu_ResetCards_In() : Menu_TakeButton1Place_LeftOut() : Menu_ResetButtonPlace1_MidIn()
@@ -400,14 +400,14 @@ Function Menu_Transition(d.tDeltaTime)
 							Menu_ResetCards_In() : Menu_TakeButton1Place_RightOut() : Menu_ResetButtonPlace1_RightIn()
 						Case MENU_STAGE#,MENU_STAGE2#,MENU_STAGESPECIAL#:
 							Menu_ResetCards_In() : Menu_TakeButton1Place_RightOut() : Menu_ResetButtonPlace1_RightIn()
-						Case MENU_CREDITS#,MENU_GAMEOVER#,MENU_EMBLEM#,MENU_MARATHONEND#:
+						Case MENU_CREDITS#,MENU_PLAYONLINE#,MENU_GAMEOVER#,MENU_EMBLEM#,MENU_MARATHONEND#:
 							Menu_ResetCards_In() : Menu_ResetButtonPlace1_RightOut()
 						Case MENU_BLACKMARKET#,MENU_PRINCIPAL#:
 							Menu_ResetCards_In() : Menu_TakeButton1Place_RightOut() : Menu_ResetButtonPlace1_RightIn()
 					End Select
 				Else
 					Select Menu\Menu
-						Case MENU_OPTIONS#:
+						Case MENU_OPTIONS#,MENU_JOIN#:
 							Menu_ResetCards_In()
 							If Menu\NewMenu2=0 Then
 								Menu_ResetButtonPlace2_RightOut()

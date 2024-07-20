@@ -438,6 +438,49 @@ Function Menu_GameOver_Update()
 	EndIf
 
 End Function
+Function Menu_PlayOnline_Update()
+
+	Menu\Music=1
+	Menu\Background=3
+	Menu\ShowCards=True
+	Menu\ControlsToShow=Menu\Menu
+	canconnect=False
+	Select Game\Online\Status
+					;Handle any of the reasons if we couldn't join.
+					Case BP_NOREPLY
+						DrawRealText("No reply in specified timeout period.. exiting", GAME_WINDOW_W/2, GAME_WINDOW_H/2, (Interface_Text_1), 1)
+					Case BP_IAMBANNED
+						DrawRealText("You have been banned from joining this game.. exiting", GAME_WINDOW_W/2, GAME_WINDOW_H/2, (Interface_Text_1), 1)
+					Case BP_GAMEISFULL
+						DrawRealText("The game is full.. exiting", GAME_WINDOW_W/2, GAME_WINDOW_H/2, (Interface_Text_1), 1)
+					Case BP_PORTNOTAVAILABLE
+						DrawRealText("Port: " + Game\Online\Port + " was not available.. exiting", GAME_WINDOW_W/2, GAME_WINDOW_H/2, (Interface_Text_1), 1)
+					Case BP_USERABORT
+						DrawRealText("Connection attempt aborted!", GAME_WINDOW_W/2, GAME_WINDOW_H/2, (Interface_Text_1), 1)
+					Default
+						canconnect=true
+						repeat
+							DrawRealText("Connecting... Press Jump to join.", GAME_WINDOW_W/2, GAME_WINDOW_H/2, (Interface_Text_1), 1)
+						until connecttimer<millisecs()
+						
+				End Select
+	If Input\Pressed\ActionRoll Or Input\Pressed\Back Or Input\Pressed\ActionSkill1 Or Input\Pressed\ActionJump Or Input\Pressed\Start Then
+		If (Input\Pressed\ActionJump Or Input\Pressed\Start) And canconnect Then
+			PlaySmartSound(Sound_Check)
+			Menu\Transition=1
+			Menu\Option=1
+			Menu\NewMenu=MENU_STAGE2#
+			Menu_GoToStage()
+		Else
+			PlaySmartSound(Sound_MenuBack)
+			Menu\Transition=1
+			Menu\NewOption=1
+			Menu\NewMenu=MENU_ONLINE#
+			Game\Online\Connected=0
+			Game\Online\SendUpdates=False
+		EndIf
+	EndIf
+End Function
 
 ;===============================================================================================================================================================
 ;===============================================================================================================================================================

@@ -1587,7 +1587,7 @@ Function Menu_Options_Volume_Update()
 	EndIf
 
 End Function
-Function Menu_Options_Name_Update()
+Function Menu_Options_Name_Update(mode=0)
 	Menu_Transporter_LetterBox(GAME_WINDOW_W/2+(BUTTON_PLACE1#-64)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100)*GAME_WINDOW_SCALE#, 11, 8, 27.5)
 	Menu_Transporter_Letters(GAME_WINDOW_W/2+(BUTTON_PLACE1#-53)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-11)*GAME_WINDOW_SCALE#, 10, 7, 28.5,1)
 
@@ -1639,7 +1639,19 @@ Function Menu_Options_Name_Update()
 				If Len(Menu\NewChaoName$)>0 Then Menu\NewChaoName$=Left(Menu\NewChaoName$,Len(Menu\NewChaoName$)-1)
 			Case 2:
 				PlaySmartSound(Sound_MenuAccept)
-				Menu\PlayerName$=Menu\NewChaoName$
+				Select mode
+				Case 0:
+					Menu\PlayerName$=Menu\NewChaoName$
+				Case 1:
+					DrawRealText("Connecting... Please wait...", GAME_WINDOW_W/2, GAME_WINDOW_H/2, (Interface_Text_1), 1)
+					If Menu\NewChaoName="" Then  Menu\NewChaoName=BP_GetMyIP$()
+					Game\Online\IP$=Menu\NewChaoName$
+					Menu\NewMenu=MENU_PLAYONLINE
+					connecttimer=millisecs()+1750
+					Game\Online\Connected=1 ;!!!!!!!!!!!!
+					Game\Online\SendUpdates=True
+					Game\Online\Status=BP_JoinSession (Menu\PlayerName$,Game\Online\Port,Game\Online\IP,2222)
+				End Select
 				Menu\Transition=1
 				Menu\NewOption=1
 				Menu\NewMenu2=0

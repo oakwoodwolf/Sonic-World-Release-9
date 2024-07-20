@@ -662,9 +662,9 @@ Next
 										Game\Gameplay\CheckZ#=Game\Stage\Properties\StartZ#
 										Game\Gameplay\CheckDirection#=Game\Stage\Properties\StartDirection#
 										If Game\Online\Online=0 Then
-										If Menu\Members>2 Then p3.tPlayer = Player_Create(3)
-										If Menu\Members>1 Then p2.tPlayer = Player_Create(2)
-										p1.tPlayer = Player_Create(1)
+											If Menu\Members>2 Then p3.tPlayer = Player_Create(3)
+											If Menu\Members>1 Then p2.tPlayer = Player_Create(2)
+											p1.tPlayer = Player_Create(1)
 										Else
 											p1.tPlayer = Player_Create(1,0,0,True,Menu\PlayerName,BP_My_ID)
 										EndIf

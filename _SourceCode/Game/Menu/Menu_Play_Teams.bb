@@ -1129,7 +1129,7 @@ Function Menu_Play_Update(mode=0)
 					Else
 						PlaySmartSound(Sound_MenuRefuse)
 					EndIf
-			 		Case 2: Game\Online\Hosting=False : Menu\NewMenu=MENU_JOIN#
+			 		Case 2: Game\Online\Hosting=False : Menu\NewOption2=2 :Menu\NewMenu=MENU_JOIN#
 				End Select
 			EndIf
 
