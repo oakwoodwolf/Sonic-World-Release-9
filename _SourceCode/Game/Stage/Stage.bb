@@ -666,7 +666,7 @@ Next
 										If Menu\Members>1 Then p2.tPlayer = Player_Create(2)
 										p1.tPlayer = Player_Create(1)
 										Else
-											p1.tPlayer = Player_Create(1,0,0,True,PlayerName,BP_My_ID)
+											p1.tPlayer = Player_Create(1,0,0,True,Menu\PlayerName,BP_My_ID)
 										EndIf
 										ch.tCheese = Object_Cheese_Create.tCheese()
 										f.tFroggy = Object_Froggy_Create.tFroggy()

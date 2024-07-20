@@ -1113,9 +1113,23 @@ Function Menu_Play_Update(mode=0)
 				PlaySmartSound(Sound_MenuAccept)
 				Menu\Transition=1
 				Menu\NewOption=1
+				
 				Select Menu\Option
-			 		Case 1: Menu\NewMenu=MENU_PLAYONLINE#
-			 		Case 2: Menu\NewMenu=MENU_JOIN#
+			 		Case 1:
+					connecttimer=millisecs()+1750
+					Game\Online\Connected=1 ;!!!!!!!!!!!!
+					Game\Online\SendUpdates=True
+					Game\Online\Hosting=True
+					Game\Online\Status=BP_HostSession (Menu\PlayerName$,6,GAME_TYPE_FREE,2222,100)
+					;Menu\NewMenu=MENU_PLAYONLINE#
+					If Game\Online\Status=True Then
+						PlaySmartSound(Sound_Check)
+						Menu\Option=1
+						Menu_GoToStage()
+					Else
+						PlaySmartSound(Sound_MenuRefuse)
+					EndIf
+			 		Case 2: Game\Online\Hosting=False : Menu\NewMenu=MENU_JOIN#
 				End Select
 			EndIf
 
