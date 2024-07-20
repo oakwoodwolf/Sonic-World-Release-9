@@ -448,19 +448,19 @@ Function Menu_PlayOnline_Update()
 	Select Game\Online\Status
 					;Handle any of the reasons if we couldn't join.
 					Case BP_NOREPLY
-						DrawRealText("No reply in specified timeout period.. exiting", GAME_WINDOW_W/2, GAME_WINDOW_H/2, (Interface_Text_1), 1)
+						DrawRealText("No reply in specified timeout period.", GAME_WINDOW_W/2, GAME_WINDOW_H/2, (Interface_Text_1), 1)
 					Case BP_IAMBANNED
-						DrawRealText("You have been banned from joining this game.. exiting", GAME_WINDOW_W/2, GAME_WINDOW_H/2, (Interface_Text_1), 1)
+						DrawRealText("You have been banned from joining this game.", GAME_WINDOW_W/2, GAME_WINDOW_H/2, (Interface_Text_1), 1)
 					Case BP_GAMEISFULL
-						DrawRealText("The game is full.. exiting", GAME_WINDOW_W/2, GAME_WINDOW_H/2, (Interface_Text_1), 1)
+						DrawRealText("The game is full.", GAME_WINDOW_W/2, GAME_WINDOW_H/2, (Interface_Text_1), 1)
 					Case BP_PORTNOTAVAILABLE
-						DrawRealText("Port: " + Game\Online\Port + " was not available.. exiting", GAME_WINDOW_W/2, GAME_WINDOW_H/2, (Interface_Text_1), 1)
+						DrawRealText("Port: " + Game\Online\Port + " was not available.", GAME_WINDOW_W/2, GAME_WINDOW_H/2, (Interface_Text_1), 1)
 					Case BP_USERABORT
 						DrawRealText("Connection attempt aborted!", GAME_WINDOW_W/2, GAME_WINDOW_H/2, (Interface_Text_1), 1)
 					Default
 						canconnect=true
 						repeat
-							DrawRealText("Connecting... Press Jump to join.", GAME_WINDOW_W/2, GAME_WINDOW_H/2, (Interface_Text_1), 1)
+							DrawRealText("Ready! Press Select to join.", GAME_WINDOW_W/2, GAME_WINDOW_H/2, (Interface_Text_1), 1)
 						until connecttimer<millisecs()
 						
 				End Select
