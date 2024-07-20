@@ -1094,6 +1094,37 @@ Function Menu_Play_Update(mode=0)
 				Menu\NewOption=6
 				Menu\NewMenu=MENU_PLAY#
 			EndIf
+		Case 3:
+			DrawRealText("Welcome to the early Sonic World Online test.", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-85*GAME_WINDOW_SCALE#+0*20*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
+			DrawRealText("To host a game, you need to port forward,", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-85*GAME_WINDOW_SCALE#+1*20*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
+			DrawRealText("or use proxies such as RadminVPN.", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-85*GAME_WINDOW_SCALE#+2*20*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
+
+			DrawSmartButton(1, "Host", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+10*GAME_WINDOW_SCALE#)
+			DrawSmartButton(2, "Join", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+60*GAME_WINDOW_SCALE#)
+
+			If Input\Pressed\Down Or Input\Pressed\Up Then
+			 	Select Menu\Option
+			 		Case 1: Menu\Option=2 : PlaySmartSound(Sound_MenuMove)
+			 		Case 2: Menu\Option=1 : PlaySmartSound(Sound_MenuMove)
+			 	End Select
+			EndIf
+
+			If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+				PlaySmartSound(Sound_MenuAccept)
+				Menu\Transition=1
+				Menu\NewOption=1
+				Select Menu\Option
+			 		Case 1: Menu\NewMenu=MENU_PLAYONLINE#
+			 		Case 2: Menu\NewMenu=MENU_JOIN#
+				End Select
+			EndIf
+
+			If Input\Pressed\ActionRoll Or Input\Pressed\Back Or Input\Pressed\ActionSkill1 Then
+				PlaySmartSound(Sound_MenuBack)
+				Menu\Transition=1
+				Menu\NewOption=2
+				Menu\NewMenu=MENU_MAIN#
+			EndIf
 	End Select
 
 End Function

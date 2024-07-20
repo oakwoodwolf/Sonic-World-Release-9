@@ -12,6 +12,10 @@ Function Menu_DrawCardsTitleControls()
 					DrawRealText("Main Menu", 0+12*GAME_WINDOW_SCALE#, 0-(CARD_PLACE#-27.5)*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 0, 0, 36, 81, 143)
 				Case MENU_OPTIONS#:
 					DrawRealText("Options", GAME_WINDOW_W-12*GAME_WINDOW_SCALE#, 0-(CARD_PLACE#-27.5)*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 2, 0, 186, 165, 23)
+				Case MENU_ONLINE#:
+					DrawRealText("Online", GAME_WINDOW_W-12*GAME_WINDOW_SCALE#, 0-(CARD_PLACE#-27.5)*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 2, 0, 186, 165, 23)
+				Case MENU_JOIN#:
+					DrawRealText("Enter I.P.", GAME_WINDOW_W-12*GAME_WINDOW_SCALE#, 0-(CARD_PLACE#-27.5)*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 2, 0, 186, 165, 23)
 				Case MENU_PLAY#,MENU_PLAYMARATHON#:
 					DrawRealText("Select Mode", GAME_WINDOW_W-12*GAME_WINDOW_SCALE#, 0-(CARD_PLACE#-27.5)*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 2, 0, 196, 8, 8)
 				Case MENU_MARATHON#:
@@ -128,7 +132,7 @@ Function Menu_DrawCardsTitleControls()
 					DrawRealText("Move", GAME_WINDOW_W/2+(-10-200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 					DrawSmartKey_MovementGeneral(GAME_WINDOW_W/2-(40+200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#)
 					DrawRealText("Back", GAME_WINDOW_W/2+(-10+200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-				Case MENU_PLAY#,MENU_TEAMS#,MENU_MARATHON#,MENU_PLAYMARATHON#:
+				Case MENU_PLAY#,MENU_TEAMS#,MENU_MARATHON#,MENU_PLAYMARATHON#,MENU_ONLINE#,MENU_PLAYONLINE#,MENU_JOIN#:
 					DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2-(40)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#)
 					DrawRealText("Select", GAME_WINDOW_W/2+(-10)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 					DrawSmartKey(INPUT_BUTTON_ACTIONROLL, GAME_WINDOW_W/2-(40-200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(CARD_PLACE#-20)*GAME_WINDOW_SCALE#)
@@ -329,7 +333,7 @@ Function Menu_Transition(d.tDeltaTime)
 							Menu_ResetCards_Out() : Menu_ResetButtonPlace1_LeftOut()
 						Case MENU_OPTIONS#:
 							Menu_ResetCards_Out() : Menu_ResetButtonPlace1_LeftOut()
-						Case MENU_PLAY#,MENU_BLACKMARKET#,MENU_TRANSPORTER#,MENU_PRINCIPAL#,MENU_MARATHON#,MENU_PLAYMARATHON#:
+						Case MENU_PLAY#,MENU_BLACKMARKET#,MENU_TRANSPORTER#,MENU_PRINCIPAL#,MENU_MARATHON#,MENU_PLAYMARATHON#,MENU_ONLINE#,MENU_PLAYONLINE#,MENU_JOIN#:
 							Menu_ResetCards_Out() : Menu_ResetButtonPlace1_RightOut()
 						Case MENU_CHARACTERS#,MENU_CHARACTERS2#:
 							Menu_ResetCards_Out() : Menu_ResetButtonPlace1_RightOut()
@@ -369,7 +373,7 @@ Function Menu_Transition(d.tDeltaTime)
 							Case MENU_OPTIONS#: Menu\RoundNewPos=1
 							Case MENU_MAIN#,MENU_CREDITS#: Menu\RoundNewPos=2
 							Case MENU_BIOS#: Menu\RoundNewPos=3
-							Case MENU_PLAY#,MENU_CHARACTERS#,MENU_CHARACTERS2#,MENU_TEAMS#,MENU_STAGE#,MENU_STAGE2#,MENU_STAGESPECIAL#,MENU_MARATHON#,MENU_PLAYMARATHON#: Menu\RoundNewPos=4
+							Case MENU_PLAY#,MENU_PLAYONLINE#,MENU_ONLINE#,MENU_JOIN#,MENU_CHARACTERS#,MENU_CHARACTERS2#,MENU_TEAMS#,MENU_STAGE#,MENU_STAGE2#,MENU_STAGESPECIAL#,MENU_MARATHON#,MENU_PLAYMARATHON#: Menu\RoundNewPos=4
 							Default: Menu\RoundNewPos=0
 						End Select
 						Menu\RoundTimer=0.4*secs#
@@ -386,7 +390,7 @@ Function Menu_Transition(d.tDeltaTime)
 							Menu_ResetCards_In() : Menu_TakeButton1Place_LeftOut() : Menu_ResetButtonPlace1_MidIn()
 						Case MENU_OPTIONS#:
 							Menu_ResetCards_In() : Menu_TakeButton1Place_RightOut() : Menu_ResetButtonPlace1_LeftIn()
-						Case MENU_PLAY#,MENU_MARATHON#,MENU_PLAYMARATHON#:
+						Case MENU_PLAY#,MENU_MARATHON#,MENU_PLAYMARATHON#,MENU_PLAYONLINE#,MENU_ONLINE#,MENU_JOIN#:
 							Menu_ResetCards_In() : Menu_TakeButton1Place_LeftOut() : Menu_ResetButtonPlace1_MidIn()
 						Case MENU_CHARACTERS#,MENU_CHARACTERS2#:
 							Menu_ResetCards_In() : Menu_TakeButton1Place_RightOut() : Menu_ResetButtonPlace1_RightIn()
@@ -427,7 +431,7 @@ Function Menu_Transition(d.tDeltaTime)
 				Menu\Option=Menu\NewOption : Menu\Menu=Menu\NewMenu
 				Menu\Option2=Menu\NewOption2 : Menu\Menu2=Menu\NewMenu2
 				Select Menu\Menu
-					Case MENU_PLAY#,MENU_MARATHON#,MENU_PLAYMARATHON#:
+					Case MENU_PLAY#,MENU_MARATHON#,MENU_PLAYMARATHON#,MENU_ONLINE#,MENU_PLAYONLINE#,MENU_JOIN#:
 						Menu\ChaoGarden=0
 					Case MENU_STAGE#,MENU_STAGE2#:
 						If Menu\NewOption<0 Then Menu\NewOption=1

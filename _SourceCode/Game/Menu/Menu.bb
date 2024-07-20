@@ -265,6 +265,9 @@ Menu\Settings = New tMenu_Settings
 	Const MENU_MARATHON#	= 14
 	Const MENU_PLAYMARATHON#= 15
 	Const MENU_MARATHONEND# = 16
+	Const MENU_ONLINE# 		= 17
+	Const MENU_PLAYONLINE# 	= 18
+	Const MENU_JOIN#	 	= 19
 
 	Const MENU_RESOLUTION#	= 1
 	Const MENU_SCREEN#	= 2
