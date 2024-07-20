@@ -314,23 +314,24 @@ Function Menu_Main_Update()
 	Menu\Background=1
 	Menu\ShowCards=True
 	Menu\ControlsToShow=Menu\Menu
-
-	DrawSmartButton(1, "Play", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-100*GAME_WINDOW_SCALE#)
-	DrawSmartButton(2, "Gallery", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-50*GAME_WINDOW_SCALE#)
-	DrawSmartButton(3, "Options", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#)
-	DrawSmartButton(4, "Credits", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+50*GAME_WINDOW_SCALE#)
-	DrawSmartButton(5, "Exit", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+100*GAME_WINDOW_SCALE#)
+	i=1
+	DrawSmartButton(i, "Play", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-250+(42*i)*GAME_WINDOW_SCALE#) : i=i+1
+	DrawSmartButton(i, "Online", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-250+(42*i)*GAME_WINDOW_SCALE#) : i=i+1
+	DrawSmartButton(i, "Gallery", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-250+(42*i)*GAME_WINDOW_SCALE#) : i=i+1
+	DrawSmartButton(i, "Options", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-250+(42*i)*GAME_WINDOW_SCALE#) : i=i+1
+	DrawSmartButton(i, "Credits", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-250+(42*i)*GAME_WINDOW_SCALE#) : i=i+1
+	DrawSmartButton(i, "Exit", GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-250+(42*i)*GAME_WINDOW_SCALE#)
 
 	If Input\Pressed\Down Then
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option+1
-		If Menu\Option>5 Then Menu\Option=1
+		If Menu\Option>i Then Menu\Option=1
 	EndIf
 
 	If Input\Pressed\Up Then
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option-1
-		If Menu\Option<1 Then Menu\Option=5
+		If Menu\Option<1 Then Menu\Option=i
 	EndIf
 
 	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
@@ -341,11 +342,11 @@ Function Menu_Main_Update()
 			Case 1:
 				CountEmblems()
 				Menu\NewOption=1 : Menu\NewMenu=MENU_PLAY#
-			Case 2:
+			Case 3:
 				For i = 1 to 3 : Menu\Character[i]=InterfaceChar(Menu\Character[i]) : Next
 				Menu\NewOption=Menu\Character[1] : Menu\NewMenu=MENU_BIOS# : ChannelVolume(Menu\Channel_Menu,0) : Menu\CharacterMeshAnimation=1
 				Menu\NewOption2=1
-			Case 3:
+			Case 4:
 				Menu\NewOption=1 : Menu\NewMenu=MENU_OPTIONS# : Menu\NewMenu2=0 : Menu\OptionOrder=0
 				Menu\Settings\NewResolution#=Menu\Settings\Resolution#
 				For i=1 to 2
@@ -355,9 +356,9 @@ Function Menu_Main_Update()
 				Menu\OptionsForceKeyAct[i]=CONTROLS(i,INPUT_BUTTON_ACTIONACT)
 				Next
 				For i=0 to 17 : CONTROLS_NEWGAMEPAD(i) = CONTROLS_GAMEPAD(i) : Next
-			Case 4:
-				Menu\NewOption=0 : Menu\NewMenu=MENU_CREDITS# : Menu\CreditsTimer=0
 			Case 5:
+				Menu\NewOption=0 : Menu\NewMenu=MENU_CREDITS# : Menu\CreditsTimer=0
+			Case 6:
 				Menu\NewOption=0 : Menu\NewMenu=MENU_CLOSE#
 		End Select
 	EndIf
