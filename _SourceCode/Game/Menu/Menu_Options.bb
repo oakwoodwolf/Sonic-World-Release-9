@@ -157,24 +157,24 @@ Function Menu_Options_Update()
 	Menu\Music=3
 	Menu\Background=1
 	Menu\ShowCards=True
+	If Menu\Menu2<>MENU_NAME# Then
+		For i=1 to 5
+			Menu_UpdateOptionButtons(i+Menu\OptionOrder) : DrawSmartButton(i, Menu\OptionButton$, GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*50*GAME_WINDOW_SCALE#)
+			Select (i+Menu\OptionOrder)
+				Case MENU_CONTROLS#:
+					DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#-62.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*50*GAME_WINDOW_SCALE#, 61)
+					DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#-62.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*50*GAME_WINDOW_SCALE#, 57)
+					DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#-32.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*50*GAME_WINDOW_SCALE#, 61)
+					DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#-32.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*50*GAME_WINDOW_SCALE#, 56)
+				Case MENU_CONTROLS2#:
+					DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#-52.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*50*GAME_WINDOW_SCALE#, 61)
+					DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#-52.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*50*GAME_WINDOW_SCALE#, 111)
+			End Select
+		Next
 
-	For i=1 to 5
-		Menu_UpdateOptionButtons(i+Menu\OptionOrder) : DrawSmartButton(i, Menu\OptionButton$, GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*50*GAME_WINDOW_SCALE#)
-		Select (i+Menu\OptionOrder)
-			Case MENU_CONTROLS#:
-				DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#-62.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*50*GAME_WINDOW_SCALE#, 61)
-				DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#-62.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*50*GAME_WINDOW_SCALE#, 57)
-				DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#-32.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*50*GAME_WINDOW_SCALE#, 61)
-				DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#-32.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*50*GAME_WINDOW_SCALE#, 56)
-			Case MENU_CONTROLS2#:
-				DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#-52.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*50*GAME_WINDOW_SCALE#, 61)
-				DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#-52.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*50*GAME_WINDOW_SCALE#, 111)
-		End Select
-	Next
-
-	DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-130*GAME_WINDOW_SCALE#,20)
-	DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+130*GAME_WINDOW_SCALE#,21)
-
+		DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-130*GAME_WINDOW_SCALE#,20)
+		DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+130*GAME_WINDOW_SCALE#,21)
+	EndIf
 	Menu_UpdateWarnings()
 
 	Select Menu\Menu2
@@ -187,6 +187,7 @@ Function Menu_Options_Update()
 		Case MENU_CONTROLS#,MENU_CONTROLS2#: Menu_Options_Controls_Update()
 		Case MENU_THEME#: Menu_Options_Theme_Update()
 		Case MENU_RESET#: Menu_Options_Reset_Update()
+		Case MENU_NAME#: Menu_Options_Name_Update()
 	End Select
 
 End Function
@@ -249,7 +250,8 @@ Function Menu_Options_Main_Update()
 						Menu\NewOption2=abs(MENU_THEME_AMOUNT#-Menu\Settings\Theme#-7)
 					EndIf
 					Menu_Options_Theme_LoadThumbnail()
-			Case 20: Menu\NewOption2=1 : Menu\NewMenu2=MENU_RESET#
+			Case 20: Menu\NewOption2=1 : Menu\NewChaoName$=Menu\PlayerName$ : Menu\NewMenu2=MENU_NAME#
+			Case 21: Menu\NewOption2=1 : Menu\NewMenu2=MENU_RESET#
 		End Select
 	EndIf
 
@@ -1585,136 +1587,136 @@ Function Menu_Options_Volume_Update()
 	EndIf
 
 End Function
-Function Menu_Options_Name()
-	Menu_Transporter_LetterBox(GAME_WINDOW_W/2+(BUTTON_PLACE1#-255)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100)*GAME_WINDOW_SCALE#, 11, 8, 27.5)
-	Menu_Transporter_Letters(GAME_WINDOW_W/2+(BUTTON_PLACE1#-255+9.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-11)*GAME_WINDOW_SCALE#, 10, 7, 28.5)
+Function Menu_Options_Name_Update()
+	Menu_Transporter_LetterBox(GAME_WINDOW_W/2+(BUTTON_PLACE1#-64)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100)*GAME_WINDOW_SCALE#, 11, 8, 27.5)
+	Menu_Transporter_Letters(GAME_WINDOW_W/2+(BUTTON_PLACE1#-53)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-11)*GAME_WINDOW_SCALE#, 10, 7, 28.5,1)
 
-	DrawSmartButtonT(1, "Backspace", GAME_WINDOW_W/2+(BUTTON_PLACE1#+180)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+15*GAME_WINDOW_SCALE#, 3)
-	DrawSmartButtonT(2, "Done", GAME_WINDOW_W/2+(BUTTON_PLACE1#+180)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+65*GAME_WINDOW_SCALE#, 3)
+	DrawSmartButton(1, "Backspace", GAME_WINDOW_W/2+(BUTTON_PLACE1#+180+255-53)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+15*GAME_WINDOW_SCALE#, 3)
+	DrawSmartButton(2, "Done", GAME_WINDOW_W/2+(BUTTON_PLACE1#+180+255-53)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+65*GAME_WINDOW_SCALE#, 3)
 
-	Menu_Transporter_NameBox(GAME_WINDOW_W/2+(BUTTON_PLACE1#+117.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-70*GAME_WINDOW_SCALE#, 10, 2, 27.5/2)
+	Menu_Transporter_NameBox(GAME_WINDOW_W/2+(BUTTON_PLACE1#+117.5+255-53)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-70*GAME_WINDOW_SCALE#, 10, 2, 27.5/2,1)
 
 	If Input\Pressed\Right Then
 		PlaySmartSound(Sound_MenuMove)
-		Select Menu\Option
-			Case 1,2: Menu\Option=10
-			Case 19,29,39,49,59,69,79: Menu\Option=1
-			Default: Menu\Option=Menu\Option+1
+		Select Menu\Option2
+			Case 1,2: Menu\Option2=10
+			Case 19,29,39,49,59,69,79: Menu\Option2=1
+			Default: Menu\Option2=Menu\Option2+1
 		End Select
 	EndIf
 
 	If Input\Pressed\Left Then
 		PlaySmartSound(Sound_MenuMove)
-		Select Menu\Option
-			Case 1,2: Menu\Option=19
-			Case 10,20,30,40,50,60,70: Menu\Option=1
-			Default: Menu\Option=Menu\Option-1
+		Select Menu\Option2
+			Case 1,2: Menu\Option2=19
+			Case 10,20,30,40,50,60,70: Menu\Option2=1
+			Default: Menu\Option2=Menu\Option2-1
 		End Select
 	EndIf
 
 	If Input\Pressed\Up Then
 		PlaySmartSound(Sound_MenuMove)
-		Select Menu\Option
-			Case 1: Menu\Option=2
-			Case 2: Menu\Option=1
-			Default: Menu\Option=Menu\Option-10 : If Menu\Option<10 Then Menu\Option=Menu\Option+70
+		Select Menu\Option2
+			Case 1: Menu\Option2=2
+			Case 2: Menu\Option2=1
+			Default: Menu\Option2=Menu\Option2-10 : If Menu\Option2<10 Then Menu\Option2=Menu\Option2+70
 		End Select
 	EndIf
 
 	If Input\Pressed\Down Then
 		PlaySmartSound(Sound_MenuMove)
-		Select Menu\Option
-			Case 1: Menu\Option=2
-			Case 2: Menu\Option=1
-			Default: Menu\Option=Menu\Option+10 : If Menu\Option>79 Then Menu\Option=Menu\Option-70
+		Select Menu\Option2
+			Case 1: Menu\Option2=2
+			Case 2: Menu\Option2=1
+			Default: Menu\Option2=Menu\Option2+10 : If Menu\Option2>79 Then Menu\Option2=Menu\Option2-70
 		End Select
 	EndIf
 
 	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
-		Select Menu\Option
+		Select Menu\Option2
 			Case 1:
 				PlaySmartSound(Sound_MenuAccept)
-				If Len(Menu\NewPlayerName$)>0 Then Menu\NewPlayerName$=Left(Menu\NewPlayerName$,Len(Menu\NewPlayerName$)-1)
+				If Len(Menu\NewChaoName$)>0 Then Menu\NewChaoName$=Left(Menu\NewChaoName$,Len(Menu\NewChaoName$)-1)
 			Case 2:
 				PlaySmartSound(Sound_MenuAccept)
-				Menu\PlayerName$=Menu\NewPlayerName$
+				Menu\PlayerName$=Menu\NewChaoName$
 				Menu\Transition=1
 				Menu\NewOption=1
 				Menu\NewMenu2=0
 			Default:
-				If Len(Menu\NewPlayerName$)<20 Then
+				If Len(Menu\NewChaoName$)<20 Then
 					PlaySmartSound(Sound_MenuAccept)
-					Select Menu\Option
-						Case 10: Menu\NewPlayerName$=Menu\NewPlayerName$+"0"
-						Case 11: Menu\NewPlayerName$=Menu\NewPlayerName$+"1"
-						Case 12: Menu\NewPlayerName$=Menu\NewPlayerName$+"2"
-						Case 13: Menu\NewPlayerName$=Menu\NewPlayerName$+"3"
-						Case 14: Menu\NewPlayerName$=Menu\NewPlayerName$+"4"
-						Case 15: Menu\NewPlayerName$=Menu\NewPlayerName$+"5"
-						Case 16: Menu\NewPlayerName$=Menu\NewPlayerName$+"6"
-						Case 17: Menu\NewPlayerName$=Menu\NewPlayerName$+"7"
-						Case 18: Menu\NewPlayerName$=Menu\NewPlayerName$+"8"
-						Case 19: Menu\NewPlayerName$=Menu\NewPlayerName$+"9"
-						Case 20: Menu\NewPlayerName$=Menu\NewPlayerName$+"A"
-						Case 21: Menu\NewPlayerName$=Menu\NewPlayerName$+"B"
-						Case 22: Menu\NewPlayerName$=Menu\NewPlayerName$+"C"
-						Case 23: Menu\NewPlayerName$=Menu\NewPlayerName$+"D"
-						Case 24: Menu\NewPlayerName$=Menu\NewPlayerName$+"E"
-						Case 25: Menu\NewPlayerName$=Menu\NewPlayerName$+"F"
-						Case 26: Menu\NewPlayerName$=Menu\NewPlayerName$+"G"
-						Case 27: Menu\NewPlayerName$=Menu\NewPlayerName$+"H"
-						Case 28: Menu\NewPlayerName$=Menu\NewPlayerName$+"I"
-						Case 29: Menu\NewPlayerName$=Menu\NewPlayerName$+"J"
-						Case 30: Menu\NewPlayerName$=Menu\NewPlayerName$+"K"
-						Case 31: Menu\NewPlayerName$=Menu\NewPlayerName$+"L"
-						Case 32: Menu\NewPlayerName$=Menu\NewPlayerName$+"M"
-						Case 33: Menu\NewPlayerName$=Menu\NewPlayerName$+"N"
-						Case 34: Menu\NewPlayerName$=Menu\NewPlayerName$+"O"
-						Case 35: Menu\NewPlayerName$=Menu\NewPlayerName$+"P"
-						Case 36: Menu\NewPlayerName$=Menu\NewPlayerName$+"Q"
-						Case 37: Menu\NewPlayerName$=Menu\NewPlayerName$+"R"
-						Case 38: Menu\NewPlayerName$=Menu\NewPlayerName$+"S"
-						Case 39: Menu\NewPlayerName$=Menu\NewPlayerName$+"T"
-						Case 40: Menu\NewPlayerName$=Menu\NewPlayerName$+"U"
-						Case 41: Menu\NewPlayerName$=Menu\NewPlayerName$+"V"
-						Case 42: Menu\NewPlayerName$=Menu\NewPlayerName$+"W"
-						Case 43: Menu\NewPlayerName$=Menu\NewPlayerName$+"X"
-						Case 44: Menu\NewPlayerName$=Menu\NewPlayerName$+"Y"
-						Case 45: Menu\NewPlayerName$=Menu\NewPlayerName$+"Z"
-						Case 46: Menu\NewPlayerName$=Menu\NewPlayerName$+"a"
-						Case 47: Menu\NewPlayerName$=Menu\NewPlayerName$+"b"
-						Case 48: Menu\NewPlayerName$=Menu\NewPlayerName$+"c"
-						Case 49: Menu\NewPlayerName$=Menu\NewPlayerName$+"d"
-						Case 50: Menu\NewPlayerName$=Menu\NewPlayerName$+"e"
-						Case 51: Menu\NewPlayerName$=Menu\NewPlayerName$+"f"
-						Case 52: Menu\NewPlayerName$=Menu\NewPlayerName$+"g"
-						Case 53: Menu\NewPlayerName$=Menu\NewPlayerName$+"h"
-						Case 54: Menu\NewPlayerName$=Menu\NewPlayerName$+"i"
-						Case 55: Menu\NewPlayerName$=Menu\NewPlayerName$+"j"
-						Case 56: Menu\NewPlayerName$=Menu\NewPlayerName$+"k"
-						Case 57: Menu\NewPlayerName$=Menu\NewPlayerName$+"l"
-						Case 58: Menu\NewPlayerName$=Menu\NewPlayerName$+"m"
-						Case 59: Menu\NewPlayerName$=Menu\NewPlayerName$+"n"
-						Case 60: Menu\NewPlayerName$=Menu\NewPlayerName$+"o"
-						Case 61: Menu\NewPlayerName$=Menu\NewPlayerName$+"p"
-						Case 62: Menu\NewPlayerName$=Menu\NewPlayerName$+"q"
-						Case 63: Menu\NewPlayerName$=Menu\NewPlayerName$+"r"
-						Case 64: Menu\NewPlayerName$=Menu\NewPlayerName$+"s"
-						Case 65: Menu\NewPlayerName$=Menu\NewPlayerName$+"t"
-						Case 66: Menu\NewPlayerName$=Menu\NewPlayerName$+"u"
-						Case 67: Menu\NewPlayerName$=Menu\NewPlayerName$+"v"
-						Case 68: Menu\NewPlayerName$=Menu\NewPlayerName$+"w"
-						Case 69: Menu\NewPlayerName$=Menu\NewPlayerName$+"x"
-						Case 70: Menu\NewPlayerName$=Menu\NewPlayerName$+"y"
-						Case 71: Menu\NewPlayerName$=Menu\NewPlayerName$+"z"
-						Case 72: Menu\NewPlayerName$=Menu\NewPlayerName$+"!"
-						Case 73: Menu\NewPlayerName$=Menu\NewPlayerName$+"?"
-						Case 74: Menu\NewPlayerName$=Menu\NewPlayerName$+"."
-						Case 75: Menu\NewPlayerName$=Menu\NewPlayerName$+"-"
-						Case 76: Menu\NewPlayerName$=Menu\NewPlayerName$+"%"
-						Case 77: Menu\NewPlayerName$=Menu\NewPlayerName$+" "
-						Case 78: Menu\NewPlayerName$=Menu\NewPlayerName$+" "
-						Case 79: Menu\NewPlayerName$=Menu\NewPlayerName$+" "
+					Select Menu\Option2
+						Case 10: Menu\NewChaoName$=Menu\NewChaoName$+"0"
+						Case 11: Menu\NewChaoName$=Menu\NewChaoName$+"1"
+						Case 12: Menu\NewChaoName$=Menu\NewChaoName$+"2"
+						Case 13: Menu\NewChaoName$=Menu\NewChaoName$+"3"
+						Case 14: Menu\NewChaoName$=Menu\NewChaoName$+"4"
+						Case 15: Menu\NewChaoName$=Menu\NewChaoName$+"5"
+						Case 16: Menu\NewChaoName$=Menu\NewChaoName$+"6"
+						Case 17: Menu\NewChaoName$=Menu\NewChaoName$+"7"
+						Case 18: Menu\NewChaoName$=Menu\NewChaoName$+"8"
+						Case 19: Menu\NewChaoName$=Menu\NewChaoName$+"9"
+						Case 20: Menu\NewChaoName$=Menu\NewChaoName$+"A"
+						Case 21: Menu\NewChaoName$=Menu\NewChaoName$+"B"
+						Case 22: Menu\NewChaoName$=Menu\NewChaoName$+"C"
+						Case 23: Menu\NewChaoName$=Menu\NewChaoName$+"D"
+						Case 24: Menu\NewChaoName$=Menu\NewChaoName$+"E"
+						Case 25: Menu\NewChaoName$=Menu\NewChaoName$+"F"
+						Case 26: Menu\NewChaoName$=Menu\NewChaoName$+"G"
+						Case 27: Menu\NewChaoName$=Menu\NewChaoName$+"H"
+						Case 28: Menu\NewChaoName$=Menu\NewChaoName$+"I"
+						Case 29: Menu\NewChaoName$=Menu\NewChaoName$+"J"
+						Case 30: Menu\NewChaoName$=Menu\NewChaoName$+"K"
+						Case 31: Menu\NewChaoName$=Menu\NewChaoName$+"L"
+						Case 32: Menu\NewChaoName$=Menu\NewChaoName$+"M"
+						Case 33: Menu\NewChaoName$=Menu\NewChaoName$+"N"
+						Case 34: Menu\NewChaoName$=Menu\NewChaoName$+"O"
+						Case 35: Menu\NewChaoName$=Menu\NewChaoName$+"P"
+						Case 36: Menu\NewChaoName$=Menu\NewChaoName$+"Q"
+						Case 37: Menu\NewChaoName$=Menu\NewChaoName$+"R"
+						Case 38: Menu\NewChaoName$=Menu\NewChaoName$+"S"
+						Case 39: Menu\NewChaoName$=Menu\NewChaoName$+"T"
+						Case 40: Menu\NewChaoName$=Menu\NewChaoName$+"U"
+						Case 41: Menu\NewChaoName$=Menu\NewChaoName$+"V"
+						Case 42: Menu\NewChaoName$=Menu\NewChaoName$+"W"
+						Case 43: Menu\NewChaoName$=Menu\NewChaoName$+"X"
+						Case 44: Menu\NewChaoName$=Menu\NewChaoName$+"Y"
+						Case 45: Menu\NewChaoName$=Menu\NewChaoName$+"Z"
+						Case 46: Menu\NewChaoName$=Menu\NewChaoName$+"a"
+						Case 47: Menu\NewChaoName$=Menu\NewChaoName$+"b"
+						Case 48: Menu\NewChaoName$=Menu\NewChaoName$+"c"
+						Case 49: Menu\NewChaoName$=Menu\NewChaoName$+"d"
+						Case 50: Menu\NewChaoName$=Menu\NewChaoName$+"e"
+						Case 51: Menu\NewChaoName$=Menu\NewChaoName$+"f"
+						Case 52: Menu\NewChaoName$=Menu\NewChaoName$+"g"
+						Case 53: Menu\NewChaoName$=Menu\NewChaoName$+"h"
+						Case 54: Menu\NewChaoName$=Menu\NewChaoName$+"i"
+						Case 55: Menu\NewChaoName$=Menu\NewChaoName$+"j"
+						Case 56: Menu\NewChaoName$=Menu\NewChaoName$+"k"
+						Case 57: Menu\NewChaoName$=Menu\NewChaoName$+"l"
+						Case 58: Menu\NewChaoName$=Menu\NewChaoName$+"m"
+						Case 59: Menu\NewChaoName$=Menu\NewChaoName$+"n"
+						Case 60: Menu\NewChaoName$=Menu\NewChaoName$+"o"
+						Case 61: Menu\NewChaoName$=Menu\NewChaoName$+"p"
+						Case 62: Menu\NewChaoName$=Menu\NewChaoName$+"q"
+						Case 63: Menu\NewChaoName$=Menu\NewChaoName$+"r"
+						Case 64: Menu\NewChaoName$=Menu\NewChaoName$+"s"
+						Case 65: Menu\NewChaoName$=Menu\NewChaoName$+"t"
+						Case 66: Menu\NewChaoName$=Menu\NewChaoName$+"u"
+						Case 67: Menu\NewChaoName$=Menu\NewChaoName$+"v"
+						Case 68: Menu\NewChaoName$=Menu\NewChaoName$+"w"
+						Case 69: Menu\NewChaoName$=Menu\NewChaoName$+"x"
+						Case 70: Menu\NewChaoName$=Menu\NewChaoName$+"y"
+						Case 71: Menu\NewChaoName$=Menu\NewChaoName$+"z"
+						Case 72: Menu\NewChaoName$=Menu\NewChaoName$+"!"
+						Case 73: Menu\NewChaoName$=Menu\NewChaoName$+"?"
+						Case 74: Menu\NewChaoName$=Menu\NewChaoName$+"."
+						Case 75: Menu\NewChaoName$=Menu\NewChaoName$+"-"
+						Case 76: Menu\NewChaoName$=Menu\NewChaoName$+"%"
+						Case 77: Menu\NewChaoName$=Menu\NewChaoName$+" "
+						Case 78: Menu\NewChaoName$=Menu\NewChaoName$+" "
+						Case 79: Menu\NewChaoName$=Menu\NewChaoName$+" "
 					End Select
 				Else
 					PlaySmartSound(Sound_MenuRefuse)

@@ -510,13 +510,14 @@ Function Menu_Transporter_LetterBox(x#, y#, row, column, spacing#, boxtype#=0)
 
 End Function
 
-Function Menu_Transporter_Letters(x#, y#, row, column, spacing#)
+Function Menu_Transporter_Letters(x#, y#, row, column, spacing#,mode=0)
 
 	j=0
+	If mode=0 Then opt = Menu\Option Else opt = Menu\Option2
 	For h=0 to column-1
 		For i=0 to row-1
 			If (i+h+j)<70 Then
-				If Menu\Option=(i+h+j)+10 Then
+				If opt=(i+h+j)+10 Then
 					If Menu\ButtonState2=0 Then Menu\ButtonSize2#=Menu\ButtonSize2#-BUTTON_SCALESPEED#*Game\DeltaTime\Delta# : If Menu\ButtonSize2#<0 Then Menu\ButtonState2=1 : Menu\ButtonSize2#=0
 					If Menu\ButtonState2=1 Then Menu\ButtonSize2#=Menu\ButtonSize2#+BUTTON_SCALESPEED#*Game\DeltaTime\Delta# : If Menu\ButtonSize2#>BUTTON_SCALELIMIT#/1.5 Then Menu\ButtonState2=0 : Menu\ButtonSize2#=BUTTON_SCALELIMIT#/1.5
 					Menu\ButtonSize#=Menu\ButtonSize2#
@@ -535,7 +536,7 @@ Function Menu_Transporter_Letters(x#, y#, row, column, spacing#)
 
 End Function
 
-Function Menu_Transporter_NameBox(x#, y#, row, column, spacing#)
+Function Menu_Transporter_NameBox(x#, y#, row, column, spacing#,mode=0)
 
 	SetScale(GAME_WINDOW_SCALE#*1.25, GAME_WINDOW_SCALE#*1.25)
 	For h=0 to column-1
@@ -550,8 +551,8 @@ Function Menu_Transporter_NameBox(x#, y#, row, column, spacing#)
 		DrawImageEx(INTERFACE(Interface_Naming), x#+i*spacing#*GAME_WINDOW_SCALE#, y#+h*spacing#*GAME_WINDOW_SCALE#, 10)
 	Next
 	Next
-
-	DrawRealText(Menu\NewChaoName$, x#-11.25*GAME_WINDOW_SCALE#, y#+8.75*GAME_WINDOW_SCALE#, Interface_TextTitleChao_1, 0, 0, 63, 63, 63, 1.35)
+	If mode=0 Then font = Interface_TextTitleChao_1 Else font = Interface_TextTitle_1
+	DrawRealText(Menu\NewChaoName$, x#-11.25*GAME_WINDOW_SCALE#, y#+8.75*GAME_WINDOW_SCALE#, font, 0, 0, 63, 63, 63, 1.35)
 
 End Function
 

@@ -230,8 +230,6 @@ Type tMenu
 	Field RandomBackgroundChooser
 
 	Field PlayerName$
-	Field NewPlayerName$
-	Field SavePlayerName
 
 	Field RingRotator
 End Type
@@ -287,7 +285,8 @@ Menu\Settings = New tMenu_Settings
 	Const MENU_MODS#	= 17
 	Const MENU_TIPS#	= 18
 	Const MENU_THEME#	= 19
-	Const MENU_RESET#	= 20
+	Const MENU_NAME#	= 20
+	Const MENU_RESET#	= 21
 
 	Const MENU_BLACKMARKET_MAIN#		= 0
 	Const MENU_BLACKMARKET_BUY#		= 1

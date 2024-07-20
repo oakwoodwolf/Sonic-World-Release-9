@@ -186,7 +186,8 @@ Select optionorder
 	Case 17: Menu\OptionButton$="Mods"
 	Case 18: Menu\OptionButton$="Control Tips"
 	Case 19: Menu\OptionButton$="Menu Theme"
-	Case 20: Menu\OptionButton$="Reset SaveData"
+	Case 20: Menu\OptionButton$="Player Name"
+	Case 21: Menu\OptionButton$="Reset SaveData"
 End Select
 
 End Function

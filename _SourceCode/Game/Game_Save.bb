@@ -169,7 +169,7 @@ Function LoadGame(loademblems=true)
 
 	Select xmlNodeNameGet$(child)
 		Case "firsttime": Menu\FirstTime = xmlNodeAttributeValueGet(child, "is")
-
+		Case "playername": Menu\PlayerName = xmlNodeAttributeValueGet(child, "is")
 		Case "resolution": Menu\Settings\Resolution# = xmlNodeAttributeValueGet(child, "setting")
 		Case "screen": Menu\Settings\ScreenMode# = xmlNodeAttributeValueGet(child, "setting")
 		Case "debug": Menu\Settings\Debug# = xmlNodeAttributeValueGet(child, "setting")
@@ -507,6 +507,7 @@ Function ResetOptions_Values()
 	Menu\Settings\AutoCameraDisabled#=0
 	Menu\Settings\VSync#=0
 	Menu\Settings\ViewRange#=0
+	Menu\PlayerName$="Player"
 
 	ResetOptions_ResetKeyboard()
 	ResetOptions_ResetGamepad()
