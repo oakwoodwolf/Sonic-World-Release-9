@@ -99,6 +99,7 @@ Function SaveGame(saveemblems=true)
 	WriteFileWithEncryption("SETTINGS")
 
 	WriteLine(CurrentOpenFile,"<firsttime is="+Chr$(34)+Menu\FirstTime+Chr$(34)+"/>")
+	WriteLine(CurrentOpenFile,"<playername is="+Chr$(34)+Menu\PlayerName$+Chr$(34)+"/>")
 
 	WriteLine(CurrentOpenFile,"<resolution setting="+Chr$(34)+Menu\Settings\Resolution#+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<screen setting="+Chr$(34)+Menu\Settings\ScreenMode#+Chr$(34)+"/>")

@@ -196,7 +196,7 @@ Menu\GameStarted=1
 			For i=1 To 255 : Color(i,0,i) : Rect(0,i,GraphicsWidth(),GraphicsHeight(),1) : Next ; blue gradient
 			Color(255,255,255)	
 			SetFont(BigFont)
-			Text(GraphicsWidth()/2,25,"Welcome to BlitzSonic Online!",1,0)
+			Text(GraphicsWidth()/2,25,"Welcome to Sonic World Online!",1,0)
 			Text(GraphicsWidth()/2,75,"From here, you'll enter info to",1, 0)
 			Text(GraphicsWidth()/2,125,"join others worldwide, or peer to peer.",1,0)	
 			
@@ -222,7 +222,7 @@ Menu\GameStarted=1
 				For i=1 To 255 : Color(i,i,0) : Rect(0,i,GraphicsWidth(),GraphicsHeight(),1) : Next ; red gradient
 				Color(255,255,255)	
 				SetFont(BigFont)
-				Text(GraphicsWidth()/2,25,"Welcome to BlitzSonic Online!",1,0)
+				Text(GraphicsWidth()/2,25,"Welcome to Sonic World Online!",1,0)
 				Text(GraphicsWidth()/2,75,"From here, you'll enter info to",1, 0)
 				Text(GraphicsWidth()/2,125,"join others worldwide, or peer to peer.",1,0)	
 				

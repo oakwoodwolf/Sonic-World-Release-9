@@ -229,6 +229,10 @@ Type tMenu
 
 	Field RandomBackgroundChooser
 
+	Field PlayerName$
+	Field NewPlayerName$
+	Field SavePlayerName
+
 	Field RingRotator
 End Type
 

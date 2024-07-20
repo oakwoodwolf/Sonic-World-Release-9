@@ -795,7 +795,7 @@
 					If p\Online\Connected And p\Online\ShowTag=True Then 
 						If p\Online\TagMode=TAG_IS_IT And Game\Online\GameType=GAME_TYPE_TAG
 							If p\Online\TagTimer<>"" Then
-								DrawPlayerTag(c\Entity, p, p\Online\Name$+" - Time:"+p\Online\TagTimer, p\Online\NetID, 3, p\Online\ColorR,p\Online\ColorG,p\Online\ColorB);000, 0, 255)
+								DrawPlayerTag(c\Entity, p, p\Online\Name$+" - Time:"+p\Online\TagTimer, p\Online\NetID, 3, Interface_Lives_G[InterfaceChar(p\RealCharacter)],Interface_Lives_B[InterfaceChar(p\RealCharacter)]);000, 0, 255)
 							EndIf
 						Else
 							DrawPlayerTag(c\Entity, p, p\Online\Name$, p\Online\NetID, 	3, Interface_Lives_R[InterfaceChar(p\RealCharacter)],Interface_Lives_G[InterfaceChar(p\RealCharacter)],Interface_Lives_B[InterfaceChar(p\RealCharacter)])
@@ -1191,6 +1191,13 @@ Function HandleMessages()
 						PositionEntity(onlineplayer(1)\Objects\Entity, 0, 10, 0)
 						PositionEntity(onlineplayer(1)\Objects\Mesh, 0, 10, 0)
 						ResetEntity(onlineplayer(1)\Objects\Entity)
+					Case "hurt"
+						Player_Hurt(p)
+						Info(p\Online\Name$ + "got hurt!")
+					Case "die"
+						;p.tPlayer = First tPlayer
+						Player_Die(p)
+						Info(p\Online\Name$ + "got slain!")
 					Case "tagged"
 						;p.tPlayer = First tPlayer
 						onlineplayer(1)\Online\TagMode=TAG_IS_IT
@@ -1257,9 +1264,9 @@ Function Update_GameModes()
 		Case GAME_TYPE_TAG
 			; handle tag values
 			p.tPlayer = First tPlayer
-			If KeyHit(KEY_0) Then p\Online\TagMode=0 : p\Online\TagTimer=0 : BP_UDPMessage(0,UDPMSG_MESSAGE, p\Online\Name$+" is safe.")
-			If KeyHit(KEY_PLUS) Then p\Online\TagMode=TAG_NOT_IT : p\Online\TagTimer=0 : BP_UDPMessage(0,UDPMSG_MESSAGE, p\Online\Name$+" is Clear!")
-			If KeyHit(KEY_HYPHEN) Then p\Online\TagMode=TAG_IS_IT : p\Online\TagTimer=TAG_TIMER : BP_UDPMessage(0,UDPMSG_MESSAGE, p\Online\Name$+" is It!") : DebugLog(p\Online\Name$+" is It!")
+			;If KeyHit(KEY_0) Then p\Online\TagMode=0 : p\Online\TagTimer=0 : BP_UDPMessage(0,UDPMSG_MESSAGE, p\Online\Name$+" is safe.")
+			;If KeyHit(KEY_PLUS) Then p\Online\TagMode=TAG_NOT_IT : p\Online\TagTimer=0 : BP_UDPMessage(0,UDPMSG_MESSAGE, p\Online\Name$+" is Clear!")
+			;If KeyHit(KEY_HYPHEN) Then p\Online\TagMode=TAG_IS_IT : p\Online\TagTimer=TAG_TIMER : BP_UDPMessage(0,UDPMSG_MESSAGE, p\Online\Name$+" is It!") : DebugLog(p\Online\Name$+" is It!")
 			If KeyHit(Key_F10) Then p\Online\TagTimer=20
 
 			; handle tag timer, and be clear once it's over

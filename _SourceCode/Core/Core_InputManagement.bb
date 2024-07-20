@@ -175,7 +175,7 @@ End Function
 		maymove = ( (Not(Game\ControlLock>0)) And (Not(Game\StartoutLock>0)) And Game\Victory=0 And Chatting\Allowed=0 )
 
 		; ---- Check for input lock -----
-		If Menu\Pause=0 And (Input\Pressed\Start And Chatting\Allowed=0) And Menu\Stage<>0 And Game\Victory=0 And Menu\ExitedAStage=0 And Game\Interface\DebugPlacerOn=0 And (Menu\ChaoGarden=0 Or Menu\Stage=999) Then
+		If Menu\Pause=0 And (Input\Pressed\Start And (Not Chatting\PauseTimer>0 And Chatting\Allowed=0)) And Menu\Stage<>0 And Game\Victory=0 And Menu\ExitedAStage=0 And Game\Interface\DebugPlacerOn=0 And (Menu\ChaoGarden=0 Or Menu\Stage=999) Then
 			Menu\Pause=1 : Input_ResetAllInput() : Game\SmartCameraRangeDontAffectTimer=3*secs#
 			Input_Lock = False
 			Menu\Option=1
@@ -206,7 +206,7 @@ End Function
 		Input_MouseWheel# = MouseZSpeed()
 
 		; ---- Update digital input -----
-		If (Menu\Stage<>0) Or (Menu\Stage=0 and (Not(Game\ControlLock>0))) Then
+		If (Menu\Stage<>0 And Chatting\Allowed=0) Or (Menu\Stage=0 and ((Not(Game\ControlLock>0)))) Then
 			Input\Pressed\Start	 		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_START)) And (Input\Hold\Start = 0)
 			Input\Pressed\Back	 		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_BACK)) And (Input\Hold\Back = 0)
 			Input\Hold\Start	 		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_START))

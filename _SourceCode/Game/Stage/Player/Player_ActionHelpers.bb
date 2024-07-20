@@ -1115,11 +1115,14 @@
 				If Game\Gameplay\Rings=0 Then
 					If Game\Invinc=0 And Game\Shield=0 Then
 						Player_Die(p)
+						BP_UDPMessage(0, 3, "die")
 					Else
 						Player_Hurt(p)
+						BP_UDPMessage(0, 3, "hurt")
 					EndIf
 				Else
 					Player_Hurt(p)
+					BP_UDPMessage(0, 3, "hurt")
 				EndIf
 			EndIf
 		EndIf

@@ -1240,7 +1240,8 @@
 			Player_DetermineChar(pp(1),newcharacter)
 			DeformCharacter(pp(1),True)
 			BP_UDPMessage(0,UDPMSG_PLAYERCHARACTER, String(newcharacter,1)) ; send new name
-			BP_UDPMessage(0, UDPMSG_MESSAGE, " Is Now, "+ ShortCharNames(newcharacter,1)) ; tell everyone
+			Info("You are now, " + SingleCharNames(newcharacter),Interface_TextNames_R[newcharacter],Interface_TextNames_G[newcharacter],Interface_TextNames_B[newcharacter])
+			BP_UDPMessage(0, UDPMSG_MESSAGE, pp(1)\Online\Name$ + " Is Now, " + SingleCharNames(newcharacter)) ; tell everyone
 			Game\Vehicle=0
 			Player_SetRadius#(pp(1))
 		EndIf

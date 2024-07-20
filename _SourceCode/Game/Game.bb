@@ -326,6 +326,7 @@ End Function
 		Field  	Logging%
 		Field   GameType%
 		Field 	RaceFinished
+		Field 	Stage
 		Field   MsgOfTheDay$, ShowMsg, ShowCommands
 	End Type
 

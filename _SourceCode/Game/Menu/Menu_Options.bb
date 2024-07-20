@@ -1585,3 +1585,148 @@ Function Menu_Options_Volume_Update()
 	EndIf
 
 End Function
+Function Menu_Options_Name()
+	Menu_Transporter_LetterBox(GAME_WINDOW_W/2+(BUTTON_PLACE1#-255)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100)*GAME_WINDOW_SCALE#, 11, 8, 27.5)
+	Menu_Transporter_Letters(GAME_WINDOW_W/2+(BUTTON_PLACE1#-255+9.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-11)*GAME_WINDOW_SCALE#, 10, 7, 28.5)
+
+	DrawSmartButtonT(1, "Backspace", GAME_WINDOW_W/2+(BUTTON_PLACE1#+180)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+15*GAME_WINDOW_SCALE#, 3)
+	DrawSmartButtonT(2, "Done", GAME_WINDOW_W/2+(BUTTON_PLACE1#+180)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+65*GAME_WINDOW_SCALE#, 3)
+
+	Menu_Transporter_NameBox(GAME_WINDOW_W/2+(BUTTON_PLACE1#+117.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-70*GAME_WINDOW_SCALE#, 10, 2, 27.5/2)
+
+	If Input\Pressed\Right Then
+		PlaySmartSound(Sound_MenuMove)
+		Select Menu\Option
+			Case 1,2: Menu\Option=10
+			Case 19,29,39,49,59,69,79: Menu\Option=1
+			Default: Menu\Option=Menu\Option+1
+		End Select
+	EndIf
+
+	If Input\Pressed\Left Then
+		PlaySmartSound(Sound_MenuMove)
+		Select Menu\Option
+			Case 1,2: Menu\Option=19
+			Case 10,20,30,40,50,60,70: Menu\Option=1
+			Default: Menu\Option=Menu\Option-1
+		End Select
+	EndIf
+
+	If Input\Pressed\Up Then
+		PlaySmartSound(Sound_MenuMove)
+		Select Menu\Option
+			Case 1: Menu\Option=2
+			Case 2: Menu\Option=1
+			Default: Menu\Option=Menu\Option-10 : If Menu\Option<10 Then Menu\Option=Menu\Option+70
+		End Select
+	EndIf
+
+	If Input\Pressed\Down Then
+		PlaySmartSound(Sound_MenuMove)
+		Select Menu\Option
+			Case 1: Menu\Option=2
+			Case 2: Menu\Option=1
+			Default: Menu\Option=Menu\Option+10 : If Menu\Option>79 Then Menu\Option=Menu\Option-70
+		End Select
+	EndIf
+
+	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+		Select Menu\Option
+			Case 1:
+				PlaySmartSound(Sound_MenuAccept)
+				If Len(Menu\NewPlayerName$)>0 Then Menu\NewPlayerName$=Left(Menu\NewPlayerName$,Len(Menu\NewPlayerName$)-1)
+			Case 2:
+				PlaySmartSound(Sound_MenuAccept)
+				Menu\PlayerName$=Menu\NewPlayerName$
+				Menu\Transition=1
+				Menu\NewOption=1
+				Menu\NewMenu2=0
+			Default:
+				If Len(Menu\NewPlayerName$)<20 Then
+					PlaySmartSound(Sound_MenuAccept)
+					Select Menu\Option
+						Case 10: Menu\NewPlayerName$=Menu\NewPlayerName$+"0"
+						Case 11: Menu\NewPlayerName$=Menu\NewPlayerName$+"1"
+						Case 12: Menu\NewPlayerName$=Menu\NewPlayerName$+"2"
+						Case 13: Menu\NewPlayerName$=Menu\NewPlayerName$+"3"
+						Case 14: Menu\NewPlayerName$=Menu\NewPlayerName$+"4"
+						Case 15: Menu\NewPlayerName$=Menu\NewPlayerName$+"5"
+						Case 16: Menu\NewPlayerName$=Menu\NewPlayerName$+"6"
+						Case 17: Menu\NewPlayerName$=Menu\NewPlayerName$+"7"
+						Case 18: Menu\NewPlayerName$=Menu\NewPlayerName$+"8"
+						Case 19: Menu\NewPlayerName$=Menu\NewPlayerName$+"9"
+						Case 20: Menu\NewPlayerName$=Menu\NewPlayerName$+"A"
+						Case 21: Menu\NewPlayerName$=Menu\NewPlayerName$+"B"
+						Case 22: Menu\NewPlayerName$=Menu\NewPlayerName$+"C"
+						Case 23: Menu\NewPlayerName$=Menu\NewPlayerName$+"D"
+						Case 24: Menu\NewPlayerName$=Menu\NewPlayerName$+"E"
+						Case 25: Menu\NewPlayerName$=Menu\NewPlayerName$+"F"
+						Case 26: Menu\NewPlayerName$=Menu\NewPlayerName$+"G"
+						Case 27: Menu\NewPlayerName$=Menu\NewPlayerName$+"H"
+						Case 28: Menu\NewPlayerName$=Menu\NewPlayerName$+"I"
+						Case 29: Menu\NewPlayerName$=Menu\NewPlayerName$+"J"
+						Case 30: Menu\NewPlayerName$=Menu\NewPlayerName$+"K"
+						Case 31: Menu\NewPlayerName$=Menu\NewPlayerName$+"L"
+						Case 32: Menu\NewPlayerName$=Menu\NewPlayerName$+"M"
+						Case 33: Menu\NewPlayerName$=Menu\NewPlayerName$+"N"
+						Case 34: Menu\NewPlayerName$=Menu\NewPlayerName$+"O"
+						Case 35: Menu\NewPlayerName$=Menu\NewPlayerName$+"P"
+						Case 36: Menu\NewPlayerName$=Menu\NewPlayerName$+"Q"
+						Case 37: Menu\NewPlayerName$=Menu\NewPlayerName$+"R"
+						Case 38: Menu\NewPlayerName$=Menu\NewPlayerName$+"S"
+						Case 39: Menu\NewPlayerName$=Menu\NewPlayerName$+"T"
+						Case 40: Menu\NewPlayerName$=Menu\NewPlayerName$+"U"
+						Case 41: Menu\NewPlayerName$=Menu\NewPlayerName$+"V"
+						Case 42: Menu\NewPlayerName$=Menu\NewPlayerName$+"W"
+						Case 43: Menu\NewPlayerName$=Menu\NewPlayerName$+"X"
+						Case 44: Menu\NewPlayerName$=Menu\NewPlayerName$+"Y"
+						Case 45: Menu\NewPlayerName$=Menu\NewPlayerName$+"Z"
+						Case 46: Menu\NewPlayerName$=Menu\NewPlayerName$+"a"
+						Case 47: Menu\NewPlayerName$=Menu\NewPlayerName$+"b"
+						Case 48: Menu\NewPlayerName$=Menu\NewPlayerName$+"c"
+						Case 49: Menu\NewPlayerName$=Menu\NewPlayerName$+"d"
+						Case 50: Menu\NewPlayerName$=Menu\NewPlayerName$+"e"
+						Case 51: Menu\NewPlayerName$=Menu\NewPlayerName$+"f"
+						Case 52: Menu\NewPlayerName$=Menu\NewPlayerName$+"g"
+						Case 53: Menu\NewPlayerName$=Menu\NewPlayerName$+"h"
+						Case 54: Menu\NewPlayerName$=Menu\NewPlayerName$+"i"
+						Case 55: Menu\NewPlayerName$=Menu\NewPlayerName$+"j"
+						Case 56: Menu\NewPlayerName$=Menu\NewPlayerName$+"k"
+						Case 57: Menu\NewPlayerName$=Menu\NewPlayerName$+"l"
+						Case 58: Menu\NewPlayerName$=Menu\NewPlayerName$+"m"
+						Case 59: Menu\NewPlayerName$=Menu\NewPlayerName$+"n"
+						Case 60: Menu\NewPlayerName$=Menu\NewPlayerName$+"o"
+						Case 61: Menu\NewPlayerName$=Menu\NewPlayerName$+"p"
+						Case 62: Menu\NewPlayerName$=Menu\NewPlayerName$+"q"
+						Case 63: Menu\NewPlayerName$=Menu\NewPlayerName$+"r"
+						Case 64: Menu\NewPlayerName$=Menu\NewPlayerName$+"s"
+						Case 65: Menu\NewPlayerName$=Menu\NewPlayerName$+"t"
+						Case 66: Menu\NewPlayerName$=Menu\NewPlayerName$+"u"
+						Case 67: Menu\NewPlayerName$=Menu\NewPlayerName$+"v"
+						Case 68: Menu\NewPlayerName$=Menu\NewPlayerName$+"w"
+						Case 69: Menu\NewPlayerName$=Menu\NewPlayerName$+"x"
+						Case 70: Menu\NewPlayerName$=Menu\NewPlayerName$+"y"
+						Case 71: Menu\NewPlayerName$=Menu\NewPlayerName$+"z"
+						Case 72: Menu\NewPlayerName$=Menu\NewPlayerName$+"!"
+						Case 73: Menu\NewPlayerName$=Menu\NewPlayerName$+"?"
+						Case 74: Menu\NewPlayerName$=Menu\NewPlayerName$+"."
+						Case 75: Menu\NewPlayerName$=Menu\NewPlayerName$+"-"
+						Case 76: Menu\NewPlayerName$=Menu\NewPlayerName$+"%"
+						Case 77: Menu\NewPlayerName$=Menu\NewPlayerName$+" "
+						Case 78: Menu\NewPlayerName$=Menu\NewPlayerName$+" "
+						Case 79: Menu\NewPlayerName$=Menu\NewPlayerName$+" "
+					End Select
+				Else
+					PlaySmartSound(Sound_MenuRefuse)
+				EndIf
+		End Select
+	EndIf
+
+	If Input\Pressed\ActionRoll Or Input\Pressed\Back Or Input\Pressed\ActionSkill1 Then
+		PlaySmartSound(Sound_MenuBack)
+		Menu\Transition=1
+		Menu\NewOption=1
+		Menu\NewMenu2=0
+	EndIf
+
+End Function

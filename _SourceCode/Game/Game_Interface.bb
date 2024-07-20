@@ -102,6 +102,7 @@ Type tChat
 	Field Scale
 	Field SlideVel#
 	Field CursorInterval
+	Field PauseTimer
 End Type
 ; Info/Message Structure
 Type Info
@@ -110,7 +111,6 @@ Type Info
 	Field font$
 	field randcolor
 	field No
-	field timer
 End Type
 
 Global Chatting.tChat = New tChat
@@ -1190,7 +1190,7 @@ Function AboutToChat()
 								default : BP_SetGameType(0) : Game\Online\GameType=0
 							end select
 							BP_UDPMessage (0,26, Game\Online\GameType)
-						;Default : kicktxt$=kicktxt$+Chr$(32) : Info("Command Doesn't Exist.", 255, 124, 5) : Info("Use /help to display commands", 255, 124, 5)
+						
 					end select
 				Endif
 				; commands for all
@@ -1204,11 +1204,18 @@ Function AboutToChat()
 					case "/clear", "/Clear" : For i.Info = Each Info : Delete i : next : FlushKeys()
 					case "/view" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : Game\Online\ViewName$=kickname$ : Game\Online\ViewPlayer=True
 					case "/viewoff" : Game\Online\ViewPlayer=False 
-					case "/logout","/logoff" : BP_UDPMessage (0,12,PlayerName$+" logged out...") : BP_EndSession()
+					case "/logout","/logoff" : BP_UDPMessage (0,12,PlayerName$+" logged out...") : BP_EndSession() : Game_Stage_Quit(3)
 					case "/hidetag","/showtag" : if kicktxt$="/hidetag" Then : onlineplayer(1)\Online\ShowTag=False : else : onlineplayer(1)\Online\ShowTag=True : EndIf : BP_UDPMessage(0,24,onlineplayer(1)\Online\ShowTag)
 					case "/chatsize" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : Chatting\Scale=Int(kickname$)
 					case "/rejoin" : Game\Online\ReJoin=True : Info("Connecting, Please Wait...",255,255,0, "bold")
-
+					Case "/tagset"
+							kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat)
+							p.tPlayer = First tPlayer
+							select kickname$
+								case "safe","0" : p\Online\TagMode=0 : p\Online\TagTimer=0 : BP_UDPMessage(0,UDPMSG_MESSAGE, p\Online\Name$+" is safe.")
+								case "clear","1" : p\Online\TagMode=TAG_NOT_IT : p\Online\TagTimer=0 : BP_UDPMessage(0,UDPMSG_MESSAGE, p\Online\Name$+" is Clear!")
+								default : p\Online\TagMode=TAG_IS_IT : p\Online\TagTimer=TAG_TIMER : BP_UDPMessage(0,UDPMSG_MESSAGE, p\Online\Name$+" is It!")
+							end select
 					case "/color"
 						kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat)
 						onlineplayer(1)\Online\PrevColorR=BP_GetMessagePart(kickname$, 1, " ")
@@ -1236,8 +1243,7 @@ Function AboutToChat()
 				End Select
 				PlaySmartSound(Sound_1Up)
 			endif
-			Chatting\PrevTxt$=Chatting\Txt$
-			Chatting\Txt$="" : Chatting\Allowed=0 : FlushKeys()
+			Chatting\PrevTxt$=Chatting\Txt$ : Chatting\Txt$="" : Chatting\PauseTimer=0.25*secs# : Chatting\Allowed=0 : FlushKeys()
 		ElseIf key=8 And Chatting\Txt$<>"" then ; backspace
 			If Len(Chatting\Txt$)>0 Then Chatting\Txt$=Left$(Chatting\Txt$,Len(Chatting\Txt$)-1)
 		ElseIf key>=32 And key<127 then ;typing
@@ -1254,7 +1260,6 @@ Function Info(t$,r=255,g=255,b=255, font_type$="normal", randcolor=false)
 	i\font$ = font_type$
 	i\txt$=t$ : i\alpha#=0.0
 	i\randcolor=randcolor
-	i\timer=30*secs#
 	Insert i Before First Info
 End Function
 global slidechat#=1
@@ -1267,7 +1272,8 @@ Function Interface_DrawChat(x#=0, y#=0, csize=1, orientation=1)
 		case 0: txtpos#=0
 		case 1: txtpos#=(427*csize)+30
 	end select
-
+	If Chatting\PauseTimer>0 Then Chatting\PauseTimer=Chatting\PauseTimer-timervalue#
+	
 	; the background for the chatbox (chatbox itself.)
 	;SetAlpha(0.175)
 	
@@ -1313,8 +1319,14 @@ Function Interface_DrawChat(x#=0, y#=0, csize=1, orientation=1)
 			If i\alpha#<1.0 Then i\alpha#=i\alpha#+0.0425*Game\DeltaTime\Delta#
 			SetAlpha(i\Alpha#)
 			If i\randcolor=True Then SeedRnd(millisecs()) : i\r=rnd(100,255): i\g=rnd(100,255): i\b=rnd(100,255)
-			SetColor(i\r, i\g, i\b)
-			DrawRealText(i\Txt$, 17.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-+64+(15*GAME_WINDOW_SCALE#+(1*textcounter)), (Interface_Text_2), 0)
+			If BP_GetMessagePart(i\Txt, 2, ":")<>"" Then
+				SetColor(i\r, i\g, i\b)
+				DrawRealText(BP_GetMessagePart(i\Txt, 1, ":") + " " + BP_GetMessagePart(i\Txt, 2, ":"), 17.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-+64+(15*GAME_WINDOW_SCALE#+(1*textcounter)), (Interface_Text_2), 0)
+			Else
+				SetColor(i\r, i\g, i\b)
+				DrawRealText(i\Txt$, 17.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-+64+(15*GAME_WINDOW_SCALE#+(1*textcounter)), (Interface_Text_2), 0)
+			endif
+			
 			SetColor(255,255,255)
 			textcounter = textcounter - 20
 		EndIf
@@ -1324,7 +1336,7 @@ Function Interface_DrawChat(x#=0, y#=0, csize=1, orientation=1)
 	SetColor(255,255,255):SetAlpha(1.0)
 	SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
 	; cancel chat
-	if (KeyHit(KEY_DELETE)) and Chatting\Allowed>0 Then Chatting\Txt$="" : Chatting\Allowed=0 : FlushKeys()
+	if (KeyHit(KEY_DELETE)) and Chatting\Allowed>0 Then Chatting\Txt$="" : Chatting\PauseTimer=0.25*secs# : Chatting\Allowed=0 : FlushKeys() 
 end function
 
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
