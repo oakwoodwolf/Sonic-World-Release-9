@@ -1193,6 +1193,9 @@ Function AboutToChat()
 						Case "/warp","/stage"
 							kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat)
 							Menu\SelectedStage=GetStageNo(kickname$)
+							Menu_Stage_LoadMissions(Menu\SelectedStage, true)
+							Menu_GoToStage_SetMission(1)
+							Chatting\Allowed=0
 							BP_UDPMessage (0,6, kickname$)
 							Game_Stage_Quit(2)
 						
@@ -1204,12 +1207,12 @@ Function AboutToChat()
 					case "/nickname", "/changename" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : Player_ChangeName(kickname$)
 					case "/tp" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : TeleportToPlayer(kickname$)
 					case "/debug" : kicktxt$=kicktxt$+Chr$(32) : Game\Online\Debug=1-Game\Online\Debug
-					case "/log" : Game\Online\Logging=1-Game\Online\Logging : If Game\Online\Logging Then : BP_StartLogFile(PlayerName$+"'s Log"+".txt") : Else : BP_StopLogFile() : Endif
+					case "/log" : Game\Online\Logging=1-Game\Online\Logging : If Game\Online\Logging Then : BP_StartLogFile(Menu\PlayerName$+"'s Log"+".txt") : Else : BP_StopLogFile() : Endif
 					case "/update" : Game\Online\SendUpdates=1-Game\Online\SendUpdates
 					case "/clear", "/Clear" : For i.Info = Each Info : Delete i : next : FlushKeys()
 					case "/view" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : Game\Online\ViewName$=kickname$ : Game\Online\ViewPlayer=True
 					case "/viewoff" : Game\Online\ViewPlayer=False 
-					case "/logout","/logoff" : BP_UDPMessage (0,12,PlayerName$+" logged out...") : BP_EndSession() : Game_Stage_Quit(3)
+					case "/logout","/logoff" : BP_UDPMessage (0,12,Menu\PlayerName$+" logged out...") : BP_EndSession() : Game_Stage_Quit(3)
 					case "/hidetag","/showtag" : if kicktxt$="/hidetag" Then : onlineplayer(1)\Online\ShowTag=False : else : onlineplayer(1)\Online\ShowTag=True : EndIf : BP_UDPMessage(0,24,onlineplayer(1)\Online\ShowTag)
 					case "/chatsize" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : Chatting\Scale=Int(kickname$)
 					case "/rejoin" : Game\Online\ReJoin=True : Info("Connecting, Please Wait...",255,255,0, "bold")

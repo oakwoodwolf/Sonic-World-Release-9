@@ -79,7 +79,7 @@ Function KickPlayer(pname$, Ban%=False, kickall%=False)
 		kickcount%=0:kickall%=false : Return ;reset and be done
 	EndIf 
 	 ;will kick a single person
-	If pname$=PlayerName$ then Info("You can't kick yourself.", 255, 0, 255) : Return
+	If pname$=Menu\PlayerName$ then Info("You can't kick yourself.", 255, 0, 255) : Return
 	For p.tPlayer = Each tPlayer
 		;if p\Online\NetID<>BP_My_ID then ; it's not for you
 		If p\Online\Name=pname$ Then
@@ -109,7 +109,7 @@ Function Player_ChangeName(NewName$)
 	if NewName$="/changename" or NewName$="/nickname" then NewName$=""
 	p.tPlayer = First tPlayer
 	;nInfo.NetInfo = BP_FindID(p\Online\NetID)
-	OldName$=PlayerName$ ; keep in case
+	OldName$=Menu\PlayerName$ ; keep in case
 	Menu\PlayerName$=NewName$ : PlayerName$=NewName$ : p\Online\Name$=NewName$ ; old to now
 	;nInfo\Name=NewName$+"/"+chars$
 	Info("Your Name is "+NewName$,255, 0, 255)
@@ -122,7 +122,7 @@ end function
 ; Warp To Other Player
 ; =========================================================================================================
 Function TeleportToPlayer(name$)
-	if name$=PlayerName$ then Return
+	if name$=Menu\PlayerName$ then Return
 	for p.tPlayer = Each tPlayer
 		if p\Online\Name$=name$ then
 			if p=Null then Return

@@ -1631,7 +1631,9 @@ Function Menu_Options_Name_Update(mode=0)
 			Default: Menu\Option2=Menu\Option2+10 : If Menu\Option2>79 Then Menu\Option2=Menu\Option2-70
 		End Select
 	EndIf
-
+	If Input\Pressed\ActionSkill2 Then
+		;
+	EndIf 
 	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
 		Select Menu\Option2
 			Case 1:

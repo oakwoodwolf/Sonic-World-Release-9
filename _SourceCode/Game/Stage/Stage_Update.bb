@@ -1197,7 +1197,7 @@ Function HandleMessages()
 						Info(p\Online\Name$ + "got hurt!")
 					Case "die"
 						;p.tPlayer = First tPlayer
-						Player_Die(p)
+						;Player_Die(p)
 						Info(p\Online\Name$ + "got slain!")
 					Case "tagged"
 						;p.tPlayer = First tPlayer
@@ -1262,6 +1262,8 @@ Function HandleMessages()
 					DebugLog("warping to" + msg\msgData)
 					PlaySmartSound(Sound_Teleport)
 					Menu\SelectedStage=GetStageNo(msg\msgData)
+					Menu_Stage_LoadMissions(Menu\SelectedStage, true)
+					Menu_GoToStage_SetMission(1)
 					;If Menu\Stage<>Menu\SelectedStage Then Game_Stage_Quit(2)
 					Game_Stage_Quit(2)
 				Else
