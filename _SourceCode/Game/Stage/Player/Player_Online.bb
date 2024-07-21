@@ -22,22 +22,20 @@ Function Player_CreateOnlineData(p.tPlayer, pname$, pid%, no%, localplayer%=True
 		EntityType(p\Objects\Entity, 0)
 		p\Online\CamPivot=CreatePivot()
 		p\Online\Camera = CreateCamera(p\Online\campivot):HideEntity(p\Online\Camera)
-		p\Online\Collision = CreateCylinder():EntityAlpha(p\Online\Collision,0)
-		;EntityRadius(p\Online\Collision, 8.5, 8.5)		
-		;EntityType(p\Online\Collision, COLLISION_PLAYER)	
+		p\Online\Collision = CreateCylinder():EntityAlpha(p\Online\Collision,0)	
 		EntityType(p\Objects\Mesh, COLLISION_PLAYER)
 	EndIf		
 	; name the player by their ID.
 	NameEntity(p\Objects\Entity, p\Online\NetID)
 	DebugLog("ID No:"+EntityName(p\Objects\Entity) + " " + p\Online\Name) ; debugging
 	; tag bubble for Tag Game Mode. (will change to a sprite circle.)
-	p\Online\TagBubble = CreateSphere(12, p\Objects\Mesh)
-	Textures_Shield					= LoadTexture("Textures/shield.png", 1+2)
-	EntityTexture(p\Online\TagBubble, Textures_Shield)
-	ScaleEntity(p\Online\TagBubble, 7.5, 7.5, 7.5)
-	EntityAlpha(p\Online\TagBubble, 0.45)
-	EntityBlend(p\Online\TagBubble, 3)
-	EntityFx(p\Online\TagBubble, 1)
+	;p\Online\TagBubble = CreateSphere(12, p\Objects\Mesh)
+	;Textures_Shield					= LoadTexture("Textures/shield.png", 1+2)
+	;EntityTexture(p\Online\TagBubble, Textures_Shield)
+	;ScaleEntity(p\Online\TagBubble, 7.5, 7.5, 7.5)
+	;EntityAlpha(p\Online\TagBubble, 0.45)
+	;EntityBlend(p\Online\TagBubble, 3)
+	;EntityFx(p\Online\TagBubble, 1)
 End Function
 
 ; =========================================================================================================
@@ -178,7 +176,13 @@ Function GetClosestPlayer.tPlayer(distance# = 20)
 		EndIf
 	Next
 End Function
-
+Function GetStageNo%(stagenamed$)
+	j=1
+	For i=0 to StageAmount
+		If StageName$(i)=stagenamed$ and j=1 Then j=i
+	Next
+	Return j
+End Function
 
 ; draw players name tag and number.
 Function DrawPlayerTag(Cam%, p.tPlayer, label$, no=1, height#=3, r=255, g=255, b=255)

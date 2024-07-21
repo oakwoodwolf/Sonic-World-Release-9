@@ -838,6 +838,7 @@
 					; send movement packet
 					BP_UDPMessage(0, UDPMSG_PLAYERMOVEMENT, String$(EntityX(p\Objects\Mesh)+"/"+EntityY(p\Objects\Mesh)+"/"+EntityZ(p\Objects\Mesh)+"/"+EntityPitch(p\Objects\Mesh)+"/"+EntityYaw(p\Objects\Mesh)+"/"+EntityRoll(p\Objects\Mesh),1))	
 					BP_UDPMessage(0, UDPMSG_PLAYERATTRIBUTES, String$(p\Action+"/"+p\Animation\Animation+"/"+p\SpeedLength+"/"+p\Motion\Ground+"/",1))
+					If BP_My_ID = BP_Host_ID Then BP_UDPMessage(0, 6, StageName(Menu\Stage))
 					; deal the tag and race attributes
 					If Game\Online\GameType=GAME_TYPE_TAG Then BP_UDPMessage(0,UDPMSG_TAGVALUES,onlineplayer(1)\Online\TagMode+"/"+onlineplayer(1)\Online\TagTimer+"/"+onlineplayer(1)\Online\TagCoolDown)
 					If Game\Online\GameType=GAME_TYPE_RACE Then BP_UDPMessage(0,UDPMSG_RACEVALUES,onlineplayer(1)\Online\RacePosition+"/"+onlineplayer(1)\Online\FinishedRace+"/"+onlineplayer(1)\Online\RaceTimer)
@@ -1013,7 +1014,7 @@ Function HandleMessages()
 				; finished 	; inform the joined party
 				If Game\Online\ShowMsg=False Then BP_UDPMessage(0,25, Game\Online\MsgOfTheDay$) : Game\Online\ShowMsg=True
 				If BP_My_ID = BP_Host_ID Then : Info("**" + p\Online\Name$ + " has joined Session!",0,255,0, "bold") : Else : Info("**" + p\Online\Name$ + " is in Session!",0,255,0, "bold") : EndIf
-				Game\Channel_1Up=PlaySmartSound(Sound_CharacterChange) 								; sound for comformation			
+				PlaySmartSound(Sound_CharacterChange) 								; sound for comformation			
 				;Next						
 			;------------------------------------------------------
 			Case UDPMSG_LEFT ;A player has left..
@@ -1023,13 +1024,12 @@ Function HandleMessages()
 					nInfo.NetInfo = BP_FindID(p\Online\NetID) 			; send info the net		
 					If (msg\msgData = True) Then 
 						Info("**" + p\Online\Name$ + " has left!",0,0,255, "bold") : DebugLog("**" + p\Online\Name$ + " left!")
-						Game\Channel_1Up=PlaySmartSound(Sound_Die)
 					Else 
 						Info("**" + p\Online\Name$ + " lagged out!",0,0,255, "bold") : DebugLog("**" + p\Online\Name$ + " lagged out!")
-						Game\Channel_1Up=PlaySmartSound(Sound_GameOver)
 					EndIf
 					Player_Destroy(p)
 					;Delete nInfo;
+					PlaySmartSound(Sound_Die)
 					Delete p		
 					PlayerNo=PlayerNo-1		
 				End If
@@ -1044,10 +1044,12 @@ Function HandleMessages()
 				
 				If msg\msgData = True Then 
 					Info("**The host ended the game!", 0, 0, 255, "bold") 
-						Game\Channel_1Up=PlaySmartSound(Sound_Die)
+					PlaySmartSound(Sound_Die)
+					Game_Stage_Quit(3)
 				Else 
 					Info("**No reply from host in " + (BP_TimeoutPeriod / 1000) + " seconds. Exiting game..", 255, 255, 0, "bold")
-					Game\Channel_1Up=PlaySmartSound(Sound_GameOver)
+					PlaySmartSound(Sound_GameOver)
+					Game_Stage_Quit(3)
 				EndIf
 			;------------------------------------------------------	
 			Case UDPMSG_KICKED	;Someone got kicked/banned
@@ -1055,7 +1057,7 @@ Function HandleMessages()
 				p.tPlayer = FindPlayerData(msg\msgFrom)
 				; was it you breh
 				If p\Online\NetID = BP_My_ID Then	;It was -me-??				
-					;If msg\msgData = False Then : Info("**You have been kicked!", 255, 153, 0, "bold") : Else : Info("**You have been banned!", 255, 0 ,0, "bold") : EndIf
+					If msg\msgData = False Then : Info("**You have been kicked!", 255, 153, 0, "bold") : Else : Info("**You have been banned!", 255, 0 ,0, "bold") : EndIf
 					Channel_Kicked=PlaySound(Sound_Kicked)
 					For p.tPlayer = Each tPlayer
 						If p\Online\NetID <> BP_My_ID Then
@@ -1064,7 +1066,7 @@ Function HandleMessages()
 						End If
 					Next				
 				Else				;It wasn't? Ok then.
-					;If msg\msgData = False Then : Info("**" + p\Online\Name$ + " has been kicked!", 255, 153, 0, "bold") : Else : Info("**" + p\Online\Name$ + " has been banned!",255,0,0, "bold") : EndIf
+					If msg\msgData = False Then : Info("**" + p\Online\Name$ + " has been kicked!", 255, 153, 0, "bold") : Else : Info("**" + p\Online\Name$ + " has been banned!",255,0,0, "bold") : EndIf
 					Channel_Kicked=PlaySound(Sound_Kicked)
 					Player_Destroy(p)
 					Delete p
@@ -1076,8 +1078,7 @@ Function HandleMessages()
             	p.tPlayer = FindPlayerData(msg\msgFrom)
             	If  msg\msgType=11 Then Info (p\Online\name$ + ":" + msg\msgData, 255,255,255, "normal")
 				If  msg\msgType=95 Then Info (msg\msgData, 255,255,255, "normal")
-				If ChannelPlaying(Channel_Message) Then StopChannel(Channel_Message)
-            	Channel_Message=PlaySound(Sound_Message)
+            	PlaySmartSound(Sound_MenuMove)
 			;------------------------------------------------------
             Case UDPMSG_MESSAGE ; Info/Message Packet
 			;------------------------------------------------------
@@ -1088,7 +1089,7 @@ Function HandleMessages()
             		Info (msg\msgData,255,255,0, "bold", False)
             	EndIf
 				DebugLog("INFO: " + msg\msgData)
-				EmitSmartSound(Sound_Hint,p\Objects\Entity)
+				PlaySmartSound(Sound_Hint)
 			;------------------------------------------------------			
 			Case UDPMSG_PLAYERMOVEMENT ; Player Movement
 			;------------------------------------------------------							
@@ -1220,13 +1221,13 @@ Function HandleMessages()
 			;------------------------------------------------------	
 				If ChannelPlaying(Channel_Gag) Then StopChannel(Channel_Gag)	
 				Select msg\msgData
-					Case 1 : Channel_Gag=PlaySound(Sound_NoUse)
-					Case 2 : Channel_Gag=PlaySound(Sound_OhNo)
-					Case 3 : Channel_Gag=PlaySound(Sound_TooSlow)
-					Case 4 : Channel_Gag=PlaySound(Sound_StepItUp)
-					Case 5 : Channel_Gag=PlaySound(Sound_Hi)
-					Case 6 : Channel_Gag=PlaySound(Sound_Fart)
-					Case 7 : Channel_Gag=PlaySound(Sound_Pingas)
+					Case 1 : Channel_Gag=PlaySmartSound(Sound_NoUse)
+					Case 2 : Channel_Gag=PlaySmartSound(Sound_OhNo)
+					Case 3 : Channel_Gag=PlaySmartSound(Sound_TooSlow)
+					Case 4 : Channel_Gag=PlaySmartSound(Sound_StepItUp)
+					Case 5 : Channel_Gag=PlaySmartSound(Sound_Hi)
+					Case 6 : Channel_Gag=PlaySmartSound(Sound_Fart)
+					Case 7 : Channel_Gag=PlaySmartSound(Sound_Pingas)
 				End Select
 			;------------------------------------------------------			
 			Case 4 ; Spawn Object
@@ -1252,8 +1253,17 @@ Function HandleMessages()
 				p\Online\CamY#		 			=  Float(BP_GetMessagePart(msg\msgData, 2))
 				p\Online\CamZ#					=  Float(BP_GetMessagePart(msg\msgData, 3))
 			Case 6 ; Warp
-				Menu\SelectedStage=msg\msgData
-				Game_Stage_Quit(2)
+			p.tPlayer = FindPlayerData(msg\msgFrom)
+			If p\Online\NetID<>BP_Host_ID Then
+				If Menu\Stage<>0 Then
+					Game\ControlLock=0.25*secs#
+					Menu\SelectedStage=GetStageNo(msg\msgData)
+					If Menu\Stage<>Menu\SelectedStage Then Game_Stage_Quit(2)
+				Else
+					Menu\Option=Menu\SelectedStage
+					Menu_GoToStage()
+				EndIf
+			EndIf
 		End Select
 		Delete msg
 	Next ;!!!!

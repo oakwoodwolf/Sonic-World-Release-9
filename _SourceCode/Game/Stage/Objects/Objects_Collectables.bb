@@ -412,7 +412,6 @@
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
-
 	Function Object_Goal_Create.tObject(mode#, x#, y#, z#, teleportername$=0, switchno1=0, switchno2=0, switchno3=0)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\Goal = New tObject_Goal : o\Teleporter = New tObject_Teleporter : o\HasValuesetTeleporter=True

@@ -818,6 +818,7 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
+
 	Function Object_Teleporter_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, teleporterno, teleportername$=0)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\Teleporter = New tObject_Teleporter : o\HasValuesetTeleporter=True
@@ -863,7 +864,8 @@ End Function
 	End Function
 	
 	; =========================================================================================================
-	
+
+
 	Function Object_Teleporter_Update(o.tObject, p.tPlayer)
 
 		If o\Teleporter\RestrictTeleportTimer>0 Then o\Teleporter\RestrictTeleportTimer=o\Teleporter\RestrictTeleportTimer-timervalue#

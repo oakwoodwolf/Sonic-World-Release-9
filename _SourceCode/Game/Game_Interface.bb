@@ -1190,6 +1190,11 @@ Function AboutToChat()
 								default : BP_SetGameType(0) : Game\Online\GameType=0
 							end select
 							BP_UDPMessage (0,26, Game\Online\GameType)
+						Case "/warp","/stage"
+							kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat)
+							Menu\SelectedStage=GetStageNo(kickname$)
+							BP_UDPMessage (0,6, kickname$)
+							Game_Stage_Quit(2)
 						
 					end select
 				Endif
