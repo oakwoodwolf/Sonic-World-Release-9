@@ -1642,11 +1642,12 @@ Function Menu_Options_Name_Update(mode=0)
 				Select mode
 				Case 0:
 					Menu\PlayerName$=Menu\NewChaoName$
+					Menu\NewChaoName$=""
 				Case 1:
 					DrawRealText("Connecting... Please wait...", GAME_WINDOW_W/2, GAME_WINDOW_H/2, (Interface_Text_1), 1)
 					If Menu\NewChaoName="" Then  Menu\NewChaoName=BP_GetMyIP$()
 					Game\Online\IP$=Menu\NewChaoName$
-					Menu\NewMenu=MENU_PLAYONLINE
+					Menu\NewMenu=MENU_PLAYONLINE#
 					connecttimer=millisecs()+1750
 					Game\Online\Connected=1 ;!!!!!!!!!!!!
 					Game\Online\SendUpdates=True
@@ -1655,6 +1656,7 @@ Function Menu_Options_Name_Update(mode=0)
 				Menu\Transition=1
 				Menu\NewOption=1
 				Menu\NewMenu2=0
+
 			Default:
 				If Len(Menu\NewChaoName$)<20 Then
 					PlaySmartSound(Sound_MenuAccept)
@@ -1739,8 +1741,14 @@ Function Menu_Options_Name_Update(mode=0)
 	If Input\Pressed\ActionRoll Or Input\Pressed\Back Or Input\Pressed\ActionSkill1 Then
 		PlaySmartSound(Sound_MenuBack)
 		Menu\Transition=1
+		Select mode
+		case 0
 		Menu\NewOption=1
 		Menu\NewMenu2=0
+		case 1
+		Menu\NewOption=2
+		Menu\NewMenu=MENU_ONLINE#
+		End Select
 	EndIf
 
 End Function

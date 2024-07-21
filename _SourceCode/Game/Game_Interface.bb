@@ -1227,9 +1227,6 @@ Function AboutToChat()
 						onlineplayer(1)\Online\PrevColorG=BP_GetMessagePart(kickname$, 2, " ")
 						onlineplayer(1)\Online\PrevColorB=BP_GetMessagePart(kickname$, 3, " ")
 						BP_UDPMessage(0, 77, onlineplayer(1)\Online\PrevColorR+"|"+onlineplayer(1)\Online\PrevColorG+"|"+onlineplayer(1)\Online\PrevColorB)			
-					;case "/object" : BP_UDPMessage(0, 4, BP_GetMessagePart(kicktxt$, 1, "/")+"/"+Float(BP_GetMessagePart(kicktxt$, 1, " "))+"/"+Float(BP_GetMessagePart(kicktxt$, 1, " "))+"/"+Float(BP_GetMessagePart(kicktxt$, 1, " ")))
-					; gag command!!
-
 					case "/nouse" : kicktxt$=kicktxt$+Chr$(32) : BP_UDPMessage(0,55, 1) : PlaySound(Sound_NoUse) 
 					case "/ohno","/knux" : kicktxt$=kicktxt$+Chr$(32) : BP_UDPMessage(0,55, 2) : PlaySound(Sound_OhNo)
 					case "/tooslow" : kicktxt$=kicktxt$+Chr$(32) : BP_UDPMessage(0,55, 3) : PlaySound(Sound_TooSlow)
@@ -1241,12 +1238,9 @@ Function AboutToChat()
 					Case "/sh71","/SH71", "/Sh71" : kicktxt$=kicktxt$+Chr$(32) : Info("#off_topic", 255,0,255, "bold") : BP_UDPMessage(0,UDPMSG_MESSAGE, "#off_topic")
 					case "/yarcaz" : kicktxt$=kicktxt$+Chr$(32) : Info("...", 255,0,255, "bold") : BP_UDPMessage(0,UDPMSG_MESSAGE, "...")
 					case "/pingas" : kicktxt$=kicktxt$+Chr$(32) : BP_UDPMessage(0,55, 7) : PlaySound(Sound_Pingas)
-					;case "/headsize" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : FindChild(p\)
-					;case "/size"
-					;case "/unsize"
-					;Default : kicktxt$=kicktxt$+Chr$(32) : Info("Command Doesn't Exist.", 255, 124, 5) : Info("Use /help to display commands", 255, 124, 5)
+					Default : kicktxt$=kicktxt$+Chr$(32) : Info("Command Doesn't Exist.", 255, 124, 5) : Info("Use /help to display commands", 255, 124, 5) : PlaySmartSound(Sound_MenuRefuse)
 				End Select
-				PlaySmartSound(Sound_1Up)
+				
 			endif
 			Chatting\PrevTxt$=Chatting\Txt$ : Chatting\Txt$="" : Chatting\PauseTimer=0.25*secs# : Chatting\Allowed=0 : FlushKeys()
 		ElseIf key=8 And Chatting\Txt$<>"" then ; backspace

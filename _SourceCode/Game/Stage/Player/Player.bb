@@ -856,7 +856,7 @@
 		; Setup pivot collision
 		EntityType(p\Objects\Entity, COLLISION_PLAYER)
 		Player_SetRadius#(p)
-		Player_Spawn(Game\Gameplay\CheckX#,Game\Gameplay\CheckY#,Game\Gameplay\CheckZ#,Game\Gameplay\CheckDirection#)
+		If localplayer Then Player_Spawn(Game\Gameplay\CheckX#,Game\Gameplay\CheckY#,Game\Gameplay\CheckZ#,Game\Gameplay\CheckDirection#)
 
 		; Particle templates
 		p\Particle = ParticleTemplate_Create.tParticleTemplate()

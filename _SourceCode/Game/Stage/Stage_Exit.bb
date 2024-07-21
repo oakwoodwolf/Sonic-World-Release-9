@@ -473,7 +473,7 @@
 
 		Game_Stage_Restart()
 		Menu\SavedLives=Game\Gameplay\Lives
-		SaveGame()
+		If Not BP_Online Then SaveGame()
 
 	End Function
 
