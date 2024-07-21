@@ -838,7 +838,6 @@
 					; send movement packet
 					BP_UDPMessage(0, UDPMSG_PLAYERMOVEMENT, String$(EntityX(p\Objects\Mesh)+"/"+EntityY(p\Objects\Mesh)+"/"+EntityZ(p\Objects\Mesh)+"/"+EntityPitch(p\Objects\Mesh)+"/"+EntityYaw(p\Objects\Mesh)+"/"+EntityRoll(p\Objects\Mesh),1))	
 					BP_UDPMessage(0, UDPMSG_PLAYERATTRIBUTES, String$(p\Action+"/"+p\Animation\Animation+"/"+p\SpeedLength+"/"+p\Motion\Ground+"/",1))
-					If BP_My_ID = BP_Host_ID Then BP_UDPMessage(0, 6, StageName(Menu\Stage))
 					; deal the tag and race attributes
 					If Game\Online\GameType=GAME_TYPE_TAG Then BP_UDPMessage(0,UDPMSG_TAGVALUES,onlineplayer(1)\Online\TagMode+"/"+onlineplayer(1)\Online\TagTimer+"/"+onlineplayer(1)\Online\TagCoolDown)
 					If Game\Online\GameType=GAME_TYPE_RACE Then BP_UDPMessage(0,UDPMSG_RACEVALUES,onlineplayer(1)\Online\RacePosition+"/"+onlineplayer(1)\Online\FinishedRace+"/"+onlineplayer(1)\Online\RaceTimer)
@@ -1013,6 +1012,7 @@ Function HandleMessages()
 				nInfo.NetInfo = BP_FindID(p\Online\NetID) 			; send info the net							
 				; finished 	; inform the joined party
 				If Game\Online\ShowMsg=False Then BP_UDPMessage(0,25, Game\Online\MsgOfTheDay$) : Game\Online\ShowMsg=True
+				If BP_My_ID = BP_Host_ID Then BP_UDPMessage(p\Online\NetID, 6, StageName(Menu\Stage))
 				If BP_My_ID = BP_Host_ID Then : Info("**" + p\Online\Name$ + " has joined Session!",0,255,0, "bold") : Else : Info("**" + p\Online\Name$ + " is in Session!",0,255,0, "bold") : EndIf
 				PlaySmartSound(Sound_CharacterChange) 								; sound for comformation			
 				;Next						
@@ -1254,16 +1254,21 @@ Function HandleMessages()
 				p\Online\CamZ#					=  Float(BP_GetMessagePart(msg\msgData, 3))
 			Case 6 ; Warp
 			p.tPlayer = FindPlayerData(msg\msgFrom)
-			If p\Online\NetID<>BP_Host_ID Then
-				If Menu\Stage<>0 Then
-					Game\ControlLock=0.25*secs#
+			
+			DebugLog("warping " + p\Online\Name)
+			;If p\Online\NetID<>BP_Host_ID Then
+				If Menu\Stage<>0  Then
+					Game\ControlLock=1.5*secs#
+					DebugLog("warping to" + msg\msgData)
+					PlaySmartSound(Sound_Teleport)
 					Menu\SelectedStage=GetStageNo(msg\msgData)
-					If Menu\Stage<>Menu\SelectedStage Then Game_Stage_Quit(2)
+					;If Menu\Stage<>Menu\SelectedStage Then Game_Stage_Quit(2)
+					Game_Stage_Quit(2)
 				Else
 					Menu\Option=Menu\SelectedStage
 					Menu_GoToStage()
 				EndIf
-			EndIf
+			;EndIf
 		End Select
 		Delete msg
 	Next ;!!!!
