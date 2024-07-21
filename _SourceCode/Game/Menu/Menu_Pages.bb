@@ -680,7 +680,11 @@ Function Menu_Pause_Update()
 	DrawSmartButton(1, "Continue", GAME_WINDOW_W/2, GAME_WINDOW_H/2-50*GAME_WINDOW_SCALE#)
 	Select Menu\ChaoGarden
 		Case 0:
-			DrawSmartButton(2, "Restart", GAME_WINDOW_W/2, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#)
+			If BP_Online Then
+				DrawSmartButton(2, "Restart", GAME_WINDOW_W/2, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#,false,false,true)
+			Else
+				DrawSmartButton(2, "Restart", GAME_WINDOW_W/2, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#)
+			EndIf
 		Case 1:
 			DrawSmartButton(2, "Restart", GAME_WINDOW_W/2, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#,false,false,true)
 	End Select
@@ -698,13 +702,14 @@ Function Menu_Pause_Update()
 	If Input\Pressed\Up and Menu\Transition=0 Then
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option-1
-		If Menu\ChaoGarden=1 and Menu\Option=2 Then Menu\Option=Menu\Option-1
+		If (Menu\ChaoGarden=1 Or BP_Online) and Menu\Option=2 Then Menu\Option=Menu\Option-1
 		If Menu\Option<1 Then Menu\Option=3
 	EndIf
 
 	If (Input\Pressed\ActionJump Or Input\Pressed\Start) and Menu\Transition=0 Then
 		PlaySmartSound(Sound_MenuAccept)
-		If Menu\Option=3 Or (Menu\Option=2 and Menu\ChaoGarden=0) Then Game_Stage_Quit(Menu\Option)
+		If Menu\Option=3 Or (Menu\Option=2 and Menu\ChaoGarden=0 And (Not BP_Online)) Then Game_Stage_Quit(Menu\Option)
+		If Menu\Option=3 And BP_Online Then BP_EndSession()
 		Menu\Transition=1
 	EndIf
 
