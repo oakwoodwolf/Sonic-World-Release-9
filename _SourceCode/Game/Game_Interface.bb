@@ -1241,7 +1241,7 @@ Function AboutToChat()
 					Case "/sh71","/SH71", "/Sh71" : kicktxt$=kicktxt$+Chr$(32) : Info("#off_topic", 255,0,255, "bold") : BP_UDPMessage(0,UDPMSG_MESSAGE, "#off_topic")
 					case "/yarcaz" : kicktxt$=kicktxt$+Chr$(32) : Info("...", 255,0,255, "bold") : BP_UDPMessage(0,UDPMSG_MESSAGE, "...")
 					case "/pingas" : kicktxt$=kicktxt$+Chr$(32) : BP_UDPMessage(0,55, 7) : PlaySound(Sound_Pingas)
-					Default : kicktxt$=kicktxt$+Chr$(32) : Info("Command Doesn't Exist.", 255, 124, 5) : Info("Use /help to display commands", 255, 124, 5) : PlaySmartSound(Sound_MenuRefuse)
+					;Default : kicktxt$=kicktxt$+Chr$(32) : Info("Command Doesn't Exist.", 255, 124, 5) : Info("Use /help to display commands", 255, 124, 5) : PlaySmartSound(Sound_MenuRefuse)
 				End Select
 				
 			endif

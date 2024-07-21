@@ -578,19 +578,24 @@
 				If rcp<>Null Then
 					if rcp\Online\RacePosition = 0 then 
 						onlineplayer(1)\Online\RacePosition = 1
-						Info("You got 1st Place!", 255, 71, 12) : BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name+" got 1st Place!") : DebugLog("INFO: " + "You reached 1st")
+						Info("You got 1st Place!", 255, 71, 12) : BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name+" got 1st Place!") : Player_PlayRankVoice(p, 1)
 					elseif rcp\Online\RacePosition = 1 then 
 						onlineplayer(1)\Online\RacePosition = 2
-						Info("You got 2nd Place!", 255, 71, 12) : BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name+" got 2nd Place!") : DebugLog("INFO: " + "You reached 2nd")
+						Info("You got 2nd Place!", 255, 71, 12) : BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name+" got 2nd Place!") : Player_PlayRankVoice(p, 2)
 					elseif rcp\Online\RacePosition = 2 then 
 						onlineplayer(1)\Online\RacePosition = 3 : DebugLog("INFO: " + "You got 3rd Place!")
-						Info("You got 3rd Place!", 255, 71, 12) : BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name+" got 3rd Place!")
+						Info("You got 3rd Place!", 255, 71, 12) : BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name+" got 3rd Place!") : Player_PlayRankVoice(p, 3)
 					else
 						onlineplayer(1)\Online\RacePosition = rcp\Online\RacePosition+1 : DebugLog("INFO: " + "You reached "+p\Online\RacePosition+"th Place!")
 						Info("You got "+p\Online\RacePosition+"th Place!", 255, 71, 12) : BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name+" got "+p\Online\RacePosition+"th Place!")
+						If onlineplayer(1)\Online\RacePosition<7 Then
+							Player_PlayRankVoice(p, p\Online\RacePosition)
+						Else
+							Player_PlayRankVoice(p, 6)
+						EndIf
 					endif
 				Else
-					Info("You reached the goal", 255, 71, 12) : BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name+" got 1st Place!") : DebugLog("INFO: " + "You reached the goal")
+					onlineplayer(1)\Online\RacePosition = 1 : Info("You reached the goal", 255, 71, 12) : BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name+" got 1st Place!") : Player_PlayRankVoice(p, 1)
 				EndIf
 				onlineplayer(1)\Online\FinishedRace=1
 				Menu\Mission=MISSION_FREEROAM#

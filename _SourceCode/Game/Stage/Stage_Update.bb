@@ -1162,11 +1162,12 @@ Function HandleMessages()
 			;------------------------------------------------------
 				Game\Online\GameType=msg\msgData
 				BP_GameType=msg\msgData
+				PlaySmartSound(Sound_TitleCard)
 				Select Game\Online\GameType
-					Case 1 : DebugLog("Game Mode is 'Tag'")
-					Case 2 : DebugLog("Game Mode is 'Hide and Seek'")
-					Case 3 : DebugLog("Game Mode is 'Racing'")
-					Case 4 : DebugLog("Game Mode is 'Free'")
+					Case 1 : Info("Game Mode is 'Tag'", 0,255,255)
+					Case 2 : Info("Game Mode is 'Hide and Seek'", 0,255,255)
+					Case 3 : Info("Game Mode is 'Racing'", 0,255,255)
+					Case 4 : Info("Game Mode is 'Free'", 0,255,255)
 				End Select
 			;------------------------------------------------------
 			Case 3 ; Various Packet
