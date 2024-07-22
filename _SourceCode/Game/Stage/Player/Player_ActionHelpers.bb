@@ -713,7 +713,7 @@
 			p\ChargeTimer=0
 			p\JustChargedTimer=0
 			p\Action=ACTION_CHARGE
-			If Player_IsSoundable(p) Then EmitSmartSound(Sound_SpinDashCharge,p\Objects\Entity)
+			If (BP_Online=False And Player_IsSoundable(p)) or (BP_Online And p\Online\IsLocal) Then EmitSmartSound(Sound_SpinDashCharge,p\Objects\Entity)
 		EndIf
 
 	EndIf

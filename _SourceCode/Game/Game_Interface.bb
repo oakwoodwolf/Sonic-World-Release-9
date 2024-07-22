@@ -1172,24 +1172,32 @@ Function AboutToChat()
 				;if kickname$="" then kickname$="z"
 				;Channel_Command=PlaySound(Sound_Command)
 				; commands for host only
+				showunavailable=True
 				If BP_My_ID = BP_Host_ID then	
 					Select kicktxt$
-						case "/welcome" : kicktxt$=kicktxt$+Chr$(32) : Game\Online\ShowMsg=False	
-						case "/kick" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : KickPlayer(kickname$, False)
-						case "/kickall" : kicktxt$=kicktxt$+Chr$(32) : KickPlayer("", False, True)
-						case "/ban" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : KickPlayer(kickname$, True)
-						Case "/unban" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : Info("You unbanned - "+kickname$,255,0,255,"bold") : If kickname$<>BP_GetMyIP$ Then BP_UnbanIP(BP_ConvertIp%(kickname$))
-						case "/hosttp" : kicktxt$=kicktxt$+Chr$(32) : Player_BringAllToHost()	
-						Case "/gametype","/gamemode"
+						case "/welcome" : kicktxt$=kicktxt$+Chr$(32) : Game\Online\ShowMsg=False	: showunavailable=False
+						case "/kick" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : KickPlayer(kickname$, False) : showunavailable=False
+						case "/kickall" : kicktxt$=kicktxt$+Chr$(32) : KickPlayer("", False, True) : showunavailable=False
+						case "/ban" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : KickPlayer(kickname$, True) : showunavailable=False
+						Case "/unban" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : Info("You unbanned - "+kickname$,255,0,255,"bold") : If kickname$<>BP_GetMyIP$ Then BP_UnbanIP(BP_ConvertIp%(kickname$)) : showunavailable=False
+						case "/hosttp" : kicktxt$=kicktxt$+Chr$(32) : Player_BringAllToHost()	 : showunavailable=False
+						Case "/gametype","/gamemode" 
 							kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat)
 							select kickname$
-								case "tag","1" : BP_SetGameType(1) : Game\Online\GameType=1 : Info("Gametype set to tag")
+								case "tag","1" :
+								BP_SetGameType(1) : Game\Online\GameType=1 : Info("Gametype set to tag")
+								For op.tPlayer= Each tPlayer
+										If op\Online\NetID=BP_Host_ID Then	op\Online\TagMode=TAG_IS_IT : op\Online\TagTimer=TAG_TIMER : BP_UDPMessage(0,UDPMSG_MESSAGE, op\Online\Name$+" is It!")
+										If op\Online\NetID<>BP_Host_ID Then op\Online\TagMode=TAG_NOT_IT : op\Online\TagTimer=0 : BP_UDPMessage(0,UDPMSG_MESSAGE, op\Online\Name$+" is Not It!")
+										op\Online\TagCoolDown=MilliSecs()+3500		
+								Next
 								case "has","2" : BP_SetGameType(2) : Game\Online\GameType=2  : Info("Gametype set to Hide and Seek")
 								case "race","3" : BP_SetGameType(3) : Game\Online\GameType=3  : Info("Gametype set to Race")
 								case "free","4","0": BP_SetGameType(0) : Game\Online\GameType=0  : Info("Gametype set to Free")
 								default : BP_SetGameType(0) : Game\Online\GameType=0
 							end select
 							BP_UDPMessage (0,26, Game\Online\GameType)
+							showunavailable=False
 						Case "/warp","/stage"
 							kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat)
 							Menu\SelectedStage=GetStageNo(kickname$)
@@ -1198,7 +1206,7 @@ Function AboutToChat()
 							Chatting\Allowed=0
 							BP_UDPMessage (0,6, kickname$)
 							Game_Stage_Quit(2)
-						
+							showunavailable=False
 					end select
 				Endif
 				; commands for all
@@ -1241,7 +1249,7 @@ Function AboutToChat()
 					Case "/sh71","/SH71", "/Sh71" : kicktxt$=kicktxt$+Chr$(32) : Info("#off_topic", 255,0,255, "bold") : BP_UDPMessage(0,UDPMSG_MESSAGE, "#off_topic")
 					case "/yarcaz" : kicktxt$=kicktxt$+Chr$(32) : Info("...", 255,0,255, "bold") : BP_UDPMessage(0,UDPMSG_MESSAGE, "...")
 					case "/pingas" : kicktxt$=kicktxt$+Chr$(32) : BP_UDPMessage(0,55, 7) : PlaySound(Sound_Pingas)
-					;Default : kicktxt$=kicktxt$+Chr$(32) : Info("Command Doesn't Exist.", 255, 124, 5) : Info("Use /help to display commands", 255, 124, 5) : PlaySmartSound(Sound_MenuRefuse)
+					Default : kicktxt$=kicktxt$+Chr$(32) : If showunavailable Then Info("Command Doesn't Exist.", 255, 124, 5) : Info("Use /help to display commands", 255, 124, 5) : PlaySmartSound(Sound_MenuRefuse)
 				End Select
 				
 			endif

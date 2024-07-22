@@ -1312,6 +1312,7 @@ Function Update_GameModes()
 				If GAME\ONLINE\DEBUG=True Then DebugLog(Handle(closestPlayer)) : TheRName$=closestPlayer\Online\NetID
 				;tag someone in your radius, and be cleared.		
 				If onlineplayer(1)\Online\TagMode=TAG_IS_IT And onlineplayer(1)\Online\TagCoolDown<MilliSecs() And closestPlayer\Online\TagCoolDown<MilliSecs() And closestPlayer\Online\TagMode=TAG_NOT_IT Then
+					DebugLog("it")
 					; clear yourself of being it
 					onlineplayer(1)\Online\TagMode=TAG_NOT_IT : BP_UDPMessage(0, UDPMSG_MESSAGE, onlineplayer(1)\Online\Name$+" is Clear!")
 					; make online player it.

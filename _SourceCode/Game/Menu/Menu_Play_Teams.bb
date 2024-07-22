@@ -1121,6 +1121,7 @@ Function Menu_Play_Update(mode=0)
 					Game\Online\SendUpdates=True
 					Game\Online\Hosting=True
 					Game\Online\Status=BP_HostSession (Menu\PlayerName$,6,GAME_TYPE_FREE,2222,100)
+					DebugLog("port " + BP_Host_Port)
 					;Menu\NewMenu=MENU_PLAYONLINE#
 					If Game\Online\Status=True Then
 						PlaySmartSound(Sound_Check)

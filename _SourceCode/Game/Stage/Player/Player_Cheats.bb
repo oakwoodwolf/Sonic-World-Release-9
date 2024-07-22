@@ -39,12 +39,12 @@ If p\No#=1 And Chatting\Allowed=0 Then
 	EndIf
 
 	;object reset cheat
-	If (KeyHit(KEY_F10)) Then
+	If (KeyHit(KEY_F10) And BP_Online=False) Then
 		If Game\Victory=0 Then Game\ResetObjects=1 : Game\Cheater=1
 	EndIf
 
 	;go debug placer
-	If (Menu\ChaoGarden=0 Or Menu\Developer=1) and (Not(p\Action=ACTION_DIE)) and Chatting\Allowed=0 Then
+	If (Menu\ChaoGarden=0 Or Menu\Developer=1) and (Not(p\Action=ACTION_DIE)) and (Chatting\Allowed=0 And BP_Online=False) Then
 		If (KeyHit(KEY_DELETE)) Then Player_HandleCheats_DebugPlacer(p,1)
 		If (KeyHit(KEY_F3)) Then Player_HandleCheats_DebugPlacer(p,2)
 	EndIf
@@ -109,7 +109,7 @@ If p\No#=1 And Chatting\Allowed=0 Then
 		If (KeyHit(KEY_F8)) Then Gameplay_AddRings(50) : Game\Cheater=1
 
 		;complete stage cheat
-		If (KeyHit(KEY_F9)) and Menu\Stage>0 Then Game\Cheater=1 : Player_Goal(p)
+		If (KeyHit(KEY_F9) And BP_Online=False) and Menu\Stage>0 Then Game\Cheater=1 : Player_Goal(p)
 	EndIf
 
 	;cinema mode

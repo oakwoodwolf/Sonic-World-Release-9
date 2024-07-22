@@ -143,8 +143,10 @@
 	Function Player_Action_Roll_Initiate_Rival(p.tPlayer)
 		p\Action = ACTION_ROLL
 		p\Rival\Speed#=p\Physics\SPINDASH_SPEED#+Rand(0,4)/2.0
-		EmitSmartSound(Sound_SpinDashCharge,p\Objects\Entity)
-		EmitSmartSound(Sound_SpinDashRelease,p\Objects\Entity)
+		If Not BP_Online Then
+			EmitSmartSound(Sound_SpinDashCharge,p\Objects\Entity)
+			EmitSmartSound(Sound_SpinDashRelease,p\Objects\Entity)
+		EndIf
 		Player_PlayAttackVoice(p)
 	End Function
 
