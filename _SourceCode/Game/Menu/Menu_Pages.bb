@@ -676,19 +676,17 @@ Function Menu_Pause_Update()
 	SetAlpha(1.0)
 	SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
 	SetColor(255, 255, 255)
-
-	DrawSmartButton(1, "Continue", GAME_WINDOW_W/2, GAME_WINDOW_H/2-50*GAME_WINDOW_SCALE#)
+	i=1
+	DrawSmartButton(i, "Continue", GAME_WINDOW_W/2, GAME_WINDOW_H/2+((-100+50*i)*GAME_WINDOW_SCALE#)) : i=i+1
 	Select Menu\ChaoGarden
 		Case 0:
-			If BP_Online Then
-				DrawSmartButton(2, "Restart", GAME_WINDOW_W/2, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#,false,false,true)
-			Else
-				DrawSmartButton(2, "Restart", GAME_WINDOW_W/2, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#)
-			EndIf
+
+				DrawSmartButton(i, "Restart", GAME_WINDOW_W/2, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#) : i=i+1
+
 		Case 1:
-			DrawSmartButton(2, "Restart", GAME_WINDOW_W/2, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#,false,false,true)
-	End Select
-	DrawSmartButton(3, "Quit", GAME_WINDOW_W/2, GAME_WINDOW_H/2+50*GAME_WINDOW_SCALE#)
+			DrawSmartButton(i, "Restart", GAME_WINDOW_W/2, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#,false,false,true) : i=i+1
+	End Select 
+	DrawSmartButton(i, "Quit", GAME_WINDOW_W/2, GAME_WINDOW_H/2+50*GAME_WINDOW_SCALE#)
 
 	DrawRealText("PAUSE", GAME_WINDOW_W/2, GAME_WINDOW_H/2-92.5*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 1, 0, 63, 63, 63)
 
@@ -710,6 +708,8 @@ Function Menu_Pause_Update()
 		PlaySmartSound(Sound_MenuAccept)
 		If Menu\Option=3 Or (Menu\Option=2 and Menu\ChaoGarden=0 And (Not BP_Online)) Then Game_Stage_Quit(Menu\Option)
 		If Menu\Option=3 And BP_Online Then BP_EndSession()
+		p.tPlayer = First tPlayer
+		If Menu\Option=2 And BP_Online Then Player_SetPosition(p, Game\Stage\Properties\StartX#,Game\Stage\Properties\StartY#+10,Game\Stage\Properties\StartZ#,Game\Stage\Properties\StartDirection#)
 		Menu\Transition=1
 	EndIf
 
