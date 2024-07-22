@@ -1195,22 +1195,23 @@ Function HandleMessages()
 						ResetEntity(onlineplayer(1)\Objects\Entity)
 					Case "hurt"
 						Player_Hurt(p)
-						Info(p\Online\Name$ + "got hurt!")
+						Info(p\Online\Name$ + " got hurt!")
 					Case "die"
 						;p.tPlayer = First tPlayer
 						;Player_Die(p)
-						Info(p\Online\Name$ + "got slain!")
+						Info(p\Online\Name$ + " got slain!")
 					Case "tagged"
 						;p.tPlayer = First tPlayer
+						Info("YOURE IT AHAHAHHAHAHAHAHAHAHHAHAH")
 						onlineplayer(1)\Online\TagMode=TAG_IS_IT
 						If onlineplayer(1)\Online\TagMode=TAG_IS_IT Then onlineplayer(1)\Online\TagTimer=TAG_TIMER
 					Case "cleared"
+						Info("YOURE not IT lol")
 						onlineplayer(1)\Online\TagMode=0;TAG_NOT_IT
 						onlineplayer(1)\Online\TagTimer=0
 					Default ; name change
 						p\Online\Name$=msg\msgData
-						If ChannelPlaying(Channel_NameChange) Then StopChannel(Channel_NameChange)
-						Channel_NameChange=PlaySound(Sound_NameChange)
+						PlaySmartSound(Sound_Emblem)
 				End Select
 			Case 4
 				p.tPlayer = FindPlayerData(msg\msgFrom)

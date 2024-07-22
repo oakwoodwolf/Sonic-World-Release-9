@@ -558,7 +558,7 @@
 
 		If p\Motion\Ground=False Then p\Motion\Speed\y# = p\Physics\DIEFALL_SPEED#
 
-		If (Not(p\DieTimer>0.1*secs#)) and Menu\ExitedAStage=0 Then Player_DieSpawn(p)
+		If (Not(p\DieTimer>0.1*secs#)) and Menu\ExitedAStage=0 and p\Online\IsLocal Then Player_DieSpawn(p)
 
 	End Function
 

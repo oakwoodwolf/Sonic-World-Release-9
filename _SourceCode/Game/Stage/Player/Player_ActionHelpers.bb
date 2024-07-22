@@ -1115,36 +1115,41 @@
 				If Game\Gameplay\Rings=0 Then
 					If Game\Invinc=0 And Game\Shield=0 Then
 						Player_Die(p)
+						Info("You got slain...",128,0,0)
 						BP_UDPMessage(0, 3, "die")
 					Else
 						Player_Hurt(p)
+						Info("You got spared by your shield!",128,0,0)
 						BP_UDPMessage(0, 3, "hurt")
 					EndIf
 				Else
 					Player_Hurt(p)
+					Info("You got hit!",196,64,0)
 					BP_UDPMessage(0, 3, "hurt")
 				EndIf
 			EndIf
 		EndIf
 	ElseIf p\No#<0 Then
-		If (Not(p\HurtTimer>0)) Then
-			If p\Rival\Health>1 Then
-				p\Rival\Health=p\Rival\Health-1
-				p\Motion\Ground=False
-				p\Motion\Speed\y#=1.03
-				Player_SetSpeed(p,-1.55)
-				EmitSmartSound(Sound_Die,p\Objects\Entity)
-				p\HurtTimer=4*secs#
-				Player_PlayHurtVoice(p)
-				p\Action=ACTION_HURT
-			Else
-				p\Rival\Health=p\Rival\Health-1
-				p\Motion\Ground=False
-				p\Motion\Speed\y#=1.3
-				EmitSmartSound(Sound_Die,p\Objects\Entity)
-				p\HurtTimer=4*secs#
-				Player_PlayDieVoice(p)
-				p\Action=ACTION_RIVALDIE
+		If Not BP_Online Then
+			If (Not(p\HurtTimer>0)) Then
+				If p\Rival\Health>1 Then
+					p\Rival\Health=p\Rival\Health-1
+					p\Motion\Ground=False
+					p\Motion\Speed\y#=1.03
+					Player_SetSpeed(p,-1.55)
+					EmitSmartSound(Sound_Die,p\Objects\Entity)
+					p\HurtTimer=4*secs#
+					Player_PlayHurtVoice(p)
+					p\Action=ACTION_HURT
+				Else
+					p\Rival\Health=p\Rival\Health-1
+					p\Motion\Ground=False
+					p\Motion\Speed\y#=1.3
+					EmitSmartSound(Sound_Die,p\Objects\Entity)
+					p\HurtTimer=4*secs#
+					Player_PlayDieVoice(p)
+					p\Action=ACTION_RIVALDIE
+				EndIf
 			EndIf
 		EndIf
 	EndIf
@@ -1228,7 +1233,7 @@
 			p\Motion\Speed\y#=1.3
 			EmitSmartSound(Sound_Die,p\Objects\Entity)
 			p\HurtTimer=4*secs#
-			If BP_Online=False Then p\DieTimer=2.1*secs# Else p\DieTimer=0.4*secs#
+			p\DieTimer=2.1*secs# 
 			Player_DieCamera(p)
 			Player_PlayDieVoice(p)
 			p\Action=ACTION_DIE
