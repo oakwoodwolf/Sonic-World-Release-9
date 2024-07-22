@@ -172,7 +172,7 @@ End Function
 
 	If (Not(Menu\Menu=MENU_OPTIONS# And Menu\Menu2=MENU_CONTROLS#)) Or Menu\ButtonToChange=-1 Then
 
-		maymove = ( (Not(Game\ControlLock>0)) And (Not(Game\StartoutLock>0)) And Game\Victory=0 And Chatting\Allowed=0 )
+		maymove = ( (Not(Game\ControlLock>0)) And (Not(Game\StartoutLock>0)) And Game\Victory=0 And Chatting\Allowed=0 And (BP_Online And Menu\Pause=0) )
 
 		; ---- Check for input lock -----
 		If Menu\Pause=0 And (Input\Pressed\Start And (Not Chatting\PauseTimer>0 And Chatting\Allowed=0)) And Menu\Stage<>0 And Game\Victory=0 And Menu\ExitedAStage=0 And Game\Interface\DebugPlacerOn=0 And (Menu\ChaoGarden=0 Or Menu\Stage=999) Then

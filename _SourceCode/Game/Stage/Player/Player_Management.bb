@@ -347,7 +347,7 @@ Function Player_Movement(p.tPlayer, d.tDeltaTime)
 		Else
 			p\Motion\Direction# = p\Objects\Camera\Rotation\y#-Input\Movement_Direction#
 		EndIf
-		p\Motion\Pressure#  = Input\Movement_Pressure#
+		If Menu\Pause=0 Then p\Motion\Pressure#  = Input\Movement_Pressure# Else p\Motion\Pressure#=0
 		
 		; Declarate acceleration and speed vectors and setup.
 		p\Motion\Acceleration		= Vector(Cos#(p\Motion\Direction#)*p\Motion\Pressure#, 0, Sin#(p\Motion\Direction#)*p\Motion\Pressure#)

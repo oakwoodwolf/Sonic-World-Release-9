@@ -67,7 +67,7 @@
 			Game\Gameplay\Score=0
 		EndIf
 
-	If Menu\Pause=0 Then
+	If Menu\Pause=0 Or BP_Online Then
 
 		;ambient environment sounds
 		If Game\Stage\Properties\AmbientAlarm=1 Then
