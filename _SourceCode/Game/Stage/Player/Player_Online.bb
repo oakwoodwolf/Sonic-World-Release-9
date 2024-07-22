@@ -110,11 +110,11 @@ Function Player_ChangeName(NewName$)
 	p.tPlayer = First tPlayer
 	;nInfo.NetInfo = BP_FindID(p\Online\NetID)
 	OldName$=Menu\PlayerName$ ; keep in case
-	Menu\PlayerName$=NewName$ : PlayerName$=NewName$ : p\Online\Name$=NewName$ ; old to now
+	Menu\PlayerName$=Left(NewName$,15) : PlayerName$=Left(NewName$,15) : p\Online\Name$=Left(NewName$,15) ; old to now
 	;nInfo\Name=NewName$+"/"+chars$
-	Info("Your Name is "+NewName$,255, 0, 255)
-	BP_UDPMessage(0,3, NewName$) ; send new name
-	BP_UDPMessage(0, UDPMSG_MESSAGE, OldName$+" Is Now, "+NewName$) ; tell everyone
+	Info("Your Name is "+Left(NewName$,15),255, 0, 255)
+	BP_UDPMessage(0,3, Left(NewName$,15)) ; send new name
+	BP_UDPMessage(0, UDPMSG_MESSAGE, OldName$+" Is Now, "+Left(NewName$,15)) ; tell everyone
 end function
 
 

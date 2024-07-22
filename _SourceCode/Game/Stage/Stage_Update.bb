@@ -2,7 +2,7 @@
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
 	Function Game_Stage_Step(d.tDeltaTime)
-		If ((Input\Pressed\Change) And Game\Online\Connected=1) And Chatting\Allowed=0 Then FlushKeys() : Chatting\Allowed=1 : FlushKeys()
+		If ((Input\Pressed\Change) And Game\Online\Connected=1) And Chatting\Allowed=0 Then PlaySmartSound(Sound_MenuPause) : Chatting\Allowed=1 : FlushKeys()
 		;deal with mouse
 		HidePointer()
 			Input\AllowMouse=False

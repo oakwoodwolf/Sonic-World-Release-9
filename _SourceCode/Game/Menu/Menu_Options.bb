@@ -250,7 +250,7 @@ Function Menu_Options_Main_Update()
 						Menu\NewOption2=abs(MENU_THEME_AMOUNT#-Menu\Settings\Theme#-7)
 					EndIf
 					Menu_Options_Theme_LoadThumbnail()
-			Case 20: Menu\NewOption2=1 : Menu\NewChaoName$=Menu\PlayerName$ : Menu\NewMenu2=MENU_NAME#
+			Case 20: Menu\NewOption2=1 : Menu\NewChaoName$=Left(Menu\PlayerName$,15) : Menu\NewMenu2=MENU_NAME#
 			Case 21: Menu\NewOption2=1 : Menu\NewMenu2=MENU_RESET#
 		End Select
 	EndIf
@@ -1588,6 +1588,7 @@ Function Menu_Options_Volume_Update()
 
 End Function
 Function Menu_Options_Name_Update(mode=0)
+	Menu\ControlsToShow=MENU_NAME#
 	Menu_Transporter_LetterBox(GAME_WINDOW_W/2+(BUTTON_PLACE1#-64)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100)*GAME_WINDOW_SCALE#, 11, 8, 27.5)
 	Menu_Transporter_Letters(GAME_WINDOW_W/2+(BUTTON_PLACE1#-53)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(100-11)*GAME_WINDOW_SCALE#, 10, 7, 28.5,1)
 
@@ -1631,8 +1632,13 @@ Function Menu_Options_Name_Update(mode=0)
 			Default: Menu\Option2=Menu\Option2+10 : If Menu\Option2>79 Then Menu\Option2=Menu\Option2-70
 		End Select
 	EndIf
-	If Input\Pressed\ActionSkill2 Then
+	If Input\Pressed\ActionSkill2 Or (KeyHit(KEY_CTRL_LEFT) And KeyHit(KEY_V)) Then
 		;
+		OpenClipboard 0
+		Menu\NewChaoName=GetClipboardText$(1)
+		CloseClipboard
+		PlaySmartSound(Sound_CharacterChange)
+		;GetClipboard%(format%)
 	EndIf 
 	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
 		Select Menu\Option2
