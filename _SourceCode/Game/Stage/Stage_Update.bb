@@ -137,7 +137,7 @@
 		timervalue#=(d\TimeCurrentFrame-d\TimePreviousFrame)*TimeControl#
 		For p.tPlayer=Each tPlayer
 		If p\No#=1 Then
-			If (Not(p\Action=ACTION_DEBUG)) Then Game\Gameplay\Time = Game\Gameplay\Time+(d\TimeCurrentFrame-d\TimePreviousFrame)*TimeControl#
+			If (Not(p\Action=ACTION_DEBUG) And p\Online\NetID = BP_Host_ID) Then Game\Gameplay\Time = Game\Gameplay\Time+(d\TimeCurrentFrame-d\TimePreviousFrame)*TimeControl# : BP_UDPMessage(0, 9, Game\Gameplay\Time+"/")
 		EndIf
 		Next
 		Game\Others\Frames = Game\Others\Frames + 1
@@ -1296,6 +1296,13 @@ Function HandleMessages()
 					Next
 				DebugLog("Activating switch " + attribute + "on: " + value)
 				End Select
+			Case 9 ; Time
+				p.tPlayer = FindPlayerData(msg\msgFrom)
+				time 				= Int(BP_GetMessagePart(msg\msgData, 1, "/"))
+				attribute		 		= Int(BP_GetMessagePart(msg\msgData, 2, "/"))
+				value		 		= Int(BP_GetMessagePart(msg\msgData, 3, "/"))
+
+				If Not Game\Online\Hosting Then If (Abs(Game\Gameplay\Time-time)>1000) Then Game\Gameplay\Time=time
 		End Select
 		Delete msg
 	Next ;!!!!

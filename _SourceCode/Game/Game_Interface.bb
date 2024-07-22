@@ -363,7 +363,7 @@ End Function
 		DrawImageEx(INTERFACE(Interface_Numbers), 144*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#, 10)
 		DrawNumber((Game\Gameplay\Time/60000), 58*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#, 2)
 		DrawNumber((Game\Gameplay\Time/1000) Mod 60, 108*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#, 2)
-		DrawNumber((Game\Gameplay\Time/10) Mod 60, 158*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#, 2)
+		DrawNumber((Game\Gameplay\Time/10) Mod 100, 158*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#, 2)
 
 		Interface_RingCounter(d)
 		Update_Monitor_Icons(d)
