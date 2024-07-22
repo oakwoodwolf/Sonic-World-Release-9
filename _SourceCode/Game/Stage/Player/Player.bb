@@ -237,10 +237,10 @@
 	Const 	TAG_BUBBLE_LOCAL		= 1
 	Const 	TAG_BUBBLE_RIVAL		= 2
 	Const 	TAG_IS_IT 				= 1
-	Const 	TAG_NOT_IT 				= 2
+	Const 	TAG_NOT_IT 				= 0
 	Const 	TAG_RADIUS#				= 14.50
 	Const   TAG_TIMER				= 150 ;2 mins
-	Const   TAG_SAFE				= 0
+	Const   TAG_SAFE				= 2
 
 	Const   PlayerRadius#=2.20
 	; ---------------------------------------------------------------------------------------------------------	
@@ -560,7 +560,7 @@
 		Field camx#,camy#,camz#, campivot, camera
 
 		; Tag
-		Field TagBubble, TagTimer, TagTimerInterval, TagMode, TagCoolDown, TagStarted
+		Field TagBubble, TagTimer, TagTimerInterval, TagMode, TagCoolDown#, TagStarted
 
 		; Hide and Seek
 

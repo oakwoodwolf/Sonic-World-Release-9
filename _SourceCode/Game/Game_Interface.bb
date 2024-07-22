@@ -1187,9 +1187,8 @@ Function AboutToChat()
 								case "tag","1" :
 								BP_SetGameType(1) : Game\Online\GameType=1 : Info("Gametype set to tag")
 								For op.tPlayer= Each tPlayer
-										If op\Online\NetID=BP_Host_ID Then	op\Online\TagMode=TAG_IS_IT : op\Online\TagTimer=TAG_TIMER : BP_UDPMessage(0,UDPMSG_MESSAGE, op\Online\Name$+" is It!")
-										If op\Online\NetID<>BP_Host_ID Then op\Online\TagMode=TAG_NOT_IT : op\Online\TagTimer=0 : BP_UDPMessage(0,UDPMSG_MESSAGE, op\Online\Name$+" is Not It!")
-										op\Online\TagCoolDown=MilliSecs()+3500		
+										If op\Online\NetID=BP_Host_ID Then	Player_SetTagMode(op)
+										If op\Online\NetID<>BP_Host_ID Then op\Online\TagMode=TAG_NOT_IT : op\Online\TagTimer=0 : BP_UDPMessage(0,UDPMSG_MESSAGE, op\Online\Name$+" is Not It!") : op\Online\TagCoolDown=3.5*secs#	
 								Next
 								case "has","2" : BP_SetGameType(2) : Game\Online\GameType=2  : Info("Gametype set to Hide and Seek")
 								case "race","3" : BP_SetGameType(3) : Game\Online\GameType=3  : Info("Gametype set to Race")

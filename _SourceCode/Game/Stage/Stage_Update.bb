@@ -1120,10 +1120,10 @@ Function HandleMessages()
 				p.tPlayer = FindPlayerData(msg\msgFrom)
 				If p\Online\NetID<>BP_My_ID Then
 				; set attributes
-					p\Action 					= Int(BP_GetMessagePart(msg\msgData, 1, "/"))
-					p\Animation\Animation 		= Int(BP_GetMessagePart(msg\msgData, 2, "/"))
-					p\SpeedLength# 				= Float(BP_GetMessagePart(msg\msgData, 3, "/"))
-					p\Motion\Ground 			= Int(BP_GetMessagePart(msg\msgData, 4, "/"))
+					p\Action 					= Int(BP_GetMessagePart(msg\msgData, 1))
+					p\Animation\Animation 		= Int(BP_GetMessagePart(msg\msgData, 2))
+					p\SpeedLength# 				= Float(BP_GetMessagePart(msg\msgData, 3))
+					p\Motion\Ground 			= Int(BP_GetMessagePart(msg\msgData, 4))
 				EndIf
 			;------------------------------------------------------
 			Case UDPMSG_TAGVALUES ; handle tag
@@ -1132,7 +1132,7 @@ Function HandleMessages()
 				p.tPlayer = FindPlayerData(msg\msgFrom)				
 				p\Online\TagMode 				= Int(BP_GetMessagePart(msg\msgData, 1))
 				p\Online\TagTimer 				= Float(BP_GetMessagePart(msg\msgData, 2))
-				p\Online\TagCoolDown 			= Int(BP_GetMessagePart(msg\msgData, 3))
+				p\Online\TagCoolDown 			= Float(BP_GetMessagePart(msg\msgData, 3))
 			;------------------------------------------------------	
 			Case UDPMSG_RACEVALUES ; handle race
 			;------------------------------------------------------
@@ -1207,7 +1207,7 @@ Function HandleMessages()
 						If onlineplayer(1)\Online\TagMode=TAG_IS_IT Then onlineplayer(1)\Online\TagTimer=TAG_TIMER
 					Case "cleared"
 						Info("YOURE not IT lol")
-						onlineplayer(1)\Online\TagMode=0;TAG_NOT_IT
+						onlineplayer(1)\Online\TagMode=TAG_NOT_IT;TAG_NOT_IT
 						onlineplayer(1)\Online\TagTimer=0
 					Default ; name change
 						p\Online\Name$=msg\msgData
@@ -1331,19 +1331,20 @@ Function Update_GameModes()
 
 			; find closest player to tag
 			Local closestPlayer.tPlayer = GetClosestPlayer(TAG_RADIUS#);
-
 			If closestPlayer<>Null Then 
-				If GAME\ONLINE\DEBUG=True Then DebugLog(Handle(closestPlayer)) : TheRName$=closestPlayer\Online\NetID
+			DebugLog("cooldown " + pp(1)\Online\TagCoolDown + " " + closestPlayer\Online\TagCoolDown + " ") 
+			DebugLog("mode " + pp(1)\Online\TagMode + " " + closestPlayer\Online\TagMode)
+				;If GAME\ONLINE\DEBUG=True Then DebugLog(Handle(closestPlayer)) : TheRName$=closestPlayer\Online\NetID
 				;tag someone in your radius, and be cleared.		
-				If onlineplayer(1)\Online\TagMode=TAG_IS_IT And onlineplayer(1)\Online\TagCoolDown<MilliSecs() And closestPlayer\Online\TagCoolDown<MilliSecs() And closestPlayer\Online\TagMode=TAG_NOT_IT Then
+				If pp(1)\Online\TagMode=TAG_IS_IT And closestPlayer\Online\TagMode=TAG_NOT_IT And (Not (pp(1)\Online\TagCoolDown>0 Or closestPlayer\Online\TagCoolDown>0)) Then
 					DebugLog("it")
 					; clear yourself of being it
-					onlineplayer(1)\Online\TagMode=TAG_NOT_IT : BP_UDPMessage(0, UDPMSG_MESSAGE, onlineplayer(1)\Online\Name$+" is Clear!")
+					pp(1)\Online\TagMode=TAG_NOT_IT : BP_UDPMessage(0, UDPMSG_MESSAGE, pp(1)\Online\Name$+" is Clear!")
 					; make online player it.
 					Player_SetTagMode(closestPlayer)						
-					BP_UDPMessage(closestPlayer\Online\NetID, UDPMSG_MESSAGE, onlineplayer(1)\Online\Name$+" has Tagged you!")
+					BP_UDPMessage(closestPlayer\Online\NetID, UDPMSG_MESSAGE, pp(1)\Online\Name$+" has Tagged you!")
 					; apply a wait timer
-					onlineplayer(1)\Online\TagCoolDown=MilliSecs()+5500
+					pp(1)\Online\TagCoolDown=5.5*secs#
 				EndIf	
 			EndIf;!
 

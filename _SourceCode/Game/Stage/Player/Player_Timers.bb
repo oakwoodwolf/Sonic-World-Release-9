@@ -112,6 +112,13 @@ If p\No#<0 and Game\Online\Connected=0 Then
 	If p\Rival\JustHadActionTimer>0 Then p\Rival\JustHadActionTimer=p\Rival\JustHadActionTimer-timervalue#
 EndIf
 
+If BP_Online Then
+	Select Game\Online\GameType
+	Case GAME_TYPE_TAG
+		If p\Online\TagCoolDown>0 Then p\Online\TagCoolDown=p\Online\TagCoolDown-timervalue#
+	End Select
+EndIf
+
 End Function
 
 
