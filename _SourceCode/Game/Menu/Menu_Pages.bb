@@ -709,7 +709,11 @@ Function Menu_Pause_Update()
 		If Menu\Option=3 Or (Menu\Option=2 and Menu\ChaoGarden=0 And (Not BP_Online)) Then Game_Stage_Quit(Menu\Option)
 		If Menu\Option=3 And BP_Online Then BP_EndSession()
 		p.tPlayer = First tPlayer
-		If Menu\Option=2 And BP_Online Then Player_SetPosition(p, Game\Stage\Properties\StartX#,Game\Stage\Properties\StartY#+10,Game\Stage\Properties\StartZ#,Game\Stage\Properties\StartDirection#)
+		If Menu\Option=2 And BP_Online Then 
+			Game\ResetObjects=1
+			Objects_Reset_All()
+			Player_SetPosition(p, Game\Stage\Properties\StartX#,Game\Stage\Properties\StartY#+10,Game\Stage\Properties\StartZ#,Game\Stage\Properties\StartDirection#)
+		EndIf
 		Menu\Transition=1
 	EndIf
 

@@ -957,7 +957,7 @@ End Function
 				EndIf
 
 				; Toggle switch
-				If o\Switch\SwitchNo[0]>0 Then o\Switch\s1\Active=0
+				If o\Switch\SwitchNo[0]>0 Then o\Switch\s1\Active=0 : BP_UDPMessage(0, 8, OBJTYPE_SWITCH+"/"+o\Switch\SwitchNo[0]+"/"+0)
 			EndIf
 			EndIf
 

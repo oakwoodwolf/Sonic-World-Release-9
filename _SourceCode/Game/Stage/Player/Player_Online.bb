@@ -117,7 +117,18 @@ Function Player_ChangeName(NewName$)
 	BP_UDPMessage(0, UDPMSG_MESSAGE, OldName$+" Is Now, "+Left(NewName$,15)) ; tell everyone
 end function
 
-
+	Function Player_SaveCheckpoint(p.tPlayer, x#=0, y#=0, z#=0, yaw#=0)
+		Game\Gameplay\CheckX#=x#
+		Game\Gameplay\CheckY#=y#
+		Game\Gameplay\CheckZ#=z#
+		Game\Gameplay\CheckDirection#=yaw#
+		Game\Gameplay\CheckScore=Game\Gameplay\Score
+		Game\Gameplay\CheckTime=Game\Gameplay\Time
+		Game\Gameplay\CheckEnemies=Game\Gameplay\Enemies
+		Game\Gameplay\CheckGoldEnemies=Game\Gameplay\GoldEnemies
+		Game\Gameplay\CheckBalloons=Game\Gameplay\Balloons
+		Game\Gameplay\CheckMusicMode=Game\Stage\Properties\MusicMode
+	End Function
 ; =========================================================================================================
 ; Warp To Other Player
 ; =========================================================================================================

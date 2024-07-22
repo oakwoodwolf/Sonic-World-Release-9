@@ -1228,12 +1228,12 @@
 			p\Motion\Speed\y#=1.3
 			EmitSmartSound(Sound_Die,p\Objects\Entity)
 			p\HurtTimer=4*secs#
-			p\DieTimer=2.1*secs#
+			If BP_Online=False Then p\DieTimer=2.1*secs# Else p\DieTimer=0.4*secs#
 			Player_DieCamera(p)
 			Player_PlayDieVoice(p)
 			p\Action=ACTION_DIE
 			p\DieButDontLoseLife=diebutdontloselife
-			PostEffect_Create_FadeOut(0.007, 10, 10, 10)
+			If Not BP_Online Then PostEffect_Create_FadeOut(0.007, 10, 10, 10)
 		EndIf
 	End Function
 
@@ -1308,8 +1308,8 @@
 		Game\Gameplay\CheckGoldEnemies=Game\Gameplay\GoldEnemies
 		Game\Gameplay\CheckBalloons=Game\Gameplay\Balloons
 		Game\Gameplay\CheckMusicMode=Game\Stage\Properties\MusicMode
+		BP_UDPMessage(0, 7, o\Position\x#+"/"+o\Position\y#+"/"+o\Position\z#+"/"+o\Rotation\y#+"/")
 	End Function
-
 	; =========================================================================================================
 	; =========================================================================================================
 

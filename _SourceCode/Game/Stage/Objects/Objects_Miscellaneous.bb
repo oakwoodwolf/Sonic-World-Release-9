@@ -645,7 +645,7 @@ End Function
 						Case OBJTYPE_SWITCHWATER:
 							Game\Stage\Properties\WaterLevelChanged=1
 							Game\Stage\Properties\WaterLevelTarget=o\Power#
-						Default: o\Switch\s1\Active=abs(o\Switch\s1\Active-1)
+						Default: o\Switch\s1\Active=abs(o\Switch\s1\Active-1) : BP_UDPMessage(0, 8, OBJTYPE_SWITCH+"/"+o\Switch\SwitchNo[0]+"/"+o\Switch\s1\Active)
 					End Select
 					o\Switch\SwitchTimer=1.05*secs#
 					Select o\ObjType

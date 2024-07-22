@@ -1272,6 +1272,29 @@ Function HandleMessages()
 					Menu_GoToStage()
 				EndIf
 			;EndIf
+			Case 7 ; Checkpoint
+				p.tPlayer = FindPlayerData(msg\msgFrom)
+				x 				= Float(BP_GetMessagePart(msg\msgData, 1, "/"))
+				y		 		= Float(BP_GetMessagePart(msg\msgData, 2, "/"))
+				z 				= Float(BP_GetMessagePart(msg\msgData, 3, "/"))
+				yaw 			= Float(BP_GetMessagePart(msg\msgData, 4, "/"))
+				Player_SaveCheckpoint(p, x, y, z, yaw) 
+			Case 8 ; Object
+				p.tPlayer = FindPlayerData(msg\msgFrom)
+				objecttosync 				= Int(BP_GetMessagePart(msg\msgData, 1, "/"))
+				attribute		 		= Int(BP_GetMessagePart(msg\msgData, 2, "/"))
+				value		 		= Int(BP_GetMessagePart(msg\msgData, 3, "/"))
+				Select objecttosync
+				Case OBJTYPE_SWITCH
+					For o.tObject= Each tObject
+						If o\HasValuesetSwitch Then
+							If o\Switch\SwitchNo[0] = attribute Then o\Switch\s1\Active=value
+							If o\Switch\SwitchNo[1] = attribute Then o\Switch\s1\Active=value
+							If o\Switch\SwitchNo[2] = attribute Then o\Switch\s1\Active=value
+						EndIf
+					Next
+				DebugLog("Activating switch " + attribute + "on: " + value)
+				End Select
 		End Select
 		Delete msg
 	Next ;!!!!
