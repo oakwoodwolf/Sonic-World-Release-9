@@ -50,7 +50,7 @@
 
 		Player_JumpActions(p)
 
-		If p\Bouncing=0 Then
+		If p\Bouncing=0 And p\Online\IsLocal Then
 			If ((Player_IsPlayable(p) and Input\Hold\ActionJump=False) Or (p\No#<0)) And p\Motion\Speed\y# > p\Physics\JUMP_STRENGTH_VARIABLE# and (Not(p\JumpMayRiseTimer>0)) Then
 				p\Motion\Speed\y# = p\Physics\JUMP_STRENGTH_VARIABLE#
 			End If
@@ -131,12 +131,14 @@
 
 	Function Player_Action_Roll_Initiate(p.tPlayer, chargedelay#)
 		p\Action = ACTION_ROLL
-		If Player_IsSoundable(p) Then EmitSmartSound(Sound_SpinDashRelease,p\Objects\Entity)
-		Player_PlayAttackVoice(p)
-		If p\ChargeTimer<=5.0*secs# Then
-			Player_SetSpeed(p,p\Physics\SPINDASH_SPEED#+1.0+(p\ChargeTimer/secs#-chargedelay#),true)
-		Else
-			Player_SetSpeed(p,p\Physics\SPINDASH_SPEED#+1.0+(5.0-chargedelay#),true)
+		If p\Online\IsLocal Then
+			If Player_IsSoundable(p) Then EmitSmartSound(Sound_SpinDashRelease,p\Objects\Entity)
+			Player_PlayAttackVoice(p)
+			If p\ChargeTimer<=5.0*secs# Then
+				Player_SetSpeed(p,p\Physics\SPINDASH_SPEED#+1.0+(p\ChargeTimer/secs#-chargedelay#),true)
+			Else
+				Player_SetSpeed(p,p\Physics\SPINDASH_SPEED#+1.0+(5.0-chargedelay#),true)
+			EndIf
 		EndIf
 	End Function
 

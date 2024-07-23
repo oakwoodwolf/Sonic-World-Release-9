@@ -1140,7 +1140,7 @@ Function HandleMessages()
 				p.tPlayer = FindPlayerData(msg\msgFrom)
 				p\Online\RacePosition 			= Int(BP_GetMessagePart(msg\msgData, 1))
 				p\Online\FinishedRace 			= Int(BP_GetMessagePart(msg\msgData, 2))
-				;p\Online\RaceTimer 			= Float(BP_GetMessagePart(msg\msgData, 3))
+				p\Online\RaceTimer 				= Float(BP_GetMessagePart(msg\msgData, 3))
 			;------------------------------------------------------	
 			Case UDPMSG_INRADIUS
 			;------------------------------------------------------
@@ -1189,10 +1189,7 @@ Function HandleMessages()
 						EntityType(onlineplayer(1)\Objects\Entity, COLLISION_PLAYER)
 						PlaySmartSound(Sound_Teleport)
 					Case "respawn all"
-						Vector_Set(onlineplayer(1)\Motion\Speed, 0, 0, 0)
-						PositionEntity(onlineplayer(1)\Objects\Entity, 0, 10, 0)
-						PositionEntity(onlineplayer(1)\Objects\Mesh, 0, 10, 0)
-						ResetEntity(onlineplayer(1)\Objects\Entity)
+						Player_ResetGamemodeValues(onlineplayer(1))
 					Case "hurt"
 						Player_Hurt(p)
 						Info(p\Online\Name$ + " got hurt!")
@@ -1202,7 +1199,7 @@ Function HandleMessages()
 						Info(p\Online\Name$ + " got slain!")
 					Case "tagged"
 						;p.tPlayer = First tPlayer
-						Info("YOURE IT AHAHAHHAHAHAHAHAHAHHAHAH")
+						Player_PlayDieVoice(onlineplayer(1))
 						onlineplayer(1)\Online\TagMode=TAG_IS_IT
 						If onlineplayer(1)\Online\TagMode=TAG_IS_IT Then onlineplayer(1)\Online\TagTimer=TAG_TIMER
 					Case "cleared"
@@ -1327,7 +1324,7 @@ Function Update_GameModes()
 						p\Online\TagTimerInterval=MilliSecs()+1000
 					EndIf
 				Else
-					p\Online\TagMode=0
+					p\Online\TagMode=2
 					BP_UDPMessage(0, 3, "cleared")	
 					Info("You ran out of time. You Lose.")
 					BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name$+" Lost. Ran out of time.")
@@ -1350,6 +1347,7 @@ Function Update_GameModes()
 					; make online player it.
 					Player_SetTagMode(closestPlayer)						
 					BP_UDPMessage(closestPlayer\Online\NetID, UDPMSG_MESSAGE, pp(1)\Online\Name$+" has Tagged you!")
+					Player_PlayGoodVoice(pp(1))
 					; apply a wait timer
 					pp(1)\Online\TagCoolDown=5.5*secs#
 				EndIf	
@@ -1368,12 +1366,16 @@ Function Update_GameModes()
 			me_p.tPlayer=First tPlayer
 			;other_p.tPlayer After tPlayer
 			If HasEveryoneFinishedTheRace() Then
-				Info("Race Has Finished!", 255,20,128) : DebugLog("Race has FINISHED!")	
-				Game\Online\RaceFinished=True
+				Info("Race Has Finished!", 255,20,128)
+				DrawRealText("Race Has Finished!", GAME_WINDOW_W/2, GAME_WINDOW_H/2-Game\Interface\ResultTitlePosition#*GAME_WINDOW_SCALE#, (Interface_TextRecords_1), 1)
+				
+				If me_p\Online\NetID=BP_GetHostID() Then
+					Player_ResetGamemodeValues(me_p)
+					BP_UDPMessage(0,3,"respawn all")
+				EndIf
 			Else
 				Game\Online\RaceFinished=False
 			End if
-			;DrawRealText("Race Finished:"+ Game\Online\RaceFinished, GAME_WINDOW_W-35*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#,Interface_TextControls_2)
 		
 			;			PositionEntity p\Objects\Entity, 0, 10, 0
 			;;;			PositionEntity p\Objects\Mesh, 0, 10, 0	

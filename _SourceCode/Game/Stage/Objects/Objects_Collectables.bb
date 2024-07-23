@@ -598,8 +598,9 @@
 					onlineplayer(1)\Online\RacePosition = 1 : Info("You reached the goal", 255, 71, 12) : BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name+" got 1st Place!") : Player_PlayRankVoice(p, 1)
 				EndIf
 				onlineplayer(1)\Online\FinishedRace=1
+				onlineplayer(1)\Online\RaceTimer=Game\Gameplay\Time
 				Menu\Mission=MISSION_FREEROAM#
-				BP_UDPMessage(0, UDPMSG_RACEVALUES, onlineplayer(1)\Online\RacePosition+"/"+onlineplayer(1)\Online\FinishedRace)
+				BP_UDPMessage(0, UDPMSG_RACEVALUES, onlineplayer(1)\Online\RacePosition+"/"+onlineplayer(1)\Online\FinishedRace+"/"+Game\Gameplay\Time)
 		EndIf
 	End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/

@@ -1306,6 +1306,7 @@
 			Case 0: Game\Gameplay\CheckDirection#=o\Rotation\y#
 			Case 1: Game\Gameplay\CheckDirection#=p\Animation\Direction#-180
 			End Select
+			BP_UDPMessage(0, 7, o\Position\x#+"/"+o\Position\y#+"/"+o\Position\z#+"/"+o\Rotation\y#+"/")
 		EndIf
 		Game\Gameplay\CheckScore=Game\Gameplay\Score
 		Game\Gameplay\CheckTime=Game\Gameplay\Time
@@ -1313,7 +1314,7 @@
 		Game\Gameplay\CheckGoldEnemies=Game\Gameplay\GoldEnemies
 		Game\Gameplay\CheckBalloons=Game\Gameplay\Balloons
 		Game\Gameplay\CheckMusicMode=Game\Stage\Properties\MusicMode
-		BP_UDPMessage(0, 7, o\Position\x#+"/"+o\Position\y#+"/"+o\Position\z#+"/"+o\Rotation\y#+"/")
+		
 	End Function
 	; =========================================================================================================
 	; =========================================================================================================

@@ -60,9 +60,9 @@ End Function
 function HasEveryoneFinishedTheRace()
 	t = 0
 	For p.tPlayer = Each tPlayer
-		t = t * p\Online\FinishedRace
+		t = t + p\Online\FinishedRace
 	Next
-	If t = 0 Return False Else Return True
+	If t = PlayerNo Return True Else Return False
 
 end function 
 ; =========================================================================================================
@@ -139,9 +139,9 @@ Function TeleportToPlayer(name$)
 			if p=Null then Return
 			BP_UDPMessage(0,3,"teleport")	
 			EntityType(onlineplayer(1)\Objects\Entity, 0)			
-			PositionEntity(onlineplayer(1)\Objects\Entity, entityx(p\Objects\Entity), entityy(p\Objects\Entity), entityz(p\Objects\Entity))
+			PositionEntity(onlineplayer(1)\Objects\Entity, EntityX(p\Objects\Entity), EntityY(p\Objects\Entity), EntityZ(p\Objects\Entity))
 			EntityType(onlineplayer(1)\Objects\Entity, COLLISION_PLAYER)
-			Channel_Teleport=PlaySound(Sound_Teleport)
+			PlaySmartSound(Sound_Teleport)
 		else
 			Info("Player doesn't exist", 255, 0, 255)
 			Return	
@@ -155,11 +155,11 @@ Function Player_BringAllToHost()
 	for p.tPlayer = Each tPlayer	
 		if p<>null and p\Online\NetID<>BP_My_ID then
 			EntityType(p\Objects\Entity, 0)			
-			PositionEntity(p\Objects\Entity, EntityX(onlineplayer(1)\Objects\Entity), EntityY(onlineplayer(1)\Objects\Entity), EntityZ(onlineplayer(1)\Objects\Entity))
+			PositionEntity(p\Objects\Entity, EntityX(onlineplayer(1)\Objects\Entity)+Rand(-10, 10), EntityY(onlineplayer(1)\Objects\Entity), EntityZ(onlineplayer(1)\Objects\Entity)+Rand(-5, 5))
 			EntityType(p\Objects\Entity, COLLISION_PLAYER)
 		endif
 	next
-	Channel_Teleport=PlaySound(Sound_Teleport)
+	PlaySmartSound(Sound_Teleport)
 end function
 
 
@@ -171,6 +171,7 @@ Function Player_SetTagMode(p.tPlayer)
 	p\Online\TagMode = TAG_IS_IT 
 	p\Online\TagTimer=TAG_TIMER
 	p\Online\TagCoolDown=3.5*secs#
+	Player_PlayDieVoice(p)
 	BP_UDPMessage(0, UDPMSG_TAGVALUES, p\Online\TagMode+"/"+p\Online\TagTimer+"/"+p\Online\TagCoolDown)							
 	BP_UDPMessage(p\Online\NetID, 3, "tagged")	: BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name$+" is it!")	
 End Function
@@ -213,7 +214,7 @@ Function DrawPlayerTag(Cam%, p.tPlayer, label$, no=1, height#=3, r=255, g=255, b
 		Select Game\Online\GameType
 			Case GAME_TYPE_TAG:
 				Select p\Online\TagMode:
-					Case TAG_IS_IT: DrawRealText("Is It", x, y-64, Interface_TextControls_1, 1, 0, 255, 128, 64, 0)
+					Case TAG_IS_IT: DrawRealText("It", x, y-64, Interface_TextControls_1, 1, 0, 255, 128, 64, 0)
 				End Select
 			Case GAME_TYPE_RACE:
 				Select p\Online\RacePosition:
@@ -226,7 +227,10 @@ Function DrawPlayerTag(Cam%, p.tPlayer, label$, no=1, height#=3, r=255, g=255, b
 					Default:
 						suffix$="th" : rp=255 : gp=128 : bp=64
 				End Select
-				If p\Online\FinishedRace=1 Then DrawRealText(p\Online\RacePosition+suffix$, x, y-64, Interface_TextControls_1, 1, 0, rp, gp, bp, 0)
+				If p\Online\FinishedRace=1 Then
+					DrawRealText(p\Online\RacePosition+suffix$, x, y-64, Interface_TextControls_1, 1, 0, rp, gp, bp)
+					DrawRealText(p\Online\RaceTimer/60000+":"+(p\Online\RaceTimer/1000 Mod 60)+";"+(p\Online\RaceTimer/10 Mod 100), x, y-32, Interface_TextButtons_1, 1, 0, rp, gp, bp)
+				EndIf
 		End Select
 		EndDraw()
 	EndIf
@@ -256,4 +260,45 @@ Function Game_OnlineMsgOfTheDay()
 				EndIf
 				Game\Online\ShowMsg=True
 			EndIf
+	End Function
+
+	Function Player_ResetGamemodeValues(p.tPlayer)
+		Game\Victory=0
+		Gameplay_SetRings(0)
+		If Game\Gameplay\Flickies>0 Then
+			Gameplay_SetFlickies(0)
+			For o.tObject = Each tObject
+				If o\ObjType=OBJTYPE_FLICKY Then o\State=-1
+			Next
+		EndIf
+		Game\Gameplay\Time=0
+		Game\Shield = 0
+		Game\HurtWithoutShield = 0
+		Stage_ResetStageMusic()
+		Game\Gameplay\CheckX#=Game\Stage\Properties\StartX#
+		Game\Gameplay\CheckY#=Game\Stage\Properties\StartY#
+		Game\Gameplay\CheckZ#=Game\Stage\Properties\StartZ#
+		Game\Gameplay\CheckDirection#=Game\Stage\Properties\StartDirection#
+		Game\Gameplay\CheckScore=Game\Gameplay\Score
+		Game\Gameplay\CheckTime=Game\Gameplay\Time
+		Game\Gameplay\CheckEnemies=Game\Gameplay\Enemies
+		Game\ResetCamera=1
+		Game\ResetChecks=1
+		Game\ResetObjects=1
+		Objects_Reset_All()
+		PostEffect_Create_FadeIn(0.008, 255, 255, 255)
+		Player_SetPosition(p,Game\Stage\Properties\StartX#,Game\Stage\Properties\StartY#+7,Game\Stage\Properties\StartZ#,Game\Stage\Properties\StartDirection#)
+		PlaySmartSound(Sound_Warp)
+		Player_ResetDuringGameValues()
+		Select Game\Online\GameType
+			Case GAME_TYPE_RACE
+			
+				DebugLog("Resetting race")
+				Menu_GoToStage_SetMission(1)
+				If Menu\Mission=MISSION_HUNT# Then Menu\Mission=MISSION_FREEROAM#
+				p\Online\FinishedRace=0
+				p\Online\RacePosition=0
+				Game\Online\RaceFinished=False
+				DebugLog(Menu\Mission)
+		End Select
 	End Function

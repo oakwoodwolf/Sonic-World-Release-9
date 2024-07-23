@@ -1319,7 +1319,8 @@ Function Interface_DrawChat(x#=0, y#=0, csize=1, orientation=1)
 
 	; a counter to check if over the limit of the chatbox.
 	Counter = 0
-	DrawRealText(": "+Chatting\Txt$+Chatting\Cursor$, 17.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-+64+(15*GAME_WINDOW_SCALE#+(-1)*textcounter), (Interface_Text_2), 0)
+	DrawRealText(": "+Chatting\Txt$+Chatting\Cursor$, 17.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-+64+(15*GAME_WINDOW_SCALE#+(1)*textcounter), (Interface_Text_2), 0)
+	textcounter = textcounter - 20
 	For i.Info = Each Info
 		Counter = Counter + 1
 		If Counter > fitbox Then
@@ -1330,7 +1331,7 @@ Function Interface_DrawChat(x#=0, y#=0, csize=1, orientation=1)
 			If i\randcolor=True Then SeedRnd(millisecs()) : i\r=rnd(100,255): i\g=rnd(100,255): i\b=rnd(100,255)
 			If BP_GetMessagePart(i\Txt, 2, ":")<>"" Then
 				SetColor(i\r, i\g, i\b)
-				DrawRealText(BP_GetMessagePart(i\Txt, 1, ":") + " " + BP_GetMessagePart(i\Txt, 2, ":"), 17.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-+64+(15*GAME_WINDOW_SCALE#+(1*textcounter)), (Interface_Text_2), 0)
+				DrawRealText(BP_GetMessagePart(i\Txt, 1, ":") + " " + BP_GetMessagePart(i\Txt, 2, ":"), 17.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-+64+(15*GAME_WINDOW_SCALE#+(1*(textcounter))), (Interface_Text_2), 0)
 			Else
 				SetColor(i\r, i\g, i\b)
 				DrawRealText(i\Txt$, 17.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-+64+(15*GAME_WINDOW_SCALE#+(1*textcounter)), (Interface_Text_2), 0)
