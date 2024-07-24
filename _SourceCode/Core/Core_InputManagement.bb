@@ -189,15 +189,9 @@ End Function
 				Game\Interface\ShowChaoItems=5
 			EndIf
 			PauseAllChannels()
-		ElseIf Menu\Pause=1 And (((Input\Pressed\Start Or Input\Pressed\ActionJump) And (Menu\Option=1 Or (BP_Online And Menu\Option=2))) Or (Input\Pressed\ActionRoll Or Input\Pressed\ActionSkill1 Or Input\Pressed\Back)) Then
-			Input_Lock = True
-			PlaySmartSound(Sound_MenuBack)
-			Menu\Pause=0 : Input_ResetAllInput() : Game\SmartCameraRangeDontAffectTimer=3*secs#
-			FlushMouse()
-			If Menu\ChaoGarden=1 Then
-				For i=1 to 3 : Game\Interface\GardenActionTimer[i]=0 : Next
-			EndIf
-			ResumeAllChannels()
+		ElseIf Menu\Pause=1 And (((Input\Pressed\Start Or Input\Pressed\ActionJump) And (Menu\PauseScreen=0 And (Menu\Option=1 Or (BP_Online And Menu\Option=2)))) Or (Menu\PauseScreen=0 And (Input\Pressed\ActionRoll Or Input\Pressed\ActionSkill1 Or Input\Pressed\Back))) Then
+			UnPause()
+			
 		EndIf
 		
 		; ---- Update mouse wheel, as it can only be checked once -----
@@ -474,4 +468,21 @@ EndIf
 			Return 0.0
 		EndIf
 		
+	End Function
+
+	Function UnPause()
+		Input_Lock = True
+		PlaySmartSound(Sound_MenuBack)
+		Menu\Pause=0 : Input_ResetAllInput() : Game\SmartCameraRangeDontAffectTimer=3*secs#
+		FlushMouse()
+		If Menu\ChaoGarden=1 Then
+			For i=1 to 3 : Game\Interface\GardenActionTimer[i]=0 : Next
+		EndIf
+		
+		If Menu\PauseScreen=1 Then
+			p.tPlayer = First tPlayer
+			If p\RealCharacter<>Menu\Character[1] Then ChangeCharacter(Menu\Character[1])
+		EndIf
+		Menu\PauseScreen=0
+		ResumeAllChannels()
 	End Function

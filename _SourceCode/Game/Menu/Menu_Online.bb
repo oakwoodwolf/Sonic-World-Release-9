@@ -11,12 +11,10 @@ Function Interface_Render_PlayerMenu(p.tPlayer)
 	DrawRealText("Back", (30+15)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 	
 	SetScale(2*GAME_WINDOW_SCALE#,2*GAME_WINDOW_SCALE#)
-
+	Interface_DrawHead(GAME_WINDOW_W/2,GAME_WINDOW_H/2,Menu\Option-1)
 	If Menu\Option>CHAR_NONMODPLAYABLECOUNT Then
-		DrawImageEx(INTERFACE(Interface_CharactersMod[Menu\Option-CHAR_MOD1+1]), GAME_WINDOW_W/2,GAME_WINDOW_H/2)
 		DrawRealText( MODCHARS_NAME$( InterfaceChar(Menu\Option-CHAR_MOD1+1) ), GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
 	Else
-		DrawImageEx(INTERFACE(Interface_Characters), GAME_WINDOW_W/2,GAME_WINDOW_H/2,Menu\Option)
 		DrawRealText(CharNames$(Menu\Option)+" "+CharNames2$(Menu\Option), GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
 	EndIf
 	
@@ -72,11 +70,13 @@ Function Interface_Render_PlayerMenu(p.tPlayer)
 		Menu\Character[1]=Menu\Option
 		PostEffect_Create_FadeIn(0.004, 10, 10, 10)
 		PlaySmartSound(Sound_MenuAccept)
-		ChangeCharacter(Menu\Character[1])
+		
+		UnPause()
 	EndIf
 	
 	If Input\Pressed\ActionRoll Then
 		PlaySmartSound(Sound_MenuBack)
+		Menu\PauseScreen=0 : Menu\Option=1
 	EndIf	
 	
 End Function

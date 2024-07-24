@@ -717,6 +717,7 @@ Function Menu_Pause_Update()
 					Game\ResetObjects=1
 					Objects_Reset_All()
 					Player_SetPosition(p, Game\Stage\Properties\StartX#,Game\Stage\Properties\StartY#+10,Game\Stage\Properties\StartZ#,Game\Stage\Properties\StartDirection#)
+					DeformCharacter(p)
 				EndIf
 				If Menu\Option=3 And BP_Online Then Menu\PauseScreen=1
 				If Menu\Option=4 And BP_Online Then Menu\PauseScreen=2

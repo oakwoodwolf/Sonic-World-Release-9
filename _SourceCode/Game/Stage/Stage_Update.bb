@@ -792,7 +792,7 @@
 			; draw name-tags
 				For p.tPlayer = Each tPlayer ;!
 					;ViewOtherPlayer(p, c)
-					If p\Online\Connected And p\Online\ShowTag=True Then 
+					If p\Online\Connected And p\Online\ShowTag=True And Menu\Pause=0 Then 
 						If p\Online\TagMode=TAG_IS_IT And Game\Online\GameType=GAME_TYPE_TAG
 							If p\Online\TagTimer<>"" Then
 								DrawPlayerTag(c\Entity, p, p\Online\Name$+" - Time:"+p\Online\TagTimer, p\Online\NetID, 3, Interface_Lives_G[InterfaceChar(p\RealCharacter)],Interface_Lives_B[InterfaceChar(p\RealCharacter)]);000, 0, 255)
