@@ -523,7 +523,7 @@
 
 	Function Player_SkillActions(p.tPlayer,force=false)
 	If Not((p\No#=1 or p\No#<0) and Menu\ChaoGarden=0) Then Return
-	If Menu\Stage>0 and ((Player_IsPlayable(p) and Input\Pressed\ActionSkill1) or force) Then
+	If Menu\Stage>0 and ((Player_IsPlayable(p) and Input\Pressed\ActionSkill1 and Menu\Pause=0) or force) Then
 		Select p\Character
 			Case CHAR_SON,CHAR_SHA,CHAR_MIG,CHAR_PRS,CHAR_INF:
 				If p\Motion\Ground Then
@@ -584,7 +584,7 @@
 
 	Function Player_SkillActions2(p.tPlayer,force=false)
 	If Not((p\No#=1 or p\No#<0) and Menu\ChaoGarden=0) Then Return
-	If Menu\Stage>0 and ((Player_IsPlayable(p) and Input\Pressed\ActionSkill2) or force) Then
+	If Menu\Stage>0 and ((Player_IsPlayable(p) and Input\Pressed\ActionSkill2 and Menu\Pause=0) or force) Then
 		Select p\Character
 			Case CHAR_TIK:
 			Case CHAR_CHA,CHAR_RAY,CHAR_AMY,CHAR_BAR,CHAR_WAV,CHAR_COM:
@@ -646,7 +646,7 @@
 
 	Function Player_SkillActions3(p.tPlayer,force=false)
 	If Not((p\No#=1 or p\No#<0) and Menu\ChaoGarden=0) Then Return
-	If Menu\Stage>0 and ((Player_IsPlayable(p) and Input\Pressed\ActionSkill3) or force) Then
+	If Menu\Stage>0 and ((Player_IsPlayable(p) and Input\Pressed\ActionSkill3 and Menu\Pause=0) or force) Then
 		Select p\Character
 			Case CHAR_ESP,CHAR_SHD,CHAR_EME,CHAR_GME,CHAR_INF:
 			Case CHAR_SON,CHAR_SHA,CHAR_BLA,CHAR_MAR,CHAR_STO,CHAR_JET,CHAR_MIG,CHAR_TIK:

@@ -9,6 +9,8 @@ Function Interface_Render_PlayerMenu(p.tPlayer)
 	
 	DrawSmartKey(INPUT_BUTTON_ACTIONROLL, (30)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#)
 	DrawRealText("Back", (30+15)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	DrawSmartKey(INPUT_BUTTON_ACTIONSKILL3, (30)*GAME_WINDOW_SCALE#, (30+30*3)*GAME_WINDOW_SCALE#)
+	DrawRealText("Toggle Player Tag", (30+15)*GAME_WINDOW_SCALE#, (30+30*3)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 	
 	SetScale(2*GAME_WINDOW_SCALE#,2*GAME_WINDOW_SCALE#)
 	SetColor(Interface_Lives_R[InterfaceChar(Menu\Option)],Interface_Lives_G[InterfaceChar(Menu\Option)],Interface_Lives_B[InterfaceChar(Menu\Option)])
@@ -77,7 +79,10 @@ Function Interface_Render_PlayerMenu(p.tPlayer)
 		FlushKeys()
 		UnPause()
 	EndIf
-	
+	If Input\Pressed\ActionSkill3  Then
+		onlineplayer(1)\Online\ShowTag= Not onlineplayer(1)\Online\ShowTag
+		BP_UDPMessage(0,24,onlineplayer(1)\Online\ShowTag)
+	EndIf
 	If Input\Pressed\ActionRoll Then
 		PlaySmartSound(Sound_MenuBack)
 		Menu\PauseScreen=0 : Menu\Option=1

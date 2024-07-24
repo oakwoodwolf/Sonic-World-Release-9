@@ -698,14 +698,14 @@ Function Menu_Pause_Update()
 			If Input\Pressed\Down and Menu\Transition=0 Then
 				PlaySmartSound(Sound_MenuMove)
 				Menu\Option=Menu\Option+1
-				If Menu\ChaoGarden=1 and Menu\Option=2 Then Menu\Option=Menu\Option+1
+				If (Menu\ChaoGarden=1 and Menu\Option=2) Or (Game\Online\Hosting=False And Menu\Option=4) Then Menu\Option=Menu\Option+1
 				If Menu\Option>i Then Menu\Option=1
 			EndIf
 
 			If Input\Pressed\Up and Menu\Transition=0 Then
 				PlaySmartSound(Sound_MenuMove)
 				Menu\Option=Menu\Option-1
-				If (Menu\ChaoGarden=1) and Menu\Option=2 Then Menu\Option=Menu\Option-1
+				If (Menu\ChaoGarden=1 and Menu\Option=2) Or (Game\Online\Hosting=False And Menu\Option=4) Then Menu\Option=Menu\Option-1
 				If Menu\Option<1 Then Menu\Option=i
 			EndIf
 
