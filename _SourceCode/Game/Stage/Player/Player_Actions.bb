@@ -2259,7 +2259,7 @@
 	End Function
 
 	Function Player_Action_Freeze_Initiate2(p.tPlayer)
-		If (Not(Game\Shield=OBJTYPE_BSHIELD Or p\Character=CHAR_MAR Or p\Character=CHAR_BAR)) Then
+		If (Not(Game\Shield=OBJTYPE_BSHIELD Or p\Character=CHAR_MAR Or p\Character=CHAR_BAR or p\Online\IsLocal=False)) Then
 			If (Not(p\WasGrabbedTimer>0)) and Game\Invinc=0 Then
 				Player_ConvertGroundToAir(p) : p\Motion\Ground = False
 				If Game\MachLock>0 Then

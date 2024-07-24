@@ -117,7 +117,7 @@
 			Select Game\Stage\Properties\WaterType
 				Case 2,4: Player_TouchDie(p)
 				Case 6,7:
-					If p\No#=1 Then
+					If p\No#=1 And p\Online\IsLocal Then
 						If (Not(p\Action=ACTION_SINK Or p\Action=ACTION_DIE)) Then
 							p\Action=ACTION_SINK
 							EmitSmartSound(Sound_Paddle2,p\Objects\Entity)
