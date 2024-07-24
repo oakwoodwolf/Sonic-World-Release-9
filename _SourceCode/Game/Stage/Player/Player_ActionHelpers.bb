@@ -1119,12 +1119,10 @@
 						BP_UDPMessage(0, 3, "die")
 					Else
 						Player_Hurt(p)
-						Info("You got spared by your shield!",128,0,0)
 						BP_UDPMessage(0, 3, "hurt")
 					EndIf
 				Else
 					Player_Hurt(p)
-					Info("You got hit!",196,64,0)
 					BP_UDPMessage(0, 3, "hurt")
 				EndIf
 			EndIf

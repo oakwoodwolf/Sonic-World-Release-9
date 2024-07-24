@@ -392,19 +392,23 @@ End Function
 		Else
 			Interface_TrickPointsCounter(p, d)
 		EndIf
-		Interface_DrawChat(30*GAME_WINDOW_SCALE#, (GAME_WINDOW_H-(ImageHeightEx#(INTERFACE(Interface_Chatbox))))*GAME_WINDOW_SCALE#,Chatting\Scale)
+		If Game\Online\Connected Then
+			Interface_DrawChat(30*GAME_WINDOW_SCALE#, (GAME_WINDOW_H-(ImageHeightEx#(INTERFACE(Interface_Chatbox))))*GAME_WINDOW_SCALE#,Chatting\Scale)
+		Else
+			Interface_MemberHeads()
+			SetColor(Interface_Lives_R[InterfaceChar(pp(1)\RealCharacter)],Interface_Lives_G[InterfaceChar(pp(1)\RealCharacter)],Interface_Lives_B[InterfaceChar(pp(1)\RealCharacter)])
+			If Menu\Members>1 Then
+				DrawBetterNumber(Game\Gameplay\Lives, 67.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-30*GAME_WINDOW_SCALE#)
+			Else
+				DrawBetterNumber(Game\Gameplay\Lives, 58*GAME_WINDOW_SCALE#, GAME_WINDOW_H-30*GAME_WINDOW_SCALE#)
+			EndIf
+			SetColor(255,255,255)
+		EndIf
 		; if is chatting, update it
 		If Chatting\Allowed>0 Then
 			AboutToChat()
 		EndIf
-		;Interface_MemberHeads()
-		;SetColor(Interface_Lives_R[InterfaceChar(pp(1)\RealCharacter)],Interface_Lives_G[InterfaceChar(pp(1)\RealCharacter)],Interface_Lives_B[InterfaceChar(pp(1)\RealCharacter)])
-		;If Menu\Members>1 Then
-		;	DrawBetterNumber(Game\Gameplay\Lives, 67.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-30*GAME_WINDOW_SCALE#)
-		;Else
-		;	DrawBetterNumber(Game\Gameplay\Lives, 58*GAME_WINDOW_SCALE#, GAME_WINDOW_H-30*GAME_WINDOW_SCALE#)
-		;EndIf
-		;SetColor(255,255,255)
+		
 
 		If Game\Interface\ChaoItemCount>0 Then movemissioncounterup#=25.0*GAME_WINDOW_SCALE#*Game\Interface\ChaoIconSpread# Else movemissioncounterup#=0
 		If Menu\MissionTime=1 Then

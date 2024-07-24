@@ -1192,7 +1192,6 @@ Function HandleMessages()
 						Player_ResetGamemodeValues(onlineplayer(1))
 					Case "hurt"
 						Player_Hurt(p)
-						Info(p\Online\Name$ + " got hurt!")
 					Case "die"
 						;p.tPlayer = First tPlayer
 						;Player_Die(p)

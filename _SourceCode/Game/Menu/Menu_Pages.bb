@@ -720,12 +720,14 @@ Function Menu_Pause_Update()
 					DeformCharacter(p)
 				EndIf
 				If Menu\Option=3 And BP_Online Then Menu\PauseScreen=1 : Menu\Option=pp(1)\RealCharacter
-				If Menu\Option=4 And BP_Online Then Menu\PauseScreen=2
-				If Menu\Option=5 And BP_Online Then BP_EndSession() : Game\Online\Connected=0
+				If Menu\Option=4 And BP_Online Then Menu\PauseScreen=2 : Menu\Option=Menu\Stage
+				If Menu\Option=5 And BP_Online Then BP_EndSession() : Game\Online\Connected=0 : Game_Stage_Quit(3)
 				Menu\Transition=1
 			EndIf
 		Case 1:
 			Interface_Render_PlayerMenu(pp(1))
+		Case 2:
+			Interface_Render_HostMenu(pp(1))
 		End Select
 	EndDraw()
 End Function

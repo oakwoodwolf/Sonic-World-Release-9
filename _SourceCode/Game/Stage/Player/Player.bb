@@ -238,8 +238,8 @@
 	Const 	TAG_BUBBLE_RIVAL		= 2
 	Const 	TAG_IS_IT 				= 1
 	Const 	TAG_NOT_IT 				= 0
-	Const 	TAG_RADIUS#				= 14.50
-	Const   TAG_TIMER				= 150 ;2 mins
+	Const 	TAG_RADIUS#				= 7.5
+	Const   TAG_TIMER				= 180 ;2 mins
 	Const   TAG_SAFE				= 2
 
 	Const   PlayerRadius#=2.20
@@ -1242,7 +1242,7 @@
 			BP_UDPMessage(0,UDPMSG_PLAYERCHARACTER, String(newcharacter,1)) ; send new name
 			charstring$ = ""
 			If IsCharMod(newcharacter) Then
-				charstring$ = MODCHARS_NAME$(InterfaceChar(newcharacter-CHAR_MOD1))
+				charstring$ = MODCHARS_NAME$(InterfaceChar(newcharacter-CHAR_MOD1+1))
 			Else
 				charstring$ = SingleCharNames$(newcharacter)
 			EndIf

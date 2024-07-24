@@ -1,4 +1,26 @@
 
+Dim GAMETYPE_NAME$(10)
+Dim GAMETYPE_DESCRIPTION$(10)
+GAMETYPE_NAME$(1)="Free Play"
+GAMETYPE_NAME$(2)="Tag"
+GAMETYPE_NAME$(3)="Hide and Seek"
+GAMETYPE_NAME$(4)="Race"
+GAMETYPE_NAME$(5)="Battle"
+GAMETYPE_NAME$(6)="Capture the Flag"
+GAMETYPE_NAME$(7)="Prop Hunt"
+GAMETYPE_NAME$(8)="Manhunt"
+GAMETYPE_NAME$(9)="Flood"
+GAMETYPE_NAME$(10)="TBD"
+GAMETYPE_DESCRIPTION$(1)="No specific rules. Mess around!"
+GAMETYPE_DESCRIPTION$(2)="The host starts as it, tag other players!"
+GAMETYPE_DESCRIPTION$(3)="Hide in the level, try not get found!"
+GAMETYPE_DESCRIPTION$(4)="Race to the finish in a time attack!"
+GAMETYPE_DESCRIPTION$(5)="Battle other players to the death!"
+GAMETYPE_DESCRIPTION$(6)="Capture the enemy Flag!"
+GAMETYPE_DESCRIPTION$(7)="Hide as stage setpieces, blend in!"
+GAMETYPE_DESCRIPTION$(8)="Prevent set players from doing their runs!"
+GAMETYPE_DESCRIPTION$(9)="Escape the rising water levels!"
+GAMETYPE_DESCRIPTION$(10)="TBD"
 Function Interface_Render_PlayerMenu(p.tPlayer)
 	
 	DrawSmartKey_MovementGeneral((30)*GAME_WINDOW_SCALE#, (30+30*0)*GAME_WINDOW_SCALE#)
@@ -80,6 +102,7 @@ Function Interface_Render_PlayerMenu(p.tPlayer)
 		UnPause()
 	EndIf
 	If Input\Pressed\ActionSkill3  Then
+		PlaySmartSound(Sound_MenuMove)
 		onlineplayer(1)\Online\ShowTag= Not onlineplayer(1)\Online\ShowTag
 		BP_UDPMessage(0,24,onlineplayer(1)\Online\ShowTag)
 	EndIf
@@ -88,4 +111,23 @@ Function Interface_Render_PlayerMenu(p.tPlayer)
 		Menu\PauseScreen=0 : Menu\Option=1
 	EndIf	
 	
+End Function
+Function Interface_Render_HostMenu(p.tPlayer)
+	DrawSmartKey_MovementGeneral((30)*GAME_WINDOW_SCALE#, (30+30*0)*GAME_WINDOW_SCALE#)
+	DrawRealText("Nothing yet", (30+15)*GAME_WINDOW_SCALE#, (30+30*0)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	
+	DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, (30)*GAME_WINDOW_SCALE#, (30+30*1)*GAME_WINDOW_SCALE#)
+	DrawRealText("Confirm", (30+15)*GAME_WINDOW_SCALE#, (30+30*1)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	
+	DrawSmartKey(INPUT_BUTTON_ACTIONROLL, (30)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#)
+	DrawRealText("Back", (30+15)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	If Input\Pressed\ActionJump Then
+		PlaySmartSound(Sound_MenuBack)
+		FlushKeys()
+		UnPause()
+	EndIf	
+	If Input\Pressed\ActionRoll Then
+		PlaySmartSound(Sound_MenuBack)
+		Menu\PauseScreen=0 : Menu\Option=1
+	EndIf	
 End Function
