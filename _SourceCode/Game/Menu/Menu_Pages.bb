@@ -707,7 +707,7 @@ Function Menu_Pause_Update()
 	If (Input\Pressed\ActionJump Or Input\Pressed\Start) and Menu\Transition=0 Then
 		PlaySmartSound(Sound_MenuAccept)
 		If Menu\Option=3 Or (Menu\Option=2 and Menu\ChaoGarden=0 And (Not BP_Online)) Then Game_Stage_Quit(Menu\Option)
-		If Menu\Option=3 And BP_Online Then BP_EndSession()
+		If Menu\Option=3 And BP_Online Then BP_EndSession() : Game\Online\Connected=0
 		p.tPlayer = First tPlayer
 		If Menu\Option=2 And BP_Online Then 
 			Game\ResetObjects=1
