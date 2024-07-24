@@ -60,6 +60,7 @@ Type tMenu
 	Field Settings.tMenu_Settings
 
 	Field Pause
+	Field PauseScreen
 
 	Field Stage
 	Field SelectedStage

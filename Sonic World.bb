@@ -171,6 +171,7 @@ Include "_SourceCode\Game\Stage\Objects\Objects_Chao.bb"
 
 ; Menu code
 Include "_SourceCode\Game\Menu\Menu_BlackMarket.bb"
+Include "_SourceCode\Game\Menu\Menu_Online.bb"
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 

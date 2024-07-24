@@ -676,47 +676,56 @@ Function Menu_Pause_Update()
 	SetAlpha(1.0)
 	SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
 	SetColor(255, 255, 255)
+	
 	i=1
-	DrawSmartButton(i, "Continue", GAME_WINDOW_W/2, GAME_WINDOW_H/2+((-100+50*i)*GAME_WINDOW_SCALE#)) : i=i+1
-	Select Menu\ChaoGarden
+	Select Menu\PauseScreen
 		Case 0:
+			DrawSmartButton(i, "Continue", GAME_WINDOW_W/2, GAME_WINDOW_H/2+((-100+50*i)*GAME_WINDOW_SCALE#)) : i=i+1
+			Select Menu\ChaoGarden
+				Case 0:
+					DrawSmartButton(i, "Restart", GAME_WINDOW_W/2, GAME_WINDOW_H/2+((-100+50*i)*GAME_WINDOW_SCALE#)) : i=i+1
+				Case 1:
+					DrawSmartButton(i, "Restart", GAME_WINDOW_W/2, GAME_WINDOW_H/2+((-100+50*i)*GAME_WINDOW_SCALE#),false,false,true) : i=i+1
+			End Select 
+			If BP_Online Then
+					DrawSmartButton(i, "Player", GAME_WINDOW_W/2, GAME_WINDOW_H/2+((-100+50*i)*GAME_WINDOW_SCALE#))  : i=i+1
+					DrawSmartButton(i, "Server Settings", GAME_WINDOW_W/2, GAME_WINDOW_H/2+((-100+50*i)*GAME_WINDOW_SCALE#),False,False,Not(Game\Online\Hosting))  : i=i+1
+			End If
+			DrawSmartButton(i, "Quit", GAME_WINDOW_W/2, GAME_WINDOW_H/2+((-100+50*i)*GAME_WINDOW_SCALE#))
 
-				DrawSmartButton(i, "Restart", GAME_WINDOW_W/2, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#) : i=i+1
+			DrawRealText("PAUSE", GAME_WINDOW_W/2, GAME_WINDOW_H/2-92.5*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 1, 0, 63, 63, 63)
 
+			If Input\Pressed\Down and Menu\Transition=0 Then
+				PlaySmartSound(Sound_MenuMove)
+				Menu\Option=Menu\Option+1
+				If Menu\ChaoGarden=1 and Menu\Option=2 Then Menu\Option=Menu\Option+1
+				If Menu\Option>i Then Menu\Option=1
+			EndIf
+
+			If Input\Pressed\Up and Menu\Transition=0 Then
+				PlaySmartSound(Sound_MenuMove)
+				Menu\Option=Menu\Option-1
+				If (Menu\ChaoGarden=1) and Menu\Option=2 Then Menu\Option=Menu\Option-1
+				If Menu\Option<1 Then Menu\Option=i
+			EndIf
+
+			If (Input\Pressed\ActionJump Or Input\Pressed\Start) and Menu\Transition=0 Then
+				PlaySmartSound(Sound_MenuAccept)
+				If (Menu\Option=3 And BP_Online=False) Or (Menu\Option=2 and Menu\ChaoGarden=0 And (Not BP_Online)) Then Game_Stage_Quit(Menu\Option)
+				p.tPlayer = First tPlayer
+				If Menu\Option=2 And BP_Online Then 
+					Game\ResetObjects=1
+					Objects_Reset_All()
+					Player_SetPosition(p, Game\Stage\Properties\StartX#,Game\Stage\Properties\StartY#+10,Game\Stage\Properties\StartZ#,Game\Stage\Properties\StartDirection#)
+				EndIf
+				If Menu\Option=3 And BP_Online Then Menu\PauseScreen=1
+				If Menu\Option=4 And BP_Online Then Menu\PauseScreen=2
+				If Menu\Option=5 And BP_Online Then BP_EndSession() : Game\Online\Connected=0
+				Menu\Transition=1
+			EndIf
 		Case 1:
-			DrawSmartButton(i, "Restart", GAME_WINDOW_W/2, GAME_WINDOW_H/2-0*GAME_WINDOW_SCALE#,false,false,true) : i=i+1
-	End Select 
-	DrawSmartButton(i, "Quit", GAME_WINDOW_W/2, GAME_WINDOW_H/2+50*GAME_WINDOW_SCALE#)
-
-	DrawRealText("PAUSE", GAME_WINDOW_W/2, GAME_WINDOW_H/2-92.5*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 1, 0, 63, 63, 63)
-
-	If Input\Pressed\Down and Menu\Transition=0 Then
-		PlaySmartSound(Sound_MenuMove)
-		Menu\Option=Menu\Option+1
-		If Menu\ChaoGarden=1 and Menu\Option=2 Then Menu\Option=Menu\Option+1
-		If Menu\Option>3 Then Menu\Option=1
-	EndIf
-
-	If Input\Pressed\Up and Menu\Transition=0 Then
-		PlaySmartSound(Sound_MenuMove)
-		Menu\Option=Menu\Option-1
-		If (Menu\ChaoGarden=1 Or BP_Online) and Menu\Option=2 Then Menu\Option=Menu\Option-1
-		If Menu\Option<1 Then Menu\Option=3
-	EndIf
-
-	If (Input\Pressed\ActionJump Or Input\Pressed\Start) and Menu\Transition=0 Then
-		PlaySmartSound(Sound_MenuAccept)
-		If Menu\Option=3 Or (Menu\Option=2 and Menu\ChaoGarden=0 And (Not BP_Online)) Then Game_Stage_Quit(Menu\Option)
-		If Menu\Option=3 And BP_Online Then BP_EndSession() : Game\Online\Connected=0
-		p.tPlayer = First tPlayer
-		If Menu\Option=2 And BP_Online Then 
-			Game\ResetObjects=1
-			Objects_Reset_All()
-			Player_SetPosition(p, Game\Stage\Properties\StartX#,Game\Stage\Properties\StartY#+10,Game\Stage\Properties\StartZ#,Game\Stage\Properties\StartDirection#)
-		EndIf
-		Menu\Transition=1
-	EndIf
-
+			Interface_Render_PlayerMenu(pp(1))
+		End Select
 	EndDraw()
 End Function
 
