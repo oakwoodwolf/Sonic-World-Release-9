@@ -719,7 +719,7 @@ Function Menu_Pause_Update()
 					Player_SetPosition(p, Game\Stage\Properties\StartX#,Game\Stage\Properties\StartY#+10,Game\Stage\Properties\StartZ#,Game\Stage\Properties\StartDirection#)
 					DeformCharacter(p)
 				EndIf
-				If Menu\Option=3 And BP_Online Then Menu\PauseScreen=1
+				If Menu\Option=3 And BP_Online Then Menu\PauseScreen=1 : Menu\Option=pp(1)\RealCharacter
 				If Menu\Option=4 And BP_Online Then Menu\PauseScreen=2
 				If Menu\Option=5 And BP_Online Then BP_EndSession() : Game\Online\Connected=0
 				Menu\Transition=1

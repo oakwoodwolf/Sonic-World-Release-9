@@ -11,7 +11,9 @@ Function Interface_Render_PlayerMenu(p.tPlayer)
 	DrawRealText("Back", (30+15)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 	
 	SetScale(2*GAME_WINDOW_SCALE#,2*GAME_WINDOW_SCALE#)
+	SetColor(Interface_Lives_R[InterfaceChar(Menu\Option)],Interface_Lives_G[InterfaceChar(Menu\Option)],Interface_Lives_B[InterfaceChar(Menu\Option)])
 	Interface_DrawHead(GAME_WINDOW_W/2,GAME_WINDOW_H/2,Menu\Option-1)
+	SetColor(255, 255, 255)
 	If Menu\Option>CHAR_NONMODPLAYABLECOUNT Then
 		DrawRealText( MODCHARS_NAME$( InterfaceChar(Menu\Option-CHAR_MOD1+1) ), GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
 	Else
@@ -70,7 +72,9 @@ Function Interface_Render_PlayerMenu(p.tPlayer)
 		Menu\Character[1]=Menu\Option
 		PostEffect_Create_FadeIn(0.004, 10, 10, 10)
 		PlaySmartSound(Sound_MenuAccept)
-		pp(1)\NewCharacter=Menu\Option
+		pp(1)\NewCharacter=Menu\Character[1]
+		Game\CheaterChangedCharacter=1
+		FlushKeys()
 		UnPause()
 	EndIf
 	
