@@ -70,7 +70,7 @@ Function Interface_Render_PlayerMenu(p.tPlayer)
 		Menu\Character[1]=Menu\Option
 		PostEffect_Create_FadeIn(0.004, 10, 10, 10)
 		PlaySmartSound(Sound_MenuAccept)
-		
+		pp(1)\NewCharacter=Menu\Option
 		UnPause()
 	EndIf
 	

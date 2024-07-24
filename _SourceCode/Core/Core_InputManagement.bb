@@ -184,7 +184,7 @@ End Function
 			If Menu\ChaoGarden=1 Then
 				SaveGame_AllChaoStuff()
 				Game\Interface\AutoSaveShowTimer=0.5*secs#
-				For i=1 to 3 : Game\Interface\GardenActionTimer[i]=0 : Next
+				For i=1 To 3 : Game\Interface\GardenActionTimer[i]=0 : Next
 			Else
 				Game\Interface\ShowChaoItems=5
 			EndIf
@@ -200,7 +200,7 @@ End Function
 		Input_MouseWheel# = MouseZSpeed()
 
 		; ---- Update digital input -----
-		If (Menu\Stage<>0 And Chatting\Allowed=0) Or (Menu\Stage=0 and ((Not(Game\ControlLock>0)))) Then
+		If (Menu\Stage<>0 And Chatting\Allowed=0) Or (Menu\Stage=0 And ((Not(Game\ControlLock>0)))) Then
 			Input\Pressed\Start	 		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_START)) And (Input\Hold\Start = 0)
 			Input\Pressed\Back	 		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_BACK)) And (Input\Hold\Back = 0)
 			Input\Hold\Start	 		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_START))
@@ -208,7 +208,7 @@ End Function
 		EndIf
 
 		; ---- Update digital input -----
-		If (Menu\Pause=1 Or (  (Not(Game\ControlLock>0)) and (Not(Game\StartoutLock>0)) and Game\Victory=0  )) And Chatting\Allowed=0  Then
+		If (Menu\Pause=1 Or (  (Not(Game\ControlLock>0)) And (Not(Game\StartoutLock>0)) And Game\Victory=0  )) And Chatting\Allowed=0  Then
 			Input\Pressed\Up 		 	= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_UP)) And (Input\Hold\Up = 0)
 			Input\Pressed\Down		 	= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_DOWN)) And (Input\Hold\Down = 0)
 			Input\Pressed\Left 			= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_LEFT)) And (Input\Hold\Left = 0)
@@ -225,12 +225,12 @@ End Function
 			Input\Pressed\CamRight			= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_CAM_RIGHT)) And (Input\Hold\CamRight = 0)
 			Input\Pressed\CamCenter			= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_CAM_CENTER)) And (Input\Hold\CamCenter = 0)
 			Input\Pressed\ActionSkillX		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_ACTIONSKILLX)) And (Input\Hold\ActionSkillX = 0)
-			Input\Pressed\MouseCamUp		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_UP,true)) And (Input\Hold\MouseCamUp = 0)
-			Input\Pressed\MouseCamDown		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_DOWN,true)) And (Input\Hold\MouseCamDown = 0)
-			Input\Pressed\MouseCamLeft		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_LEFT,true)) And (Input\Hold\MouseCamLeft = 0)
-			Input\Pressed\MouseCamRight		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_RIGHT,true)) And (Input\Hold\MouseCamRight = 0)
-			Input\Pressed\MouseCamZoomIn		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_ZOOMIN,true)) And (Input\Hold\MouseCamZoomIn = 0)
-			Input\Pressed\MouseCamZoomOut		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_ZOOMOUT,true)) And (Input\Hold\MouseCamZoomOut = 0)
+			Input\Pressed\MouseCamUp		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_UP,True)) And (Input\Hold\MouseCamUp = 0)
+			Input\Pressed\MouseCamDown		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_DOWN,True)) And (Input\Hold\MouseCamDown = 0)
+			Input\Pressed\MouseCamLeft		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_LEFT,True)) And (Input\Hold\MouseCamLeft = 0)
+			Input\Pressed\MouseCamRight		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_RIGHT,True)) And (Input\Hold\MouseCamRight = 0)
+			Input\Pressed\MouseCamZoomIn		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_ZOOMIN,True)) And (Input\Hold\MouseCamZoomIn = 0)
+			Input\Pressed\MouseCamZoomOut		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_ZOOMOUT,True)) And (Input\Hold\MouseCamZoomOut = 0)
 
 			Input\Hold\Up 		 		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_UP))
 			Input\Hold\Down		 		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_DOWN))
@@ -248,12 +248,12 @@ End Function
 			Input\Hold\CamRight			= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_CAM_RIGHT))
 			Input\Hold\CamCenter			= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_CAM_CENTER))
 			Input\Hold\ActionSkillX			= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_ACTIONSKILLX))
-			Input\Hold\MouseCamUp			= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_UP,true))
-			Input\Hold\MouseCamDown			= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_DOWN,true))
-			Input\Hold\MouseCamLeft			= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_LEFT,true))
-			Input\Hold\MouseCamRight		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_RIGHT,true))
-			Input\Hold\MouseCamZoomIn		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_ZOOMIN,true))
-			Input\Hold\MouseCamZoomOut		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_ZOOMOUT,true))
+			Input\Hold\MouseCamUp			= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_UP,True))
+			Input\Hold\MouseCamDown			= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_DOWN,True))
+			Input\Hold\MouseCamLeft			= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_LEFT,True))
+			Input\Hold\MouseCamRight		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_RIGHT,True))
+			Input\Hold\MouseCamZoomIn		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_ZOOMIN,True))
+			Input\Hold\MouseCamZoomOut		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_ZOOMOUT,True))
 		EndIf
 
 		; ---- Update analog movement ----
@@ -278,7 +278,7 @@ End Function
 			Input\Camera_AnalogX# = 0
 			Input\Camera_AnalogY# = 0
 		EndIf
-		If (Menu\Pause=1 Or maymove) and Input\AllowMouse Then
+		If (Menu\Pause=1 Or maymove) And Input\AllowMouse Then
 			Input\Camera_MouseAnalogX# = Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_RIGHT)-Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_LEFT)
 			Input\Camera_MouseAnalogY# = Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_DOWN)-Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_UP)
 		Else
@@ -294,7 +294,7 @@ EndIf
 	; ---------------------------------------------------------------------------------------------------------
 
 	Function Input_IndividualMinimizedReset(inputno)
-		If Ceil#(Input_RetrieveStatus(inputno)) Then Input\Minimized[inputno]=true
+		If Ceil#(Input_RetrieveStatus(inputno)) Then Input\Minimized[inputno]=True
 	End Function
 
 	Function Input_ResetAllInput()
@@ -326,7 +326,7 @@ EndIf
 			Input\Hold\ActionSkillX	 		= False
 			Input\Hold\ActionAct	 		= False
 
-			For i=0 to INPUT_BUTTON_BACK
+			For i=0 To INPUT_BUTTON_BACK
 				Input_IndividualMinimizedReset(i)
 			Next
 			Input_IndividualMinimizedReset(INPUT_BUTTON_ACTIONSKILLX)
@@ -355,16 +355,16 @@ EndIf
 			Input\Hold\MouseCamZoomIn		= False
 			Input\Hold\MouseCamZoomOut		= False
 
-			For i=INPUT_BUTTON_CAM_LEFT to INPUT_BUTTON_CAM_CENTER
+			For i=INPUT_BUTTON_CAM_LEFT To INPUT_BUTTON_CAM_CENTER
 				Input_IndividualMinimizedReset(i)
 			Next
-			For i=INPUT_BUTTON_MOUSECAM_UP to INPUT_BUTTON_MOUSECAM_ZOOMOUT
+			For i=INPUT_BUTTON_MOUSECAM_UP To INPUT_BUTTON_MOUSECAM_ZOOMOUT
 				Input_IndividualMinimizedReset(i)
 			Next
 	End Function
 
 	Function Input_ResetActionInput()
-			For i=INPUT_BUTTON_ACTIONJUMP to INPUT_BUTTON_ACTIONACT
+			For i=INPUT_BUTTON_ACTIONJUMP To INPUT_BUTTON_ACTIONACT
 				Input_IndividualMinimizedReset(i)
 			Next
 			Input_IndividualMinimizedReset(INPUT_BUTTON_ACTIONSKILLX)
@@ -394,7 +394,7 @@ EndIf
 
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
-	Function Input_RetrieveStatus#(Button, nogamepad=false)
+	Function Input_RetrieveStatus#(Button, nogamepad=False)
 		g = Input_Gamepad
 		Result1# = 0.0
 		Result2# = 0.0
@@ -405,9 +405,9 @@ EndIf
 				Result1# = 0.0
 			Case INPUT_DEVICE_KEYBOARD
 				If Input\Minimized[Button] Then
-					If KeyHit(Input\Configuration1[Button]\Button) Then Input\Minimized[Button]=false
+					If KeyHit(Input\Configuration1[Button]\Button) Then Input\Minimized[Button]=False
 				EndIf
-				If Input\Minimized[Button]=false Then Result1# = KeyDown(Input\Configuration1[Button]\Button)
+				If Input\Minimized[Button]=False Then Result1# = KeyDown(Input\Configuration1[Button]\Button)
 			Case INPUT_DEVICE_MOUSE
 				Select Input\Configuration1[Button]\Button
 	 				Case INPUT_MOUSE_XMINUS		: If (Input_MouseX#<-1.0) Then Result1# = Abs(Input_MouseX#)*Input_MouseSensitivy#/Input_MouseSpeed#
@@ -418,14 +418,14 @@ EndIf
 	 				Case INPUT_MOUSE_WHEELPLUS	: If (Input_MouseWheel#>0.0) Then Result1# = Abs(Input_MouseWheel#)
 	 				Default:
 						If Input\Minimized[Button] Then
-							If MouseHit(Input\Configuration1[Button]\Button-INPUT_MOUSE_LEFT+1) Then Input\Minimized[Button]=false
+							If MouseHit(Input\Configuration1[Button]\Button-INPUT_MOUSE_LEFT+1) Then Input\Minimized[Button]=False
 						EndIf
-						If Input\Minimized[Button]=false Then Result1# = MouseDown(Input\Configuration1[Button]\Button-INPUT_MOUSE_LEFT+1)
+						If Input\Minimized[Button]=False Then Result1# = MouseDown(Input\Configuration1[Button]\Button-INPUT_MOUSE_LEFT+1)
 				End Select
 		End Select
 
 		; Get device status for gamepad
-		If not nogamepad Then
+		If Not nogamepad Then
 		Select Input\Configuration2[Button]\Device
 			Case INPUT_DEVICE_NONE
 				Result2# = 0.0
@@ -437,10 +437,10 @@ EndIf
 	 				Case INPUT_GAMEPAD_YPLUS	: If (JoyY#(g)>Input_GamepadThreshold#)  Then Result2# = (Abs(JoyY#(g))-Input_GamepadThreshold#)/(1-Input_GamepadThreshold#)
 	 				Case INPUT_GAMEPAD_ZMINUS	: If (JoyZ#(g)<-Input_GamepadThreshold#) Then Result2# = (Abs(JoyZ#(g))-Input_GamepadThreshold#)/(1-Input_GamepadThreshold#)
 	 				Case INPUT_GAMEPAD_ZPLUS	: If (JoyZ#(g)>Input_GamepadThreshold#)  Then Result2# = (Abs(JoyZ#(g))-Input_GamepadThreshold#)/(1-Input_GamepadThreshold#)
-					Case INPUT_GAMEPAD_DPAD_UP	: If (Not(JoyHat(g)=-1)) and (JoyHat(g)=0) Then Result2# = 1.0
-					Case INPUT_GAMEPAD_DPAD_LEFT	: If (Not(JoyHat(g)=-1)) and (JoyHat(g)=270) Then Result2# = 1.0
-					Case INPUT_GAMEPAD_DPAD_RIGHT	: If (Not(JoyHat(g)=-1)) and (JoyHat(g)=90) Then Result2# = 1.0
-					Case INPUT_GAMEPAD_DPAD_DOWN	: If (Not(JoyHat(g)=-1)) and (JoyHat(g)=180) Then Result2# = 1.0
+					Case INPUT_GAMEPAD_DPAD_UP	: If (Not(JoyHat(g)=-1)) And (JoyHat(g)=0) Then Result2# = 1.0
+					Case INPUT_GAMEPAD_DPAD_LEFT	: If (Not(JoyHat(g)=-1)) And (JoyHat(g)=270) Then Result2# = 1.0
+					Case INPUT_GAMEPAD_DPAD_RIGHT	: If (Not(JoyHat(g)=-1)) And (JoyHat(g)=90) Then Result2# = 1.0
+					Case INPUT_GAMEPAD_DPAD_DOWN	: If (Not(JoyHat(g)=-1)) And (JoyHat(g)=180) Then Result2# = 1.0
 	 				Case INPUT_GAMEPAD_PMINUS	: If ((JoyPitch#(g)/180.0)<-Input_GamepadThreshold#) Then Result2# = (Abs(JoyPitch#(g)/180.0)-Input_GamepadThreshold#)/(1-Input_GamepadThreshold#)
 	 				Case INPUT_GAMEPAD_PPLUS	: If ((JoyPitch#(g)/180.0)>Input_GamepadThreshold#)  Then Result2# = (Abs(JoyPitch#(g)/180.0)-Input_GamepadThreshold#)/(1-Input_GamepadThreshold#)
 	 				Case INPUT_GAMEPAD_WMINUS	: If ((JoyYaw#(g)/180.0)<-Input_GamepadThreshold#)   Then Result2# = (Abs(JoyYaw#(g)/180.0)-Input_GamepadThreshold#)/(1-Input_GamepadThreshold#)
@@ -449,9 +449,9 @@ EndIf
 					Case INPUT_GAMEPAD_RPLUS	: If ((JoyRoll#(g)/180.0)>Input_GamepadThreshold#)   Then Result2# = (Abs(JoyRoll#(g)/180.0)-Input_GamepadThreshold#)/(1-Input_GamepadThreshold#)
 	 				Default	:
 						If Input\Minimized[Button] Then
-							If JoyHit(Input\Configuration2[Button]\Button-50, g) Then Input\Minimized[Button]=false
+							If JoyHit(Input\Configuration2[Button]\Button-50, g) Then Input\Minimized[Button]=False
 						EndIf
-						If Input\Minimized[Button]=false Then Result2# = JoyDown(Input\Configuration2[Button]\Button-50, g)
+						If Input\Minimized[Button]=False Then Result2# = JoyDown(Input\Configuration2[Button]\Button-50, g)
 				End Select
 		End Select
 		EndIf
@@ -476,13 +476,12 @@ EndIf
 		Menu\Pause=0 : Input_ResetAllInput() : Game\SmartCameraRangeDontAffectTimer=3*secs#
 		FlushMouse()
 		If Menu\ChaoGarden=1 Then
-			For i=1 to 3 : Game\Interface\GardenActionTimer[i]=0 : Next
+			For i=1 To 3 : Game\Interface\GardenActionTimer[i]=0 : Next
 		EndIf
 		
-		If Menu\PauseScreen=1 Then
-			p.tPlayer = First tPlayer
-			If p\RealCharacter<>Menu\Character[1] Then ChangeCharacter(Menu\Character[1])
-		EndIf
+		
 		Menu\PauseScreen=0
 		ResumeAllChannels()
 	End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D
