@@ -720,7 +720,7 @@ Function Menu_Pause_Update()
 					DeformCharacter(p)
 				EndIf
 				If Menu\Option=3 And BP_Online Then Menu\PauseScreen=1 
-				If Menu\Option=4 And BP_Online And Game\Online\Hosting Then Menu\PauseScreen=2 : Menu\Option2=2 : Menu\Option=Menu\Stage
+				If Menu\Option=4 And BP_Online And Game\Online\Hosting Then Menu\PauseScreen=2 : Menu\Option2=2 : Menu\Option=Menu\Stage : Menu\LoadThumbnailAndMissions=True
 				If Menu\Option=5 And BP_Online Then BP_EndSession() : Game\Online\Connected=0 : Game_Stage_Quit(3)
 				Menu\Transition=1
 			EndIf

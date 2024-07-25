@@ -3403,7 +3403,7 @@ End Function
 ;-------------------------------------------------------------------------------------------
 
 Function Object_Enemy_BossBehaviour(o.tObject,p.tPlayer,d.tDeltaTime)
-
+	BP_UDPMessage(0, 8, OBJTYPE_BOSS+"/"+o\Enemy\Health) : DebugLog("Sent hit")
 	Select o\ObjType
 	Case OBJTYPE_BOSSRUN,OBJTYPE_BOSSMECHA:
 	Default:

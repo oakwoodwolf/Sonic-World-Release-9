@@ -285,6 +285,7 @@
 	Global Interface_Saving			= i : i=i+1
 	Global Interface_Indicator		= i : i=i+1
 	Global Interface_Chatbox		= i : i=i+1
+	Global Interface_Square			= i : i=i+1
 
 	Global INTERFACE_ALWAYSTOTAL=i-1
 
@@ -307,7 +308,6 @@
 	Global Interface_Logo_flash		= i : i=i+1
 	Global Interface_LogoRipple		= i : i=i+1
 	Global Interface_Logoxmas		= i : i=i+1
-	Global Interface_Square			= i : i=i+1
 	Global Interface_Round			= i : i=i+1
 	Global Interface_Bubble_1		= i : i=i+1
 	Global Interface_Bubble_2		= i : i=i+1

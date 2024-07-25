@@ -214,7 +214,7 @@ Function DrawPlayerTag(Cam%, p.tPlayer, label$, no=1, height#=3, r=255, g=255, b
 		Select Game\Online\GameType
 			Case GAME_TYPE_TAG:
 				Select p\Online\TagMode:
-					Case TAG_IS_IT: DrawRealText("It", x, y-64, Interface_TextControls_1, 1, 0, 255, 128, 64, 0)
+					Case TAG_IS_IT: DrawRealText("IT", x, y-64, Interface_TextControls_1, 1, 0, 255, 128, 64, 0)
 				End Select
 			Case GAME_TYPE_RACE:
 				Select p\Online\RacePosition:
@@ -295,7 +295,7 @@ Function Game_OnlineMsgOfTheDay()
 			
 				DebugLog("Resetting race")
 				Menu_GoToStage_SetMission(1)
-				If Menu\Mission=MISSION_HUNT# Then Menu\Mission=MISSION_FREEROAM#
+				If Menu\Mission=MISSION_HUNT# Or Menu\Mission=MISSION_BOSS# Then Menu\Mission=MISSION_FREEROAM#
 				p\Online\FinishedRace=0
 				p\Online\RacePosition=0
 				Game\Online\RaceFinished=False

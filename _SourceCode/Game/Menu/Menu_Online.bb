@@ -123,7 +123,10 @@ Function Interface_Render_HostMenu(p.tPlayer)
 		DrawRealText(GAMETYPE_NAME(Game\Online\GameType+1),GAME_WINDOW_W/2, (65)*GAME_WINDOW_SCALE#, (Interface_TextButtons_1), 1, 0, 63, 63, 63)
 	EndIf
 	DrawRealText("Stage", 12*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(75)*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 0, 0, 23, 128, 23)
-	Menu_Stage_LoadThumbnailAndMissions(Menu\Option)
+	If Menu\LoadThumbnailAndMissions Then
+		Menu_Stage_LoadThumbnailAndMissions(Menu\Option)
+		Menu\LoadThumbnailAndMissions=False
+	EndIf
 	Menu_UpdateStageNames(Menu\Option)
 	Menu_Stage_DrawThumbnailAndMissions(GAME_WINDOW_W/2,GAME_WINDOW_H/2+125*GAME_WINDOW_SCALE#,20*GAME_WINDOW_SCALE#)
 	If Menu\Option<=StageAmount And Menu\Option2=2 Then
@@ -154,10 +157,19 @@ Function Interface_Render_HostMenu(p.tPlayer)
 		PlaySmartSound(Sound_MenuAccept)
 		Select Menu\Option2
 		Case 1:
+			BP_SetGameType(Game\Online\GameType+1)
 			Game\Online\GameType=Game\Online\GameType+1
-			If Game\Online\GameType>3 Then Game\Online\GameType=0
-			BP_SetGameType(Game\Online\GameType)
+			If Game\Online\GameType>3 Then 	BP_SetGameType(0) : Game\Online\GameType=0
 			Info("Gametype set to " + GAMETYPE_NAME(Game\Online\GameType+1))
+			Select Game\Online\GameType:
+			Case GAME_TYPE_TAG
+				it=Rand(1, PlayerNo)
+				For op.tPlayer = Each tPlayer
+						If op\Online\NetID=it Then	Player_SetTagMode(op)
+						If op\Online\NetID<>it Then op\Online\TagMode=TAG_NOT_IT : op\Online\TagTimer=0 : BP_UDPMessage(0,UDPMSG_MESSAGE, op\Online\Name$+" is Not It!") : op\Online\TagCoolDown=3.5*secs#	
+				Next
+			End Select
+			BP_UDPMessage (0,26, Game\Online\GameType)
 		Case 2:
 			PlaySmartSound(Sound_MenuAccept)
 			Menu\SelectedStage=Menu\Option

@@ -668,6 +668,7 @@ End Function
 					o\Switch\SwitchTopBrought=True
 					o\Switch\SwitchTop\Done=1
 					If Not o\Switch\SwitchTop\ObjPickedUp=0 Then p\ObjPickUp=0
+					BP_UDPMessage(0, 8, OBJTYPE_SWITCHBASE+"/"+o\Switch\SwitchNo[0]+"/"+o\Switch\SwitchTop\Done)
 				EndIf
 			EndIf
 		EndIf

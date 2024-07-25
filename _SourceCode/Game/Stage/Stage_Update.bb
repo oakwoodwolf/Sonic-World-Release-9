@@ -964,13 +964,7 @@
 				For p.tPlayer = Each tPlayer ;!
 					;ViewOtherPlayer(p, c)
 					If p\Online\Connected And p\Online\ShowTag=True And Menu\Pause=0 Then 
-						If p\Online\TagMode=TAG_IS_IT And Game\Online\GameType=GAME_TYPE_TAG
-							If p\Online\TagTimer<>"" Then
-								DrawPlayerTag(c\Entity, p, p\Online\Name$+" - Time:"+p\Online\TagTimer, p\Online\NetID, 3, Interface_Lives_G[InterfaceChar(p\RealCharacter)],Interface_Lives_B[InterfaceChar(p\RealCharacter)]);000, 0, 255)
-							EndIf
-						Else
-							DrawPlayerTag(c\Entity, p, p\Online\Name$, p\Online\NetID, 	3, Interface_Lives_R[InterfaceChar(p\RealCharacter)],Interface_Lives_G[InterfaceChar(p\RealCharacter)],Interface_Lives_B[InterfaceChar(p\RealCharacter)])
-						EndIf
+						DrawPlayerTag(c\Entity, p, p\Online\Name$, p\Online\NetID, 	3, Interface_Lives_R[InterfaceChar(p\RealCharacter)],Interface_Lives_G[InterfaceChar(p\RealCharacter)],Interface_Lives_B[InterfaceChar(p\RealCharacter)])
 					EndIf
 				Next ;!	
 			EndIf
@@ -1371,11 +1365,13 @@ Function HandleMessages()
 					Case "tagged"
 						;p.tPlayer = First tPlayer
 						Player_PlayDieVoice(onlineplayer(1))
+						p.tPlayer = FindPlayerData(msg\msgFrom)
+						Player_PlayGoodVoice(p)
 						onlineplayer(1)\Online\TagMode=TAG_IS_IT
 						If onlineplayer(1)\Online\TagMode=TAG_IS_IT Then onlineplayer(1)\Online\TagTimer=TAG_TIMER
 					Case "cleared"
 						Info("YOURE not IT lol")
-						onlineplayer(1)\Online\TagMode=TAG_NOT_IT;TAG_NOT_IT
+						onlineplayer(1)\Online\TagMode=2;TAG_NOT_IT
 						onlineplayer(1)\Online\TagTimer=0
 					Default ; name change
 						p\Online\Name$=msg\msgData
@@ -1461,6 +1457,24 @@ Function HandleMessages()
 						EndIf
 					Next
 				DebugLog("Activating switch " + attribute + "on: " + value)
+				Case OBJTYPE_SWITCHBASE
+					For o.tObject= Each tObject
+						If o\HasValuesetSwitch Then
+							If o\Switch\SwitchNo[0] = attribute Then o\Switch\SwitchTopBrought=True : o\Switch\SwitchTop\Done=1
+							If o\Switch\SwitchNo[1] = attribute Then o\Switch\SwitchTopBrought=True : o\Switch\SwitchTop\Done=1
+							If o\Switch\SwitchNo[2] = attribute Then o\Switch\SwitchTopBrought=True : o\Switch\SwitchTop\Done=1
+						EndIf
+					Next
+				Case OBJTYPE_BOSS
+					DebugLog("BOSS SPOTTED")
+					For o.tObject= Each tObject
+						If o\ThisIsAnEnemy Then
+							If o\Enemy\IsBoss=1 Then
+								If o\Enemy\Health>attribute Then o\Enemy\Health=attribute
+								DebugLog("BOSS SPOTTED")
+							EndIf
+						EndIf
+					Next
 				End Select
 			Case 9 ; Time
 				p.tPlayer = FindPlayerData(msg\msgFrom)

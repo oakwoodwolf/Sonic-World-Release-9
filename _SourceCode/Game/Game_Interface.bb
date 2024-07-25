@@ -123,7 +123,7 @@ Const CHAT_LENGTH=28
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
 
-	Function Interface_TrickPointsCounter(p.tPlayer, d.tDeltaTime, movedown#=0)
+	Function Interface_TrickPointsCounter(p.tPlayer, d.tDeltaTime, movedown#=0,spacing#=0)
 	
 			If Game\Interface\PointsTimer>5.0*secs# And Game\Interface\PointsTimer<6.0*secs# Then
 				If Game\Interface\t_x#<0 Then Game\Interface\t_x#=Game\Interface\t_x#+5*d\Delta
@@ -141,7 +141,7 @@ Const CHAT_LENGTH=28
 			If (Game\Interface\PointsTimer>1.0*secs# And Game\Interface\PointsTimer<=6.0*secs#) Then
 				If Game\Interface\PointsTimer>4.0*secs# And Game\Interface\PointsTimer<6.0*secs# Then
 					SetColor(220,220,220)
-					DrawBetterNumber(Game\Interface\Points, (38+Game\Interface\t_x#)*GAME_WINDOW_SCALE#, (96+Game\Interface\thisheight#+Game\Interface\t_y#+movedown#)*GAME_WINDOW_SCALE#)
+					DrawBetterNumber(Game\Interface\Points, (38+Game\Interface\t_x#)*GAME_WINDOW_SCALE#, ((30+(33*spacing))+Game\Interface\thisheight#+Game\Interface\t_y#+movedown#)*GAME_WINDOW_SCALE#)
 				Else
 					If Game\Interface\PointsCommentGiven=0 Then
 						Select Rand(1,7)
@@ -158,7 +158,7 @@ Const CHAT_LENGTH=28
 					If Game\Interface\PointsChain<=15 Then SetColor(Game\Interface\point_r,Game\Interface\point_g,Game\Interface\point_b)
 					If Game\Interface\PointsChain>15 Then SetColor(Rand(155,255),Rand(155,255),Rand(155,255))
 					SetAlpha(Game\Interface\point_fade#)
-					If Game\Interface\PointsChain>=5 Then DrawRealText(Game\Interface\PointsComment$, (67.5+Game\Interface\t_x#)*GAME_WINDOW_SCALE#, (96+Game\Interface\thisheight#+Game\Interface\t_y#+movedown#)*GAME_WINDOW_SCALE#, (Interface_TextControls_2), 1)
+					If Game\Interface\PointsChain>=5 Then DrawRealText(Game\Interface\PointsComment$, (67.5+Game\Interface\t_x#)*GAME_WINDOW_SCALE#, ((30+(33*spacing))+Game\Interface\thisheight#+Game\Interface\t_y#+movedown#)*GAME_WINDOW_SCALE#, (Interface_TextControls_2), 1)
 					SetColor(255,255,255) : SetAlpha(1.0)
 				EndIf
 			Else
@@ -269,13 +269,13 @@ Const CHAT_LENGTH=28
 
 ;===================================================================================================================================================================================
 
-	Function Interface_RingCounter(d.tDeltaTime)
-		DrawImageEx(INTERFACE(Interface_Icons), 30*GAME_WINDOW_SCALE#, 66*GAME_WINDOW_SCALE#, 16)
+	Function Interface_RingCounter(d.tDeltaTime,s#)
+		DrawImageEx(INTERFACE(Interface_Icons), 30*GAME_WINDOW_SCALE#, (30+(s*33))*GAME_WINDOW_SCALE#, 16)
 		If (Game\Gameplay\Rings=0 Or Game\Interface\RingStolenTimer>0) And Menu\Pause=0 Then
 			If Game\Interface\RingStolenTimer>0 Then Game\Interface\RingStolenTimer=Game\Interface\RingStolenTimer-timervalue#
 			flash=Sin#(MilliSecs() Mod 255) : SetColor(255,(255*flash)*d\Delta,(255*flash)*d\Delta)
 		EndIf
-		DrawBetterNumber(Game\Gameplay\Rings, 58*GAME_WINDOW_SCALE#, 66*GAME_WINDOW_SCALE#)
+		DrawBetterNumber(Game\Gameplay\Rings, 58*GAME_WINDOW_SCALE#, (30+(s*33))*GAME_WINDOW_SCALE#)
 		SetColor(255,255,255)
 	End Function
 
@@ -357,15 +357,31 @@ End Function
 	Function Interface_Render_Stage_Stage(p.tPlayer,d.tDeltatime)
 
 		If Menu\ChaoGarden=0 Then;!!
-
-		DrawImageEx(INTERFACE(Interface_Icons), 30*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#, 15)
-		DrawImageEx(INTERFACE(Interface_Numbers), 94*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#, 10)
-		DrawImageEx(INTERFACE(Interface_Numbers), 144*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#, 10)
-		DrawNumber((Game\Gameplay\Time/60000), 58*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#, 2)
-		DrawNumber((Game\Gameplay\Time/1000) Mod 60, 108*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#, 2)
-		DrawNumber((Game\Gameplay\Time/10) Mod 100, 158*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#, 2)
-
-		Interface_RingCounter(d)
+		spacing#=0
+		If Menu\Pause=0 And (BP_Online=False or Game\Online\GameType=GAME_TYPE_RACE) Then
+			DrawImageEx(INTERFACE(Interface_Icons), 30*GAME_WINDOW_SCALE#, (30+(spacing*33))*GAME_WINDOW_SCALE#, 15)
+			DrawImageEx(INTERFACE(Interface_Numbers), 94*GAME_WINDOW_SCALE#, (30+(spacing*33))*GAME_WINDOW_SCALE#, 10)
+			DrawImageEx(INTERFACE(Interface_Numbers), 144*GAME_WINDOW_SCALE#, (30+(spacing*33))*GAME_WINDOW_SCALE#, 11)
+			DrawNumber((Game\Gameplay\Time/60000), 58*GAME_WINDOW_SCALE#, (30+(spacing*33))*GAME_WINDOW_SCALE#, 2)
+			DrawNumber((Game\Gameplay\Time/1000) Mod 60, 108*GAME_WINDOW_SCALE#, (30+(spacing*33))*GAME_WINDOW_SCALE#, 2)
+			DrawNumber((Game\Gameplay\Time/10) Mod 100, 158*GAME_WINDOW_SCALE#, (30+(spacing*33))*GAME_WINDOW_SCALE#, 2)
+			spacing=spacing+1
+		EndIf
+		Select Game\Online\GameType
+			Case GAME_TYPE_RACE:
+			Case GAME_TYPE_TAG,GAME_TYPE_HIDENSEEK:
+				For ppp.tPlayer = Each tPlayer
+					If ppp\Online\TagMode=TAG_IS_IT Then
+						DrawImageEx(INTERFACE(Interface_Icons), 30*GAME_WINDOW_SCALE#, (30+(spacing*33))*GAME_WINDOW_SCALE#, 15)
+						DrawNumber((ppp\Online\TagTimer/60), 58*GAME_WINDOW_SCALE#, (30+(spacing*33))*GAME_WINDOW_SCALE#, 2)
+						DrawImageEx(INTERFACE(Interface_Numbers), 94*GAME_WINDOW_SCALE#, (30+(spacing*33))*GAME_WINDOW_SCALE#, 10)
+						DrawNumber((ppp\Online\TagTimer) Mod 60, 108*GAME_WINDOW_SCALE#, (30+(spacing*33))*GAME_WINDOW_SCALE#, 2)
+						spacing=spacing+1
+					EndIf
+				Next
+		End Select
+		Interface_RingCounter(d,spacing)
+		spacing=spacing+1
 		Update_Monitor_Icons(d)
 
 		If Game\Interface\FlashCheckTimerTimer>0 Then
@@ -386,11 +402,12 @@ End Function
 		DrawBetterNumber(Game\Gameplay\Score, GAME_WINDOW_W-35*GAME_WINDOW_SCALE#, 30*GAME_WINDOW_SCALE#, 0, 1)
 
 		If p\Underwater=1 and (Not(Game\Shield=OBJTYPE_BSHIELD)) Then
-			DrawImageEx(INTERFACE(Interface_Icons), 32.5*GAME_WINDOW_SCALE#, 102*GAME_WINDOW_SCALE#, 14)
-			If p\DrownValue>=0 Then DrawBetterNumber(p\DrownValue, 58*GAME_WINDOW_SCALE#, 102*GAME_WINDOW_SCALE#)
-			Interface_TrickPointsCounter(p, d, 36)
+			DrawImageEx(INTERFACE(Interface_Icons), 32.5*GAME_WINDOW_SCALE#, (30+(spacing*33))*GAME_WINDOW_SCALE#, 14)
+			If p\DrownValue>=0 Then DrawBetterNumber(p\DrownValue, 58*GAME_WINDOW_SCALE#, (30+(spacing*33))*GAME_WINDOW_SCALE#)
+			spacing=spacing+1
+			Interface_TrickPointsCounter(p, d, 36,spacing)
 		Else
-			Interface_TrickPointsCounter(p, d)
+			Interface_TrickPointsCounter(p, d,0,spacing)
 		EndIf
 		If Game\Online\Connected Then
 			Interface_DrawChat(30*GAME_WINDOW_SCALE#, (GAME_WINDOW_H-(ImageHeightEx#(INTERFACE(Interface_Chatbox))))*GAME_WINDOW_SCALE#,Chatting\Scale)
@@ -476,7 +493,7 @@ End Function
 					Else
 						SetCustomColor ARGB(1, 0, 236, 233), ARGB(1, 0, 236, 233), ARGB(1, 0, 78, 77), ARGB(1, 0, 78, 77)
 					EndIf
-					DrawRect(GAME_WINDOW_W-(90*1.8)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-(30*1.25)*GAME_WINDOW_SCALE#, (o\Enemy\Health*10)*2.13/1.5, 43/3.0, 1)
+					DrawRect(GAME_WINDOW_W-(90*1.8)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-(30*1.25)*GAME_WINDOW_SCALE#, ((o\Enemy\Health*10)*2.13/1.5), 43/3.0, 1)
 					SetColor(255,255,255)
 					DrawRealText("Enemy:", GAME_WINDOW_W-50*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-50*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
 					DrawImageEx(INTERFACE(Interface_Boss), GAME_WINDOW_W-90*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-30*GAME_WINDOW_SCALE#)
