@@ -194,3 +194,17 @@ Function Interface_Render_HostMenu(p.tPlayer)
 					DrawSmartKey_MovementGeneral(GAME_WINDOW_W/2-(40+200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+( -20)*GAME_WINDOW_SCALE#)
 					DrawRealText("Back", GAME_WINDOW_W/2+(-10+200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+( -20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 End Function
+
+Function DrawPingMenu()
+	BP_PingClients()
+	no=1
+	For p.tPlayer = Each tPlayer
+		ninfo.NetInfo = BP_FindID(p\Online\NetID)
+		SetColor(Interface_Lives_R[InterfaceChar(p\RealCharacter)],Interface_Lives_G[InterfaceChar(p\RealCharacter)],Interface_Lives_B[InterfaceChar(p\RealCharacter)])
+		Interface_DrawHead(GAME_WINDOW_W-20*GAME_WINDOW_SCALE, GAME_WINDOW_H-(no*20)*GAME_WINDOW_SCALE#,p\RealCharacter-1)
+		SetColor(255,255,255)
+		DrawRealText(ninfo\Name + " :" + ninfo\Net_id, GAME_WINDOW_W-40*GAME_WINDOW_SCALE, GAME_WINDOW_H-(no*20)*GAME_WINDOW_SCALE#, (Interface_Text_1), 2, 0, 63, 63, 63)
+		no=no+1
+		
+	Next
+End Function
