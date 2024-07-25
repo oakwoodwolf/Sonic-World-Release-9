@@ -554,6 +554,7 @@
 		Field Collision
 		Field InRadius
 		Field InYourRadius
+		Field Vehicle
 
 		Field Joined, ShowTag=True
 
@@ -1104,6 +1105,7 @@
 		EndIf
 
 	EndIf
+	If p\Online\IsLocal=False Then Player_Motion_OnlinePlacements(p)
 	End Function
 
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

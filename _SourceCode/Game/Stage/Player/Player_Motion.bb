@@ -475,25 +475,47 @@
 						TurnEntity(p\Objects\Mesh,0,0,p\Physics\DRIFT_ANGLE_ACTUAL#)
 					EndIf
 					RotateEntity(p\Objects\Vehicle, EntityPitch(p\Objects\Mesh), EntityYaw(p\Objects\Mesh), EntityRoll(p\Objects\Mesh), 1)
-					Select Game\Vehicle
-						Case 2:
-							PositionEntity(p\Objects\Vehicle, (EntityX(p\Objects\HandR,1)+EntityX(p\Objects\HandL,1))/2.0, EntityY(p\Objects\HandR,1), (EntityZ(p\Objects\HandR,1)+EntityZ(p\Objects\HandL,1))/2.0, 1)
-						Default:
-							PositionEntity(p\Objects\Vehicle, EntityX(p\Objects\Mesh), EntityY(p\Objects\Mesh), EntityZ(p\Objects\Mesh), 1)
-					End Select
-					Select Game\Vehicle
-						Case 1:
-							MoveEntity p\Objects\Vehicle, 0, -2.2, 0
-						Case 2:
-							TurnEntity p\Objects\Vehicle, -60, 0, 0
-							MoveEntity p\Objects\Vehicle, 0, 0.25, 0.5
-						Case 3:
-							MoveEntity p\Objects\Vehicle, 0, 0.2+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
-						Case 4,9:
-							MoveEntity p\Objects\Vehicle, 0, 0.65+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
-						Case 5,8:
-							MoveEntity p\Objects\Vehicle, 0, 1.05+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
-					End Select
+					If p\Online\IsLocal Then
+						Select Game\Vehicle
+							Case 2:
+								PositionEntity(p\Objects\Vehicle, (EntityX(p\Objects\HandR,1)+EntityX(p\Objects\HandL,1))/2.0, EntityY(p\Objects\HandR,1), (EntityZ(p\Objects\HandR,1)+EntityZ(p\Objects\HandL,1))/2.0, 1)
+							Default:
+								PositionEntity(p\Objects\Vehicle, EntityX(p\Objects\Mesh), EntityY(p\Objects\Mesh), EntityZ(p\Objects\Mesh), 1)
+						End Select
+						Select Game\Vehicle
+							Case 1:
+								MoveEntity p\Objects\Vehicle, 0, -2.2, 0
+							Case 2:
+								TurnEntity p\Objects\Vehicle, -60, 0, 0
+								MoveEntity p\Objects\Vehicle, 0, 0.25, 0.5
+							Case 3:
+								MoveEntity p\Objects\Vehicle, 0, 0.2+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
+							Case 4,9:
+								MoveEntity p\Objects\Vehicle, 0, 0.65+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
+							Case 5,8:
+								MoveEntity p\Objects\Vehicle, 0, 1.05+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
+						End Select
+					Else
+					Select p\Online\Vehicle
+							Case 2:
+								PositionEntity(p\Objects\Vehicle, (EntityX(p\Objects\HandR,1)+EntityX(p\Objects\HandL,1))/2.0, EntityY(p\Objects\HandR,1), (EntityZ(p\Objects\HandR,1)+EntityZ(p\Objects\HandL,1))/2.0, 1)
+							Default:
+								PositionEntity(p\Objects\Vehicle, EntityX(p\Objects\Mesh), EntityY(p\Objects\Mesh), EntityZ(p\Objects\Mesh), 1)
+						End Select
+						Select p\Online\Vehicle
+							Case 1:
+								MoveEntity p\Objects\Vehicle, 0, -2.2, 0
+							Case 2:
+								TurnEntity p\Objects\Vehicle, -60, 0, 0
+								MoveEntity p\Objects\Vehicle, 0, 0.25, 0.5
+							Case 3:
+								MoveEntity p\Objects\Vehicle, 0, 0.2+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
+							Case 4,9:
+								MoveEntity p\Objects\Vehicle, 0, 0.65+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
+							Case 5,8:
+								MoveEntity p\Objects\Vehicle, 0, 1.05+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
+						End Select
+					EndIf
 				EndIf
 			EndIf
 			
@@ -537,7 +559,38 @@
 		EndIf
 		
 	End Function
-
+	Function Player_Motion_OnlinePlacements(p.tPlayer)
+				If p\Online\Vehicle>0 Then
+					If abs(p\Physics\DRIFT_ANGLE#)>10 Then p\Physics\DRIFT_ANGLE_ACTUAL#=p\Physics\DRIFT_ANGLE# Else p\Physics\DRIFT_ANGLE_ACTUAL#=0
+					If p\Online\Vehicle=9 Then
+						TurnEntity(p\Objects\Mesh,0,p\Physics\DRIFT_ANGLE_ACTUAL#,0)
+					Else
+						TurnEntity(p\Objects\Mesh,0,0,p\Physics\DRIFT_ANGLE_ACTUAL#)
+					EndIf
+					RotateEntity(p\Objects\Vehicle, EntityPitch(p\Objects\Mesh), EntityYaw(p\Objects\Mesh), EntityRoll(p\Objects\Mesh), 1)
+					
+					Select p\Online\Vehicle
+							Case 2:
+								PositionEntity(p\Objects\Vehicle, (EntityX(p\Objects\HandR,1)+EntityX(p\Objects\HandL,1))/2.0, EntityY(p\Objects\HandR,1), (EntityZ(p\Objects\HandR,1)+EntityZ(p\Objects\HandL,1))/2.0, 1)
+							Default:
+								PositionEntity(p\Objects\Vehicle, EntityX(p\Objects\Mesh), EntityY(p\Objects\Mesh), EntityZ(p\Objects\Mesh), 1)
+						End Select
+						Select p\Online\Vehicle
+							Case 1:
+								MoveEntity p\Objects\Vehicle, 0, -2.2, 0
+							Case 2:
+								TurnEntity p\Objects\Vehicle, -60, 0, 0
+								MoveEntity p\Objects\Vehicle, 0, 0.25, 0.5
+							Case 3:
+								MoveEntity p\Objects\Vehicle, 0, 0.2+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
+							Case 4,9:
+								MoveEntity p\Objects\Vehicle, 0, 0.65+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
+							Case 5,8:
+								MoveEntity p\Objects\Vehicle, 0, 1.05+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
+						End Select
+				EndIf
+		
+	End Function
 	Function Player_Motion_PetPlacements(p.tPlayer)
 		Select p\Character
 			Case CHAR_CRE:

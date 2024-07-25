@@ -2321,13 +2321,14 @@
 	; =========================================================================================================
 
 	Function Player_Action_Sink(p.tPlayer)
+		If p\Online\IsLocal Then
+			Game\ControlLock=0.1*secs#
 
-		Game\ControlLock=0.1*secs#
+			Player_SetSpeed(p,0)
+			Player_SetSpeedY(p,-0.0625)
 
-		Player_SetSpeed(p,0)
-		Player_SetSpeedY(p,-0.0625)
-
-		If p\Objects\Position\y# > Game\Stage\Properties\WaterLevel+5 Then p\Action=ACTION_FALL
+			If p\Objects\Position\y# > Game\Stage\Properties\WaterLevel+5 Then p\Action=ACTION_FALL
+		EndIf
 
 	End Function
 	; =========================================================================================================

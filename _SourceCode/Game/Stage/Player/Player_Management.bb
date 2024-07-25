@@ -272,7 +272,7 @@
 	EndIf
 
 	; Go super
-	If p\No#=1 Then
+	If p\No#=1 And (Not BP_Online) Then
 		If p\Action=ACTION_JUMPFALL Or p\Action=ACTION_JUMP Or p\Action=ACTION_HOP Then p\Flags\CanSuperTransform=True Else p\Flags\CanSuperTransform=False
 		If Input\Pressed\ActionAct Then
 			If Menu\Stage>0 and UNLOCKEDEMERALDS[7]=1 And (Game\SuperForm<2 and Player_IsPlayable(p)) And Game\Gameplay\Rings>=50+50*Game\SuperForm And p\Flags\CanSuperTransform And (Not(Game\Interface\ControlTipPickUpTimer>0)) Then

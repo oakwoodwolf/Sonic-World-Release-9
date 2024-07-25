@@ -525,7 +525,7 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 			EndIf
 		EndIf
 		For ppp.tPlayer = Each tPlayer
-			If (Not(ppp\HasVehicle=Game\Vehicle)) and ppp\No#>0 and (ppp\No#=1 Or (Not(Game\Vehicle=6 Or Game\Vehicle=7))) Then
+			If (Not(ppp\HasVehicle=Game\Vehicle)) and ppp\No#>0 and ppp\Online\IsLocal and (ppp\No#=1 Or (Not(Game\Vehicle=6 Or Game\Vehicle=7))) Then
 				If ppp\HasVehicle>0 Then
 					FreeEntity ppp\Objects\Vehicle : ppp\Action=ACTION_FALL
 				EndIf
@@ -577,6 +577,7 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 					Case 6,7: ppp\Action=ACTION_TORNADO
 				End Select
 			EndIf
+			
 		Next
 
 		If p\HasVehicle>0 Then
@@ -607,6 +608,46 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 					p\ForceJumpTimer=0.05*secs#
 				EndIf
 			EndIf
+		EndIf
+	Else If p\Online\IsLocal=False Then
+
+		If (Not(p\HasVehicle=p\Online\Vehicle)) and p\Online\IsLocal=False Then
+			If p\HasVehicle>0 Then
+				FreeEntity p\Objects\Vehicle
+			EndIf
+			Select p\Online\Vehicle
+				Case 1: p\Objects\Vehicle = CopyEntity(MESHES(SmartEntity(Mesh_Board)), Game\Stage\Root)
+				Case 2: p\Objects\Vehicle = CopyEntity(MESHES(SmartEntity(Mesh_Glider)), Game\Stage\Root)
+				Case 3: p\Objects\Vehicle = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_CopRacer1Car+p\VehicleColor-1)), Game\Stage\Root)
+						p\Objects\VehicleJet1 = FindChild(p\Objects\Vehicle, "jet")
+				Case 4: p\Objects\Vehicle = CopyEntity(MESHES(SmartEntity(Mesh_Bike)), Game\Stage\Root)
+						p\Objects\VehicleJet1 = FindChild(p\Objects\Vehicle, "jetR")
+						p\Objects\VehicleJet2 = FindChild(p\Objects\Vehicle, "jetL")
+						Animate(p\Objects\Vehicle,1,0.2,1,10)
+				Case 5: p\Objects\Vehicle = CopyEntity(MESHES(SmartEntity(Mesh_Bobsleigh)), Game\Stage\Root)
+				Case 6: p\Objects\Vehicle = CopyEntity(MESHES(SmartEntity(Mesh_Tornado1)), Game\Stage\Root)
+				Case 7: p\Objects\Vehicle = CopyEntity(MESHES(SmartEntity(Mesh_Tornado2)), Game\Stage\Root)
+						p\Objects\VehicleJet2 = FindChild(p\Objects\Vehicle, "jetU")
+						p\Objects\VehicleJet1 = FindChild(p\Objects\Vehicle, "jetD")
+				Case 8: p\Objects\Vehicle = CopyEntity(MESHES(SmartEntity(Mesh_Cyclone)), Game\Stage\Root)
+						Animate(p\Objects\Vehicle,1,0.3,1,10)
+				Case 9: p\Objects\Vehicle = CopyEntity(MESHES(SmartEntity(Mesh_Kart)), Game\Stage\Root)
+						p\Objects\VehicleJet1 = FindChild(p\Objects\Vehicle, "jetR")
+						p\Objects\VehicleJet2 = FindChild(p\Objects\Vehicle, "jetL")
+						Animate(p\Objects\Vehicle,1,0.2,1,10)
+			End Select
+			Select p\Online\Vehicle
+				Case 3,5,8:
+					ScaleEntity p\Objects\Vehicle, 1.1+p\ScaleFactor#*0.65, 1.1+p\ScaleFactor#*0.65, 1.1+p\ScaleFactor#*0.65, 1
+				Case 4,9:
+					ScaleEntity p\Objects\Vehicle, 0.95+p\ScaleFactor#*0.65, 0.95+p\ScaleFactor#*0.65, 0.95+p\ScaleFactor#*0.65, 1
+				Case 6,7:
+					p\Objects\VehicleShoot = FindChild(p\Objects\Vehicle, "propeller")
+					p\Objects\VehicleShootController = FindChild(p\Objects\Vehicle, "top")
+					ScaleEntity p\Objects\Vehicle, 1.08+p\ScaleFactor#*0.65, 1.08+p\ScaleFactor#*0.65, 1.08+p\ScaleFactor#*0.65, 1
+					Animate(p\Objects\Vehicle,1,0.55,2,10)
+			End Select
+			p\HasVehicle=p\Online\Vehicle
 		EndIf
 	EndIf
 

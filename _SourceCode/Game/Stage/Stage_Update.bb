@@ -199,7 +199,7 @@
 							EndIf
 							Next
 					End Select
-
+					
 					Select Game\Vehicle
 						Case 3:
 							ScaleEntity p\Objects\HipR, 0, 0, 0
@@ -366,6 +366,177 @@
 							Default:
 								Player_PlacementsOfVehicle(p)
 						End Select
+					EndIf
+				Else If BP_Online
+					Select p\Online\Vehicle
+						Case 3:
+							ScaleEntity p\Objects\HipR, 0, 0, 0
+							ScaleEntity p\Objects\HipL, 0, 0, 0
+							PositionEntity p\Objects\Hips, EntityX(p\Objects\Mesh,1), EntityY(p\Objects\Mesh,1), EntityZ(p\Objects\Mesh,1), 1
+							MoveEntity p\Objects\Hips, 0, 0.4, 0
+							Select p\Character
+								Case CHAR_GAM,CHAR_BET:
+									MoveEntity p\Objects\Hips, 0, 2, 0
+							End Select
+						Case 4,9:
+							Select p\Character
+								Case CHAR_GAM,CHAR_BET,CHAR_EGG,CHAR_TMH,CHAR_PRS,CHAR_COM:
+									TurnEntity p\Objects\HipR, -95, 0, 20
+									TurnEntity p\Objects\HipL, -95, 0, -20
+								Case CHAR_CHW:
+								Default:
+									TurnEntity p\Objects\HipR, -95, 0, 35
+									TurnEntity p\Objects\HipL, -95, 0, -35
+							End Select
+							Select p\Character
+								Case CHAR_CHW:
+								Default:
+									TurnEntity p\Objects\LegR, 25, 0, 0
+									TurnEntity p\Objects\LegL, 25, 0, 0
+							End Select
+							Select p\Character
+								Case CHAR_EGG,CHAR_TMH:
+								Case CHAR_OME:
+									TurnEntity p\Objects\ArmR, 10, 30, 70
+									TurnEntity p\Objects\ArmL, 10, -30, -70
+								Case CHAR_VEC:
+									TurnEntity p\Objects\ArmR, -20, 30, 20
+									TurnEntity p\Objects\ArmL, -20, -30, -20
+									ScaleEntity p\Objects\Extra, 0, 0, 0
+								Case CHAR_BIG:
+									TurnEntity p\Objects\ArmR, -35, 30, 10
+									TurnEntity p\Objects\ArmL, -35, -30, -10
+									ScaleEntity p\Objects\Extra, 0, 0, 0
+								Case CHAR_BAR,CHAR_STO,CHAR_HBO,CHAR_PRS,CHAR_COM:
+									TurnEntity p\Objects\ArmR, -25, 30, 25
+									TurnEntity p\Objects\ArmL, -25, -30, -25
+								Case CHAR_GAM,CHAR_BET:
+									TurnEntity p\Objects\ArmR, -25, 30, 25
+									TurnEntity p\Objects\ArmL, -25, -30, -25
+									TurnEntity p\Objects\HandL, 0, 20, 0
+								Case CHAR_CHW:
+									TurnEntity p\Objects\ArmL, -80, 0, 0
+								Default:
+									TurnEntity p\Objects\ArmR, -30, 30, 70
+									TurnEntity p\Objects\ArmL, -30, -30, -70
+							End Select
+							PositionEntity p\Objects\Hips, EntityX(p\Objects\Mesh,1), EntityY(p\Objects\Mesh,1), EntityZ(p\Objects\Mesh,1), 1
+							MoveEntity p\Objects\Hips, 0, 1.45, -0.2
+							TurnEntity p\Objects\Spine, 5, 0, 0
+							Select p\Character
+								Case CHAR_CHO,CHAR_MET,CHAR_MT3,CHAR_EGR:
+									MoveEntity p\Objects\Hips, 0, 0.75, 0
+								Case CHAR_GAM,CHAR_BET,CHAR_EGG,CHAR_TMH,CHAR_CHW:
+									MoveEntity p\Objects\Hips, 0, 3.2, 0
+								Case CHAR_PRS,CHAR_COM:
+									MoveEntity p\Objects\Hips, 0, 0, -1
+							End Select
+							If Game\Vehicle=9 Then
+								MoveEntity p\Objects\Hips, 0, -0.75, -0.908
+								Select p\Character
+									Case CHAR_CHW:
+									Default:
+										TurnEntity p\Objects\HipR, 7.5, 0, -15
+										TurnEntity p\Objects\HipL, 7.5, 0, 15
+								End Select
+								TurnEntity p\Objects\ArmR, 15, 15, -45
+								TurnEntity p\Objects\ArmL, 15, -15, 45
+								Select p\Character
+									Case CHAR_VEC,CHAR_BIG:
+										TurnEntity p\Objects\ArmR, -30, -40, 10
+										TurnEntity p\Objects\ArmL, -30, 40, -10
+									Case CHAR_OME:
+										TurnEntity p\Objects\ArmR, -30, -40, -50
+										TurnEntity p\Objects\ArmL, -30, 40, 50
+									Case CHAR_BAR,CHAR_STO,CHAR_HBO,CHAR_PRS,CHAR_COM:
+										TurnEntity p\Objects\ArmR, -30, -40, -5
+										TurnEntity p\Objects\ArmL, -30, 40, 5
+									Case CHAR_GAM,CHAR_BET:
+										TurnEntity p\Objects\ArmR, -35, -50, -5
+										TurnEntity p\Objects\ArmL, -35, 50, 5
+								End Select
+								Select p\Character
+									Case CHAR_MET,CHAR_MT3:
+										MoveEntity p\Objects\Hips, 0, -0.5, 0
+									Case CHAR_GAM,CHAR_BET:
+										MoveEntity p\Objects\Hips, 0, -1, 0
+									Case CHAR_PRS,CHAR_COM:
+										MoveEntity p\Objects\Hips, 0, 0.5, 0
+								End Select
+							EndIf
+						Case 5,8:
+							TurnEntity p\Objects\HandR, 85, 0, 0
+							TurnEntity p\Objects\HandL, 85, 0, 0
+							MoveEntity p\Objects\Hips, 0, 2.1, -0.3
+							Select p\Character
+								Case CHAR_PRS,CHAR_COM:
+									TurnEntity p\Objects\LegR, 120, 0, 0
+									TurnEntity p\Objects\LegL, 120, 0, 0
+									TurnEntity p\Objects\FootR, 10, 0, 0
+									TurnEntity p\Objects\FootL, 10, 0, 0
+									MoveEntity p\Objects\Hips, 0, -3.25, -1
+								Case CHAR_INF:
+									TurnEntity p\Objects\FootR, -27.5, 0, 0
+									MoveEntity p\Objects\Hips, 0, -1, 0
+								Case CHAR_CHW:
+									TurnEntity p\Objects\ArmL, -80, 0, 0
+							End Select
+							Select p\Character
+								Case CHAR_TAI:
+									TurnEntity p\Objects\ArmR, -10, 37.5, 0
+									TurnEntity p\Objects\ArmL, -10, -37.5, 0
+								Case CHAR_CRE,CHAR_RAY,CHAR_TDL:
+									TurnEntity p\Objects\ArmR, -15, 42.1875, 0
+									TurnEntity p\Objects\ArmL, -15, -42.1875, 0
+									MoveEntity p\Objects\Hips, 0, 0, -0.25
+								Case CHAR_AMY,CHAR_CHA,CHAR_HBO,CHAR_EME,CHAR_GME:
+									TurnEntity p\Objects\ArmR, -5, 18.75, 0
+									TurnEntity p\Objects\ArmL, -5, -18.75, 0
+								Case CHAR_MAR,CHAR_BEA,CHAR_MET,CHAR_MT3:
+									TurnEntity p\Objects\ArmR, -7.5, 28.125, 0
+									TurnEntity p\Objects\ArmL, -7.5, -28.125, 0
+									MoveEntity p\Objects\Hips, 0, 0, -0.25
+							End Select
+							If Game\Vehicle=8 Then
+								TurnEntity p\Objects\ArmR, 2.5, -5, 0
+								TurnEntity p\Objects\ArmL, 2.5, 5, 0
+								TurnEntity p\Objects\HipR, 0, 0, 10
+								TurnEntity p\Objects\HipL, 0, 0, -10
+								TurnEntity p\Objects\FootR, 0, 0, -10
+								TurnEntity p\Objects\FootL, 0, 0, 10
+								MoveEntity p\Objects\Hips, 0, 0.375, 0
+								Select p\Character
+									Case CHAR_BIG,CHAR_BAR,CHAR_HBO,CHAR_GAM,CHAR_BET,CHAR_EGG,CHAR_CHW,CHAR_EGR,CHAR_TMH:
+										MoveEntity p\Objects\Hips, 0, 0.45, 0
+									Case CHAR_TIA,CHAR_PRS,CHAR_COM:
+										MoveEntity p\Objects\Hips, 0, 0.15, 0
+								End Select
+							EndIf
+						Case 6,7:
+							ScaleEntity p\Objects\HipR, 0, 0, 0
+							ScaleEntity p\Objects\HipL, 0, 0, 0
+							PositionEntity p\Objects\Hips, EntityX(p\Objects\Mesh,1), EntityY(p\Objects\Mesh,1), EntityZ(p\Objects\Mesh,1), 1
+							MoveEntity p\Objects\Hips, 0, 2.1, -1.05-0.08*p\ScaleFactor#
+							If GetCharScaleFactor#(p\RealCharacter)>5 Then MoveEntity p\Objects\Hips, 0, 0, -2
+							Select p\Character
+								Case CHAR_BIG,CHAR_TAI,CHAR_TDL,CHAR_VEC,CHAR_RAY:
+									ScaleEntity p\Objects\Extra, 0, 0, 0
+								Case CHAR_TMH:
+									MoveEntity p\Objects\Hips, 0, 3.2, 0
+								Case CHAR_GAM,CHAR_BET,CHAR_EGR:
+									MoveEntity p\Objects\Hips, 0, 3.2, 0
+									If Menu\Members>1 Then ScaleEntity p\Objects\Extra2, 0, 0, 0
+								Case CHAR_CHW:
+									MoveEntity p\Objects\Hips, 0, 3.2, 0
+									TurnEntity p\Objects\ArmL, -80, 0, 0
+								Case CHAR_EGG:
+									MoveEntity p\Objects\Hips, 0, 3.2, 0
+									ScaleEntity p\Objects\Extra2, 0, 0, 0
+							End Select
+						
+					End Select
+					If p\Online\Vehicle>0 Then
+						Player_PlacementsOfVehicle(p)
 					EndIf
 				EndIf
 			Next
@@ -837,7 +1008,7 @@
 					p.tPlayer = First tPlayer		
 					; send movement packet
 					BP_UDPMessage(0, UDPMSG_PLAYERMOVEMENT, String$(EntityX(p\Objects\Mesh)+"/"+EntityY(p\Objects\Mesh)+"/"+EntityZ(p\Objects\Mesh)+"/"+EntityPitch(p\Objects\Mesh)+"/"+EntityYaw(p\Objects\Mesh)+"/"+EntityRoll(p\Objects\Mesh),1))	
-					BP_UDPMessage(0, UDPMSG_PLAYERATTRIBUTES, String$(p\Action+"/"+p\Animation\Animation+"/"+p\SpeedLength+"/"+p\Motion\Ground+"/",1))
+					BP_UDPMessage(0, UDPMSG_PLAYERATTRIBUTES, String$(p\Action+"/"+p\Animation\Animation+"/"+p\SpeedLength+"/"+p\Motion\Ground+"/"+Game\Vehicle+"/",1))
 					; deal the tag and race attributes
 					If Game\Online\GameType=GAME_TYPE_TAG Then BP_UDPMessage(0,UDPMSG_TAGVALUES,onlineplayer(1)\Online\TagMode+"/"+onlineplayer(1)\Online\TagTimer+"/"+onlineplayer(1)\Online\TagCoolDown)
 					If Game\Online\GameType=GAME_TYPE_RACE Then BP_UDPMessage(0,UDPMSG_RACEVALUES,onlineplayer(1)\Online\RacePosition+"/"+onlineplayer(1)\Online\FinishedRace+"/"+onlineplayer(1)\Online\RaceTimer)
@@ -1124,6 +1295,7 @@ Function HandleMessages()
 					p\Animation\Animation 		= Int(BP_GetMessagePart(msg\msgData, 2))
 					p\SpeedLength# 				= Float(BP_GetMessagePart(msg\msgData, 3))
 					p\Motion\Ground 			= Int(BP_GetMessagePart(msg\msgData, 4))
+					p\Online\Vehicle 			= Int(BP_GetMessagePart(msg\msgData, 5))
 				EndIf
 			;------------------------------------------------------
 			Case UDPMSG_TAGVALUES ; handle tag
@@ -1253,11 +1425,9 @@ Function HandleMessages()
 			Case 6 ; Warp
 			p.tPlayer = FindPlayerData(msg\msgFrom)
 			
-			DebugLog("warping " + p\Online\Name)
 			;If p\Online\NetID<>BP_Host_ID Then
 				If Menu\Stage<>0  Then
 					Game\ControlLock=1.5*secs#
-					DebugLog("warping to" + msg\msgData)
 					PlaySmartSound(Sound_Teleport)
 					Menu\SelectedStage=GetStageNo(msg\msgData)
 					Menu_Stage_LoadMissions(Menu\SelectedStage, true)
