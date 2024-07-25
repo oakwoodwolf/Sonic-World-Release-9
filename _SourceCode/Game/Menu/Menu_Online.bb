@@ -21,6 +21,7 @@ GAMETYPE_DESCRIPTION$(7)="Hide as stage setpieces, blend in!"
 GAMETYPE_DESCRIPTION$(8)="Prevent set players from doing their runs!"
 GAMETYPE_DESCRIPTION$(9)="Escape the rising water levels!"
 GAMETYPE_DESCRIPTION$(10)="TBD"
+
 Function Interface_Render_PlayerMenu(p.tPlayer)
 	
 	DrawSmartKey_MovementGeneral((30)*GAME_WINDOW_SCALE#, (30+30*0)*GAME_WINDOW_SCALE#)
@@ -113,21 +114,71 @@ Function Interface_Render_PlayerMenu(p.tPlayer)
 	
 End Function
 Function Interface_Render_HostMenu(p.tPlayer)
-	DrawSmartKey_MovementGeneral((30)*GAME_WINDOW_SCALE#, (30+30*0)*GAME_WINDOW_SCALE#)
-	DrawRealText("Nothing yet", (30+15)*GAME_WINDOW_SCALE#, (30+30*0)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-	
-	DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, (30)*GAME_WINDOW_SCALE#, (30+30*1)*GAME_WINDOW_SCALE#)
-	DrawRealText("Confirm", (30+15)*GAME_WINDOW_SCALE#, (30+30*1)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-	
-	DrawSmartKey(INPUT_BUTTON_ACTIONROLL, (30)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#)
-	DrawRealText("Back", (30+15)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+
+	DrawRealText("Game Type", 12*GAME_WINDOW_SCALE#, (25)*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 0, 0, 255, 23, 23)
+	DrawRealText(GAMETYPE_DESCRIPTION(Game\Online\GameType+1),GAME_WINDOW_W/2, (85)*GAME_WINDOW_SCALE#, (Interface_Text_3), 1, 0, 63, 63, 63)
+	If Menu\Option2=1 Then
+		DrawRealText(GAMETYPE_NAME(Game\Online\GameType+1),GAME_WINDOW_W/2, (65)*GAME_WINDOW_SCALE#, (Interface_TextButtons2_1), 1, 0, 63, 63, 63)
+	Else
+		DrawRealText(GAMETYPE_NAME(Game\Online\GameType+1),GAME_WINDOW_W/2, (65)*GAME_WINDOW_SCALE#, (Interface_TextButtons_1), 1, 0, 63, 63, 63)
+	EndIf
+	DrawRealText("Stage", 12*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(75)*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 0, 0, 23, 128, 23)
+	Menu_Stage_LoadThumbnailAndMissions(Menu\Option)
+	Menu_UpdateStageNames(Menu\Option)
+	Menu_Stage_DrawThumbnailAndMissions(GAME_WINDOW_W/2,GAME_WINDOW_H/2+125*GAME_WINDOW_SCALE#,20*GAME_WINDOW_SCALE#)
+	If Menu\Option<=StageAmount And Menu\Option2=2 Then
+		DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W/2-200*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(65)*GAME_WINDOW_SCALE#,19)
+		DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W/2+200*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+(65)*GAME_WINDOW_SCALE#,18)
+		DrawRealText(Menu\StageName$,GAME_WINDOW_W/2, GAME_WINDOW_H/2+(65)*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 1, 0, 63, 63, 63)
+	EndIf
+	If Input\Pressed\Right And Menu\Option2=2 Then
+		PlaySmartSound(Sound_MenuMove)
+		Menu\Option=Menu\Option+1
+		If Menu\Option>StageAmount Then Menu\Option=1
+		Menu\LoadThumbnailAndMissions=True
+
+	EndIf
+	If Input\Pressed\Down Or  Input\Pressed\Up Then
+		PlaySmartSound(Sound_MenuMove)
+		Menu\Option2=Menu\Option2+1
+		If Menu\Option2>2 Then Menu\Option2=1
+	EndIf
+	If Input\Pressed\Left And Menu\Option2=2 Then
+		PlaySmartSound(Sound_MenuMove)
+		Menu\Option=Menu\Option-1
+		If Menu\Option<1 Then Menu\Option=StageAmount
+		Menu\LoadThumbnailAndMissions=True
+
+	EndIf
 	If Input\Pressed\ActionJump Then
-		PlaySmartSound(Sound_MenuBack)
-		FlushKeys()
-		UnPause()
+		PlaySmartSound(Sound_MenuAccept)
+		Select Menu\Option2
+		Case 1:
+			Game\Online\GameType=Game\Online\GameType+1
+			If Game\Online\GameType>3 Then Game\Online\GameType=0
+			BP_SetGameType(Game\Online\GameType)
+			Info("Gametype set to " + GAMETYPE_NAME(Game\Online\GameType+1))
+		Case 2:
+			PlaySmartSound(Sound_MenuAccept)
+			Menu\SelectedStage=Menu\Option
+			Menu_Stage_LoadMissions(Menu\SelectedStage, true)
+			Menu_GoToStage_SetMission(1)
+			Chatting\Allowed=0
+			BP_UDPMessage (0,6, StageName(Menu\SelectedStage))
+			Game_Stage_Quit(2)
+			FlushKeys()
+			UnPause()
+		End Select
+	
 	EndIf	
 	If Input\Pressed\ActionRoll Then
 		PlaySmartSound(Sound_MenuBack)
 		Menu\PauseScreen=0 : Menu\Option=1
 	EndIf	
+	DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2-(40)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+( -20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeyJump[Menu\Settings\PrimaryController#])
+					DrawRealText("Select", GAME_WINDOW_W/2+(-10)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+( -20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+					DrawSmartKey(INPUT_BUTTON_ACTIONROLL, GAME_WINDOW_W/2-(40-200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+( -20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeyRoll[Menu\Settings\PrimaryController#])
+					DrawRealText("Move", GAME_WINDOW_W/2+(-10-200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+( -20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+					DrawSmartKey_MovementGeneral(GAME_WINDOW_W/2-(40+200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+( -20)*GAME_WINDOW_SCALE#)
+					DrawRealText("Back", GAME_WINDOW_W/2+(-10+200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+( -20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 End Function
