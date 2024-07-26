@@ -1508,7 +1508,7 @@
 
 		If Game\Shield<>Game\PreviousShield Then
 			For ppp.tPlayer = Each tPlayer
-			If Player_IsPlayable(ppp) Then
+			If Player_IsPlayable(ppp) And ppp\Online\IsLocal Then
 				If Game\PreviousShield>0 Then FreeEntity ppp\Objects\Shield
 				Select Game\Shield
 					Case OBJTYPE_NSHIELD: ppp\Objects\Shield = CopyEntity(MESHES(SmartEntity(Mesh_ShieldNormal)), Game\Stage\Root)
@@ -1517,7 +1517,7 @@
 					Case OBJTYPE_TSHIELD: ppp\Objects\Shield = CopyEntity(MESHES(SmartEntity(Mesh_ShieldThunder)), Game\Stage\Root)
 					Case OBJTYPE_ESHIELD: ppp\Objects\Shield = CopyEntity(MESHES(SmartEntity(Mesh_ShieldEarth)), Game\Stage\Root)
 				End Select
-				If Game\Shield>0 Then ScaleEntity ppp\Objects\Shield, 1+ppp\ScaleFactor#, 1+ppp\ScaleFactor#, 1+ppp\ScaleFactor#
+				If Game\Shield>0 And  ppp\Online\IsLocal Then ScaleEntity ppp\Objects\Shield, 1+ppp\ScaleFactor#, 1+ppp\ScaleFactor#, 1+ppp\ScaleFactor#
 			EndIf
 			Next
 			Game\PreviousShield=Game\Shield
@@ -1525,7 +1525,7 @@
 
 		If Game\Shield>0 Then
 			For ppp.tPlayer = Each tPlayer
-			If Player_IsPlayable(ppp) and (Not(ppp\Action=ACTION_TORNADO)) Then
+			If Player_IsPlayable(ppp) and (Not(ppp\Action=ACTION_TORNADO)) And ppp\Online\IsLocal Then
 				Player_ShieldPlacement(ppp)
 			EndIf
 			Next

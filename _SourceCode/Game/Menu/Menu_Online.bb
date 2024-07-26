@@ -196,7 +196,6 @@ Function Interface_Render_HostMenu(p.tPlayer)
 End Function
 
 Function DrawPingMenu()
-	BP_PingClients()
 	no=1
 	For p.tPlayer = Each tPlayer
 		ninfo.NetInfo = BP_FindID(p\Online\NetID)
