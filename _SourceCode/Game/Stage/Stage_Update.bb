@@ -1553,13 +1553,14 @@ Function Update_GameModes()
 		Case GAME_TYPE_HIDENSEEK
 		; >---------
 		Case GAME_TYPE_RACE
+		me_p.tPlayer=First tPlayer
+		If BP_GetHostID()=me_p\Online\NetID Then BP_UDPMessage(0, 29, Game\Online\GTState)
 		Select Game\Online\GTState:
 		Case 0:
 			Game\ControlLock=0.1*secs#
 			Game\Gameplay\Time=0
 			If HasEveryoneJoined() Then
 				DebugLog("Everyone joined")
-				PlaySmartSound(Sound_Warp)
 				Game\Online\GTState=1
 				Game\Online\Countdown=10*secs#
 			End if
@@ -1577,21 +1578,26 @@ Function Update_GameModes()
 				Next
 				If Menu\Mission=MISSION_RIVAL# Then Gameplay_SetRings(5)
 			EndIf
+		Case 3:
+			If BP_GetHostID()=me_p\Online\NetID Then BP_UDPMessage(0, 29, Game\Online\GTState)
+			Game\Online\Countdown=Game\Online\Countdown-timervalue#
+			If (Not Game\Online\Countdown>0) Then
+				Game\Online\GTState=0
+				If me_p\Online\NetID=BP_GetHostID() Then
+					Player_ResetGamemodeValues(me_p)
+					BP_UDPMessage(0,3,"respawn all")
+				EndIf
+			EndIf
 		Default:
 			; handle race mode
 			; did everyone finish the race...
-			me_p.tPlayer=First tPlayer
 			If BP_GetHostID()=me_p\Online\NetID Then BP_UDPMessage(0, 29, Game\Online\GTState)
 			;other_p.tPlayer After tPlayer
 			
 			If HasEveryoneFinishedTheRace() Then
 				Info("Race Has Finished!", 255,20,128)
-				DrawRealText("Race Has Finished!", GAME_WINDOW_W/2, GAME_WINDOW_H/2-Game\Interface\ResultTitlePosition#*GAME_WINDOW_SCALE#, (Interface_TextRecords_1), 1)
-				
-				If me_p\Online\NetID=BP_GetHostID() Then
-					Player_ResetGamemodeValues(me_p)
-					BP_UDPMessage(0,3,"respawn all")
-				EndIf
+				Game\Online\Countdown=10*secs#
+				Game\Online\GTState=3				
 			Else
 				Game\Online\RaceFinished=False
 			End if

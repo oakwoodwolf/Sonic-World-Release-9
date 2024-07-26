@@ -221,7 +221,10 @@ End Function
 Function DrawGametypeOverlay()
 	Select Game\Online\GameType:
 	Case GAME_TYPE_RACE
-		If Game\Online\GTState=0 Then DrawRealText("Waiting for other players to load.", GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
-		If Game\Online\GTState=1 Then DrawBetterNumber(Game\Online\Countdown/secs#, GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, 2, 1)
+		Select Game\Online\GTState
+			Case 0: DrawRealText("Waiting for other players to load.", GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
+			Case 1: DrawBetterNumber(Game\Online\Countdown/secs#, GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, 2, 0)
+			Case 3: DrawRealText("Race Finished", GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 1,0,128,128,16)
+		End Select
 	End Select
 End Function
