@@ -1381,7 +1381,7 @@ Function Player_GetClosestObject(p.tPlayer, mode=1)
 			mayhom=true
 			If o\IsInBox=0 and ( ((Not(Game\CheeseTimer>0 Or Game\FroggyTimer>0)) and o\CanHoming) Or ((Game\CheeseTimer>0 Or Game\FroggyTimer>0) and o\CheeseCanHoming) ) Then mayhom=true Else mayhom=false
 			If o\ObjType=OBJTYPE_HOMMER Then
-				If (p\No#>0 and o\State=-1) Or (p\No#<0 and o\State=1) Then mayhom=true Else mayhom=false
+				If (p\No#>0 and o\State=-1 and (Game\Online\PVP Or Menu\Mission=MISSION_RIVAL)) Or (p\No#<0 and o\State=1) Then mayhom=true Else mayhom=false
 			EndIf
 			If p\No#<0 and (Not(o\ObjType=OBJTYPE_HOMMER)) Then mayhom=false
 			If o\ThisIsAnEnemy Then

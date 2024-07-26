@@ -1254,7 +1254,7 @@
 				Player_Spawn(Game\Gameplay\CheckX#,Game\Gameplay\CheckY#+7,Game\Gameplay\CheckZ#,Game\Gameplay\CheckDirection#)
 			EndIf
 			Player_PlayTurnVoice(p)
-
+			p\HurtTimer=5*secs#
 			If Not BP_Online Then Gameplay_SubstractLives(abs(p\DieButDontLoseLife-1))
 
 			Game\Stage\Properties\MusicMode=Game\Gameplay\CheckMusicMode

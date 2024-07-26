@@ -341,7 +341,7 @@ End Function
 
 		b\Particle = ParticleTemplate_Create.tParticleTemplate()
 
-		If Menu\Mission=MISSION_RIVAL# Then
+		If Menu\Mission=MISSION_RIVAL# Or Game\Online\PVP Then
 			If p\No#>0 Then b\HurtPlayer=-1 ElseIf p\No#<0 Then b\HurtPlayer=1
 		EndIf
 

@@ -187,6 +187,15 @@ Function Interface_Render_HostMenu(p.tPlayer)
 		PlaySmartSound(Sound_MenuBack)
 		Menu\PauseScreen=0 : Menu\Option=1
 	EndIf	
+	If Input\Pressed\ActionSkill3  Then
+		PlaySmartSound(Sound_EggmanHurt)
+		Game\Online\PVP = Not Game\Online\PVP
+		Select Game\Online\PVP
+			Case True : Info("PVP is ENABLED!", 0,255,255)
+			Case False : Info("PVP is Disabled...", 0,255,255)
+		End Select
+		BP_UDPMessage(0,28,Game\Online\PVP)
+	EndIf
 	DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2-(40)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+( -20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeyJump[Menu\Settings\PrimaryController#])
 					DrawRealText("Select", GAME_WINDOW_W/2+(-10)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+( -20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 					DrawSmartKey(INPUT_BUTTON_ACTIONROLL, GAME_WINDOW_W/2-(40-200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+( -20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeyRoll[Menu\Settings\PrimaryController#])

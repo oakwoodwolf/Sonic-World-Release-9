@@ -1100,7 +1100,7 @@
 
 			; Rival
 			If p\No#<0 And (Game\Online\Online=False) Then Player_Rival(p,d)
-			If p\No#=1 And Game\Online\Online=True Then Player_PVP(p,d)
+			If p\No#=1 And Game\Online\Online=True And Game\Online\PVP=True And (Not (Game\Online\GTState=1 And Game\Online\GameType=GAME_TYPE_RACE)) Then Player_PVP(p,d)
 		Else
 			Player_Motion_Placements(p)
 		EndIf

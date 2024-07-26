@@ -1337,6 +1337,14 @@ Function HandleMessages()
 					Case 3 : Info("Game Mode is 'Racing'", 0,255,255)
 					Case 4 : Info("Game Mode is 'Free'", 0,255,255)
 				End Select
+			Case 28 ; PVP
+			;------------------------------------------------------
+				Game\Online\PVP=msg\msgData
+				PlaySmartSound(Sound_EggmanHurt)
+				Select Game\Online\PVP
+					Case True : Info("PVP is ENABLED!", 0,255,255)
+					Case False : Info("PVP is Disabled...", 0,255,255)
+				End Select
 			;------------------------------------------------------
 			Case 3 ; Various Packet
 			;------------------------------------------------------
@@ -1555,8 +1563,10 @@ Function Update_GameModes()
 			If (Not Game\Online\Countdown>0) Then
 				Game\Online\GTState=2
 				PlaySmartSound(Sound_Goal)
+				
 				For ppp.tPlayer = Each tPlayer
 					Player_PlayTurnVoice(ppp)
+					ppp\HurtTimer=5*secs#
 				Next
 			EndIf
 		Default:
