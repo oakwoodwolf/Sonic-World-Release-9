@@ -222,7 +222,7 @@
 			FreeTexture Game\Stage\Properties\SpecialStageTexture
 			FreeTexture Game\Stage\Properties\SpecialStageSkydomeTexture
 		EndIf
-
+		Game\Online\GTState=0
 		FreeEntity Game\Stage\Properties\GeneralLight
 		FreeEntity Game\Stage\Properties\GeneralLightPivot
 		FreeEntity Game\Stage\Root

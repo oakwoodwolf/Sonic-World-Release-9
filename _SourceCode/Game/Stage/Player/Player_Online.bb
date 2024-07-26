@@ -15,6 +15,7 @@ Function Player_CreateOnlineData(p.tPlayer, pname$, pid%, no%, localplayer%=True
 	p\Online\No=no	
 	p\Online\IsLocal=localplayer
 	p\Online\ShowTag=True
+	p\Online\Joined=False
 	p\Online\PrevColorR=255:p\Online\PrevColorG=255:p\Online\PrevColorB=255
 	p\Online\PrevColorR= rnd (75,255):p\Online\PrevColorG=rnd(75,255):p\Online\PrevColorB=rnd(75,255)
 	; non-local players will get things local won't.
@@ -61,6 +62,14 @@ function HasEveryoneFinishedTheRace()
 	t = 0
 	For p.tPlayer = Each tPlayer
 		t = t + p\Online\FinishedRace
+	Next
+	If t = PlayerNo Return True Else Return False
+
+end function 
+function HasEveryoneJoined()
+	t = 0
+	For p.tPlayer = Each tPlayer
+		t = t + p\Online\Joined
 	Next
 	If t = PlayerNo Return True Else Return False
 
@@ -264,6 +273,7 @@ Function Game_OnlineMsgOfTheDay()
 
 	Function Player_ResetGamemodeValues(p.tPlayer)
 		Game\Victory=0
+		Game\Online\GTState=0
 		Gameplay_SetRings(0)
 		If Game\Gameplay\Flickies>0 Then
 			Gameplay_SetFlickies(0)

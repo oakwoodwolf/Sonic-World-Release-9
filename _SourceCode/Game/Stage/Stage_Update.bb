@@ -999,10 +999,11 @@
 			If Game\Online\SendCount<=0 Then
 				Game\Online\SendCount = Game\Online\SendFreq	
 				If Game\Online\SendUpdates Then	
-					p.tPlayer = First tPlayer		
+					p.tPlayer = First tPlayer	
+					p\Online\Joined=True	
 					; send movement packet
 					BP_UDPMessage(0, UDPMSG_PLAYERMOVEMENT, String$(EntityX(p\Objects\Mesh)+"/"+EntityY(p\Objects\Mesh)+"/"+EntityZ(p\Objects\Mesh)+"/"+EntityPitch(p\Objects\Mesh)+"/"+EntityYaw(p\Objects\Mesh)+"/"+EntityRoll(p\Objects\Mesh),1))	
-					BP_UDPMessage(0, UDPMSG_PLAYERATTRIBUTES, String$(p\Action+"/"+p\Animation\Animation+"/"+p\SpeedLength+"/"+p\Motion\Ground+"/"+Game\Vehicle+"/",1))
+					BP_UDPMessage(0, UDPMSG_PLAYERATTRIBUTES, String$(p\Action+"/"+p\Animation\Animation+"/"+p\SpeedLength+"/"+p\Motion\Ground+"/"+p\Online\Joined+"/"+Game\Vehicle+"/",1))
 					; deal the tag and race attributes
 					If Game\Online\GameType=GAME_TYPE_TAG Then BP_UDPMessage(0,UDPMSG_TAGVALUES,onlineplayer(1)\Online\TagMode+"/"+onlineplayer(1)\Online\TagTimer+"/"+onlineplayer(1)\Online\TagCoolDown)
 					If Game\Online\GameType=GAME_TYPE_RACE Then BP_UDPMessage(0,UDPMSG_RACEVALUES,onlineplayer(1)\Online\RacePosition+"/"+onlineplayer(1)\Online\FinishedRace+"/"+onlineplayer(1)\Online\RaceTimer)
@@ -1289,7 +1290,8 @@ Function HandleMessages()
 					p\Animation\Animation 		= Int(BP_GetMessagePart(msg\msgData, 2))
 					p\SpeedLength# 				= Float(BP_GetMessagePart(msg\msgData, 3))
 					p\Motion\Ground 			= Int(BP_GetMessagePart(msg\msgData, 4))
-					p\Online\Vehicle 			= Int(BP_GetMessagePart(msg\msgData, 5))
+					p\Online\Joined 			= Int(BP_GetMessagePart(msg\msgData, 5))
+					p\Online\Vehicle 			= Int(BP_GetMessagePart(msg\msgData, 6))
 				EndIf
 			;------------------------------------------------------
 			Case UDPMSG_TAGVALUES ; handle tag
@@ -1544,6 +1546,15 @@ Function Update_GameModes()
 		Case GAME_TYPE_HIDENSEEK
 		; >---------
 		Case GAME_TYPE_RACE
+		Select Game\Online\GTState:
+		Case 0:
+			Game\ControlLock=0.1*secs#
+			Game\Gameplay\Time=0
+			If HasEveryoneJoined() Then
+				DebugLog("Everyone joined")
+				Game\Online\GTState=1
+			End if
+		Default:
 			; handle race mode
 			; did everyone finish the race...
 			me_p.tPlayer=First tPlayer
@@ -1559,17 +1570,7 @@ Function Update_GameModes()
 			Else
 				Game\Online\RaceFinished=False
 			End if
-		
-			;			PositionEntity p\Objects\Entity, 0, 10, 0
-			;;;			PositionEntity p\Objects\Mesh, 0, 10, 0	
-			;			Vector_Set(p\Motion\Speed, 0, 0 ,0)
-			;			ResetEntity(p\Objects\Entity)	
-			;			BP_UDPMessage(0,3,"respawn all");Player_BringAllToHost()		
-			;;			p\Online\RacePosition=0
-			;			p\Online\FinishedRace=0	
-			;		EndIf
-			;	EndIf
-			;Next		
+		End Select		
 		Default	
 	End Select
 End Function

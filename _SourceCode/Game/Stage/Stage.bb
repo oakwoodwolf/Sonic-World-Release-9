@@ -674,10 +674,6 @@ Next
 												value=value+1
 												If nInfo\Net_id<>BP_My_ID Then Player_Create(-value,0,1,False,nInfo\Name,nInfo\Net_id)
 											Next
-											;Repeat
-											;	BP_FindID(value)
-											;	value=value+1
-											;Until value=BP_MaxPlayers
 										EndIf
 										ch.tCheese = Object_Cheese_Create.tCheese()
 										f.tFroggy = Object_Froggy_Create.tFroggy()
@@ -4638,6 +4634,7 @@ Next
 			For p.tPlayer=Each tPlayer
 				If p\No#=1 Then
 					If Menu\ChaoGarden=0 Or Menu\Stage=999 Then Player_PlayTurnVoice(p)
+					
 					BP_UDPMessage(0,4, String(p\Character,1))
 				EndIf
 			Next

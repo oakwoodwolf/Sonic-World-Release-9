@@ -207,3 +207,9 @@ Function DrawPingMenu()
 		
 	Next
 End Function
+Function DrawGametypeOverlay()
+	Select Game\Online\GameType:
+	Case GAME_TYPE_RACE
+		If Game\Online\GTState=0 Then DrawRealText("Waiting for other players to load.", GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
+	End Select
+End Function
