@@ -312,3 +312,39 @@ Function Game_OnlineMsgOfTheDay()
 				DebugLog(Menu\Mission)
 		End Select
 	End Function
+
+	Function Player_PVP(p.tPlayer, d.tDeltaTime)
+		ppp.tPlayer=GetClosestPlayer(7)
+		If ppp<>Null Then
+			
+			If ppp\Flags\Attacking And p\Flags\Attacking Then
+				If ppp\Action=ACTION_STOMP Then rockP=true else rockP=false
+				If p\Action=ACTION_STOMP Then rockE=true else rockE=false
+				If ppp\Action=ACTION_CHARGE Or ppp\Action=ACTION_ROLL Or ppp\Action=ACTION_DRIFT Then paperP=true else paperP=false
+				If p\Action=ACTION_CHARGE Or p\Action=ACTION_ROLL Or p\Action=ACTION_DRIFT Then paperE=true else paperE=false
+				If rockP=false and paperP=false and ppp\Flags\Attacking Then scissorsP=true Else scissorsP=False
+				If rockE=false and paperE=false and p\Flags\Attacking Then scissorsE=true Else scissorsE=False
+				
+				DebugLog("You" + p\Online\Name + " r:"+rockE+ " p:"+paperE+ " s:"+scissorsE)
+				DebugLog("He" + ppp\Online\Name + " r:"+rockP+ " p:"+paperP+ " s:"+scissorsP)
+				If (rockP and scissorsE) or (paperP and rockE) or (scissorsP and paperE) Then
+					BP_UDPMessage(p\Online\NetID, 3, "hurt")
+				ElseIf (rockP and paperE) or (paperP and scissorsE) or (scissorsP and rockE) Then
+					BP_UDPMessage(ppp\Online\NetID, 3, "hurt")
+				Else
+					p\Motion\Ground=False : p\Action=ACTION_FALL : Player_SetSpeed(p,-1.75) : p\Motion\Speed\y#=0.4
+					ppp\Motion\Ground=False : ppp\Action=ACTION_FALL : Player_SetSpeed(ppp,-1.75) : ppp\Motion\Speed\y#=0.4
+				EndIf
+				ParticleTemplate_Call(p\SmokeParticle, PARTICLE_PLAYER_CONTACTSPARK, p\Objects\Mesh, 1+p\ScaleFactor#*0.1)
+				ParticleTemplate_Call(ppp\SmokeParticle, PARTICLE_PLAYER_CONTACTSPARK, p\Objects\Mesh, 1+p\ScaleFactor#*0.1)
+			ElseIf p\Flags\Attacking=False and (ppp\Flags\Attacking and (Not(ppp\Action=ACTION_JUMP))) Then
+				BP_UDPMessage(p\Online\NetID, 3, "hurt")
+				DebugLog("You" + p\Online\Name + " r:"+rockE+ " p:"+paperE+ " s:"+scissorsE)
+				ParticleTemplate_Call(p\SmokeParticle, PARTICLE_PLAYER_CONTACTSPARK, p\Objects\Mesh, 1+p\ScaleFactor#*0.1)
+			ElseIf (p\Flags\Attacking and (Not(p\Action=ACTION_JUMP))) and ppp\Flags\Attacking=False Then
+				BP_UDPMessage(ppp\Online\NetID, 3, "hurt")
+				DebugLog("He" + ppp\Online\Name + " r:"+rockP+ " p:"+paperP+ " s:"+scissorsP)
+				ParticleTemplate_Call(ppp\SmokeParticle, PARTICLE_PLAYER_CONTACTSPARK, p\Objects\Mesh, 1+p\ScaleFactor#*0.1)
+			EndIf
+		EndIf
+	End Function

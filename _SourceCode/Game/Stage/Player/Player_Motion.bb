@@ -589,7 +589,28 @@
 								MoveEntity p\Objects\Vehicle, 0, 1.05+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
 						End Select
 				EndIf
-		
+				; Determine if attacking
+				If p\Flags\StronglyAttacking Or p\Action=ACTION_JUMP Or p\Action=ACTION_HOP Or p\Action=ACTION_CHARGE Or p\Action=ACTION_ROLL Or p\Action=ACTION_DRIFT Or p\Action=ACTION_HOMING Or p\Action=ACTION_BUMPED Then
+					p\Flags\Attacking=True
+					If Not(p\Flags\TargeterTimer>0) Then p\Flags\Targeter=0
+				Else
+					p\Flags\Attacking=False
+					p\Flags\Targeter=0
+				EndIf
+
+				; Determine if attacking strongly
+				If p\Action=ACTION_STOMP Or (p\Action=ACTION_GLIDE and Menu\ChaoGarden=0) Or p\Action=ACTION_SPRINT Or p\Action=ACTION_PUNCH Or p\Action=ACTION_THRUST Or p\Action=ACTION_SWIPE Or p\Action=ACTION_UPPERCUT Or p\Action=ACTION_CLAW Or (p\Action=ACTION_THROW and (p\Character=CHAR_KNU Or p\Character=CHAR_HBO Or p\Character=CHAR_STO Or p\Character=CHAR_MET Or p\Character=CHAR_MT3)) Or (p\Action=ACTION_BOARD and (p\GrindTurn=2 Or p\SpeedLength#>1)) Or p\Action=ACTION_BOARDJUMP Or p\Action=ACTION_BOARDFALL Or p\Action=ACTION_BOARDDRIFT Or p\Action=ACTION_BOARDTRICK Or p\Action=ACTION_GLIDER Or ((p\Action=ACTION_CAR Or p\Action=ACTION_CARFALL Or p\Action=ACTION_CARDRIFT) and (p\SpeedLength#>1 Or p\Motion\Speed\y#>1)) Or p\Action=ACTION_BELLYFLOP Or p\Action=ACTION_TORNADO Then
+					p\Flags\StronglyAttacking=True
+				Else
+					p\Flags\StronglyAttacking=False
+				EndIf
+
+				; Determine if doing air attack
+				If (p\Action=ACTION_GLIDE and Menu\ChaoGarden=0) Or p\Action=ACTION_PUNCH Or p\Action=ACTION_THRUST Or p\Action=ACTION_SWIPE Or p\Action=ACTION_SPRINT Or p\Action=ACTION_CLAW Or p\Action=ACTION_UPPERCUT Then
+					p\Flags\InAirAttack=True
+				Else
+					p\Flags\InAirAttack=False
+				EndIf
 	End Function
 	Function Player_Motion_PetPlacements(p.tPlayer)
 		Select p\Character

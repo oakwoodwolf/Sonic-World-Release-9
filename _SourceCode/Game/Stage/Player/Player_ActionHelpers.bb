@@ -1119,11 +1119,9 @@
 						BP_UDPMessage(0, 3, "die")
 					Else
 						Player_Hurt(p)
-						BP_UDPMessage(0, 3, "hurt")
 					EndIf
 				Else
 					Player_Hurt(p)
-					BP_UDPMessage(0, 3, "hurt")
 				EndIf
 			EndIf
 		EndIf

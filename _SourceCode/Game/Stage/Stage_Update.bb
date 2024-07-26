@@ -1359,7 +1359,8 @@ Function HandleMessages()
 					Case "respawn all"
 						Player_ResetGamemodeValues(onlineplayer(1))
 					Case "hurt"
-						Player_Hurt(p)
+						Player_Hit(pp(1))
+						Info(pp(1)\Online\Name + " got attacked by " + p\Online\Name)
 					Case "die"
 						;p.tPlayer = First tPlayer
 						;Player_Die(p)
