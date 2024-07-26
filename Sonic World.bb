@@ -194,7 +194,7 @@ Menu\GameStarted=1
 	FreeImage Avatars
 
 	While(1)
-		If (KeyHit(KEY_ESCAPE)) And Menu\Settings\Debug#=1 Then Game_End()
+		If (KeyHit(KEY_ESCAPE)) And Menu\Settings\Debug#=1 And BP_Online=False Then Game_End()
 		WaitTimer(Game\Others\FpsLimit)
 		Game\Online\Online=BP_Online
 		Game_Update()

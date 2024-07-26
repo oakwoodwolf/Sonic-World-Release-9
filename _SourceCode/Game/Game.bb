@@ -328,6 +328,7 @@ End Function
 		Field 	RaceFinished
 		Field 	GTState = 0
 		Field   MsgOfTheDay$, ShowMsg, ShowCommands
+		Field 	Countdown
 	End Type
 
 	Type tGame_Gameplay
@@ -500,6 +501,11 @@ End Function
 	Const		GAME_TYPE_ALTITUDE	=	8
 
 	Const FPS_LIMIT = 60
+
+Function ChangeFramerate(framerate)
+	If Game\Others\FpsLimit<>0 Then FreeTimer(Game\Others\FpsLimit)
+	Game\Others\FpsLimit=CreateTimer(framerate)
+End Function
 	
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/

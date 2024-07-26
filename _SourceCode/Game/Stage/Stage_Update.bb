@@ -575,7 +575,7 @@
 		Else
 			If Menu\MeshChaoEmoActivated>0 Then Object_ChaoEmo_Update(Menu\Mesh[2], Menu\MeshChaoEmo, d)
 		EndIf
-		Update_GameModes()
+		If BP_Online Then Update_GameModes()
 		; Update timers
 		If Game\StartoutLock>0 Then Game\StartoutLock=Game\StartoutLock-timervalue#
 		If Game\ControlLock>0 Then Game\ControlLock=Game\ControlLock-timervalue#
@@ -1397,21 +1397,7 @@ Function HandleMessages()
 					Case 6 : Channel_Gag=PlaySmartSound(Sound_Fart)
 					Case 7 : Channel_Gag=PlaySmartSound(Sound_Pingas)
 				End Select
-			;------------------------------------------------------			
-			Case 4 ; Spawn Object
-			;------------------------------------------------------
-				; apply the values
-				objtype_$  						= BP_GetMessagePart(msg\msgData, 1)
-				posx#		 					= Float(BP_GetMessagePart(msg\msgData, 2))
-				posy#							= Float(BP_GetMessagePart(msg\msgData, 3))
-				posz#							= Float(BP_GetMessagePart(msg\msgData, 4))
-				; what obj was it
-				Select objtype_
-					Case "ring"
-						obj.tObject = Object_Ring_Create(posx#, posY#, posZ#)
-					Case "monitor"
-						obj.tObject = Object_Monitor_Create(0, posX#, posY#, posZ#)
-				End Select
+			;------------------------------------------------------		
 			;------------------------------------------------------			
 			Case 5 ; Camera
 			;------------------------------------------------------
@@ -1485,6 +1471,11 @@ Function HandleMessages()
 				value		 		= Int(BP_GetMessagePart(msg\msgData, 3, "/"))
 
 				If Not Game\Online\Hosting Then If (Abs(Game\Gameplay\Time-time)>1000) Then Game\Gameplay\Time=time
+			Case 29 ; Gamemode state
+				p.tPlayer = FindPlayerData(msg\msgFrom)
+				If BP_Host_ID<>p\Online\NetID Then Game\Online\GTState = msg\msgData
+
+				If Not Game\Online\Hosting Then If (Abs(Game\Gameplay\Time-time)>1000) Then Game\Gameplay\Time=time
 		End Select
 		Delete msg
 	Next ;!!!!
@@ -1552,12 +1543,26 @@ Function Update_GameModes()
 			Game\Gameplay\Time=0
 			If HasEveryoneJoined() Then
 				DebugLog("Everyone joined")
+				PlaySmartSound(Sound_Warp)
 				Game\Online\GTState=1
+				Game\Online\Countdown=10*secs#
 			End if
+		Case 1:
+			Game\ControlLock=0.1*secs#
+			Game\Gameplay\Time=0
+			Game\Online\Countdown=Game\Online\Countdown-timervalue#
+			If (Not Game\Online\Countdown>0) Then
+				Game\Online\GTState=2
+				PlaySmartSound(Sound_Goal)
+				For ppp.tPlayer = Each tPlayer
+					Player_PlayTurnVoice(ppp)
+				Next
+			EndIf
 		Default:
 			; handle race mode
 			; did everyone finish the race...
 			me_p.tPlayer=First tPlayer
+			If BP_GetHostID()=me_p\Online\NetID Then BP_UDPMessage(0, 29, Game\Online\GTState)
 			;other_p.tPlayer After tPlayer
 			If HasEveryoneFinishedTheRace() Then
 				Info("Race Has Finished!", 255,20,128)

@@ -101,6 +101,7 @@ Next
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
 	Function Game_Stage_Start()
+	ChangeFramerate(999)
 	SetFont LilFont
 
 		; gamepad sensitivity
@@ -4635,7 +4636,7 @@ Next
 				If p\No#=1 Then
 					If Menu\ChaoGarden=0 Or Menu\Stage=999 Then Player_PlayTurnVoice(p)
 					
-					BP_UDPMessage(0,4, String(p\Character,1))
+					BP_UDPMessage(0,4, String(p\RealCharacter,1))
 				EndIf
 			Next
 			Game\StartoutLock=1*secs#
@@ -4735,7 +4736,7 @@ Next
 
 		; Create fade-in transition effect
 		PostEffect_Create_FadeIn(0.01, 10, 10, 10)
-
+		ChangeFramerate(75)
 	FlushAll()
 	SetFont MidFont
 	End Function

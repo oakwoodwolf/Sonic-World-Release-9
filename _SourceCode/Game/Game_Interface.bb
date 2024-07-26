@@ -368,15 +368,18 @@ End Function
 			spacing=spacing+1
 		EndIf
 		Select Game\Online\GameType
-			Case GAME_TYPE_RACE:
 			Case GAME_TYPE_TAG,GAME_TYPE_HIDENSEEK:
 				For ppp.tPlayer = Each tPlayer
 					If ppp\Online\TagMode=TAG_IS_IT Then
 						DrawImageEx(INTERFACE(Interface_Icons), 30*GAME_WINDOW_SCALE#, (30+(spacing*33))*GAME_WINDOW_SCALE#, 15)
+						If (ppp\Online\TagTimer<10) And Menu\Pause=0 Then
+							flash=Sin#(MilliSecs() Mod 255) : SetColor(255,(255*flash)*d\Delta,(255*flash)*d\Delta)
+						EndIf
 						DrawNumber((ppp\Online\TagTimer/60), 58*GAME_WINDOW_SCALE#, (30+(spacing*33))*GAME_WINDOW_SCALE#, 2)
 						DrawImageEx(INTERFACE(Interface_Numbers), 94*GAME_WINDOW_SCALE#, (30+(spacing*33))*GAME_WINDOW_SCALE#, 10)
 						DrawNumber((ppp\Online\TagTimer) Mod 60, 108*GAME_WINDOW_SCALE#, (30+(spacing*33))*GAME_WINDOW_SCALE#, 2)
 						spacing=spacing+1
+						SetColor(255, 255, 255)
 					EndIf
 				Next
 		End Select
@@ -1367,7 +1370,7 @@ Function Interface_DrawChat(x#=0, y#=0, csize=1, orientation=1)
 	SetColor(255,255,255):SetAlpha(1.0)
 	SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
 	; cancel chat
-	if (KeyHit(KEY_DELETE)) and Chatting\Allowed>0 Then Chatting\Txt$="" : Chatting\PauseTimer=0.25*secs# : Chatting\Allowed=0 : FlushKeys() 
+	if (KeyHit(KEY_DELETE) Or KeyHit(KEY_ESCAPE)) and Chatting\Allowed>0 Then Chatting\Txt$="" : Chatting\PauseTimer=0.25*secs# : Chatting\Allowed=0 : FlushKeys() 
 end function
 
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
