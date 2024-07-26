@@ -869,6 +869,7 @@
 				Case CHAR_CHA:
 					Object_Bomb_Create.tBomb(p, p\Objects\Position\x#, p\Objects\Position\y#-3, p\Objects\Position\z#, 0, p\Animation\Direction#-180, 0, BOMB_FLOWER, -1)
 			End Select
+			BP_UDPMessage(0, 10, -1)
 			p\BombThrown=p\BombThrown+1
 		EndIf
 	End Function
@@ -1035,6 +1036,7 @@
 				Case CHAR_INF
 					Object_Bomb_Create5(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Animation\Direction#-180+360, 0, BOMB_CUBETRAIL)
 			End Select
+			BP_UDPMessage(0, 10, p\ThrowType)
 		EndIf
 
 		If (Not(Animating(p\Objects\Mesh))) Then

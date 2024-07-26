@@ -1366,9 +1366,10 @@ Function HandleMessages()
 						PlaySmartSound(Sound_Teleport)
 					Case "respawn all"
 						Player_ResetGamemodeValues(onlineplayer(1))
+					Case "bomb"
+						If p<>pp(1) Then PlayerForceBomb(p,0)
 					Case "hurt"
 						Player_Hit(pp(1))
-						Info(pp(1)\Online\Name + " got attacked by " + p\Online\Name)
 					Case "die"
 						;p.tPlayer = First tPlayer
 						;Player_Die(p)
@@ -1415,6 +1416,12 @@ Function HandleMessages()
 				p\Online\CamX#  				=  Float(BP_GetMessagePart(msg\msgData, 1))
 				p\Online\CamY#		 			=  Float(BP_GetMessagePart(msg\msgData, 2))
 				p\Online\CamZ#					=  Float(BP_GetMessagePart(msg\msgData, 3))
+			Case 10 ; Bomb
+			;------------------------------------------------------
+				; apply the values
+				p.tPlayer = FindPlayerData(msg\msgFrom)
+				throwtype=msg\msgData
+				If p<>pp(1) Then PlayerForceBomb(p,msg\msgData)
 			Case 6 ; Warp
 			p.tPlayer = FindPlayerData(msg\msgFrom)
 			
@@ -1568,6 +1575,7 @@ Function Update_GameModes()
 					Player_PlayTurnVoice(ppp)
 					ppp\HurtTimer=5*secs#
 				Next
+				If Menu\Mission=MISSION_RIVAL# Then Gameplay_SetRings(5)
 			EndIf
 		Default:
 			; handle race mode
@@ -1575,6 +1583,7 @@ Function Update_GameModes()
 			me_p.tPlayer=First tPlayer
 			If BP_GetHostID()=me_p\Online\NetID Then BP_UDPMessage(0, 29, Game\Online\GTState)
 			;other_p.tPlayer After tPlayer
+			
 			If HasEveryoneFinishedTheRace() Then
 				Info("Race Has Finished!", 255,20,128)
 				DrawRealText("Race Has Finished!", GAME_WINDOW_W/2, GAME_WINDOW_H/2-Game\Interface\ResultTitlePosition#*GAME_WINDOW_SCALE#, (Interface_TextRecords_1), 1)

@@ -196,12 +196,14 @@ Function Interface_Render_HostMenu(p.tPlayer)
 		End Select
 		BP_UDPMessage(0,28,Game\Online\PVP)
 	EndIf
-	DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2-(40)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+( -20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeyJump[Menu\Settings\PrimaryController#])
-					DrawRealText("Select", GAME_WINDOW_W/2+(-10)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+( -20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-					DrawSmartKey(INPUT_BUTTON_ACTIONROLL, GAME_WINDOW_W/2-(40-200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+( -20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeyRoll[Menu\Settings\PrimaryController#])
-					DrawRealText("Move", GAME_WINDOW_W/2+(-10-200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+( -20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-					DrawSmartKey_MovementGeneral(GAME_WINDOW_W/2-(40+200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+( -20)*GAME_WINDOW_SCALE#)
-					DrawRealText("Back", GAME_WINDOW_W/2+(-10+200)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+( -20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+		DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2-(40-75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(-20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeyJump[Menu\Settings\PrimaryController#])
+		DrawRealText("PVP", GAME_WINDOW_W/2+(-10-75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+		DrawSmartKey(INPUT_BUTTON_ACTIONSKILL3, GAME_WINDOW_W/2-(40+75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(-20)*GAME_WINDOW_SCALE#)
+		DrawRealText("Select", GAME_WINDOW_W/2+(-10+75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+		DrawSmartKey(INPUT_BUTTON_ACTIONROLL, GAME_WINDOW_W/2-(40-225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(-20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeyRoll[Menu\Settings\PrimaryController#])
+		DrawRealText("Move", GAME_WINDOW_W/2+(-10-225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+		DrawSmartKey_MovementGeneral(GAME_WINDOW_W/2-(40+225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(-20)*GAME_WINDOW_SCALE#)
+		DrawRealText("Back", GAME_WINDOW_W/2+(-10+225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 End Function
 
 Function DrawPingMenu()

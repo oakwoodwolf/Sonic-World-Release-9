@@ -89,7 +89,7 @@ If p\No#=1 And Chatting\Allowed=0 Then
 	EndIf
 
 	;go invincible
-	If (KeyHit(KEY_F6)) Then
+	If (KeyHit(KEY_F6)And BP_Online=False) Then
 		Game\Invinc=1 : Game\InvincTimer=20.046391*secs#
 		StopChannel(Game\Channel_Invincible) : StopChannel(Game\Channel_SpeedShoes)
 		Game\Channel_Invincible=PlaySmartSound(Sound_Invincible)
@@ -97,7 +97,7 @@ If p\No#=1 And Chatting\Allowed=0 Then
 	EndIf
 
 	;go speedshoes
-	If (KeyHit(KEY_F7)) Then
+	If (KeyHit(KEY_F7)And BP_Online=False) Then
 		Game\SpeedShoes=1 : Game\SpeedShoeTimer=15.177130*secs#
 		StopChannel(Game\Channel_Invincible) : StopChannel(Game\Channel_SpeedShoes)
 		Game\Channel_SpeedShoes=PlaySmartSound(Sound_SpeedShoes)
@@ -106,7 +106,7 @@ If p\No#=1 And Chatting\Allowed=0 Then
 
 	If Menu\ChaoGarden=0 Then
 		;ring cheat
-		If (KeyHit(KEY_F8)) Then Gameplay_AddRings(50) : Game\Cheater=1
+		If (KeyHit(KEY_F8)And BP_Online=False) Then Gameplay_AddRings(50) : Game\Cheater=1
 
 		;complete stage cheat
 		If (KeyHit(KEY_F9) And BP_Online=False) and Menu\Stage>0 Then Game\Cheater=1 : Player_Goal(p)

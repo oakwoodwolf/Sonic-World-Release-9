@@ -709,7 +709,7 @@
 	Function Player_ActuallyCharge(p.tPlayer,force=false)
 	If p\No#=1 Or force Or (pp(1)\Invisibility=0 and (pp(1)\Action=ACTION_COMMON Or pp(1)\Action=ACTION_ROLL Or pp(1)\Action=ACTION_CHARGE Or pp(1)\Action=ACTION_DRIFT)) Then
 
-		If (Player_IsPlayable(p) and Input\Pressed\ActionRoll) or force Then
+		If (Player_IsPlayable(p) and Input\Pressed\ActionRoll and Menu\Pause=0) or force Then
 			p\ChargeTimer=0
 			p\JustChargedTimer=0
 			p\Action=ACTION_CHARGE
@@ -1115,8 +1115,7 @@
 				If Game\Gameplay\Rings=0 Then
 					If Game\Invinc=0 And Game\Shield=0 Then
 						Player_Die(p)
-						Info("You got slain...",128,0,0)
-						BP_UDPMessage(0, 3, "die")
+						
 					Else
 						Player_Hurt(p)
 					EndIf
@@ -1229,8 +1228,14 @@
 			p\Motion\Speed\y#=1.3
 			EmitSmartSound(Sound_Die,p\Objects\Entity)
 			p\HurtTimer=4*secs#
-			p\DieTimer=2.1*secs# 
-			Player_DieCamera(p)
+			p\DieTimer=2.1*secs#
+			Info("You got slain...",128,0,0)
+			BP_UDPMessage(0, 3, "die")
+			If BP_Online and (Game\Online\GameType=GAME_TYPE_RACE And Menu\Mission=MISSION_RIVAL#) Then 
+				p\DieTimer=999*secs# 
+			Else
+				Player_DieCamera(p)
+			EndIf
 			Player_PlayDieVoice(p)
 			p\Action=ACTION_DIE
 			p\DieButDontLoseLife=diebutdontloselife
@@ -1255,7 +1260,7 @@
 			EndIf
 			Player_PlayTurnVoice(p)
 			p\HurtTimer=5*secs#
-			If Not BP_Online Then Gameplay_SubstractLives(abs(p\DieButDontLoseLife-1))
+			If Not BP_Online Then Gameplay_SubstractLives(abs(p\DieButDontLoseLife-1)) Else p\HurtTimer=4*secs#
 
 			Game\Stage\Properties\MusicMode=Game\Gameplay\CheckMusicMode
 			For i=0 to 2

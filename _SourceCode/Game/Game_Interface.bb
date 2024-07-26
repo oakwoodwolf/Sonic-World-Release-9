@@ -522,6 +522,18 @@ End Function
 					SetAlpha(1.0)
 					SetColor(255,255,255)
 				Next
+				If BP_Online And Game\Online\GameType=GAME_TYPE_RACE Then
+					j=1
+					For rp.tPlayer = Each tPlayer
+						SetColor(Interface_Lives_R[InterfaceChar(rp\RealCharacter)],Interface_Lives_G[InterfaceChar(rp\RealCharacter)],Interface_Lives_B[InterfaceChar(rp\RealCharacter)])
+						Interface_DrawHead(GAME_WINDOW_W-(30)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-(30*j)*GAME_WINDOW_SCALE#, rp\RealCharacter-1)
+						SetAlpha(1.0)
+						DrawRealText(rp\Online\Name, GAME_WINDOW_W-(45+11.25)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-(30*j)*GAME_WINDOW_SCALE#, (Interface_Text_1), 2)
+						SetColor(255,255,255)
+						If rp\Action=ACTION_DIE Then DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W-(30)*GAME_WINDOW_SCALE#, GAME_WINDOW_H-movemissioncounterup#-(30*j)*GAME_WINDOW_SCALE#, 1)
+						j=j+1
+					Next
+				EndIf
 			Case MISSION_FLICKY#:
 				For i=1 to 5
 					j=5-i+1

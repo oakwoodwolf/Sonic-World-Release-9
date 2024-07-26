@@ -425,6 +425,7 @@ Function Object_EnforcePsychokinesis(o.tObject,p.tPlayer,d.tDeltaTime)
 				If o\ObjType=OBJTYPE_OMOCHAO Then StopChannel(o\Omochao\Channel_Omochao) : o\Omochao\Channel_Omochao=PlaySmartSound(Voice_OMO_Hurt[Rand(1,5)])
 				Game\Gameplay\PsychoBombCount=Game\Gameplay\PsychoBombCount+1
 				Object_Bomb_Create.tBomb(p, EntityX(o\Entity), EntityY(o\Entity), EntityZ(o\Entity), 0, p\Animation\Direction#-180, 0, BOMB_PSYCHIC, Game\Gameplay\PsychoBombCount)
+				BP_UDPMessage(0, 10, 1)
 				o\ThrownAsBomb=Game\Gameplay\PsychoBombCount
 				o\Psychoed=4
 			Else

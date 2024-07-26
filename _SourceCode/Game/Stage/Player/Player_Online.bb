@@ -59,7 +59,16 @@ Function GetPlayerID(id)
 End Function
 
 function HasEveryoneFinishedTheRace()
+	
 	t = 0
+	If Menu\Mission=MISSION_RIVAL#
+		For ppp.tPlayer = Each tPlayer
+			Select ppp\Action:
+				Case ACTION_DIE: t=t+1
+			End Select
+		Next
+		If t = PlayerNo-1 Return True Else Return False
+	EndIf
 	For p.tPlayer = Each tPlayer
 		t = t + p\Online\FinishedRace
 	Next
@@ -339,12 +348,128 @@ Function Game_OnlineMsgOfTheDay()
 				ParticleTemplate_Call(ppp\SmokeParticle, PARTICLE_PLAYER_CONTACTSPARK, p\Objects\Mesh, 1+p\ScaleFactor#*0.1)
 			ElseIf p\Flags\Attacking=False and (ppp\Flags\Attacking and (Not(ppp\Action=ACTION_JUMP))) Then
 				BP_UDPMessage(p\Online\NetID, 3, "hurt")
-				DebugLog("You" + p\Online\Name + " r:"+rockE+ " p:"+paperE+ " s:"+scissorsE)
 				ParticleTemplate_Call(p\SmokeParticle, PARTICLE_PLAYER_CONTACTSPARK, p\Objects\Mesh, 1+p\ScaleFactor#*0.1)
 			ElseIf (p\Flags\Attacking and (Not(p\Action=ACTION_JUMP))) and ppp\Flags\Attacking=False Then
 				BP_UDPMessage(ppp\Online\NetID, 3, "hurt")
-				DebugLog("He" + ppp\Online\Name + " r:"+rockP+ " p:"+paperP+ " s:"+scissorsP)
 				ParticleTemplate_Call(ppp\SmokeParticle, PARTICLE_PLAYER_CONTACTSPARK, p\Objects\Mesh, 1+p\ScaleFactor#*0.1)
 			EndIf
 		EndIf
+	End Function
+	Function PlayerForceBomb(p.tPlayer,throwtype)
+		Select p\Character
+				Case CHAR_MKN,CHAR_GME:
+					Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_ROCKET)
+				Case CHAR_MPH:
+					Object_Bomb_Create5(p, EntityX(p\Objects\HandL,1), EntityY(p\Objects\HandL,1), EntityZ(p\Objects\HandL,1), 0, p\Online\Rot\y#, 0, BOMB_MINION)
+				Case CHAR_BAR:
+					Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+6, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_ICE, 0)
+				Case CHAR_WAV:
+					Select throwtype
+						Case 1: Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+5, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_EXPLOSIVE, -0.125)
+								Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+5, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_EXPLOSIVE, +0.125)
+						Case 2: p\BoomerangAway=1 : Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+0.6, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_GEAR, 1)
+					End Select
+				Case CHAR_BEA:
+					Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Online\Rot\y#, 0, BOMB_BOMB, +0.125)
+				Case CHAR_SIL:
+					Select throwtype
+						Case 1: Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Online\Rot\y#, 0, BOMB_BOX)
+						Case 2: Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Online\Rot\y#, 0, BOMB_KNIFE)
+					End Select
+				Case CHAR_SHA:
+					Select throwtype
+						Case 1: Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Online\Rot\y#, 0, BOMB_SPEAR)
+						Case 2: p\ChaosControlActiveTimer=3*secs# : p\PsychoChargeTimer=5*secs#
+								ParticleTemplate_Call(p\Particle, PARTICLE_PLAYER_PSYCHOGLOW, p\Objects\Mesh, 0, 0, 1, 0, 2)
+					End Select
+				Case CHAR_CHO:
+					Select throwtype
+						Case 1: Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Online\Rot\y#, 0, BOMB_SPEARWATER)
+						Case 2: Object_Bomb_Create5(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Online\Rot\y#, 0, BOMB_BLOB)
+					End Select
+				Case CHAR_SON:
+					Select throwtype
+						Case 1: Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Online\Rot\y#, 0, BOMB_WIND)
+						Case 2: Object_Bomb_Create5(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Online\Rot\y#+360, 0, BOMB_HURRICANE)
+					End Select
+				Case CHAR_CHA:
+					Select throwtype
+						Case -1: 
+							Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#-3,  p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_FLOWER, -1)
+						Default: 
+							Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+5, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_FLOWER, 0)
+					End Select
+				Case CHAR_CRE:
+					Select throwtype
+						Case -1: Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+5,  p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_CHEESE, 0)
+						Case 1: Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Online\Rot\y#, 0, BOMB_CHEESE)
+						Case 2: Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+0.53, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_TYPHOON)
+						Case 3: Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Online\Rot\y#, 0, BOMB_CHEESE)
+					End Select
+				Case CHAR_TAI:
+				Select throwtype
+						Case -1: 
+							Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#-3,  p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_RING, -1)
+						Default: 
+							Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+5, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_RING, 0)
+							Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+5, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_RING, -0.25)
+							Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+5, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_RING, +0.25)
+				End Select
+				Case CHAR_ROU:
+				Select throwtype
+						Case -1: 
+							Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#-3,  p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_HEART, -1)
+						Default: 
+							Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+5, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_HEART, 0)
+							Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+5, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_HEART, -0.25)
+							Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+5, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_HEART, +0.25)
+				End Select
+				Case CHAR_AMY:
+					Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+0.53, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_TYPHOON)
+				Case CHAR_BIG:
+					Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Online\Rot\y#, 0, BOMB_FROGGY)
+				Case CHAR_ESP:
+					Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+2.3, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_BLADE)
+				Case CHAR_MAR:
+					Select throwtype
+						Case 1: Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Online\Rot\y#, 0, BOMB_BUBBLES)
+						Case 2: p\BoomerangAway=1 : Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+0.6, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_BOOMERANG, 1)
+					End Select
+				Case CHAR_RAY:
+					Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+1.2, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_DART)
+				Case CHAR_BLA:
+					Select throwtype
+						Case 1: Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Online\Rot\y#, 0, BOMB_FLAME)
+						Case 2: Object_Bomb_Create5(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Online\Rot\y#+360, 0, BOMB_FIREBALL)
+					End Select
+				Case CHAR_KNU:
+					Select throwtype
+						Case 1: Object_Bomb_Create5(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Online\Rot\y#+360, 0, BOMB_FIREBALL)
+						Case 2: Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+6, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_ROCK, 0)
+					End Select
+				Case CHAR_HBO:
+					Object_Bomb_Create5(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Online\Rot\y#+360, 0, BOMB_BIGBOMB)
+				Case CHAR_NAC:
+					Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_BULLET, 1)
+					Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_BULLET, 2)
+				Case CHAR_STO:
+					Select throwtype
+						Case 1: Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+10, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_TIRE)
+						Case 2: Object_Bomb_Create5(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Online\Rot\y#+360, 0, BOMB_HURRICANE)
+					End Select
+				Case CHAR_JET:
+					Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+0.6, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_LEAF)
+				Case CHAR_TDL:
+					Object_Bomb_Create.tBomb(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Online\Rot\y#, 0, BOMB_CURSE)
+				Case CHAR_COM:
+					Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_BULLET, 3)
+				Case CHAR_MIG:
+					Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+6, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_ROCK, 0)
+				Case CHAR_TIK:
+					Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+0.53, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_JUSTICE)
+				Case CHAR_MET,CHAR_MT3:
+					Object_Bomb_Create.tBomb(p, p\Online\Pos\x#, p\Online\Pos\y#+2.3, p\Online\Pos\z#, 0, p\Online\Rot\y#, 0, BOMB_SHOCK)
+				Case CHAR_INF
+					Object_Bomb_Create5(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Online\Rot\y#+360, 0, BOMB_CUBETRAIL)
+			End Select
 	End Function
