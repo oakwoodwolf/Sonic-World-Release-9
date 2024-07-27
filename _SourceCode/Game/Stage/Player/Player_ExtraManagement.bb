@@ -414,9 +414,9 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 				If (Game\LimitTime-Game\Gameplay\Time)<0 and Menu\ExitedAStage=0 Then Game_Stage_Quit(5)
 			EndIf
 			If Menu\MissionMach=1 Or Game\MachLockTriggered=1 Then
-				Game\MachLock=1.5*secs#
+				If Not (Game\Online\Online and Game\Online\GameType=GAME_TYPE_RACE And Game\Online\GTState<2) Then Game\MachLock=1.5*secs#
 			EndIf
-			If Menu\MissionPerfect=1 Or Menu\Stage<0 Then
+			If Menu\MissionPerfect=1 Or Menu\Stage<0 And (Not Game\Online\Online) Then
 				If p\Action=ACTION_DIE and Menu\ExitedAStage=0 Then Game_Stage_Quit(1)
 			EndIf
 		Else
@@ -448,7 +448,7 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 						EndIf
 				End Select
 				If Menu\MissionMach=1 Or Game\MachLockTriggered=1 Then
-					Game\MachLock=1.5*secs#
+					If Not (Game\Online\Online and Game\Online\GameType=GAME_TYPE_RACE And Game\Online\GTState<2) Then Game\MachLock=1.5*secs#
 				EndIf
 			EndIf
 		EndIf

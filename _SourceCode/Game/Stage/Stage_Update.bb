@@ -767,7 +767,7 @@
 			EndIf
 		EndIf
 		; handle game mode meshes
-		For i=1 To 6
+		For i=1 To BP_MaxPlayers
 			If onlineplayer(i)<>Null Then
 			 ;If Game\Online\GameType=1 Then ShowEntity(onlineplayer(i)\Online\TagBubble) Else HideEntity(onlineplayer(i)\Online\TagBubble)
 			EndIf
@@ -1178,8 +1178,8 @@ Function HandleMessages()
 				nInfo.NetInfo = BP_FindID(p\Online\NetID) 			; send info the net							
 				; finished 	; inform the joined party
 				If Game\Online\ShowMsg=False Then BP_UDPMessage(0,25, Game\Online\MsgOfTheDay$) : Game\Online\ShowMsg=True
-				If BP_My_ID = BP_Host_ID Then BP_UDPMessage(p\Online\NetID, 6, StageName(Menu\Stage))
-				If BP_My_ID = BP_Host_ID Then : Info("**" + p\Online\Name$ + " has joined Session!",0,255,0, "bold") : Else : Info("**" + p\Online\Name$ + " is in Session!",0,255,0, "bold") : EndIf
+				;If BP_My_ID = BP_Host_ID Then BP_UDPMessage(p\Online\NetID, 6, StageName(Menu\Stage))
+				If BP_My_ID = BP_Host_ID Then : Info("**" + p\Online\Name$ + " has joined!",0,255,0, "bold") : Else : Info("**" + p\Online\Name$ + " is in!",0,255,0, "bold") : EndIf
 				PlaySmartSound(Sound_CharacterChange) 								; sound for comformation			
 				;Next						
 			;------------------------------------------------------
@@ -1489,7 +1489,10 @@ Function HandleMessages()
 				If Not Game\Online\Hosting Then If (Abs(Game\Gameplay\Time-time)>1000) Then Game\Gameplay\Time=time
 			Case 29 ; Gamemode state
 				p.tPlayer = FindPlayerData(msg\msgFrom)
-				If BP_Host_ID<>p\Online\NetID Then Game\Online\GTState = msg\msgData
+				If BP_Host_ID<>p\Online\NetID Then 
+					Game\Online\GTState = Int(BP_GetMessagePart(msg\msgData, 1, "/"))
+					Game\Online\Countdown = Float(BP_GetMessagePart(msg\msgData, 2, "/"))
+				EndIf
 
 				If Not Game\Online\Hosting Then If (Abs(Game\Gameplay\Time-time)>1000) Then Game\Gameplay\Time=time
 		End Select
@@ -1554,27 +1557,31 @@ Function Update_GameModes()
 		; >---------
 		Case GAME_TYPE_RACE
 		me_p.tPlayer=First tPlayer
-		If BP_GetHostID()=me_p\Online\NetID Then BP_UDPMessage(0, 29, Game\Online\GTState)
+		If BP_GetHostID()=me_p\Online\NetID Then BP_UDPMessage(0, 29, Game\Online\GTState+"/"+Game\Online\Countdown)
 		Select Game\Online\GTState:
 		Case 0:
 			Game\ControlLock=0.1*secs#
 			Game\Gameplay\Time=0
+			For ppp.tPlayer = Each tPlayer
+				Player_SetSpeed(ppp, 0)
+			Next
 			If HasEveryoneJoined() Then
-				DebugLog("Everyone joined")
 				Game\Online\GTState=1
 				Game\Online\Countdown=10*secs#
 			End if
 		Case 1:
 			Game\ControlLock=0.1*secs#
 			Game\Gameplay\Time=0
+			For ppp.tPlayer = Each tPlayer
+				Player_SetSpeed(ppp, 0)
+			Next
 			Game\Online\Countdown=Game\Online\Countdown-timervalue#
 			If (Not Game\Online\Countdown>0) Then
 				Game\Online\GTState=2
 				PlaySmartSound(Sound_Goal)
-				
 				For ppp.tPlayer = Each tPlayer
-					Player_PlayTurnVoice(ppp)
-					ppp\HurtTimer=5*secs#
+				Player_PlayTurnVoice(ppp)
+				ppp\HurtTimer=5*secs#
 				Next
 				If Menu\Mission=MISSION_RIVAL# Then Gameplay_SetRings(5)
 			EndIf

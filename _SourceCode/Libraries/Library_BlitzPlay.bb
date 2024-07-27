@@ -482,7 +482,9 @@ Function BP_SetGameType(GameType%)
 ;-=-=-=Allows the user to control the numeric game type value
 	If BP_My_ID = BP_Host_ID Then
 	    BP_GameType% = GameType%
+		Game\Online\Gametype=GameType%
 		BP_UDPMessage (0,248,"1"+GameType)
+		BP_UDPMessage (0,26, GameType)
 	End If
 End Function
 
@@ -685,7 +687,7 @@ Function BP_UpdateNetwork ()		;This is the -meat- of the library.
 										c\IP = senderIP
 										c\Port = senderPort
 										c\LastHeard = curTime
-										msgToSend$ = Chr$(254) + Chr$(BP_My_ID) + Chr$(1) + Chr$(c\net_id) + Chr$(BP_My_ID) + Chr$(BP_NumPlayers) + Chr$(BP_MaxPlayers) + Chr$(BP_GameType) + Chr$(BP_TimeoutPeriod/1000)
+										msgToSend$ = Chr$(254) + Chr$(BP_My_ID) + Chr$(1) + Chr$(c\net_id) + Chr$(BP_My_ID) + Chr$(BP_NumPlayers) + Chr$(BP_MaxPlayers) + Chr$(BP_GameType) + Chr$(BP_TimeoutPeriod/1000)+Chr$(Game\Online\PVP)+Chr$(Game\Online\GTState)+(StageName(Menu\Stage))
 										BP_UDPSend (msgToSend, c\IP, c\Port)
 										For nInfo.NetInfo = Each NetInfo
 											msgToSend = Chr$(254) + Chr$(BP_My_ID) + Chr$(2) +  Chr$(nInfo\net_id) + nInfo\Name
@@ -872,8 +874,15 @@ Function BP_UpdateNetwork ()		;This is the -meat- of the library.
 								BP_Host_ID = Asc(Mid$(msgData,3))
 								BP_NumPlayers = Asc(Mid$(msgData,4))
 								BP_MaxPlayers = Asc(Mid$(msgData,5))
-								BP_GameType = Asc(Mid$(msgData,6))
+								BP_GameType = Asc(Mid$(msgData,6)) : Game\Online\Gametype=BP_GameType
 								BP_TimeoutPeriod = Asc(Mid$(msgData,7)) * 1000
+								Game\Online\PVP=Asc(Mid$(msgData,8))
+								Game\Online\GTState=Asc(Mid$(msgData,9))
+								Menu\SelectedStage=GetStageNo(Mid$(msgData,10))
+								Menu_Stage_LoadMissions(Menu\SelectedStage, true)
+								Menu_GoToStage_SetMission(1)
+								Menu\Option=Menu\SelectedStage
+								If Menu\Stage<>Menu\SelectedStage Then Menu_GoToStage()
 							Case 2
 								nInfo.NetInfo = BP_FindID(Asc(Mid$(msgData,2)))
 								If nInfo=Null Then

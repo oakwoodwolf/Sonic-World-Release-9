@@ -32,7 +32,7 @@ Function Object_CheckEnemyHitBox(o.tObject,p.tPlayer)
 					If (Not(o\ObjType=OBJTYPE_BOMBIE)) Then p\DontGetHurtTimer=0.25*secs#
 				EndIf
 			ElseIf p\Motion\Ground Or (p\Objects\Position\y#>o\Position\y#) Then
-				If (o\ObjType=OBJTYPE_GRABBER Or o\ObjType=OBJTYPE_KLAGEN Or o\ObjType=OBJTYPE_ACHAOSBLOB Or o\ObjType=OBJTYPE_BOO) and (Not(p\WasGrabbedTimer>0 Or p\DontGetHurtTimer>0)) and o\Psychoed=0 and o\Rubied=0 and Game\Invinc=0 and p\Invisibility=0 and (Not(p\Action=ACTION_GRABBED Or p\Action=ACTION_HURT Or p\Action=ACTION_DIE Or p\Action=ACTION_SKYDIVE)) and (Not(Game\ControlLock>0)) and (Not(Game\RunLock>0)) Then
+				If (o\ObjType=OBJTYPE_GRABBER Or o\ObjType=OBJTYPE_KLAGEN Or o\ObjType=OBJTYPE_ACHAOSBLOB Or o\ObjType=OBJTYPE_BOO) and (Not(p\WasGrabbedTimer>0 Or p\DontGetHurtTimer>0)) and o\Psychoed=0 and o\Rubied=0 and Game\Invinc=0 and p\Invisibility=0 and (Game\Online\Online and (Game\Online\GameType=GAME_TYPE_RACE And Game\Online\GTState<2)) and (Not(p\Action=ACTION_GRABBED Or p\Action=ACTION_HURT Or p\Action=ACTION_DIE Or p\Action=ACTION_SKYDIVE)) and (Not(Game\ControlLock>0)) and (Not(Game\RunLock>0)) Then
 					EntityType(cam\Entity, COLLISION_NONE)
 					EntityType(p\Objects\Entity, COLLISION_NONE)
 					o\Enemy\AttackTimer=3*secs#
@@ -770,6 +770,9 @@ End Function
 				If (Not(Object_EnemyIsStun(o))) and EntityDistance(o\Entity,p\Objects\Entity)<(110+15*i) and (Abs(p\Objects\Position\y# - o\Position\y#) < (40+5*i)) Then
 					o\Enemy\InRange=True
 				Else
+					o\Enemy\InRange=False
+				EndIf
+				If (Game\Online\Online and Game\Online\GameType=GAME_TYPE_RACE And Game\Online\GTState<2) Then
 					o\Enemy\InRange=False
 				EndIf
 		End Select

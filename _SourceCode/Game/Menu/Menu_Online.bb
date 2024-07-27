@@ -158,18 +158,16 @@ Function Interface_Render_HostMenu(p.tPlayer)
 		Select Menu\Option2
 		Case 1:
 			BP_SetGameType(Game\Online\GameType+1)
-			Game\Online\GameType=Game\Online\GameType+1
-			If Game\Online\GameType>3 Then 	BP_SetGameType(0) : Game\Online\GameType=0
+			If Game\Online\GameType>3 Then 	BP_SetGameType(0)
 			Info("Gametype set to " + GAMETYPE_NAME(Game\Online\GameType+1))
 			Select Game\Online\GameType:
 			Case GAME_TYPE_TAG
-				it=Rand(1, PlayerNo)
+				it=Rand(1, BP_GetNumberOfPlayers%())
 				For op.tPlayer = Each tPlayer
 						If op\Online\NetID=it Then	Player_SetTagMode(op)
 						If op\Online\NetID<>it Then op\Online\TagMode=TAG_NOT_IT : op\Online\TagTimer=0 : BP_UDPMessage(0,UDPMSG_MESSAGE, op\Online\Name$+" is Not It!") : op\Online\TagCoolDown=3.5*secs#	
 				Next
 			End Select
-			BP_UDPMessage (0,26, Game\Online\GameType)
 		Case 2:
 			PlaySmartSound(Sound_MenuAccept)
 			Menu\SelectedStage=Menu\Option

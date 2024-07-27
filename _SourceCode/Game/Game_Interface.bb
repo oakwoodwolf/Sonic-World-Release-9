@@ -1226,10 +1226,10 @@ Function AboutToChat()
 										If op\Online\NetID=BP_Host_ID Then	Player_SetTagMode(op)
 										If op\Online\NetID<>BP_Host_ID Then op\Online\TagMode=TAG_NOT_IT : op\Online\TagTimer=0 : BP_UDPMessage(0,UDPMSG_MESSAGE, op\Online\Name$+" is Not It!") : op\Online\TagCoolDown=3.5*secs#	
 								Next
-								case "has","2" : BP_SetGameType(2) : Game\Online\GameType=2  : Info("Gametype set to Hide and Seek")
-								case "race","3" : BP_SetGameType(3) : Game\Online\GameType=3  : Info("Gametype set to Race")
-								case "free","4","0": BP_SetGameType(0) : Game\Online\GameType=0  : Info("Gametype set to Free")
-								default : BP_SetGameType(0) : Game\Online\GameType=0
+								case "has","2" : BP_SetGameType(2) : Info("Gametype set to Hide and Seek")
+								case "race","3" : BP_SetGameType(3) : Info("Gametype set to Race")
+								case "free","4","0": BP_SetGameType(0) : Info("Gametype set to Free")
+								default : BP_SetGameType(0)
 							end select
 							BP_UDPMessage (0,26, Game\Online\GameType)
 							showunavailable=False
@@ -1355,7 +1355,7 @@ Function Interface_DrawChat(x#=0, y#=0, csize=1, orientation=1)
 
 	; a counter to check if over the limit of the chatbox.
 	Counter = 0
-	DrawRealText(": "+Chatting\Txt$+Chatting\Cursor$, 17.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-+64+(15*GAME_WINDOW_SCALE#+(1)*textcounter), (Interface_Text_2), 0)
+	DrawRealText(": "+Chatting\Txt$+Chatting\Cursor$, 17.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-+64+(15*GAME_WINDOW_SCALE#+(1)*textcounter*GAME_WINDOW_SCALE#), (Interface_Text_2), 0)
 	textcounter = textcounter - 20
 	For i.Info = Each Info
 		Counter = Counter + 1
@@ -1367,10 +1367,10 @@ Function Interface_DrawChat(x#=0, y#=0, csize=1, orientation=1)
 			If i\randcolor=True Then SeedRnd(millisecs()) : i\r=rnd(100,255): i\g=rnd(100,255): i\b=rnd(100,255)
 			If BP_GetMessagePart(i\Txt, 2, ":")<>"" Then
 				SetColor(i\r, i\g, i\b)
-				DrawRealText(BP_GetMessagePart(i\Txt, 1, ":") + " " + BP_GetMessagePart(i\Txt, 2, ":"), 17.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-+64+(15*GAME_WINDOW_SCALE#+(1*(textcounter))), (Interface_Text_2), 0)
+				DrawRealText(BP_GetMessagePart(i\Txt, 1, ":") + " " + BP_GetMessagePart(i\Txt, 2, ":"), 17.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-+64+(15*GAME_WINDOW_SCALE#+(1*(textcounter*GAME_WINDOW_SCALE#))), (Interface_Text_2), 0)
 			Else
 				SetColor(i\r, i\g, i\b)
-				DrawRealText(i\Txt$, 17.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-+64+(15*GAME_WINDOW_SCALE#+(1*textcounter)), (Interface_Text_2), 0)
+				DrawRealText(i\Txt$, 17.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-+64+(15*GAME_WINDOW_SCALE#+(1*textcounter*GAME_WINDOW_SCALE#)), (Interface_Text_2), 0)
 			endif
 			
 			SetColor(255,255,255)

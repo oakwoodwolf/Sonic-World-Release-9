@@ -67,12 +67,12 @@ function HasEveryoneFinishedTheRace()
 				Case ACTION_DIE: t=t+1
 			End Select
 		Next
-		If t = PlayerNo-1 Return True Else Return False
+		If t = BP_GetNumberOfPlayers%()-1 Return True Else Return False
 	EndIf
 	For p.tPlayer = Each tPlayer
 		t = t + p\Online\FinishedRace
 	Next
-	If t = PlayerNo Return True Else Return False
+	If t = BP_GetNumberOfPlayers%() Return True Else Return False
 
 end function 
 function HasEveryoneJoined()
@@ -80,7 +80,7 @@ function HasEveryoneJoined()
 	For p.tPlayer = Each tPlayer
 		t = t + p\Online\Joined
 	Next
-	If t = PlayerNo Return True Else Return False
+	If t = BP_GetNumberOfPlayers%() Return True Else Return False
 
 end function 
 ; =========================================================================================================
