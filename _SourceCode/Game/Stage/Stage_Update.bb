@@ -1488,8 +1488,7 @@ Function HandleMessages()
 
 				If Not Game\Online\Hosting Then If (Abs(Game\Gameplay\Time-time)>1000) Then Game\Gameplay\Time=time
 			Case 29 ; Gamemode state
-				p.tPlayer = FindPlayerData(msg\msgFrom)
-				If BP_Host_ID<>p\Online\NetID Then 
+				If BP_Host_ID<>onlineplayer(1)\Online\NetID Then 
 					Game\Online\GTState = Int(BP_GetMessagePart(msg\msgData, 1, "/"))
 					Game\Online\Countdown = Float(BP_GetMessagePart(msg\msgData, 2, "/"))
 				EndIf
@@ -1509,55 +1508,88 @@ Function Update_GameModes()
 			;If KeyHit(KEY_PLUS) Then p\Online\TagMode=TAG_NOT_IT : p\Online\TagTimer=0 : BP_UDPMessage(0,UDPMSG_MESSAGE, p\Online\Name$+" is Clear!")
 			;If KeyHit(KEY_HYPHEN) Then p\Online\TagMode=TAG_IS_IT : p\Online\TagTimer=TAG_TIMER : BP_UDPMessage(0,UDPMSG_MESSAGE, p\Online\Name$+" is It!") : DebugLog(p\Online\Name$+" is It!")
 			If KeyHit(Key_F10) Then p\Online\TagTimer=20
-
-			; handle tag timer, and be clear once it's over
-			If p\Online\TagMode=TAG_IS_IT Then
-				; count the timer
-				If p\Online\TagTimer>0 Then
-					If p\Online\TagTimerInterval<MilliSecs() Then
-						p\Online\TagTimer=p\Online\TagTimer-1
-						p\Online\TagTimerInterval=MilliSecs()+1000
-					EndIf
-				Else
-					p\Online\TagMode=2
-					BP_UDPMessage(0, 3, "cleared")	
-					Info("You ran out of time. You Lose.")
-					BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name$+" Lost. Ran out of time.")
-				EndIf
-			Else
-				p\Online\TagTimer=0
+			If onlineplayer(1)\Online\ShowTag=False Then
+				onlineplayer(1)\Online\ShowTag=True
+				BP_UDPMessage(0,24,True)
 			EndIf
+			Select Game\Online\GTState:
+				Case 0:
+					Game\Online\GTState=1
+					Game\Online\Countdown=10*secs#
+				Case 1:
+					Game\Online\Countdown=Game\Online\Countdown-timervalue#
+					If (Not Game\Online\Countdown>0) Then
+						it=Rand(1, BP_GetNumberOfPlayers%())
+						For op.tPlayer = Each tPlayer
+								If op\Online\NetID=it Then	Player_SetTagMode(op)
+								If op\Online\NetID<>it Then op\Online\TagMode=TAG_NOT_IT : op\Online\TagTimer=0 : BP_UDPMessage(0,UDPMSG_MESSAGE, op\Online\Name$+" is Not It!") : op\Online\TagCoolDown=3.5*secs#	
+						Next
+						Game\Online\GTState=2
+						If Menu\Mission=MISSION_RIVAL# Then Gameplay_SetRings(5)
+					EndIf
+				Case 3:
+					If BP_GetHostID()=p\Online\NetID Then BP_UDPMessage(0, 29, Game\Online\GTState)
+					Game\Online\Countdown=Game\Online\Countdown-timervalue#
+					If (Not Game\Online\Countdown>0) Then
+						Game\Online\GTState=0
+						Game\Online\Countdown=10*secs#
+						If p\Online\NetID=BP_GetHostID() Then
+							Player_ResetGamemodeValues(p)
+							BP_UDPMessage(0,3,"respawn all")
+						EndIf
+					EndIf
+					
+				Default:
+					; handle tag timer, and be clear once it's over
+						If p\Online\TagMode=TAG_IS_IT Then
+							; count the timer
+							If p\Online\TagTimer>0 Then
+								If p\Online\TagTimerInterval<MilliSecs() Then
+									p\Online\TagTimer=p\Online\TagTimer-1
+									p\Online\TagTimerInterval=MilliSecs()+1000
+								EndIf
+							Else
+								p\Online\TagMode=2
+								Game\Online\Countdown=10*secs#
+								Game\Online\GTState=3
+								BP_UDPMessage(0, 3, "cleared")	
+								Info("You ran out of time. You Lose.")
+								BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name$+" Lost. Ran out of time.")
+							EndIf
+						Else
+							p\Online\TagTimer=0
+						EndIf
 
-			; find closest player to tag
-			Local closestPlayer.tPlayer = GetClosestPlayer(TAG_RADIUS#);
-			If closestPlayer<>Null Then 
-			DebugLog("cooldown " + pp(1)\Online\TagCoolDown + " " + closestPlayer\Online\TagCoolDown + " ") 
-			DebugLog("mode " + pp(1)\Online\TagMode + " " + closestPlayer\Online\TagMode)
-				;If GAME\ONLINE\DEBUG=True Then DebugLog(Handle(closestPlayer)) : TheRName$=closestPlayer\Online\NetID
-				;tag someone in your radius, and be cleared.		
-				If pp(1)\Online\TagMode=TAG_IS_IT And closestPlayer\Online\TagMode=TAG_NOT_IT And (Not (pp(1)\Online\TagCoolDown>0 Or closestPlayer\Online\TagCoolDown>0)) Then
-					DebugLog("it")
-					; clear yourself of being it
-					pp(1)\Online\TagMode=TAG_NOT_IT : BP_UDPMessage(0, UDPMSG_MESSAGE, pp(1)\Online\Name$+" is Clear!")
-					; make online player it.
-					Player_SetTagMode(closestPlayer)						
-					BP_UDPMessage(closestPlayer\Online\NetID, UDPMSG_MESSAGE, pp(1)\Online\Name$+" has Tagged you!")
-					Player_PlayGoodVoice(pp(1))
-					; apply a wait timer
-					pp(1)\Online\TagCoolDown=5.5*secs#
-				EndIf	
-			EndIf;!
-
+					; find closest player to tag
+					Local closestPlayer.tPlayer = GetClosestPlayer(TAG_RADIUS#);
+					If closestPlayer<>Null Then 
+						;tag someone in your radius, and be cleared.		
+						If pp(1)\Online\TagMode=TAG_IS_IT And closestPlayer\Online\TagMode=TAG_NOT_IT And (Not (pp(1)\Online\TagCoolDown>0 Or closestPlayer\Online\TagCoolDown>0)) Then
+							; clear yourself of being it
+							pp(1)\Online\TagMode=TAG_NOT_IT : BP_UDPMessage(0, UDPMSG_MESSAGE, pp(1)\Online\Name$+" is Clear!")
+							; make online player it.
+							Player_SetTagMode(closestPlayer)						
+							BP_UDPMessage(closestPlayer\Online\NetID, UDPMSG_MESSAGE, pp(1)\Online\Name$+" has Tagged you!")
+							Player_PlayGoodVoice(pp(1))
+							Player_PlayDieVoice(closestPlayer)
+							; apply a wait timer
+							pp(1)\Online\TagCoolDown=5.5*secs#
+						EndIf	
+					EndIf
+					
+				
+			End Select
 
 
 
 
 
 		Case GAME_TYPE_HIDENSEEK
+
 		; >---------
 		Case GAME_TYPE_RACE
 		me_p.tPlayer=First tPlayer
-		If BP_GetHostID()=me_p\Online\NetID Then BP_UDPMessage(0, 29, Game\Online\GTState+"/"+Game\Online\Countdown)
+		If BP_GetHostID()=me_p\Online\NetID Then BP_UDPMessage(0, 29, Game\Online\GTState+"/"+Game\Online\Countdown+"/")
 		Select Game\Online\GTState:
 		Case 0:
 			Game\ControlLock=0.1*secs#
@@ -1570,10 +1602,11 @@ Function Update_GameModes()
 				Game\Online\Countdown=10*secs#
 			End if
 		Case 1:
-			Game\ControlLock=0.1*secs#
+			;Game\ControlLock=0.1*secs#
 			Game\Gameplay\Time=0
 			For ppp.tPlayer = Each tPlayer
 				Player_SetSpeed(ppp, 0)
+				Player_SetPosition(ppp, Game\Stage\Properties\StartX, Game\Stage\Properties\StartY, Game\Stage\Properties\StartZ, Game\Stage\Properties\StartDirection)
 			Next
 			Game\Online\Countdown=Game\Online\Countdown-timervalue#
 			If (Not Game\Online\Countdown>0) Then

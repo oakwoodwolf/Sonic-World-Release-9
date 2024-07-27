@@ -103,9 +103,13 @@ Function Interface_Render_PlayerMenu(p.tPlayer)
 		UnPause()
 	EndIf
 	If Input\Pressed\ActionSkill3  Then
-		PlaySmartSound(Sound_MenuMove)
-		onlineplayer(1)\Online\ShowTag= Not onlineplayer(1)\Online\ShowTag
-		BP_UDPMessage(0,24,onlineplayer(1)\Online\ShowTag)
+		Select Game\Online\GameType
+		Case GAME_TYPE_TAG, GAME_TYPE_HIDENSEEK:
+		Default:
+			PlaySmartSound(Sound_MenuMove)
+			onlineplayer(1)\Online\ShowTag= Not onlineplayer(1)\Online\ShowTag
+			BP_UDPMessage(0,24,onlineplayer(1)\Online\ShowTag)
+		End Select
 	EndIf
 	If Input\Pressed\ActionRoll Then
 		PlaySmartSound(Sound_MenuBack)
@@ -160,6 +164,7 @@ Function Interface_Render_HostMenu(p.tPlayer)
 			BP_SetGameType(Game\Online\GameType+1)
 			If Game\Online\GameType>3 Then 	BP_SetGameType(0)
 			Info("Gametype set to " + GAMETYPE_NAME(Game\Online\GameType+1))
+			Game\Online\GTState=0
 			Select Game\Online\GameType:
 			Case GAME_TYPE_TAG
 				it=Rand(1, BP_GetNumberOfPlayers%())
@@ -223,6 +228,11 @@ Function DrawGametypeOverlay()
 			Case 0: DrawRealText("Waiting for other players to load.", GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
 			Case 1: DrawBetterNumber(Game\Online\Countdown/secs#, GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, 2, 0)
 			Case 3: DrawRealText("Race Finished", GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 1,0,128,128,16)
+		End Select
+	Case GAME_TYPE_TAG
+		Select Game\Online\GTState
+			Case 0: DrawBetterNumber(Game\Online\Countdown/secs#, GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, 2, 0)
+			Case 3: DrawRealText("Game Finished!", GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 1,0,128,128,16)
 		End Select
 	End Select
 End Function

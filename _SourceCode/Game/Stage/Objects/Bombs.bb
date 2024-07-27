@@ -682,13 +682,24 @@ End Function
 		; Hurt player
 		Select b\HurtPlayer
 			Case 1:
-				If EntityDistance(b\Pivot, pp(1)\Objects\Entity)<b\HitBox\y#+2.5+0.5*pp(1)\ScaleFactor# Then Player_Hit(pp(1)) : b\MustDestroy=1
+				If EntityDistance(b\Pivot, pp(1)\Objects\Entity)<b\HitBox\y#+2.5+0.5*pp(1)\ScaleFactor# Then 
+				Select b\BombType#
+					Case BOMB_TYPHOON,BOMB_HEART,BOMB_FLOWER: Player_SetSpeedY(pp(1), 3) : pp(1)\Action=ACTION_FLOAT : pp(1)\FloatTimer=1*secs#
+					Case BOMB_ICE,BOMB_HOOKSHOT: Player_Action_Freeze_Initiate2(pp(1))
+					Case BOMB_CURSE: pp(1)\InkFloorTimer=3*secs# : pp(1)\Inked=2
+					Default: Player_Hit(pp(1))
+				End Select
+					b\MustDestroy=1
+				EndIf
 			Case -1:
 				For i=1 to Game\RivalAmount
 				If EntityDistance(b\Pivot, ppe(i)\Objects\Entity)<b\HitBox\y#+2.5+0.5*ppe(i)\ScaleFactor# and (Not(ppe(i)\Action=ACTION_RIVALDIE)) Then
 					If EntityDistance(pp(1)\Objects\Entity, ppe(i)\Objects\Entity)<75 Then Player_Hit(ppe(i)) : b\MustDestroy=1
 				EndIf
 				Next
+
+
+				
 		End Select
 
 		; Targeting

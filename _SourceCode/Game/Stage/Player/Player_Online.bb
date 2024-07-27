@@ -80,7 +80,8 @@ function HasEveryoneJoined()
 	For p.tPlayer = Each tPlayer
 		t = t + p\Online\Joined
 	Next
-	If t = BP_GetNumberOfPlayers%() Return True Else Return False
+	DrawRealText("Player count: " + BP_NumPlayers + " readycount:" + t, GAME_WINDOW_W-17.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-+64+(15*GAME_WINDOW_SCALE#+(1*20*GAME_WINDOW_SCALE#)), (Interface_Text_2), 2,0,255,255,255,1)
+	If t = BP_NumPlayers Return True Else Return False
 
 end function 
 ; =========================================================================================================
@@ -258,7 +259,7 @@ Function Game_OnlineMsgOfTheDay()
 		If Game\Online\ShowMsg=False Then
 				If Game\Online\Hosting=True Then
 					SeedRnd(MilliSecs())
-					Select Rand(1, 13)
+					Select Rand(1, 14)
 						Case 1: Game\Online\MsgOfTheDay$="Rev up those fryers!"
 						Case 2: Game\Online\MsgOfTheDay$="FIND THE COMPUTER ROOM!"
 						Case 3: Game\Online\MsgOfTheDay$="Always eat your vegetables."
@@ -267,11 +268,12 @@ Function Game_OnlineMsgOfTheDay()
 						Case 6: Game\Online\MsgOfTheDay$="Is the Ocean salty because we don't Wave back?"
 						Case 7: Game\Online\MsgOfTheDay$="Run Barry, Run!!"
 						Case 8: Game\Online\MsgOfTheDay$="Where's that damn FOURTH Chaos Emerald!"
-						Case 9: Game\Online\MsgOfTheDay$="Welcome to BlitzSonic Online! Have fun!"
+						Case 9: Game\Online\MsgOfTheDay$="Welcome to Sonic World Online! Have fun!"
 						Case 10: Game\Online\MsgOfTheDay$="You are now entering the Twighlight Zone..."
 						Case 11: Game\Online\MsgOfTheDay$="We Don't Like You Here."
 						Case 12: Game\Online\MsgOfTheDay$="Piccolo: The Balls Are Inert!"
 						Case 13: Game\Online\MsgOfTheDay$="Reach for the sky!!"
+						Case 14: Game\Online\MsgOfTheDay$="When I play, I must say UHUL!"
 					End Select
 					Info(Game\Online\MsgOfTheDay$, 0,255,255)
 					BP_UDPMessage(0,25, Game\Online\MsgOfTheDay$)

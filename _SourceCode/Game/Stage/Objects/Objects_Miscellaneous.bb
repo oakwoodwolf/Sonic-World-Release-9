@@ -885,9 +885,18 @@ End Function
 						If o\Teleporter\TeleporterFound Then Player_Spawn(o\Teleporter\OtherTeleporter\Position\x#,o\Teleporter\OtherTeleporter\Position\y#+2.25,o\Teleporter\OtherTeleporter\Position\z#,o\Teleporter\OtherTeleporter\Rotation\y#)
 						o\Teleporter\OtherTeleporter\Teleporter\RestrictTeleportTimer=2.5*secs#
 					Case OBJTYPE_TELEPORTER2:
-						Menu\SelectedStage=o\Teleporter\TeleporterNo
-						Menu\HubStage=Menu\Stage
-						Game_Stage_Quit(2)
+						If Game\Online\Online=False Then
+							Menu\SelectedStage=o\Teleporter\TeleporterNo
+							Menu\HubStage=Menu\Stage
+							Game_Stage_Quit(2)
+						Else If p\Online\NetID=BP_GetHostID() Then
+							Chatting\Allowed=0
+							Menu\SelectedStage=o\Teleporter\TeleporterNo
+							Menu_Stage_LoadMissions(Menu\SelectedStage, true)
+							Menu_GoToStage_SetMission(1)
+							BP_UDPMessage (0,6, StageName(Menu\SelectedStage))
+							Game_Stage_Quit(2)
+						EndIf
 					Case OBJTYPE_TELEPORTER3:
 						Object_Teleporter_ChaoItem(p,p\ObjPickUpTarget,true)
 						SaveGame_Inventory()
