@@ -1456,19 +1456,13 @@ Function HandleMessages()
 					For o.tObject= Each tObject
 						If o\HasValuesetSwitch Then
 							If o\Switch\s1<>Null Then
-								If o\Switch\SwitchNo[0] = attribute Then o\Switch\s1\Active=value
-								If o\Switch\SwitchNo[1] = attribute Then o\Switch\s1\Active=value
-								If o\Switch\SwitchNo[2] = attribute Then o\Switch\s1\Active=value
+								If o\Switch\SwitchNo[0] = attribute Then o\Switch\s1\Active=value : o\Switch\SwitchOn=value
 							EndIf
 							If o\Switch\s2<>Null Then
-								If o\Switch\SwitchNo[0] = attribute Then o\Switch\s2\Active=value
-								If o\Switch\SwitchNo[1] = attribute Then o\Switch\s2\Active=value
-								If o\Switch\SwitchNo[2] = attribute Then o\Switch\s2\Active=value
+								If o\Switch\SwitchNo[1] = attribute Then o\Switch\s2\Active=value : o\Switch\SwitchOn=value
 							EndIf
 							If o\Switch\s3<>Null Then
-								If o\Switch\SwitchNo[0] = attribute Then o\Switch\s3\Active=value
-								If o\Switch\SwitchNo[1] = attribute Then o\Switch\s3\Active=value
-								If o\Switch\SwitchNo[2] = attribute Then o\Switch\s3\Active=value
+								If o\Switch\SwitchNo[2] = attribute Then o\Switch\s3\Active=value : o\Switch\SwitchOn=value
 							EndIf
 						EndIf
 					Next

@@ -1545,7 +1545,7 @@
 
 	Function Player_PlacementsOfVehicle(p.tPlayer)
 		Player_Motion_PetPlacements(p)
-		If Game\Shield>0 and Game\PreviousShield=Game\Shield Then
+		If Game\Shield>0 and Game\PreviousShield=Game\Shield and p\Online\IsLocal Then
 			Player_ShieldPlacement(p)
 		EndIf
 	End Function
