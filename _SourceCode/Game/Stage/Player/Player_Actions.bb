@@ -2272,13 +2272,14 @@
 				Player_SetSpeedY(p,1)
 				p\WasGrabbedTimer=2.0*secs#
 				Player_Action_Freeze_Initiate(p)
+				If p\Online\IsLocal=False Then Player_CreateRazer.tRazer(p,p\Objects\Mesh,1,4,1+0.5*p\ScaleFactor#,1+0.5*p\ScaleFactor#,1+0.5*p\ScaleFactor#,p\WasGrabbedTimer)
 			EndIf
 		EndIf
 	End Function
 
 	Function Player_Action_Freeze(p.tPlayer)
 
-		Game\ControlLock=0.2*secs#
+		If p\Online\IsLocal Then Game\ControlLock=0.2*secs#
 
 		If p\Motion\Ground Then
 			Player_SetSpeed(p,0)

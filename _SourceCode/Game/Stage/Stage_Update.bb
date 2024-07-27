@@ -1455,15 +1455,27 @@ Function HandleMessages()
 				Case OBJTYPE_SWITCH
 					For o.tObject= Each tObject
 						If o\HasValuesetSwitch Then
-							If o\Switch\SwitchNo[0] = attribute Then o\Switch\s1\Active=value
-							If o\Switch\SwitchNo[1] = attribute Then o\Switch\s1\Active=value
-							If o\Switch\SwitchNo[2] = attribute Then o\Switch\s1\Active=value
+							If o\Switch\s1<>Null Then
+								If o\Switch\SwitchNo[0] = attribute Then o\Switch\s1\Active=value
+								If o\Switch\SwitchNo[1] = attribute Then o\Switch\s1\Active=value
+								If o\Switch\SwitchNo[2] = attribute Then o\Switch\s1\Active=value
+							EndIf
+							If o\Switch\s2<>Null Then
+								If o\Switch\SwitchNo[0] = attribute Then o\Switch\s2\Active=value
+								If o\Switch\SwitchNo[1] = attribute Then o\Switch\s2\Active=value
+								If o\Switch\SwitchNo[2] = attribute Then o\Switch\s2\Active=value
+							EndIf
+							If o\Switch\s3<>Null Then
+								If o\Switch\SwitchNo[0] = attribute Then o\Switch\s3\Active=value
+								If o\Switch\SwitchNo[1] = attribute Then o\Switch\s3\Active=value
+								If o\Switch\SwitchNo[2] = attribute Then o\Switch\s3\Active=value
+							EndIf
 						EndIf
 					Next
 				DebugLog("Activating switch " + attribute + "on: " + value)
 				Case OBJTYPE_SWITCHBASE
 					For o.tObject= Each tObject
-						If o\HasValuesetSwitch Then
+						If o\ObjType=OBJTYPE_SWITCHBASE Then
 							If o\Switch\SwitchNo[0] = attribute Then o\Switch\SwitchTopBrought=True : o\Switch\SwitchTop\Done=1
 							If o\Switch\SwitchNo[1] = attribute Then o\Switch\SwitchTopBrought=True : o\Switch\SwitchTop\Done=1
 							If o\Switch\SwitchNo[2] = attribute Then o\Switch\SwitchTopBrought=True : o\Switch\SwitchTop\Done=1
