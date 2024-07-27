@@ -236,13 +236,13 @@ Function Player_ExtraHandle(p.tPlayer,d.tDeltaTime)
 
 	;be invincible!
 	If Game\Invinc=1 And Game\SuperForm=0 and Player_IsPlayable(p) Then ParticleTemplate_Call(p\InvisiParticle, PARTICLE_PLAYER_INVINCIBILITY, p\Objects\Entity, p\ScaleFactor#)
-
+	
 	;be invisible!
 	If p\Invisibility=1 Then
 		ParticleTemplate_Call(p\WaterParticle, PARTICLE_PLAYER_INVISIBILITY, p\Objects\Entity, p\ScaleFactor#)
 
 		;deal invisibility
-		If (Not(p\InvisibilityTimer>0)) Or (p\Character=CHAR_CHO And (Not(p\Action=ACTION_PUDDLE))) Then p\Invisibility=0 : p\InvisibilityRestrictTimer=4*secs#
+		If (Not(p\InvisibilityTimer>0)) Or (p\Character=CHAR_CHO And (Not(p\Action=ACTION_PUDDLE))) Then p\Invisibility=0 : p\InvisibilityRestrictTimer=4*secs# : BP_UDPMessage(0, 24, p\Online\ShowTag)
 	EndIf
 	
 	; deal light meshes

@@ -1683,7 +1683,7 @@
 				Default:
 					If (Not(p\InvisibilityRestrictTimer>0)) Then
 						Select p\Invisibility
-							Case 0: p\Invisibility=1 : p\InvisibilityTimer=10*secs#
+							Case 0: p\Invisibility=1 : p\InvisibilityTimer=10*secs# : BP_UDPMessage(0, 24, False)
 							Case 1: p\InvisibilityTimer=0
 						End Select
 						EmitSmartSound(Sound_Invisible,p\Objects\Entity)
@@ -2287,7 +2287,6 @@
 		Else
 			If p\WasGrabbedTimer<1.0*secs# Then Player_SetSpeed(p,0)
 		EndIf
-
 		If Game\MachLock>0 and Menu\Stage<0 Then p\Animation\Direction#=180
 
 		If Not(p\WasGrabbedTimer>0) Then
@@ -2443,7 +2442,7 @@
 		If (Not(p\InvisibilityRestrictTimer>0)) and p\BombThrown<1 Then
 			p\Action=ACTION_PUDDLE
 			If p\Motion\Ground=False Then p\BombThrown=p\BombThrown+1
-			p\Invisibility=1 : p\InvisibilityTimer=10*secs#
+			p\Invisibility=1 : p\InvisibilityTimer=10*secs# : BP_UDPMessage(0, 24, False)
 			EmitSmartSound(Sound_Bounce,p\Objects\Entity)
 		EndIf
 	End Function

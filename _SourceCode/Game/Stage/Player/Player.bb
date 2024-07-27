@@ -554,7 +554,7 @@
 		Field Collision
 		Field InRadius
 		Field InYourRadius
-		Field Vehicle
+		Field Vehicle, Shield, PreviousShield, Invinc
 
 		Field Joined, ShowTag=True
 
@@ -1192,7 +1192,8 @@
 
 		DeformCharacter_FixUps(p)
 
-		If Game\Shield>0 Then ScaleEntity p\Objects\Shield, 1+p\ScaleFactor#, 1+p\ScaleFactor#, 1+p\ScaleFactor#
+		If Game\Shield>0 and p\No>0 Then ScaleEntity p\Objects\Shield, 1+p\ScaleFactor#, 1+p\ScaleFactor#, 1+p\ScaleFactor#
+				
 
 		Game\SmartCameraRangeDontAffectTimer=5*secs#
 	End Function

@@ -560,6 +560,17 @@
 		
 	End Function
 	Function Player_Motion_OnlinePlacements(p.tPlayer)
+		Player_ManageNetShields(p)
+		If p\Online\Invinc=1 Then ParticleTemplate_Call(p\InvisiParticle, PARTICLE_PLAYER_INVINCIBILITY, p\Objects\Entity, p\ScaleFactor#)
+		If p\Invisibility=1 Then
+		ParticleTemplate_Call(p\WaterParticle, PARTICLE_PLAYER_INVISIBILITY, p\Objects\Entity, p\ScaleFactor#)
+			If Not p\Action=ACTION_PUDDLE Then EntityAlpha(p\Objects\Mesh,0.5)
+		EndIf
+		If p\Action=ACTION_SPIRIT Then
+			EntityAlpha(p\Objects\Mesh,0)
+		Else
+			EntityAlpha(p\Objects\Mesh,1)
+		EndIf
 				If p\Online\Vehicle>0 Then
 					If abs(p\Physics\DRIFT_ANGLE#)>10 Then p\Physics\DRIFT_ANGLE_ACTUAL#=p\Physics\DRIFT_ANGLE# Else p\Physics\DRIFT_ANGLE_ACTUAL#=0
 					If p\Online\Vehicle=9 Then
@@ -612,6 +623,33 @@
 					p\Flags\InAirAttack=False
 				EndIf
 	End Function
+	Function Player_ManageNetShields(p.tPlayer)
+		If p\Online\Shield<>p\Online\PreviousShield Then
+			If p\Online\PreviousShield>0 Then FreeEntity p\Objects\Shield
+				Select p\Online\Shield
+					Case OBJTYPE_NSHIELD: p\Objects\Shield = CopyEntity(MESHES(SmartEntity(Mesh_ShieldNormal)), Game\Stage\Root)
+					Case OBJTYPE_FSHIELD: p\Objects\Shield = CopyEntity(MESHES(SmartEntity(Mesh_ShieldFlame)), Game\Stage\Root)
+					Case OBJTYPE_BSHIELD: p\Objects\Shield = CopyEntity(MESHES(SmartEntity(Mesh_ShieldBubble)), Game\Stage\Root)
+					Case OBJTYPE_TSHIELD: p\Objects\Shield = CopyEntity(MESHES(SmartEntity(Mesh_ShieldThunder)), Game\Stage\Root)
+					Case OBJTYPE_ESHIELD: p\Objects\Shield = CopyEntity(MESHES(SmartEntity(Mesh_ShieldEarth)), Game\Stage\Root)
+					Default: If p\Objects\Shield>0 Then FreeEntity p\Objects\Shield
+				End Select
+				If p\Online\Shield>0 Then ScaleEntity p\Objects\Shield, 1+p\ScaleFactor#, 1+p\ScaleFactor#, 1+p\ScaleFactor#
+			EndIf
+			
+			p\Online\PreviousShield=p\Online\Shield
+			If p\Online\Shield>0 And p\Objects\Shield>0 Then
+				Player_NetShieldPlacement(p)
+			EndIf
+	End Function
+
+	Function Player_NetShieldPlacement(p.tPlayer)
+		RotateEntity p\Objects\Shield, EntityPitch(p\Objects\Mesh,1), EntityYaw(p\Objects\Mesh,1), EntityRoll(p\Objects\Mesh,1), 1
+		PositionEntity p\Objects\Shield, EntityX(p\Objects\Mesh,1), EntityY(p\Objects\Mesh,1)+MeshHeight#(p\Objects\Mesh)/4.0, EntityZ(p\Objects\Mesh,1), 1
+		If p\Animation\Animation=ANIMATION_HOLD1 Or p\Animation\Animation=ANIMATION_HOLD2 Then MoveEntity(p\Objects\Shield), 0, -MeshHeight#(p\Objects\Mesh)/1.5, 0
+		If (Not(p\Action=ACTION_HOLD Or p\Action=ACTION_HOLD2)) Or abs(cam\TargetRotation\x#)<50 Then PointEntity(p\Objects\Shield,cam\Entity)
+	End Function
+
 	Function Player_Motion_PetPlacements(p.tPlayer)
 		Select p\Character
 			Case CHAR_CRE:

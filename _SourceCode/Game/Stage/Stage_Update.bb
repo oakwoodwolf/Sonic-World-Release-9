@@ -1003,7 +1003,7 @@
 					p\Online\Joined=True	
 					; send movement packet
 					BP_UDPMessage(0, UDPMSG_PLAYERMOVEMENT, String$(EntityX(p\Objects\Mesh)+"/"+EntityY(p\Objects\Mesh)+"/"+EntityZ(p\Objects\Mesh)+"/"+EntityPitch(p\Objects\Mesh)+"/"+EntityYaw(p\Objects\Mesh)+"/"+EntityRoll(p\Objects\Mesh),1))	
-					BP_UDPMessage(0, UDPMSG_PLAYERATTRIBUTES, String$(p\Action+"/"+p\Animation\Animation+"/"+p\SpeedLength+"/"+p\Motion\Ground+"/"+p\Online\Joined+"/"+Game\Vehicle+"/",1))
+					BP_UDPMessage(0, UDPMSG_PLAYERATTRIBUTES, String$(p\Action+"/"+p\Animation\Animation+"/"+p\SpeedLength+"/"+p\Motion\Ground+"/"+p\Online\Joined+"/"+Game\Vehicle+"/"+Game\Shield+"/"+Game\Invinc+"/"+p\Invisibility+"/",1))
 					; deal the tag and race attributes
 					If Game\Online\GameType=GAME_TYPE_TAG Then BP_UDPMessage(0,UDPMSG_TAGVALUES,onlineplayer(1)\Online\TagMode+"/"+onlineplayer(1)\Online\TagTimer+"/"+onlineplayer(1)\Online\TagCoolDown)
 					If Game\Online\GameType=GAME_TYPE_RACE Then BP_UDPMessage(0,UDPMSG_RACEVALUES,onlineplayer(1)\Online\RacePosition+"/"+onlineplayer(1)\Online\FinishedRace+"/"+onlineplayer(1)\Online\RaceTimer)
@@ -1292,6 +1292,11 @@ Function HandleMessages()
 					p\Motion\Ground 			= Int(BP_GetMessagePart(msg\msgData, 4))
 					p\Online\Joined 			= Int(BP_GetMessagePart(msg\msgData, 5))
 					p\Online\Vehicle 			= Int(BP_GetMessagePart(msg\msgData, 6))
+					p\Online\PreviousShield 	= p\Online\Shield 
+					p\Online\Shield 			= Int(BP_GetMessagePart(msg\msgData, 7))
+					p\Online\Invinc 			= Int(BP_GetMessagePart(msg\msgData, 8))
+					p\Invisibility	 			= Int(BP_GetMessagePart(msg\msgData, 9))
+					If p\Invisibility=1 Then p\InvisibilityTimer=0.25*secs#
 				EndIf
 			;------------------------------------------------------
 			Case UDPMSG_TAGVALUES ; handle tag

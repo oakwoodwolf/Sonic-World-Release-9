@@ -1521,6 +1521,7 @@
 					Case OBJTYPE_ESHIELD: ppp\Objects\Shield = CopyEntity(MESHES(SmartEntity(Mesh_ShieldEarth)), Game\Stage\Root)
 				End Select
 				If Game\Shield>0 And  ppp\Online\IsLocal Then ScaleEntity ppp\Objects\Shield, 1+ppp\ScaleFactor#, 1+ppp\ScaleFactor#, 1+ppp\ScaleFactor#
+			Else 
 			EndIf
 			Next
 			Game\PreviousShield=Game\Shield
