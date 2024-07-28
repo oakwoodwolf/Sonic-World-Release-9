@@ -167,7 +167,25 @@ Function TeleportToPlayer(name$)
 		endif
 	next
 end function
-
+; view other players
+Function ViewOtherPlayer(p.tPlayer, c.tCamera)
+	if p<>null And p\Online\Name$=Game\Online\ViewName$ then
+		if Game\Online\ViewPlayer=True And onlineplayer(1)\Online\Name$=Game\Online\ViewName$ then Game\Online\ViewPlayer=False : Game\Online\ViewName$="" : Info("You can't view yourself.", 255,11,255)
+		if Game\Online\ViewPlayer=True then		
+			ShowEntity(p\Online\Camera)
+			Rect(GAME_WINDOW_W-300, GAME_WINDOW_H-300, 256*GAME_WINDOW_SCALE#, 256*GAME_WINDOW_SCALE#,0)
+			CameraViewport(p\Online\Camera, GAME_WINDOW_W-300, GAME_WINDOW_H-300, 256*GAME_WINDOW_SCALE#, 256*GAME_WINDOW_SCALE#)
+			CameraViewPort(c\Entity, 0, 0,GAME_WINDOW_W, GAME_WINDOW_H)
+		Endif
+	EndIf
+	If Game\Online\ViewPlayer=False
+		For p.tPlayer = Each tPlayer
+		if p\Online\Camera>0 then HideEntity(p\Online\Camera)
+		if p\Online\Camera>0 then CameraViewPort(p\Online\Camera, 0, 0, 0, 0)
+		CameraViewPort(c\Entity, 0, 0, GAME_WINDOW_W, GAME_WINDOW_H)
+		Next
+	endif 	
+End Function
 ; bring all players to host
 Function Player_BringAllToHost()
 	BP_UDPMessage(0,3,"teleport all")

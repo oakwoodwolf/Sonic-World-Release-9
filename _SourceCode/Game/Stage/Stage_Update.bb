@@ -800,7 +800,7 @@
 		EndIf
 
 		; Render world
-		CameraClsColor(c\Entity,0,0,0) ; CameraClsColor(c\Entity,255,255,255)
+		CameraClsColor(c\Entity,0,128,255) ; CameraClsColor(c\Entity,255,255,255)
 		CameraProjMode (c\Entity, 1)
 
 		;skydome stuff
@@ -962,7 +962,6 @@
 			; ---------------------------------------------------------------
 			; draw name-tags
 				For p.tPlayer = Each tPlayer ;!
-					;ViewOtherPlayer(p, c)
 					If p\Online\Connected And p\Online\ShowTag=True And Menu\Pause=0 Then 
 						DrawPlayerTag(c\Entity, p, p\Online\Name$, p\Online\NetID, 	3, Interface_Lives_R[InterfaceChar(p\RealCharacter)],Interface_Lives_G[InterfaceChar(p\RealCharacter)],Interface_Lives_B[InterfaceChar(p\RealCharacter)])
 					EndIf

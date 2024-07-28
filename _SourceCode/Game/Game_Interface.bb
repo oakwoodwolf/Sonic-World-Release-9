@@ -1249,14 +1249,30 @@ Function AboutToChat()
 				; commands for all
 				select kicktxt$
 					Case "/help" : kicktxt$=kicktxt$+Chr$(32) : If Game\Online\ShowCommands<MilliSecs() Then Game\Online\ShowCommands=MilliSecs()+10000 : Else : Game\Online\ShowCommands=0
-					case "/nickname", "/changename" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : Player_ChangeName(kickname$)
+					case "/nickname", "/changename", "/nick", "/name" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : Player_ChangeName(kickname$)
 					case "/tp" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : TeleportToPlayer(kickname$)
 					case "/debug" : kicktxt$=kicktxt$+Chr$(32) : Game\Online\Debug=1-Game\Online\Debug
 					case "/log" : Game\Online\Logging=1-Game\Online\Logging : If Game\Online\Logging Then : BP_StartLogFile(Menu\PlayerName$+"'s Log"+".txt") : Else : BP_StopLogFile() : Endif
 					case "/update" : Game\Online\SendUpdates=1-Game\Online\SendUpdates
 					case "/clear", "/Clear" : For i.Info = Each Info : Delete i : next : FlushKeys()
-					case "/view" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : Game\Online\ViewName$=kickname$ : Game\Online\ViewPlayer=True
+					case "/view" :
+						kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat)
+						
+						Select Game\Online\Gametype:
+							Case GAME_TYPE_TAG: Info("Don't cheat!",0,255,255)
+							Case GAME_TYPE_HIDENSEEK:
+								For ppp.tPlayer=Each tPlayer
+									If ppp\Online\Name = kickname And ppp\Online\TagMode<>TAG_NOT_IT Then Camera_Bind(cam,ppp) : Game\Online\ViewPlayer=True : Game\Online\ViewName$=kickname$
+								Next
+								Info("Don't cheat!",0,255,255)
+							Default:
+								For ppp.tPlayer=Each tPlayer
+									If ppp\Online\Name = kickname Then Camera_Bind(cam,ppp) : Game\Online\ViewPlayer=True : Game\Online\ViewName$=kickname$
+								Next
+						End Select
+						
 					case "/viewoff" : Game\Online\ViewPlayer=False 
+					Camera_Bind(cam,pp(1))
 					case "/logout","/logoff" : BP_UDPMessage (0,12,Menu\PlayerName$+" logged out...") : BP_EndSession() : Game_Stage_Quit(3)
 					case "/hidetag","/showtag" : if kicktxt$="/hidetag" Then : onlineplayer(1)\Online\ShowTag=False : else : onlineplayer(1)\Online\ShowTag=True : EndIf : BP_UDPMessage(0,24,onlineplayer(1)\Online\ShowTag)
 					case "/chatsize" : kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat) : Chatting\Scale=Int(kickname$)

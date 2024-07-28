@@ -163,7 +163,7 @@
 		; When the player pressed left or right, the camera rotates with them
 		If Not(Game\CamLock>0 Or Game\CamLock2>0 Or c\Lock\PosTimer>0) Then
 			c\Lock\CamLockedRightNow=False
-			If (Not(Input\Hold\MouseCamUp Or Input\Hold\MouseCamDown Or Input\Hold\MouseCamLeft Or Input\Hold\MouseCamRight)) And Game\Interface\DebugPlacerOn=0 And Game\CinemaMode=0 And Menu\Settings\AutoCameraDisabled#=0 Then
+			If (Not(Input\Hold\MouseCamUp Or Input\Hold\MouseCamDown Or Input\Hold\MouseCamLeft Or Input\Hold\MouseCamRight)) And Game\Interface\DebugPlacerOn=0 And Game\CinemaMode=0 And Menu\Pause=1 And Menu\Settings\AutoCameraDisabled#=0 Then
 				If Not(c\Target\Action=ACTION_CLIMB) Then RotationX# = Cos(Input\Movement_Direction)*Input\Movement_Pressure
 				RotationY# = Sin(Input\Movement_Direction)*Input\Movement_Pressure
 
