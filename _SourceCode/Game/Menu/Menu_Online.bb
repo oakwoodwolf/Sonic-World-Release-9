@@ -176,7 +176,7 @@ Function Interface_Render_HostMenu(p.tPlayer)
 		Case 2:
 			PlaySmartSound(Sound_MenuAccept)
 			Menu\SelectedStage=Menu\Option
-			Menu_Stage_LoadMissions(Menu\SelectedStage, true)
+			Menu_Stage_LoadMissions(Menu\SelectedStage, True)
 			Menu_GoToStage_SetMission(1)
 			Chatting\Allowed=0
 			BP_UDPMessage (0,6, StageName(Menu\SelectedStage))
@@ -197,13 +197,22 @@ Function Interface_Render_HostMenu(p.tPlayer)
 			Case True : Info("PVP is ENABLED!", 0,255,255)
 			Case False : Info("PVP is Disabled...", 0,255,255)
 		End Select
-		BP_UDPMessage(0,28,Game\Online\PVP)
+		BP_UDPMessage(0,28,Game\Online\PVP+"/"+Game\Online\RaceLimit+"/")
 	EndIf
-		DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2-(40-75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(-20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeyJump[Menu\Settings\PrimaryController#])
+	If Input\Pressed\ActionSkill2  Then
+		PlaySmartSound(Sound_Switch)
+		Game\Online\RaceLimit = Not Game\Online\RaceLimit
+		Select Game\Online\RaceLimit
+			Case True : Info("Race Timer will now start after the first player clears..", 0,255,255)
+			Case False : Info("All players must clear the race to clear the mode", 0,255,255)
+		End Select
+		BP_UDPMessage(0,28,Game\Online\PVP+"/"+Game\Online\RaceLimit+"/")
+	EndIf
+		DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, GAME_WINDOW_W/2-(40-75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(-20)*GAME_WINDOW_SCALE#, False, Menu\OptionsForceKeyJump[Menu\Settings\PrimaryController#])
 		DrawRealText("PVP", GAME_WINDOW_W/2+(-10-75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 		DrawSmartKey(INPUT_BUTTON_ACTIONSKILL3, GAME_WINDOW_W/2-(40+75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(-20)*GAME_WINDOW_SCALE#)
 		DrawRealText("Select", GAME_WINDOW_W/2+(-10+75)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-		DrawSmartKey(INPUT_BUTTON_ACTIONROLL, GAME_WINDOW_W/2-(40-225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(-20)*GAME_WINDOW_SCALE#, false, Menu\OptionsForceKeyRoll[Menu\Settings\PrimaryController#])
+		DrawSmartKey(INPUT_BUTTON_ACTIONROLL, GAME_WINDOW_W/2-(40-225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(-20)*GAME_WINDOW_SCALE#, False, Menu\OptionsForceKeyRoll[Menu\Settings\PrimaryController#])
 		DrawRealText("Move", GAME_WINDOW_W/2+(-10-225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 		DrawSmartKey_MovementGeneral(GAME_WINDOW_W/2-(40+225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(-20)*GAME_WINDOW_SCALE#)
 		DrawRealText("Back", GAME_WINDOW_W/2+(-10+225)*GAME_WINDOW_SCALE#, GAME_WINDOW_H+(-20)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
@@ -227,6 +236,7 @@ Function DrawGametypeOverlay()
 		Select Game\Online\GTState
 			Case 0: DrawRealText("Waiting for other players to load.", GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
 			Case 1: DrawBetterNumber(Game\Online\Countdown/secs#, GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, 2, 0)
+			Case 2: If Game\Online\Countdown<60*secs# And Game\Online\Countdown>0.5*secs# Then DrawBetterNumber(Game\Online\Countdown/secs#, GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, 2, 0)
 			Case 3: DrawRealText("Race Finished", GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 1,0,128,128,16)
 		End Select
 	Case GAME_TYPE_TAG
@@ -236,3 +246,5 @@ Function DrawGametypeOverlay()
 		End Select
 	End Select
 End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

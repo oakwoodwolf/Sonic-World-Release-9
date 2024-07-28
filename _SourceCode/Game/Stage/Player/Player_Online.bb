@@ -71,6 +71,7 @@ function HasEveryoneFinishedTheRace()
 	For p.tPlayer = Each tPlayer
 		t = t + p\Online\FinishedRace
 	Next
+	If Game\Online\RaceLimit And t>0 And (Not Game\Online\Countdown>0) And Game\Online\Hosting Then Return True
 	If t = BP_GetNumberOfPlayers%() Return True Else Return False
 
 end function 
@@ -239,15 +240,17 @@ Function DrawPlayerTag(Cam%, p.tPlayer, label$, no=1, height#=3, r=255, g=255, b
 					Case 1:
 						suffix$="st" : rp=255 : gp=255 : bp=64
 					Case 2:
-						suffix$="nd" : rp=128 : gp=128 : bp=128
+						suffix$="nd" : rp=164 : gp=164 : bp=172
 					Case 3:
 						suffix$="rd" : rp=203 : gp=152 : bp=64
 					Default:
 						suffix$="th" : rp=255 : gp=128 : bp=64
 				End Select
 				If p\Online\FinishedRace=1 Then
+					SetColor(rp, gp, bp)
 					DrawRealText(p\Online\RacePosition+suffix$, x, y-64, Interface_TextControls_1, 1, 0, rp, gp, bp)
-					DrawRealText(p\Online\RaceTimer/60000+":"+(p\Online\RaceTimer/1000 Mod 60)+";"+(p\Online\RaceTimer/10 Mod 100), x, y-32, Interface_TextButtons_1, 1, 0, rp, gp, bp)
+					SetColor(255, 255, 255)
+					DrawRealText(p\Online\RaceTimer/60000+":"+(p\Online\RaceTimer/1000 Mod 60)+"."+(p\Online\RaceTimer/10 Mod 100), x, y-32, Interface_TextControls_1, 1, 0, rp, gp, bp)
 				EndIf
 		End Select
 		EndDraw()

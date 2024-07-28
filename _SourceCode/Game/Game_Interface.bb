@@ -413,7 +413,9 @@ End Function
 			Interface_TrickPointsCounter(p, d,0,spacing)
 		EndIf
 		If Game\Online\Connected Then
+			SetScale(GAME_WINDOW_SCALE#*(Chatting\Scale/3), GAME_WINDOW_SCALE#*(Chatting\Scale/3))
 			Interface_DrawChat(30*GAME_WINDOW_SCALE#, (GAME_WINDOW_H-(ImageHeightEx#(INTERFACE(Interface_Chatbox))))*GAME_WINDOW_SCALE#,Chatting\Scale)
+			SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
 		Else
 			Interface_MemberHeads()
 			SetColor(Interface_Lives_R[InterfaceChar(pp(1)\RealCharacter)],Interface_Lives_G[InterfaceChar(pp(1)\RealCharacter)],Interface_Lives_B[InterfaceChar(pp(1)\RealCharacter)])
@@ -1195,7 +1197,7 @@ Function AboutToChat()
 					BP_UDPMessage (0,11,Chatting\Sentence[1])	
 					BP_UDPMessage (0,95,Chatting\Sentence[2])												
 					Info(p\Online\Name$+":"+Chatting\Sentence[1],p\Online\PrevColorR,p\Online\PrevColorG, p\Online\PrevColorB, "normal")
-					Info(Chatting\Sentence[2],255,255,255, "normal")
+					Info(Chatting\Sentence[2],p\Online\PrevColorR,p\Online\PrevColorG, p\Online\PrevColorB, "normal")
 				Else
 					BP_UDPMessage (0,11,Chatting\Txt$)				
 					Info(p\Online\Name$ + ":" + Chatting\Txt$,p\Online\PrevColorR,p\Online\PrevColorG, p\Online\PrevColorB, "normal")
@@ -1308,6 +1310,7 @@ Function Info(t$,r=255,g=255,b=255, font_type$="normal", randcolor=false)
 	Insert i Before First Info
 End Function
 global slidechat#=1
+
 Function Interface_DrawChat(x#=0, y#=0, csize=1, orientation=1)
 	; fix the chat limit consequently to the size.
 	if csize>5 then csize=5
@@ -1367,14 +1370,14 @@ Function Interface_DrawChat(x#=0, y#=0, csize=1, orientation=1)
 			If i\randcolor=True Then SeedRnd(millisecs()) : i\r=rnd(100,255): i\g=rnd(100,255): i\b=rnd(100,255)
 			If BP_GetMessagePart(i\Txt, 2, ":")<>"" Then
 				SetColor(i\r, i\g, i\b)
-				DrawRealText(BP_GetMessagePart(i\Txt, 1, ":") + " " + BP_GetMessagePart(i\Txt, 2, ":"), 17.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-+64+(15*GAME_WINDOW_SCALE#+(1*(textcounter*GAME_WINDOW_SCALE#))), (Interface_Text_2), 0)
+				DrawRealText(BP_GetMessagePart(i\Txt, 1, ":") + " " + BP_GetMessagePart(i\Txt, 2, ":"), 17.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-+64+(15*GAME_WINDOW_SCALE#+(1*(textcounter*GAME_WINDOW_SCALE#))), (Interface_Text_2), 0,0,0,0,Min(0,3-Chatting\Scale))
 			Else
 				SetColor(i\r, i\g, i\b)
-				DrawRealText(i\Txt$, 17.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-+64+(15*GAME_WINDOW_SCALE#+(1*textcounter*GAME_WINDOW_SCALE#)), (Interface_Text_2), 0)
+				DrawRealText(i\Txt$, 17.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-+64+(15*GAME_WINDOW_SCALE#+(1*textcounter*GAME_WINDOW_SCALE#)), (Interface_Text_2), 0,0,0,0,Min(0,3-Chatting\Scale))
 			endif
 			
 			SetColor(255,255,255)
-			textcounter = textcounter - 20
+			textcounter = textcounter - 15
 		EndIf
 	Next
 

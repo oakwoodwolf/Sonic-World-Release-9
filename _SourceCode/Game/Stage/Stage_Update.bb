@@ -1178,7 +1178,6 @@ Function HandleMessages()
 				nInfo.NetInfo = BP_FindID(p\Online\NetID) 			; send info the net							
 				; finished 	; inform the joined party
 				If Game\Online\ShowMsg=False Then BP_UDPMessage(0,25, Game\Online\MsgOfTheDay$) : Game\Online\ShowMsg=True
-				;If BP_My_ID = BP_Host_ID Then BP_UDPMessage(p\Online\NetID, 6, StageName(Menu\Stage))
 				If BP_My_ID = BP_Host_ID Then : Info("**" + p\Online\Name$ + " has joined!",0,255,0, "bold") : Else : Info("**" + p\Online\Name$ + " is in!",0,255,0, "bold") : EndIf
 				PlaySmartSound(Sound_CharacterChange) 								; sound for comformation			
 				;Next						
@@ -1344,12 +1343,23 @@ Function HandleMessages()
 				End Select
 			Case 28 ; PVP
 			;------------------------------------------------------
-				Game\Online\PVP=msg\msgData
+				prevPVP=Game\Online\PVP
+				prevLimit=Game\Online\RaceLimit
+				Game\Online\PVP=Int(BP_GetMessagePart(msg\msgData, 1))
+				Game\Online\RaceLimit=Int(BP_GetMessagePart(msg\msgData, 2))
 				PlaySmartSound(Sound_EggmanHurt)
-				Select Game\Online\PVP
-					Case True : Info("PVP is ENABLED!", 0,255,255)
-					Case False : Info("PVP is Disabled...", 0,255,255)
-				End Select
+				If Game\Online\PVP<>prevPVP Then
+					Select Game\Online\PVP
+						Case True : Info("PVP is ENABLED!", 0,255,255)
+						Case False : Info("PVP is Disabled...", 0,255,255)
+					End Select
+				EndIf
+				If Game\Online\RaceLimit<>prevLimit Then
+					Select Game\Online\RaceLimit
+						Case True : Info("Race Timer will now start after the first player clears..", 0,255,255)
+						Case False : Info("All players must clear the race to clear the mode", 0,255,255)
+					End Select
+				EndIf
 			;------------------------------------------------------
 			Case 3 ; Various Packet
 			;------------------------------------------------------
@@ -1502,9 +1512,9 @@ Function HandleMessages()
 				If BP_Host_ID<>onlineplayer(1)\Online\NetID Then 
 					Game\Online\GTState = Int(BP_GetMessagePart(msg\msgData, 1, "/"))
 					Game\Online\Countdown = Float(BP_GetMessagePart(msg\msgData, 2, "/"))
+				Else
+					If Game\Online\GTState=2 And Game\Online\GameType=GAME_TYPE_RACE Then Game\Online\Countdown = Float(BP_GetMessagePart(msg\msgData, 2, "/"))
 				EndIf
-
-				If Not Game\Online\Hosting Then If (Abs(Game\Gameplay\Time-time)>1000) Then Game\Gameplay\Time=time
 		End Select
 		Delete msg
 	Next ;!!!!
@@ -1615,10 +1625,9 @@ Function Update_GameModes()
 		Case 1:
 			;Game\ControlLock=0.1*secs#
 			If BP_GetHostID()=me_p\Online\NetID Then Game\Gameplay\Time=0
-			Game\Invinc=1 : Game\InvincTimer=1.1*secs#
 			For ppp.tPlayer = Each tPlayer
+				ppp\HurtTimer=1.1*secs#
 				Player_SetSpeed(ppp, 0)
-				Player_SetPosition(ppp, Game\Stage\Properties\StartX, Game\Stage\Properties\StartY, Game\Stage\Properties\StartZ, Game\Stage\Properties\StartDirection)
 			Next
 			Game\Online\Countdown=Game\Online\Countdown-timervalue#
 			If (Not Game\Online\Countdown>0) Then
@@ -1628,12 +1637,12 @@ Function Update_GameModes()
 				Player_PlayTurnVoice(ppp)
 				ppp\HurtTimer=5*secs#
 				Next
+				Game\Online\Countdown=999*secs#
 				If Menu\Mission=MISSION_RIVAL# Then Gameplay_SetRings(5)
 			EndIf
 		Case 3:
-			If BP_GetHostID()=me_p\Online\NetID Then BP_UDPMessage(0, 29, Game\Online\GTState)
 			Game\Online\Countdown=Game\Online\Countdown-timervalue#
-			If (Not Game\Online\Countdown>0) Then
+			If (Not Game\Online\Countdown>0) And Game\Online\Hosting Then
 				Game\Online\GTState=0
 				If me_p\Online\NetID=BP_GetHostID() Then
 					Player_ResetGamemodeValues(me_p)
@@ -1643,9 +1652,11 @@ Function Update_GameModes()
 		Default:
 			; handle race mode
 			; did everyone finish the race...
-			If BP_GetHostID()=me_p\Online\NetID Then BP_UDPMessage(0, 29, Game\Online\GTState)
+			;If BP_GetHostID()=me_p\Online\NetID Then BP_UDPMessage(0, 29, Game\Online\GTState)
 			;other_p.tPlayer After tPlayer
-			
+			If (Game\Online\Countdown>0) And Game\Online\RaceLimit Then
+				Game\Online\Countdown=Game\Online\Countdown-timervalue#
+			EndIf
 			If HasEveryoneFinishedTheRace() Then
 				Info("Race Has Finished!", 255,20,128)
 				Game\Online\Countdown=10*secs#

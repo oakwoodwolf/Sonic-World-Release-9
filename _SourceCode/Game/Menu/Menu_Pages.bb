@@ -343,8 +343,7 @@ Function Menu_Main_Update()
 				CountEmblems()
 				Menu\NewOption=1 : Menu\NewMenu=MENU_PLAY#
 			Case 2:
-				CountEmblems()
-				Menu\NewOption=1 : Menu\NewMenu=MENU_ONLINE#
+				Menu\NewOption=1 : Menu\NewMenu=MENU_ONLINE# : Menu\Character[1]=1
 			Case 3:
 				For i = 1 to 3 : Menu\Character[i]=InterfaceChar(Menu\Character[i]) : Next
 				Menu\NewOption=Menu\Character[1] : Menu\NewMenu=MENU_BIOS# : ChannelVolume(Menu\Channel_Menu,0) : Menu\CharacterMeshAnimation=1

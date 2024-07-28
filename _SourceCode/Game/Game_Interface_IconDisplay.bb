@@ -317,6 +317,7 @@ Global TIP_HAMMERDOWN		= i : i=i+1
 Global TIP_TRICK			= i : i=i+1
 Global TIP_LIGHTDASH		= i : i=i+1
 Global TIP_BATTLEMODE		= i : i=i+1
+Global TIP_CHAT				= i : i=i+1
 Global TIP_JUMPA[CHAR_NONMODPLAYABLECOUNT]			: For j = 1 to CHAR_NONMODPLAYABLECOUNT : TIP_JUMPA[j] = i : i=i+1 : Next
 Global TIP_ShortJUMPA[CHAR_NONMODPLAYABLECOUNT]		: For j = 1 to CHAR_NONMODPLAYABLECOUNT : TIP_ShortJUMPA[j] = i : i=i+1 : Next
 Global TIP_HoldJUMPA[CHAR_NONMODPLAYABLECOUNT]		: For j = 1 to CHAR_NONMODPLAYABLECOUNT : TIP_HoldJUMPA[j] = 0 : Next
@@ -381,6 +382,7 @@ CONTROLTIPS$(TIP_HAMMERDOWN)		= "Hammer down"
 CONTROLTIPS$(TIP_TRICK)				= "Trick"
 CONTROLTIPS$(TIP_LIGHTDASH)			= "Light dash"
 CONTROLTIPS$(TIP_BATTLEMODE)		= "Battle mode"
+CONTROLTIPS$(TIP_CHAT)				= "Enable Chat"
 ;---------------------------------------------------------------------------
 CONTROLTIPS$(TIP_JUMPA[CHAR_SON])	= "Jump dash, homing attack"
 CONTROLTIPS$(TIP_JUMPA[CHAR_TAI])	= "Fly"
@@ -709,8 +711,18 @@ Function Interface_ControlTipDraw(p.tPlayer, x#, y#)
 		Interface_ControlTipDraw_Button2(CONTROLTIPS$(TIP_CHANGE), INPUT_BUTTON_CHANGE, abs(x#-GAME_WINDOW_W), GAME_WINDOW_H-(60)*GAME_WINDOW_SCALE#-i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
 		i=i+1
 	EndIf
+	If Game\Online\Online Then
+		If Chatting\Allowed Then
+			DrawImageEx(INTERFACE(Interface_Keys_small), x#, GAME_WINDOW_H-(60)*GAME_WINDOW_SCALE#-i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, 61)
+			DrawImageEx(INTERFACE(Interface_Keys_small), x#, GAME_WINDOW_H-(60)*GAME_WINDOW_SCALE#-i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, 58)
+			DrawRealText("Disable Chat", x#-12.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-(60)*GAME_WINDOW_SCALE#-i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, (Interface_Text_2), 2)
+		Else
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_CHAT), INPUT_BUTTON_CHANGE, x, GAME_WINDOW_H-(60)*GAME_WINDOW_SCALE#-i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+		EndIf
+		i=i+1
+	EndIf
 	If Len(CONTROLTIPS$(TIP_JUMPA2[char]))>0 Then
-		Interface_ControlTipDraw_Button2(CONTROLTIPS$(TIP_JACHANGE)+" ("+Str(p\JumpActionMode+1)+")", INPUT_BUTTON_BACK, abs(x#-GAME_WINDOW_W), GAME_WINDOW_H-(60)*GAME_WINDOW_SCALE#-i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, true)
+		Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_JACHANGE)+" ("+Str(p\JumpActionMode+1)+")", INPUT_BUTTON_BACK, x#, GAME_WINDOW_H-(60)*GAME_WINDOW_SCALE#-i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, true)
 		i=i+1
 	EndIf	
 	If Menu\Stage>0 and UNLOCKEDEMERALDS[7]=1 and p\Flags\CanSuperTransform and Game\Gameplay\Rings>=50+50*Game\SuperForm Then

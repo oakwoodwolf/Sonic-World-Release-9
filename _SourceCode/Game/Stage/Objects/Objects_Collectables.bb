@@ -579,6 +579,7 @@
 					if rcp\Online\RacePosition = 0 then 
 						onlineplayer(1)\Online\RacePosition = 1
 						Info("You got 1st Place!", 255, 71, 12) : BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name+" got 1st Place!") : Player_PlayRankVoice(p, 1)
+						BP_UDPMessage(BP_Host_ID, 29, 2+"/"+60*secs#)
 					elseif rcp\Online\RacePosition = 1 then 
 						onlineplayer(1)\Online\RacePosition = 2
 						Info("You got 2nd Place!", 255, 71, 12) : BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name+" got 2nd Place!") : Player_PlayRankVoice(p, 2)

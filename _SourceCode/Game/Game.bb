@@ -325,7 +325,7 @@ End Function
 		Field   SendUpdates%
 		Field  	Logging%
 		Field   GameType%
-		Field 	PVP
+		Field 	PVP, RaceLimit
 		Field 	RaceFinished
 		Field 	GTState = 0
 		Field   MsgOfTheDay$, ShowMsg, ShowCommands
