@@ -35,7 +35,7 @@ global BP_Ping%
 global BP_PingTime = MilliSecs()
 global BP_LastUpdate = MilliSecs()
 Global BP_LogFile$ = ""			;Define if you want logging enabled.
-Global BP_TimeoutPeriod%=7000	;How long before we assuming connection dropped(in ms)
+Global BP_TimeoutPeriod%=15000	;How long before we assuming connection dropped(in ms)
 Global BP_Log%					;Log file handle, 0 if logging disabled
 Global BP_AutoLogging%			;True or False on if BP should internally do the logging
 Global BP_UDPdebug%			    ;Odds (in %) that packets do NOT get sent (for testing)

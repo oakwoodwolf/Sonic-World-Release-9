@@ -1604,7 +1604,7 @@ Function Update_GameModes()
 		Select Game\Online\GTState:
 		Case 0:
 			Game\ControlLock=0.1*secs#
-			Game\Gameplay\Time=0
+			If BP_GetHostID()=me_p\Online\NetID Then Game\Gameplay\Time=0
 			For ppp.tPlayer = Each tPlayer
 				Player_SetSpeed(ppp, 0)
 			Next
@@ -1614,7 +1614,8 @@ Function Update_GameModes()
 			End if
 		Case 1:
 			;Game\ControlLock=0.1*secs#
-			Game\Gameplay\Time=0
+			If BP_GetHostID()=me_p\Online\NetID Then Game\Gameplay\Time=0
+			Game\Invinc=1 : Game\InvincTimer=1.1*secs#
 			For ppp.tPlayer = Each tPlayer
 				Player_SetSpeed(ppp, 0)
 				Player_SetPosition(ppp, Game\Stage\Properties\StartX, Game\Stage\Properties\StartY, Game\Stage\Properties\StartZ, Game\Stage\Properties\StartDirection)

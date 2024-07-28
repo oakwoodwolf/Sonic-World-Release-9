@@ -1247,20 +1247,20 @@
 	; =========================================================================================================
 
 	Function Player_DieSpawn(p.tPlayer)
-		If Game\Gameplay\Lives=0 Then
+		If Game\Gameplay\Lives=0 And Game\Online\Online=False Then
 			Game\Gameplay\Lives=5
 			Game_Stage_Quit(1)
 		Else
+
 			Game\ResetObjects=1
 			Objects_Reset_All()
 			If BP_Online Then
 				Player_SetPosition(p,Game\Gameplay\CheckX#,Game\Gameplay\CheckY#+7,Game\Gameplay\CheckZ#,Game\Gameplay\CheckDirection#)
+				Game\Gameplay\CheckTime=Game\Gameplay\Time
 			Else
 				Player_Spawn(Game\Gameplay\CheckX#,Game\Gameplay\CheckY#+7,Game\Gameplay\CheckZ#,Game\Gameplay\CheckDirection#)
 			EndIf
 			Player_PlayTurnVoice(p)
-			p\HurtTimer=5*secs#
-			If Not BP_Online Then Gameplay_SubstractLives(abs(p\DieButDontLoseLife-1)) Else p\HurtTimer=4*secs#
 
 			Game\Stage\Properties\MusicMode=Game\Gameplay\CheckMusicMode
 			For i=0 to 2
@@ -1269,6 +1269,7 @@
 			Next
 
 			Player_ResetInGameValues()
+			If Not BP_Online Then Gameplay_SubstractLives(abs(p\DieButDontLoseLife-1)) Else p\HurtTimer=4*secs#
 			DeformCharacter(pp(1))
 			If Menu\Members>=2 Then DeformCharacter(pp(2))
 			If Menu\Members>=3 Then DeformCharacter(pp(3))
@@ -1292,6 +1293,7 @@
 			StopChannel(Game\Channel_Drown)
 			StopChannel(Game\Channel_MissionCompleted)
 			StopChannel(Game\Channel_Result)
+			If Game\Online\Online Then p\HurtTimer=5*secs#
 		EndIf
 	End Function
 

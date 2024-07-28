@@ -659,6 +659,10 @@ Next
 											Game\Stage\Properties\StartZ# = Float(xmlNodeAttributeValueGet(ScenePlayerPosition, "z"))
 											Game\Stage\Properties\StartDirection# = Float(xmlNodeAttributeValueGet(ScenePlayerPosition, "dir"))
 											If Game\Stage\Properties\StartDirection#<0 Then Game\Stage\Properties\StartDirection#=Game\Stage\Properties\StartDirection#+360
+											If Game\Online\Online=1 Then
+												Game\Stage\Properties\StartX#=Game\Stage\Properties\StartX#+Rand(-2,2) 
+												Game\Stage\Properties\StartZ#=Game\Stage\Properties\StartZ#+Rand(-3,3) 
+											EndIf
 										End If
 										Game\Gameplay\CheckX#=Game\Stage\Properties\StartX#
 										Game\Gameplay\CheckY#=Game\Stage\Properties\StartY#

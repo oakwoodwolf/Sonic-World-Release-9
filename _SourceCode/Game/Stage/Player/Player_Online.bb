@@ -24,7 +24,6 @@ Function Player_CreateOnlineData(p.tPlayer, pname$, pid%, no%, localplayer%=True
 		p\Online\CamPivot=CreatePivot()
 		p\Online\Camera = CreateCamera(p\Online\campivot):HideEntity(p\Online\Camera)
 		p\Online\Collision = CreateCylinder():EntityAlpha(p\Online\Collision,0)	
-		EntityType(p\Objects\Mesh, COLLISION_PLAYER)
 	EndIf		
 	; name the player by their ID.
 	NameEntity(p\Objects\Entity, p\Online\NetID)
