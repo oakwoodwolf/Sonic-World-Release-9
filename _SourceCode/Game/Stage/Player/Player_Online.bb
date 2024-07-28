@@ -80,7 +80,6 @@ function HasEveryoneJoined()
 	For p.tPlayer = Each tPlayer
 		t = t + p\Online\Joined
 	Next
-	DrawRealText("Player count: " + BP_NumPlayers + " readycount:" + t, GAME_WINDOW_W-17.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H-+64+(15*GAME_WINDOW_SCALE#+(1*20*GAME_WINDOW_SCALE#)), (Interface_Text_2), 2,0,255,255,255,1)
 	If t = BP_NumPlayers Return True Else Return False
 
 end function 

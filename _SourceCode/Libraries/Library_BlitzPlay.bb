@@ -892,10 +892,10 @@ Function BP_UpdateNetwork ()		;This is the -meat- of the library.
 									nInfo\Name = Mid$(msgData,2)
 									nInfo\Alive = True
 									nInfo\LastHeard = curTime
-									msg.MsgInfo = New MsgInfo
-									msg\msgType = 255
-									msg\msgFrom = nInfo\net_id
-									msg\msgData = nInfo\Name
+									;msg.MsgInfo = New MsgInfo
+									;msg\msgType = 255
+									;msg\msgFrom = nInfo\net_id
+									;msg\msgData = nInfo\Name
 								End If
 							Case 3
 								reason% = Asc(Mid$(msgData,2,1))
