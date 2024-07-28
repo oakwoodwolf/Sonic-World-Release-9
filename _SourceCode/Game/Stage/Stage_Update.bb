@@ -1191,6 +1191,7 @@ Function HandleMessages()
 					Else 
 						Info("**" + p\Online\Name$ + " lagged out!",0,0,255, "bold") : DebugLog("**" + p\Online\Name$ + " lagged out!")
 					EndIf
+					If Game\Online\ViewName=p\Online\Name And (Game\Online\ViewPlayer Or Game\SpectatorMode>0) Then SpectatePlayer(p)
 					Player_Destroy(p)
 					;Delete nInfo;
 					PlaySmartSound(Sound_Die)
@@ -1331,6 +1332,7 @@ Function HandleMessages()
 			;------------------------------------------------------
 			Case UDPMSG_GAMETYPE ; Game Mode
 			;------------------------------------------------------
+				Game\SpectatorMode=0
 				Game\Online\GameType=msg\msgData
 				BP_GameType=msg\msgData
 				PlaySmartSound(Sound_TitleCard)
@@ -1400,6 +1402,8 @@ Function HandleMessages()
 						onlineplayer(1)\Online\TagMode=2;TAG_NOT_IT
 						onlineplayer(1)\Online\TagTimer=0
 					Default ; name change
+						nInfo.NetInfo = BP_FindID(p\Online\NetID)
+						nInfo\Name$=msg\msgData
 						p\Online\Name$=msg\msgData
 						PlaySmartSound(Sound_Emblem)
 				End Select

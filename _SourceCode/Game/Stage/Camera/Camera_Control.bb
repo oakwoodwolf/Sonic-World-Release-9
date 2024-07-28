@@ -277,6 +277,16 @@ Function Camera_Control(c.tCamera,d.tDeltaTime)
 			Game\Interface\CinemaAllowUpdate=abs(Game\Interface\CinemaAllowUpdate-1)
 			PlaySmartSound(Sound_MenuMove)
 		EndIf
+	ElseIf Game\SpectatorMode=1 Then
+		If Input\Pressed\ActionJump Or Input\Pressed\ActionRoll Then
+			PlaySmartSound(Sound_MenuMove)
+			c\CinemaSpeed=c\CinemaSpeed+1
+			If c\CinemaSpeed>BP_GetNumberOfPlayers() Then c\CinemaSpeed=1
+			p.tPlayer = FindPlayerData(c\CinemaSpeed)
+			If p<>Null Then
+				SpectatePlayer(p)
+			EndIf
+		EndIf
 	EndIf
 
 	If Game\RunLock>0 Then c\Mode=CAMERA_MODE_NORMAL Else c\Mode=CAMERA_MODE_TARGETPOV

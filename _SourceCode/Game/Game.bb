@@ -212,6 +212,7 @@ End Function
 		Field	State
 		Field	MustQuitStage
 		Field	CinemaMode
+		Field	SpectatorMode
 		Field	TimeControl
 		Field	Cheater
 		Field	CheaterChangedCharacter

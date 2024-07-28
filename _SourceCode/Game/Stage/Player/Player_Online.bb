@@ -127,12 +127,13 @@ End Function
 Function Player_ChangeName(NewName$)
 	if NewName$="/changename" or NewName$="/nickname" then NewName$=""
 	p.tPlayer = First tPlayer
-	;nInfo.NetInfo = BP_FindID(p\Online\NetID)
+	nInfo.NetInfo = BP_FindID(p\Online\NetID)
 	OldName$=Menu\PlayerName$ ; keep in case
 	Menu\PlayerName$=Left(NewName$,15) : PlayerName$=Left(NewName$,15) : p\Online\Name$=Left(NewName$,15) ; old to now
 	;nInfo\Name=NewName$+"/"+chars$
 	Info("Your Name is "+Left(NewName$,15),255, 0, 255)
 	BP_UDPMessage(0,3, Left(NewName$,15)) ; send new name
+	nInfo\Name=Left(NewName$,15)
 	BP_UDPMessage(0, UDPMSG_MESSAGE, OldName$+" Is Now, "+Left(NewName$,15)) ; tell everyone
 end function
 
@@ -168,23 +169,33 @@ Function TeleportToPlayer(name$)
 	next
 end function
 ; view other players
-Function ViewOtherPlayer(p.tPlayer, c.tCamera)
-	if p<>null And p\Online\Name$=Game\Online\ViewName$ then
-		if Game\Online\ViewPlayer=True And onlineplayer(1)\Online\Name$=Game\Online\ViewName$ then Game\Online\ViewPlayer=False : Game\Online\ViewName$="" : Info("You can't view yourself.", 255,11,255)
-		if Game\Online\ViewPlayer=True then		
-			ShowEntity(p\Online\Camera)
-			Rect(GAME_WINDOW_W-300, GAME_WINDOW_H-300, 256*GAME_WINDOW_SCALE#, 256*GAME_WINDOW_SCALE#,0)
-			CameraViewport(p\Online\Camera, GAME_WINDOW_W-300, GAME_WINDOW_H-300, 256*GAME_WINDOW_SCALE#, 256*GAME_WINDOW_SCALE#)
-			CameraViewPort(c\Entity, 0, 0,GAME_WINDOW_W, GAME_WINDOW_H)
-		Endif
-	EndIf
-	If Game\Online\ViewPlayer=False
-		For p.tPlayer = Each tPlayer
-		if p\Online\Camera>0 then HideEntity(p\Online\Camera)
-		if p\Online\Camera>0 then CameraViewPort(p\Online\Camera, 0, 0, 0, 0)
-		CameraViewPort(c\Entity, 0, 0, GAME_WINDOW_W, GAME_WINDOW_H)
-		Next
-	endif 	
+Function ViewOtherPlayer(pname$)
+		Select Game\Online\Gametype:
+		Case GAME_TYPE_TAG: Info("Don't cheat!",0,255,255)
+		Case GAME_TYPE_HIDENSEEK:
+			For ppp.tPlayer=Each tPlayer
+				If ppp\Online\Name = pname And ppp\Online\TagMode<>TAG_NOT_IT Then Camera_Bind(cam,ppp) : Game\Online\ViewPlayer=True : Game\Online\ViewName$=pname$
+			Next
+			Info("Don't cheat!",0,255,255)
+		Default:
+			For ppp.tPlayer=Each tPlayer
+				If ppp\Online\Name = pname Then Camera_Bind(cam,ppp) : Game\Online\ViewPlayer=True : Game\Online\ViewName$=pname$
+			Next
+	End Select
+End Function
+Function SpectatePlayer(p.tPlayer)
+		Select Game\Online\Gametype:
+		Case GAME_TYPE_TAG: Info("Don't cheat!",0,255,255)
+		Case GAME_TYPE_HIDENSEEK:
+			If p\Online\TagMode<>TAG_NOT_IT Then
+				Camera_Bind(cam,p) : Game\Online\ViewPlayer=True : Game\Online\ViewName$=p\Online\Name
+			Else
+				Info("Don't cheat!",0,255,255)
+			EndIf
+		Default:
+		Camera_Bind(cam,p) : Game\Online\ViewPlayer=True : Game\Online\ViewName$=p\Online\Name
+			
+	End Select
 End Function
 ; bring all players to host
 Function Player_BringAllToHost()

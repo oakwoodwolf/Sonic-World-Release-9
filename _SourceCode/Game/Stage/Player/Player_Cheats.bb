@@ -114,7 +114,7 @@ If p\No#=1 And Chatting\Allowed=0 Then
 
 	;cinema mode
 	If (KeyHit(KEY_F11)) Then
-		If Game\Victory=0 Then
+		If Game\Victory=0 And Game\Online\Online=0 Then
 			PlaySmartSound(Sound_DebugOnOff)
 			Select Game\CinemaMode
 				Case 0:
@@ -124,6 +124,14 @@ If p\No#=1 And Chatting\Allowed=0 Then
 					cam\CinemaZ#=p\Objects\Position\z#
 				Default:
 					Game\CinemaMode=0
+			End Select
+		ElseIf Game\Online\Online=1 And (Game\Online\GTState>1 Or Game\Online\GameType=GAME_TYPE_FREE) And (Not Game\Online\GameType=GAME_TYPE_HIDENSEEK) Then
+			Select Game\SpectatorMode
+				Case 0:
+					Game\SpectatorMode=1
+					SpectatePlayer(p)
+				Default:
+					Game\SpectatorMode=0
 			End Select
 		EndIf
 	EndIf

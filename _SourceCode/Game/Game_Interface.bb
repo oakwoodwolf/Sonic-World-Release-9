@@ -192,7 +192,9 @@ Const CHAT_LENGTH=28
 			Interface_Render_Cheats()
 		Else
 			If Game\CinemaMode=0 Then
-				If Game\Interface\DebugPlacerOn=0 Then
+				If Game\SpectatorMode=1 Then
+					Interface_Render_Stage_Spectator(p)
+				ElseIf Game\Interface\DebugPlacerOn=0 Then
 					If Game\Interface\HideInterface=0 Then Interface_Render_Stage_Stage(p,d)
 				Else
 					If Input\Pressed\Change Then Game\Interface\HideInterface=abs(Game\Interface\HideInterface-1)
@@ -1257,19 +1259,8 @@ Function AboutToChat()
 					case "/clear", "/Clear" : For i.Info = Each Info : Delete i : next : FlushKeys()
 					case "/view" :
 						kickname$ = Right(Chatting\Txt$,Len(Chatting\Txt$)-chat)
-						
-						Select Game\Online\Gametype:
-							Case GAME_TYPE_TAG: Info("Don't cheat!",0,255,255)
-							Case GAME_TYPE_HIDENSEEK:
-								For ppp.tPlayer=Each tPlayer
-									If ppp\Online\Name = kickname And ppp\Online\TagMode<>TAG_NOT_IT Then Camera_Bind(cam,ppp) : Game\Online\ViewPlayer=True : Game\Online\ViewName$=kickname$
-								Next
-								Info("Don't cheat!",0,255,255)
-							Default:
-								For ppp.tPlayer=Each tPlayer
-									If ppp\Online\Name = kickname Then Camera_Bind(cam,ppp) : Game\Online\ViewPlayer=True : Game\Online\ViewName$=kickname$
-								Next
-						End Select
+						ViewOtherPlayer(kickname)
+					
 						
 					case "/viewoff" : Game\Online\ViewPlayer=False 
 					Camera_Bind(cam,pp(1))

@@ -922,7 +922,7 @@
 		; Run cheats
 		If Menu\Settings\Debug#=1 And ((Menu\ChaoGarden=0 And Menu\Stage>0 And Menu\MarathonMode=0) Or Menu\Developer=1) Then Player_HandleCheats(p)
 
-		If (Not(Game\CinemaMode=1)) Then
+		If (Not(Game\CinemaMode=1 Or Game\SpectatorMode=1)) Then
 			; Perform player's movement
 			Player_Motion(p, d)
 
