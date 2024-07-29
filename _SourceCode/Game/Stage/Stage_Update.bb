@@ -1419,6 +1419,15 @@ Function HandleMessages()
 				p\RealCharacter=Int(msg\msgData)
 				Player_DetermineChar(p, Int(msg\msgData))
 				DeformCharacter(p,True)
+			Case 30
+				p.tPlayer = FindPlayerData(msg\msgFrom)
+				If p\Online\NetID<>pp(1)\Online\NetID Then
+					rings=Int(msg\msgData)
+					Repeat
+						Object_SpewRing_Create.tObject(p\Objects\Position\x#, p\Objects\Position\y#+1.5, p\Objects\Position\z#, Rnd(-0.4, 0.4), Rnd(0.6, 1.2), Rnd(-0.4, 0.4))
+						rings = rings - 1
+					Until rings <= 0
+				EndIf
 			;------------------------------------------------------		
 			Case 55	; GAG Stuff
 			;------------------------------------------------------	

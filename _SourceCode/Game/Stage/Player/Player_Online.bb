@@ -239,7 +239,6 @@ Function GetClosestPlayer.tPlayer(distance# = 20)
 		if p <> pp(1) Then
 			target = p\Objects\Entity
 			If (Abs(EntityX(entity,glb) - EntityX(target,glb)) < distance#) And (Abs(EntityY(entity,glb) - EntityY(target,glb)) < distance#) And (Abs(EntityZ(entity,glb) - EntityZ(target,glb)) < distance#) Then
-				DebugLog(p\Online\Name)
 				return p
 			EndIf
 		EndIf
@@ -272,6 +271,10 @@ Function DrawPlayerTag(Cam%, p.tPlayer, label$, no=1, height#=3, r=255, g=255, b
 			Case GAME_TYPE_TAG:
 				Select p\Online\TagMode:
 					Case TAG_IS_IT: DrawRealText("IT", x, y-64, Interface_TextControls_1, 1, 0, 255, 128, 64, 0)
+				End Select
+			Case GAME_TYPE_HIDENSEEK:
+				Select p\Online\TagMode:
+					Case TAG_IS_IT: DrawRealText("SEEKING", x, y-64, Interface_TextControls_1, 1, 0, 255, 128, 64, 0)
 				End Select
 			Case GAME_TYPE_RACE:
 				Select p\Online\RacePosition:
@@ -514,4 +517,37 @@ Function Game_OnlineMsgOfTheDay()
 				Case CHAR_INF
 					Object_Bomb_Create5(p, EntityX(p\Objects\HandR,1), EntityY(p\Objects\HandR,1), EntityZ(p\Objects\HandR,1), 0, p\Online\Rot\y#+360, 0, BOMB_CUBETRAIL)
 			End Select
+	End Function
+
+	Function Player_OnlineHolding_ByFeet(p.tPlayer, op.tPlayer, groundnotforced=false)
+		DebugLog("holding ready!") 
+		holdingpivot=CreatePivot()
+		Select op\RealCharacter
+			Case CHAR_BIG,CHAR_VEC,CHAR_OME,CHAR_BAR,CHAR_STO,CHAR_CHO,CHAR_HBO,CHAR_GAM,CHAR_EGG,CHAR_BET,CHAR_TMH:
+				PositionEntity holdingpivot, EntityX(op\Objects\ToeR,1), EntityY(op\Objects\ToeR,1), EntityZ(op\Objects\ToeR,1), 1
+			Case CHAR_CHW:
+				PositionEntity holdingpivot, EntityX(op\Objects\ToeR,1), EntityY(op\Objects\ToeR,1)-1.25, EntityZ(op\Objects\ToeR,1), 1
+			Default:
+				If IsCharMod(op\RealCharacter) Then
+					If MODCHARS_BIGHOLD(op\RealCharacter-CHAR_MOD1+1)>0 Then
+					PositionEntity holdingpivot, EntityX(op\Objects\ToeR,1), EntityY(op\Objects\ToeR,1), EntityZ(op\Objects\ToeR,1), 1
+					Else
+					PositionEntity holdingpivot, (EntityX(op\Objects\ToeR,1)+EntityX(op\Objects\ToeL,1))/2.0, (EntityY(op\Objects\ToeR,1)+EntityY(op\Objects\ToeL,1))/2.0, (EntityZ(op\Objects\ToeR,1)+EntityZ(op\Objects\ToeL,1))/2.0, 1
+					EndIf
+				Else
+					PositionEntity holdingpivot, (EntityX(op\Objects\ToeR,1)+EntityX(op\Objects\ToeL,1))/2.0, (EntityY(op\Objects\ToeR,1)+EntityY(op\Objects\ToeL,1))/2.0, (EntityZ(op\Objects\ToeR,1)+EntityZ(op\Objects\ToeL,1))/2.0, 1
+				EndIf
+		End Select
+
+		If (p\Motion\Ground=False) Then
+		;If EntityDistance(op\Objects\Entity,p\Objects\Entity)>10 and ((p\Motion\Ground=False and p\RadiusChange<=1) or groundnotforced) Then
+			p\Action=ACTION_HOLD2 : p\ShouldBeHoldingTimer=0.1*secs# : p\BumpedCloudTimer=0
+			PositionEntity p\Objects\Entity, EntityX(holdingpivot,1), EntityY(holdingpivot,1)-0.5, EntityZ(holdingpivot,1), 1
+			p\Animation\Direction#=op\Animation\Direction#
+			PositionEntity(p\Objects\Mesh, EntityX(p\Objects\Entity), EntityY(p\Objects\Entity), EntityZ(p\Objects\Entity), 1)
+			RotateEntity(p\Objects\Mesh, 0, op\Animation\Direction#-180, 0)
+			TurnEntity(p\Objects\Mesh, 120*pp(1)\SpeedLength#/6.0, 0, pp(1)\Physics\LEAN_ANGLE_ACTUAL#)
+		EndIf
+	
+		FreeEntity holdingpivot
 	End Function

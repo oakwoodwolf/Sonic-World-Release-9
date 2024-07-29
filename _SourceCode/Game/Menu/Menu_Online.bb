@@ -165,14 +165,6 @@ Function Interface_Render_HostMenu(p.tPlayer)
 			If Game\Online\GameType>3 Then 	BP_SetGameType(0)
 			Info("Gametype set to " + GAMETYPE_NAME(Game\Online\GameType+1))
 			Game\Online\GTState=0
-			Select Game\Online\GameType:
-			Case GAME_TYPE_TAG
-				it=Rand(1, BP_GetNumberOfPlayers%())
-				For op.tPlayer = Each tPlayer
-						If op\Online\NetID=it Then	Player_SetTagMode(op)
-						If op\Online\NetID<>it Then op\Online\TagMode=TAG_NOT_IT : op\Online\TagTimer=0 : BP_UDPMessage(0,UDPMSG_MESSAGE, op\Online\Name$+" is Not It!") : op\Online\TagCoolDown=3.5*secs#	
-				Next
-			End Select
 		Case 2:
 			PlaySmartSound(Sound_MenuAccept)
 			Menu\SelectedStage=Menu\Option
@@ -235,18 +227,18 @@ Function DrawGametypeOverlay()
 	Case GAME_TYPE_RACE
 		Select Game\Online\GTState
 			Case 0: DrawRealText("Waiting for other players to load.", GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, (Interface_Text_3), 1)
-			Case 1: DrawBetterNumber(Game\Online\Countdown/secs#, GAME_WINDOW_W/2.0, GAME_WINDOW_H/2-50*GAME_WINDOW_SCALE#, 2, 0)
+			Case 1: DrawBetterNumber(Game\Online\Countdown/secs#, GAME_WINDOW_W/2.0, 30*GAME_WINDOW_SCALE#, 2, 0)
 			Case 2: If Game\Online\Countdown<60*secs# And Game\Online\Countdown>0.5*secs# Then DrawBetterNumber(Game\Online\Countdown/secs#, GAME_WINDOW_W/2.0, GAME_WINDOW_H/2-50*GAME_WINDOW_SCALE#, 2, 0)
 			Case 3: DrawRealText("Race Finished", GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 1,0,128,128,16)
 		End Select
 	Case GAME_TYPE_TAG
 		Select Game\Online\GTState
-			Case 1: DrawBetterNumber(Game\Online\Countdown/secs#, GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, 2, 0)
+			Case 1: DrawBetterNumber(Game\Online\Countdown/secs#, GAME_WINDOW_W/2.0, 30*GAME_WINDOW_SCALE#, 2, 0)
 			Case 3: DrawRealText("Game Finished!", GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 1,0,128,128,16)
 		End Select
 	Case GAME_TYPE_HIDENSEEK
 		Select Game\Online\GTState
-			Case 2: DrawBetterNumber(Game\Online\Countdown/secs#, GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, 2, 0)
+			Case 2: DrawBetterNumber(Game\Online\Countdown/secs#, GAME_WINDOW_W/2.0, 30*GAME_WINDOW_SCALE#, 2, 0)
 			Case 4: DrawRealText("Game Finished!", GAME_WINDOW_W/2.0, GAME_WINDOW_H-160*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 1,0,128,128,16)
 		End Select
 	End Select

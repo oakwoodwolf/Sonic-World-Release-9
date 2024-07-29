@@ -1101,6 +1101,15 @@
 			; Rival
 			If p\No#<0 And (Game\Online\Online=False) Then Player_Rival(p,d)
 			If p\No#=1 And Game\Online\Online=True And Game\Online\PVP=True And (Not (Game\Online\GTState=1 And Game\Online\GameType=GAME_TYPE_RACE)) Then Player_PVP(p,d)
+			If p\No#=1 And Game\Online\Online=True And Game\Online\PVP=False Then
+				targetplayer.tPlayer=GetClosestPlayer(7)
+				If targetplayer<>Null Then
+					If (targetplayer\Action=ACTION_FLY Or targetplayer\Action=ACTION_SLOWGLIDE Or targetplayer\Action=ACTION_HOVER Or targetplayer\Action=ACTION_LEVITATE) Then
+						DebugLog("Target player ready!") 
+						Player_OnlineHolding_ByFeet(p,targetplayer)
+					EndIf
+				EndIf
+			End If
 		Else
 			Player_Motion_Placements(p)
 		EndIf
@@ -1626,11 +1635,11 @@ End Function
 			If rings > 10 Then rings = 10
 		EndIf
 			
+		If Game\Online\PVP Then BP_UDPMessage(0, 30, rings/3)
 		Repeat
 			Object_SpewRing_Create.tObject(p\Objects\Position\x#, p\Objects\Position\y#+1.5, p\Objects\Position\z#, Rnd(-0.4, 0.4), Rnd(0.6, 1.2), Rnd(-0.4, 0.4))
 			rings = rings - 1
 		Until rings <= 0
-
 		If Menu\Stage>0 Then
 			Game\Gameplay\Rings = Game\Gameplay\Rings-30
 		Else

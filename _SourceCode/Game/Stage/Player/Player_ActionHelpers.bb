@@ -1231,7 +1231,7 @@
 			p\DieTimer=2.1*secs#
 			Info("You got slain...",128,0,0)
 			BP_UDPMessage(0, 3, "die")
-			If BP_Online and (Game\Online\GameType=GAME_TYPE_RACE And Menu\Mission=MISSION_RIVAL#) Then 
+			If BP_Online and (Game\Online\GameType=GAME_TYPE_RACE And Menu\Mission=MISSION_RIVAL#) Or Menu\MissionPerfect=1 Then 
 				p\DieTimer=999*secs# 
 			Else
 				Player_DieCamera(p)
