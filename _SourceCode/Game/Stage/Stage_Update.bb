@@ -1007,7 +1007,7 @@
 					BP_UDPMessage(0, UDPMSG_PLAYERMOVEMENT, String$(EntityX(p\Objects\Mesh)+"/"+EntityY(p\Objects\Mesh)+"/"+EntityZ(p\Objects\Mesh)+"/"+EntityPitch(p\Objects\Mesh)+"/"+EntityYaw(p\Objects\Mesh)+"/"+EntityRoll(p\Objects\Mesh),1))	
 					BP_UDPMessage(0, UDPMSG_PLAYERATTRIBUTES, String$(p\Action+"/"+p\Animation\Animation+"/"+p\SpeedLength+"/"+p\Motion\Ground+"/"+p\Online\Joined+"/"+Game\Vehicle+"/"+Game\Shield+"/"+Game\Invinc+"/"+p\Invisibility+"/",1))
 					; deal the tag and race attributes
-					If Game\Online\GameType=GAME_TYPE_TAG Then BP_UDPMessage(0,UDPMSG_TAGVALUES,onlineplayer(1)\Online\TagMode+"/"+onlineplayer(1)\Online\TagTimer+"/"+onlineplayer(1)\Online\TagCoolDown)
+					If Game\Online\GameType=GAME_TYPE_TAG Or Game\Online\GameType=GAME_TYPE_HIDENSEEK Then BP_UDPMessage(0,UDPMSG_TAGVALUES,onlineplayer(1)\Online\TagMode+"/"+onlineplayer(1)\Online\TagTimer+"/"+onlineplayer(1)\Online\TagCoolDown)
 					If Game\Online\GameType=GAME_TYPE_RACE Then BP_UDPMessage(0,UDPMSG_RACEVALUES,onlineplayer(1)\Online\RacePosition+"/"+onlineplayer(1)\Online\FinishedRace+"/"+onlineplayer(1)\Online\RaceTimer)
 				EndIf
 			EndIf
@@ -1400,8 +1400,12 @@ Function HandleMessages()
 						Player_PlayGoodVoice(p)
 						onlineplayer(1)\Online\TagMode=TAG_IS_IT
 						If onlineplayer(1)\Online\TagMode=TAG_IS_IT Then onlineplayer(1)\Online\TagTimer=TAG_TIMER
+					Case "notit"
+						;p.tPlayer = First tPlayer
+						p.tPlayer = FindPlayerData(msg\msgFrom)
+						onlineplayer(1)\Online\TagMode=TAG_NOT_IT
+						If onlineplayer(1)\Online\TagMode=TAG_NOT_IT Then onlineplayer(1)\Online\TagTimer=0
 					Case "cleared"
-						Info("YOURE not IT lol")
 						onlineplayer(1)\Online\TagMode=2;TAG_NOT_IT
 						onlineplayer(1)\Online\TagTimer=0
 					Default ; name change
@@ -1612,6 +1616,106 @@ Function Update_GameModes()
 
 
 		Case GAME_TYPE_HIDENSEEK
+			p.tPlayer = First tPlayer
+			If BP_GetHostID()=p\Online\NetID Then BP_UDPMessage(0, 29, Game\Online\GTState+"/"+Game\Online\Countdown+"/")
+
+			If onlineplayer(1)\Online\TagMode=TAG_NOT_IT Then
+				onlineplayer(1)\Online\ShowTag=False
+				BP_UDPMessage(0,24,False)
+			Else
+				onlineplayer(1)\Online\ShowTag=True
+			EndIf
+			Select Game\Online\GTState:
+				Case 0:
+					Game\Online\GTState=1
+					Game\Online\Countdown=5*secs#
+				Case 1:
+					Game\Online\Countdown=Game\Online\Countdown-timervalue#
+					If (Not Game\Online\Countdown>0) Then
+						If Game\Online\Hosting Then
+							it=Rand(1, BP_GetNumberOfPlayers%())
+							For lp.tPlayer = Each tPlayer
+									If lp\Online\NetID=it Then	Player_SetTagMode(lp,2) : Info("You're a seeker.", 255, 255, 0)
+									If lp\Online\NetID<>it Then lp\Online\TagMode=TAG_NOT_IT : lp\Online\TagTimer=0 : BP_UDPMessage(0,UDPMSG_MESSAGE, lp\Online\Name$+" is Hiding!") : lp\Online\TagCoolDown=3.5*secs#	: BP_UDPMessage(lp\Online\NetID, 3, "notit")
+							Next
+						EndIf
+						Game\Online\GTState=2
+						Game\Online\Countdown=30*secs#
+					EndIf
+				Case 2:
+					Game\Online\Countdown=Game\Online\Countdown-timervalue#
+					If (Not Game\Online\Countdown>0) Then
+						BP_UDPMessage(0, UDPMSG_MESSAGE,"Seekers are on the move!")
+						Game\Online\GTState=3
+					Else
+						If p\Online\TagMode=TAG_IS_IT Then
+							PostEffect_Create_FadeIn(0.008, 0, 0, 0) : Game\ControlLock=1.0*secs# : Player_SetSpeed(p, 0) : p\HurtTimer=1.0*secs#
+						EndIf
+					EndIf
+				Case 4:
+					If BP_GetHostID()=p\Online\NetID Then BP_UDPMessage(0, 29, Game\Online\GTState)
+					Game\Online\Countdown=Game\Online\Countdown-timervalue#
+					If (Not Game\Online\Countdown>0) Then
+						Game\Online\GTState=0
+						Game\Online\Countdown=10*secs#
+						If p\Online\NetID=BP_GetHostID() Then
+							Player_ResetGamemodeValues(p)
+							BP_UDPMessage(0,3,"respawn all")
+						EndIf
+					EndIf
+					
+				Default:
+					; handle tag timer, and be clear once it's over
+						If p\Online\TagMode=TAG_IS_IT Then
+							; count the timer
+							If p\Online\TagTimer>0 Then
+								If p\Online\TagTimerInterval<MilliSecs() Then
+									p\Online\TagTimer=p\Online\TagTimer-1
+									p\Online\TagTimerInterval=MilliSecs()+1000
+								EndIf
+								hp=0
+								t = 0
+								For sp.tPlayer = Each tPlayer
+									If sp\Online\TagMode=2 Then t = t + 1
+								Next
+								If t = BP_NumPlayers-1 Then
+									p\Online\TagMode=2
+									BP_UDPMessage(0, 3, "cleared")
+									Game\Online\Countdown=10*secs#
+									Game\Online\GTState=4 
+									Info("You won!")
+								BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name$+" Won. All players have been found.")
+								EndIf
+							Else
+								p\Online\TagMode=2
+								Game\Online\Countdown=10*secs#
+								Game\Online\GTState=4
+								BP_UDPMessage(0, 3, "cleared")	
+								Info("You ran out of time. You Lose.")
+								BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name$+" Lost. Did not find all players in time.")
+							EndIf
+						Else
+							Game\ControlLock=0.9*secs#
+							Player_SetSpeed(p, 0)
+							p\Online\TagTimer=0
+						EndIf
+
+					; find closest player to tag
+					Local hidingPlayer.tPlayer = GetClosestPlayer(TAG_RADIUS#*1.5);
+					If hidingPlayer<>Null Then 
+						;tag someone in your radius, and be cleared.		
+						If pp(1)\Online\TagMode=TAG_IS_IT And hidingPlayer\Online\TagMode=TAG_NOT_IT Then
+							DebugLog("Found " + hidingPlayer\Online\Name)
+							Player_SetTagMode(hidingPlayer,3)						
+							BP_UDPMessage(0, UDPMSG_MESSAGE, pp(1)\Online\Name$+" has Found " + hidingPlayer\Online\Name)
+							Player_PlayGoodVoice(pp(1))
+							Player_PlayDieVoice(hidingPlayer)
+						EndIf	
+					EndIf
+					
+				
+			End Select
+
 
 		; >---------
 		Case GAME_TYPE_RACE

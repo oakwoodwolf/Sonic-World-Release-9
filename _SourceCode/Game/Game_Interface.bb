@@ -389,6 +389,7 @@ End Function
 						SetColor(255, 255, 255)
 					EndIf
 				Next
+				If Game\Online\GameType=GAME_TYPE_HIDENSEEK And p\Online\TagMode=TAG_NOT_IT And Game\Online\GTState=3  Then DrawRealText("Hiding... Input disabled.", 58*GAME_WINDOW_SCALE#, (30+(spacing*33))*GAME_WINDOW_SCALE#, 2) : spacing=spacing+1
 		End Select
 		Interface_RingCounter(d,spacing)
 		spacing=spacing+1

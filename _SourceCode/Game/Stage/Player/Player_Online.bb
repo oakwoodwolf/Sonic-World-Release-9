@@ -214,13 +214,22 @@ end function
 ; ============================================
 ; Set Tag Settings
 ; ============================================
-Function Player_SetTagMode(p.tPlayer)
-	p\Online\TagMode = TAG_IS_IT 
+Function Player_SetTagMode(p.tPlayer,mode=1)
+	Select mode
+		Case 3: p\Online\TagMode=TAG_SAFE : Player_Die(p)
+		Default:
+			p\Online\TagMode = TAG_IS_IT 
+	End Select
 	p\Online\TagTimer=TAG_TIMER
 	p\Online\TagCoolDown=3.5*secs#
 	Player_PlayDieVoice(p)
 	BP_UDPMessage(0, UDPMSG_TAGVALUES, p\Online\TagMode+"/"+p\Online\TagTimer+"/"+p\Online\TagCoolDown)							
-	BP_UDPMessage(p\Online\NetID, 3, "tagged")	: BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name$+" is it!")	
+	Select mode:
+		Case 2: BP_UDPMessage(p\Online\NetID, 3, "tagged")	: BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name$+" is the seeker. Hide!")	
+		Case 3: BP_UDPMessage(p\Online\NetID, 3, "cleared")	: BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name$+" has been found")	
+		Default
+			BP_UDPMessage(p\Online\NetID, 3, "tagged")	: BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name$+" is it!")	
+	End Select
 End Function
 
 Function GetClosestPlayer.tPlayer(distance# = 20) 
@@ -230,6 +239,7 @@ Function GetClosestPlayer.tPlayer(distance# = 20)
 		if p <> pp(1) Then
 			target = p\Objects\Entity
 			If (Abs(EntityX(entity,glb) - EntityX(target,glb)) < distance#) And (Abs(EntityY(entity,glb) - EntityY(target,glb)) < distance#) And (Abs(EntityZ(entity,glb) - EntityZ(target,glb)) < distance#) Then
+				DebugLog(p\Online\Name)
 				return p
 			EndIf
 		EndIf
