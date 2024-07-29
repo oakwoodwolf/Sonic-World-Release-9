@@ -126,13 +126,15 @@ If p\No#=1 And Chatting\Allowed=0 Then
 					Game\CinemaMode=0
 			End Select
 		ElseIf Game\Online\Online=1 And (Game\Online\GTState>1 Or Game\Online\GameType=GAME_TYPE_FREE) And (Not Game\Online\GameType=GAME_TYPE_HIDENSEEK) Then
+			PlaySmartSound(Sound_DebugOnOff)
 			Select Game\SpectatorMode
 				Case 0:
 					Game\SpectatorMode=1
-					SpectatePlayer(p)
+					
 				Default:
 					Game\SpectatorMode=0
 			End Select
+			SpectatePlayer(p)
 		EndIf
 	EndIf
 

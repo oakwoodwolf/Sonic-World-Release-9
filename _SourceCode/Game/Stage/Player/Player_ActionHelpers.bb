@@ -399,7 +399,7 @@
 
 	Function Player_JumpActions(p.tPlayer,force=false)
 	If Not(p\No#=1 or p\No#<0) Then Return
-	If ((Player_IsPlayable(p) and Input\Pressed\ActionJump and Menu\Pause=0) or force) Then
+	If ((Player_IsPlayable(p) and Input\Pressed\ActionJump and Menu\Pause=0 and Game\SpectatorMode=0) or force) Then
 		If Menu\Stage>0 Then
 		Select p\Character
 			Case CHAR_SON,CHAR_SHA,CHAR_MIG,CHAR_ESP,CHAR_MET,CHAR_PRS:
@@ -523,7 +523,7 @@
 
 	Function Player_SkillActions(p.tPlayer,force=false)
 	If Not((p\No#=1 or p\No#<0) and Menu\ChaoGarden=0) Then Return
-	If Menu\Stage>0 and ((Player_IsPlayable(p) and Input\Pressed\ActionSkill1 and Menu\Pause=0) or force) Then
+	If Menu\Stage>0 and ((Player_IsPlayable(p) and Input\Pressed\ActionSkill1 and Menu\Pause=0 and Game\SpectatorMode=0) or force) Then
 		Select p\Character
 			Case CHAR_SON,CHAR_SHA,CHAR_MIG,CHAR_PRS,CHAR_INF:
 				If p\Motion\Ground Then
@@ -584,7 +584,7 @@
 
 	Function Player_SkillActions2(p.tPlayer,force=false)
 	If Not((p\No#=1 or p\No#<0) and Menu\ChaoGarden=0) Then Return
-	If Menu\Stage>0 and ((Player_IsPlayable(p) and Input\Pressed\ActionSkill2 and Menu\Pause=0) or force) Then
+	If Menu\Stage>0 and ((Player_IsPlayable(p) and Input\Pressed\ActionSkill2 and Menu\Pause=0 and Game\SpectatorMode=0) or force) Then
 		Select p\Character
 			Case CHAR_TIK:
 			Case CHAR_CHA,CHAR_RAY,CHAR_AMY,CHAR_BAR,CHAR_WAV,CHAR_COM:
@@ -646,7 +646,7 @@
 
 	Function Player_SkillActions3(p.tPlayer,force=false)
 	If Not((p\No#=1 or p\No#<0) and Menu\ChaoGarden=0) Then Return
-	If Menu\Stage>0 and ((Player_IsPlayable(p) and Input\Pressed\ActionSkill3 and Menu\Pause=0) or force) Then
+	If Menu\Stage>0 and ((Player_IsPlayable(p) and Input\Pressed\ActionSkill3 and Menu\Pause=0 and Game\SpectatorMode=0) or force) Then
 		Select p\Character
 			Case CHAR_ESP,CHAR_SHD,CHAR_EME,CHAR_GME,CHAR_INF:
 			Case CHAR_SON,CHAR_SHA,CHAR_BLA,CHAR_MAR,CHAR_STO,CHAR_JET,CHAR_MIG,CHAR_TIK:
@@ -709,7 +709,7 @@
 	Function Player_ActuallyCharge(p.tPlayer,force=false)
 	If p\No#=1 Or force Or (pp(1)\Invisibility=0 and (pp(1)\Action=ACTION_COMMON Or pp(1)\Action=ACTION_ROLL Or pp(1)\Action=ACTION_CHARGE Or pp(1)\Action=ACTION_DRIFT)) Then
 
-		If (Player_IsPlayable(p) and Input\Pressed\ActionRoll and Menu\Pause=0) or force Then
+		If (Player_IsPlayable(p) and Input\Pressed\ActionRoll and Menu\Pause=0 and Game\SpectatorMode=0 and Game\SpectatorMode=0) or force Then
 			p\ChargeTimer=0
 			p\JustChargedTimer=0
 			p\Action=ACTION_CHARGE
@@ -726,7 +726,7 @@
 	If p\No#=1 Or force Or (pp(1)\Flags\InJumpAction=False and pp(1)\Invisibility=0) Then
 
 		; Jump when pressed and if on ground
-		If (Player_IsPlayable(p) and Input\Pressed\ActionJump and Menu\Pause=0) or force Then
+		If (Player_IsPlayable(p) and Input\Pressed\ActionJump and Menu\Pause=0 and Game\SpectatorMode=0) or force Then
 
 			p\Motion\Speed\x# = p\Motion\Speed\x#*0.7
 			p\Motion\Speed\z# = p\Motion\Speed\z#*0.7

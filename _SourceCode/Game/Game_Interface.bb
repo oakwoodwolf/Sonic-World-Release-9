@@ -204,6 +204,11 @@ Const CHAT_LENGTH=28
 				If Input\Pressed\Change Then Game\Interface\HideInterface=abs(Game\Interface\HideInterface-1)
 				If Game\Interface\HideInterface=0 Then Interface_Render_Stage_Cinema(p)
 			EndIf
+			If Game\Online\Connected Then
+				SetScale(GAME_WINDOW_SCALE#*(Chatting\Scale/3), GAME_WINDOW_SCALE#*(Chatting\Scale/3))
+				Interface_DrawChat(30*GAME_WINDOW_SCALE#, (GAME_WINDOW_H-(ImageHeightEx#(INTERFACE(Interface_Chatbox))))*GAME_WINDOW_SCALE#,Chatting\Scale)
+				SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
+			EndIf
 		EndIf
 
 	End Function
@@ -414,11 +419,8 @@ End Function
 		Else
 			Interface_TrickPointsCounter(p, d,0,spacing)
 		EndIf
-		If Game\Online\Connected Then
-			SetScale(GAME_WINDOW_SCALE#*(Chatting\Scale/3), GAME_WINDOW_SCALE#*(Chatting\Scale/3))
-			Interface_DrawChat(30*GAME_WINDOW_SCALE#, (GAME_WINDOW_H-(ImageHeightEx#(INTERFACE(Interface_Chatbox))))*GAME_WINDOW_SCALE#,Chatting\Scale)
-			SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
-		Else
+	
+		If Game\Online\Online=0
 			Interface_MemberHeads()
 			SetColor(Interface_Lives_R[InterfaceChar(pp(1)\RealCharacter)],Interface_Lives_G[InterfaceChar(pp(1)\RealCharacter)],Interface_Lives_B[InterfaceChar(pp(1)\RealCharacter)])
 			If Menu\Members>1 Then
@@ -429,9 +431,7 @@ End Function
 			SetColor(255,255,255)
 		EndIf
 		; if is chatting, update it
-		If Chatting\Allowed>0 Then
-			AboutToChat()
-		EndIf
+		
 		
 
 		If Game\Interface\ChaoItemCount>0 Then movemissioncounterup#=25.0*GAME_WINDOW_SCALE#*Game\Interface\ChaoIconSpread# Else movemissioncounterup#=0

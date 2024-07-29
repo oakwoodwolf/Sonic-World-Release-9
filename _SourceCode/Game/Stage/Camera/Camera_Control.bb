@@ -280,8 +280,10 @@ Function Camera_Control(c.tCamera,d.tDeltaTime)
 	ElseIf Game\SpectatorMode=1 Then
 		If Input\Pressed\ActionJump Or Input\Pressed\ActionRoll Then
 			PlaySmartSound(Sound_MenuMove)
-			c\CinemaSpeed=c\CinemaSpeed+1
+			If Input\Pressed\ActionJump Then dir=1 Else dir=-1
+			c\CinemaSpeed=c\CinemaSpeed+1*dir
 			If c\CinemaSpeed>BP_GetNumberOfPlayers() Then c\CinemaSpeed=1
+			If c\CinemaSpeed<1 Then c\CinemaSpeed=BP_GetNumberOfPlayers()
 			p.tPlayer = FindPlayerData(c\CinemaSpeed)
 			If p<>Null Then
 				SpectatePlayer(p)

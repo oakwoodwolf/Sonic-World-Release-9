@@ -251,17 +251,16 @@ Function Interface_Render_Stage_Spectator(p.tPlayer)
 
 		DrawRealText("SPECTATING", 0+12*GAME_WINDOW_SCALE#, 27.5*GAME_WINDOW_SCALE#, (Interface_TextTitle_1), 0, 0, 36, 81, 143)
 
-		DrawSmartKey_MovementGeneral((30)*GAME_WINDOW_SCALE#, (30+30*1)*GAME_WINDOW_SCALE#)
-		DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, (30+60)*GAME_WINDOW_SCALE#, (30+30*1)*GAME_WINDOW_SCALE#)
-		DrawSmartKey(INPUT_BUTTON_ACTIONROLL, (30+30)*GAME_WINDOW_SCALE#, (30+30*1)*GAME_WINDOW_SCALE#)
-		DrawRealText("Switch Player", (30+60+15)*GAME_WINDOW_SCALE#, (30+30*1)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
-		DrawRealText("Viewing: " + Game\Online\ViewName, (30+60+15)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+		DrawSmartKey(INPUT_BUTTON_ACTIONJUMP, (30+30)*GAME_WINDOW_SCALE#, (30+30*1)*GAME_WINDOW_SCALE#)
+		DrawSmartKey(INPUT_BUTTON_ACTIONROLL, (30)*GAME_WINDOW_SCALE#, (30+30*1)*GAME_WINDOW_SCALE#)
+		DrawRealText("Switch Player", (30+30+15)*GAME_WINDOW_SCALE#, (30+30*1)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+		DrawRealText("Viewing: " + Game\Online\ViewName, (30)*GAME_WINDOW_SCALE#, (30+30*2)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
-		DrawImageEx(INTERFACE(Interface_Keys), (30)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, 61)
-		DrawImageEx(INTERFACE(Interface_Keys_small), (30)*GAME_WINDOW_SCALE#-6*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, 5)
-		DrawImageEx(INTERFACE(Interface_Keys_small), (30)*GAME_WINDOW_SCALE#+3*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, 31)
-		DrawImageEx(INTERFACE(Interface_Keys_small), (30)*GAME_WINDOW_SCALE#+13*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, 31)
-		DrawRealText("Close Spectator Mode", (30+15)*GAME_WINDOW_SCALE#, (30+30*4)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+		DrawImageEx(INTERFACE(Interface_Keys), 			(30)*GAME_WINDOW_SCALE#, 						(30+30*4)*GAME_WINDOW_SCALE#, 61)
+		DrawImageEx(INTERFACE(Interface_Keys_small), 	(30)*GAME_WINDOW_SCALE#-7*GAME_WINDOW_SCALE#, 	(30+30*4)*GAME_WINDOW_SCALE#, 5)
+		DrawImageEx(INTERFACE(Interface_Keys_small), 	(30)*GAME_WINDOW_SCALE#+2*GAME_WINDOW_SCALE#, 	(30+30*4)*GAME_WINDOW_SCALE#, 31)
+		DrawImageEx(INTERFACE(Interface_Keys_small), 	(30)*GAME_WINDOW_SCALE#+7*GAME_WINDOW_SCALE#, 	(30+30*4)*GAME_WINDOW_SCALE#, 31)
+		DrawRealText("Close Spectator Mode", 			(30+15)*GAME_WINDOW_SCALE#, 					(30+30*4)*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
 
 	End Function
 ;~IDEal Editor Parameters:
