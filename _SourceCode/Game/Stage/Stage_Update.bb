@@ -1662,7 +1662,7 @@ Function Update_GameModes()
 						EndIf
 					EndIf
 				Case 4:
-					If BP_GetHostID()=p\Online\NetID Then BP_UDPMessage(0, 29, Game\Online\GTState)
+					Game\ControlLock=0
 					Game\Online\Countdown=Game\Online\Countdown-timervalue#
 					If (Not Game\Online\Countdown>0) Then
 						Game\Online\GTState=0

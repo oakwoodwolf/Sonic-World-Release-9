@@ -254,7 +254,7 @@ End Function
 			Input\Hold\MouseCamRight		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_RIGHT,True))
 			Input\Hold\MouseCamZoomIn		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_ZOOMIN,True))
 			Input\Hold\MouseCamZoomOut		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_MOUSECAM_ZOOMOUT,True))
-		Else If Chatting\Allowed Then
+		Else If BP_Online Then
 			Input\Pressed\Change	 		= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_CHANGE)) And (Input\Hold\Change = 0)
 			Input\Hold\Change 			= Ceil#(Input_RetrieveStatus(INPUT_BUTTON_CHANGE))
 		EndIf

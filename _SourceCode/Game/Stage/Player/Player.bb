@@ -1105,8 +1105,8 @@
 				targetplayer.tPlayer=GetClosestPlayer(7)
 				If targetplayer<>Null Then
 					If (targetplayer\Action=ACTION_FLY Or targetplayer\Action=ACTION_SLOWGLIDE Or targetplayer\Action=ACTION_HOVER Or targetplayer\Action=ACTION_LEVITATE) Then
-						DebugLog("Target player ready!") 
-						Player_OnlineHolding_ByFeet(p,targetplayer)
+						;DebugLog("Target player ready!") 
+						;Player_OnlineHolding_ByFeet(p,targetplayer)
 					EndIf
 				EndIf
 			End If
