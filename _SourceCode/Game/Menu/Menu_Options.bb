@@ -1635,9 +1635,15 @@ Function Menu_Options_Name_Update(mode=0)
 	If Input\Pressed\ActionSkill2 Or (KeyHit(KEY_CTRL_LEFT) And KeyHit(KEY_V)) Then
 		;
 		OpenClipboard 0
-		Menu\NewChaoName=GetClipboardText$(1)
+		If IsClipboardFormatAvailable(1) Then
+			Menu\NewChaoName=GetClipboardText$(1)
+			PlaySmartSound(Sound_CharacterChange)
+		Else
+			Menu\NewChaoName=""
+			PlaySmartSound(Sound_MenuRefuse)
+		EndIf
 		CloseClipboard
-		PlaySmartSound(Sound_CharacterChange)
+		
 		;GetClipboard%(format%)
 	EndIf 
 	If Input\Pressed\ActionJump Or Input\Pressed\Start Then

@@ -164,6 +164,10 @@ Function Interface_Render_HostMenu(p.tPlayer)
 			BP_SetGameType(Game\Online\GameType+1)
 			If Game\Online\GameType>3 Then 	BP_SetGameType(0)
 			Info("Gametype set to " + GAMETYPE_NAME(Game\Online\GameType+1))
+			For play.tPlayer= Each tPlayer
+				play\Online\ShowTag=True
+				BP_UDPMessage(0,24,play\Online\ShowTag)
+			Next
 			Game\Online\GTState=0
 		Case 2:
 			PlaySmartSound(Sound_MenuAccept)

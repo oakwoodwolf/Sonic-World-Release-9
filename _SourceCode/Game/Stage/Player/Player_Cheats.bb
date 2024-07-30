@@ -33,7 +33,7 @@ If p\No#=1 And Chatting\Allowed=0 Then
 	EndIf
 
 	;moonjump
-	If (KeyDown(KEY_SPACE)) Then
+	If (KeyDown(KEY_SPACE)) And ((Game\Online\Online And Game\Online\Debug) Or Game\Online\Online=0) Then
 		p\Motion\Ground=False : p\Motion\Speed\y=1.53
 		Game\Cheater=1
 	EndIf

@@ -361,7 +361,7 @@ Function Menu_Cheats()
 			If Menu\CharacterRow>Ceil(CHAR_NONMODPLAYABLECOUNT/10.0) Then Menu\CharacterRow=1
 			PlaySmartSound(Sound_MenuMove)
 		EndIf
-		If Menu\Members=1 Then
+		If Menu\Members=1 And ((Game\Online\Online And Game\Online\Debug) Or Game\Online\Online=0) Then
 			For i=KEY_1 to KEY_0
 				j = (10*(Menu\CharacterRow-1))+i-1
 				If j<=CHAR_NONMODPLAYABLECOUNT Then

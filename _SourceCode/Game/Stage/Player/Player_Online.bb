@@ -216,7 +216,7 @@ end function
 ; ============================================
 Function Player_SetTagMode(p.tPlayer,mode=1)
 	Select mode
-		Case 3: p\Online\TagMode=TAG_SAFE : Player_Die(p)
+		Case 3: p\Online\TagMode=TAG_SAFE
 		Default:
 			p\Online\TagMode = TAG_IS_IT 
 	End Select
@@ -228,7 +228,7 @@ Function Player_SetTagMode(p.tPlayer,mode=1)
 		Case 2: BP_UDPMessage(p\Online\NetID, 3, "tagged")	: BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name$+" is the seeker. Hide!")	
 		Case 3: BP_UDPMessage(p\Online\NetID, 3, "cleared")	: BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name$+" has been found")	
 		Default
-			BP_UDPMessage(p\Online\NetID, 3, "tagged")	: BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name$+" is it!")	
+			BP_UDPMessage(p\Online\NetID, 3, "tagged")	: BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name$+" is it!")
 	End Select
 End Function
 
@@ -364,6 +364,8 @@ Function Game_OnlineMsgOfTheDay()
 				p\Online\RacePosition=0
 				Game\Online\RaceFinished=False
 				DebugLog(Menu\Mission)
+			Case GAME_TYPE_HIDENSEEK
+				Game\ControlLock=0
 		End Select
 	End Function
 
@@ -385,7 +387,7 @@ Function Game_OnlineMsgOfTheDay()
 					BP_UDPMessage(p\Online\NetID, 3, "hurt")
 				ElseIf (rockP and paperE) or (paperP and scissorsE) or (scissorsP and rockE) Then
 					BP_UDPMessage(ppp\Online\NetID, 3, "hurt")
-				Else
+				ElseIf Not p\HurtTimer>0 Then
 					p\Motion\Ground=False : p\Action=ACTION_FALL : Player_SetSpeed(p,-1.75) : p\Motion\Speed\y#=0.4
 					ppp\Motion\Ground=False : ppp\Action=ACTION_FALL : Player_SetSpeed(ppp,-1.75) : ppp\Motion\Speed\y#=0.4
 				EndIf

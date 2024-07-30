@@ -1398,6 +1398,7 @@ Function HandleMessages()
 						Player_PlayDieVoice(onlineplayer(1))
 						p.tPlayer = FindPlayerData(msg\msgFrom)
 						Player_PlayGoodVoice(p)
+						If Game\Online\GameType=GAMETYPE_TAG Then Info("You've been tagged by " + p\Online\Name, 255,255,0)	
 						onlineplayer(1)\Online\TagMode=TAG_IS_IT
 						If onlineplayer(1)\Online\TagMode=TAG_IS_IT Then onlineplayer(1)\Online\TagTimer=TAG_TIMER
 					Case "notit"
@@ -1406,7 +1407,7 @@ Function HandleMessages()
 						onlineplayer(1)\Online\TagMode=TAG_NOT_IT
 						If onlineplayer(1)\Online\TagMode=TAG_NOT_IT Then onlineplayer(1)\Online\TagTimer=0
 					Case "cleared"
-						onlineplayer(1)\Online\TagMode=2;TAG_NOT_IT
+						onlineplayer(1)\Online\TagMode=TAG_SAFE;TAG_NOT_IT
 						onlineplayer(1)\Online\TagTimer=0
 					Default ; name change
 						nInfo.NetInfo = BP_FindID(p\Online\NetID)
@@ -1555,15 +1556,18 @@ Function Update_GameModes()
 			Select Game\Online\GTState:
 				Case 0:
 					Game\Online\GTState=1
+							
 					Game\Online\Countdown=10*secs#
 				Case 1:
 					Game\Online\Countdown=Game\Online\Countdown-timervalue#
 					If (Not Game\Online\Countdown>0) Then
-						it=Rand(1, BP_GetNumberOfPlayers%())
-						For op.tPlayer = Each tPlayer
-								If op\Online\NetID=it Then	Player_SetTagMode(op)
-								If op\Online\NetID<>it Then op\Online\TagMode=TAG_NOT_IT : op\Online\TagTimer=0 : BP_UDPMessage(0,UDPMSG_MESSAGE, op\Online\Name$+" is Not It!") : op\Online\TagCoolDown=3.5*secs#	
-						Next
+						If Game\Online\Hosting Then
+							it=Rand(1, BP_GetNumberOfPlayers%())
+							For op.tPlayer = Each tPlayer
+									If op\Online\NetID=it Then	Player_SetTagMode(op) : Info(op\Online\Name$+" is It!",255,255,0)
+									If op\Online\NetID<>it Then op\Online\TagMode=TAG_NOT_IT : op\Online\TagTimer=0 : BP_UDPMessage(0,UDPMSG_MESSAGE, op\Online\Name$+" is Not It!") : op\Online\TagCoolDown=3.5*secs# : Info(op\Online\Name$+" is Not It!",255,255,0)
+							Next
+						EndIf
 						Game\Online\GTState=2
 						If Menu\Mission=MISSION_RIVAL# Then Gameplay_SetRings(5)
 					EndIf
@@ -1608,7 +1612,8 @@ Function Update_GameModes()
 							; clear yourself of being it
 							pp(1)\Online\TagMode=TAG_NOT_IT : BP_UDPMessage(0, UDPMSG_MESSAGE, pp(1)\Online\Name$+" is Clear!")
 							; make online player it.
-							Player_SetTagMode(closestPlayer)						
+							Player_SetTagMode(closestPlayer)	
+							BP_UDPMessage(pp(1)\Online\NetID, UDPMSG_MESSAGE, "You tagged " + closestPlayer\Online\Name)					
 							BP_UDPMessage(closestPlayer\Online\NetID, UDPMSG_MESSAGE, pp(1)\Online\Name$+" has Tagged you!")
 							Player_PlayGoodVoice(pp(1))
 							Player_PlayDieVoice(closestPlayer)
@@ -1637,6 +1642,7 @@ Function Update_GameModes()
 			Select Game\Online\GTState:
 				Case 0:
 					Game\Online\GTState=1
+					Player_SetPosition(p,Game\Stage\Properties\StartX#,Game\Stage\Properties\StartY#+7,Game\Stage\Properties\StartZ#,Game\Stage\Properties\StartDirection#)
 					Game\Online\Countdown=5*secs#
 				Case 1:
 					Game\Online\Countdown=Game\Online\Countdown-timervalue#
@@ -1644,8 +1650,15 @@ Function Update_GameModes()
 						If Game\Online\Hosting Then
 							it=Rand(1, BP_GetNumberOfPlayers%())
 							For lp.tPlayer = Each tPlayer
-									If lp\Online\NetID=it Then	Player_SetTagMode(lp,2) : Info("You're a seeker.", 255, 255, 0)
-									If lp\Online\NetID<>it Then lp\Online\TagMode=TAG_NOT_IT : lp\Online\TagTimer=0 : BP_UDPMessage(0,UDPMSG_MESSAGE, lp\Online\Name$+" is Hiding!") : lp\Online\TagCoolDown=3.5*secs#	: BP_UDPMessage(lp\Online\NetID, 3, "notit")
+									If lp\Online\NetID=it Then
+										Player_SetTagMode(lp,2) : Info("You're a seeker.", 255, 255, 0)
+									Else
+										lp\Online\TagMode=TAG_NOT_IT
+										lp\Online\TagTimer=0
+										BP_UDPMessage(0,UDPMSG_MESSAGE, lp\Online\Name$+" is Hiding!") : Info("You're a hider.", 255, 255, 0)
+										lp\Online\TagCoolDown=3.5*secs#
+										BP_UDPMessage(lp\Online\NetID, 3, "notit")
+									EndIf
 							Next
 						EndIf
 						Game\Online\GTState=2
@@ -1654,15 +1667,15 @@ Function Update_GameModes()
 				Case 2:
 					Game\Online\Countdown=Game\Online\Countdown-timervalue#
 					If (Not Game\Online\Countdown>0) Then
-						BP_UDPMessage(0, UDPMSG_MESSAGE,"Seekers are on the move!")
+						If pp(1)\Online\TagMode=TAG_NOT_IT Then BP_UDPMessage(0, UDPMSG_MESSAGE,"Seekers are on the move!")
 						Game\Online\GTState=3
 					Else
 						If p\Online\TagMode=TAG_IS_IT Then
-							PostEffect_Create_FadeIn(0.008, 0, 0, 0) : Game\ControlLock=1.0*secs# : Player_SetSpeed(p, 0) : p\HurtTimer=1.0*secs#
+							PostEffect_Create_FadeOut(0.008, 0, 0, 0) : Game\ControlLock=1.0*secs# : Player_SetSpeed(p, 0) : p\HurtTimer=1.0*secs#
 						EndIf
 					EndIf
 				Case 4:
-					Game\ControlLock=0
+					;BP_UDPMessage(0, 29, Game\Online\GTState+"/"+Game\Online\Countdown+"/")
 					Game\Online\Countdown=Game\Online\Countdown-timervalue#
 					If (Not Game\Online\Countdown>0) Then
 						Game\Online\GTState=0
@@ -1674,41 +1687,6 @@ Function Update_GameModes()
 					EndIf
 					
 				Default:
-					; handle tag timer, and be clear once it's over
-						If p\Online\TagMode=TAG_IS_IT Then
-							; count the timer
-							If p\Online\TagTimer>0 Then
-								If p\Online\TagTimerInterval<MilliSecs() Then
-									p\Online\TagTimer=p\Online\TagTimer-1
-									p\Online\TagTimerInterval=MilliSecs()+1000
-								EndIf
-								hp=0
-								t = 0
-								For sp.tPlayer = Each tPlayer
-									If sp\Online\TagMode=2 Then t = t + 1
-								Next
-								If t = BP_NumPlayers-1 Then
-									p\Online\TagMode=2
-									BP_UDPMessage(0, 3, "cleared")
-									Game\Online\Countdown=10*secs#
-									Game\Online\GTState=4 
-									Info("You won!")
-								BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name$+" Won. All players have been found.")
-								EndIf
-							Else
-								p\Online\TagMode=2
-								Game\Online\Countdown=10*secs#
-								Game\Online\GTState=4
-								BP_UDPMessage(0, 3, "cleared")	
-								Info("You ran out of time. You Lose.")
-								BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name$+" Lost. Did not find all players in time.")
-							EndIf
-						Else
-							Game\ControlLock=0.9*secs#
-							Player_SetSpeed(p, 0)
-							p\Online\TagTimer=0
-						EndIf
-
 					; find closest player to tag
 					Local hidingPlayer.tPlayer = GetClosestPlayer(TAG_RADIUS#*1.5);
 					If hidingPlayer<>Null Then 
@@ -1721,6 +1699,45 @@ Function Update_GameModes()
 							Player_PlayDieVoice(hidingPlayer)
 						EndIf	
 					EndIf
+					; handle tag timer, and be clear once it's over
+						If p\Online\TagMode=TAG_NOT_IT Then
+							Game\ControlLock=0.9*secs#
+							Player_SetSpeed(p, 0)
+							p\Online\TagTimer=0
+						ElseIf p\Online\TagMode=TAG_IS_IT Then
+							; count the timer
+							If p\Online\TagTimer>0 Then
+								If p\Online\TagTimerInterval<MilliSecs() Then
+									p\Online\TagTimer=p\Online\TagTimer-1
+									p\Online\TagTimerInterval=MilliSecs()+1000
+								EndIf
+					
+								
+							Else
+								p\Online\TagMode=TAG_SAFE
+								Game\Online\GTState=4
+								Game\Online\Countdown=10*secs#
+								BP_UDPMessage(0, 3, "cleared")	
+								;BP_UDPMessage(0, 29, 4+"/"+Game\Online\Countdown+"/")
+								Info("You ran out of time. You Lose.")
+								BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name$+" Lost. Did not find all players in time.")
+							EndIf
+						EndIf
+						;Handle if all players are found
+						t = 0
+						For sp.tPlayer = Each tPlayer
+							If sp\Online\TagMode=TAG_SAFE Then t = t + 1
+						Next
+						If t >= BP_NumPlayers-1 Then
+							p\Online\TagMode=TAG_SAFE
+							BP_UDPMessage(0, 3, "cleared")
+							Game\Online\GTState=4 
+							Game\Online\Countdown=10*secs#
+							Info("You won!")
+							BP_UDPMessage(0, 29, 4+"/"+10*secs#+"/")
+							BP_UDPMessage(0, UDPMSG_MESSAGE, p\Online\Name$+" Won. All players have been found.")
+						EndIf
+
 					
 				
 			End Select
@@ -1738,6 +1755,7 @@ Function Update_GameModes()
 				Player_SetSpeed(ppp, 0)
 			Next
 			If HasEveryoneJoined() Then
+				Player_SetPosition(me_p,Game\Stage\Properties\StartX#,Game\Stage\Properties\StartY#+7,Game\Stage\Properties\StartZ#,Game\Stage\Properties\StartDirection#)
 				Game\Online\GTState=1
 				Game\Online\Countdown=10*secs#
 			End if
