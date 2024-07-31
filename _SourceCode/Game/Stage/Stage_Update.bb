@@ -10,7 +10,7 @@
 		HidePointer()
 			Input\AllowMouse=False
 			If Menu\Stage<>0 Then
-				If (Menu\Pause=0 And (Menu\ChaoGarden=0 Or Menu\Stage=999)) Or Chatting\Allowed=1 Then Input\AllowMouse=True : ShowPointer()
+				If (Menu\Pause=0 And (Menu\ChaoGarden=0 Or Menu\Stage=999)) Or Chatting\Allowed=1 Then Input\AllowMouse=True
 			Else
 				If Menu\Menu=MENU_CHARACTERS# Or Menu\Menu=MENU_BIOS# Or (Menu\Menu=MENU_TRANSPORTER# And (Menu\Menu2=MENU_TRANSPORTER_GOODBYE# Or Menu\Menu2=MENU_TRANSPORTER_STADIUM#)) Then Input\AllowMouse=True
 			EndIf
