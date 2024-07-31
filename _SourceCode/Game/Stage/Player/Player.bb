@@ -777,7 +777,7 @@
 			Player_DetermineChar(p,p\Character)
 		
 		Else
-			p\Character = rivalfixed : p\RealCharacter = rivalfixed
+			Player_DetermineChar(p,1)
 		EndIf
 
 		; Create objects
@@ -815,7 +815,7 @@
 		p\Objects\Staring=CreatePivot()
 		p\Objects\DestinationTarget=CreatePivot()
 		DeformCharacter(p)
-		BP_UDPMessage(0,UDPMSG_PLAYERCHARACTER, String(p\RealCharacter,1)) ; send new name
+		;BP_UDPMessage(0,UDPMSG_PLAYERCHARACTER, String(p\RealCharacter,1)) ; send new name
 		p\Objects\JumpBall=CopyEntity(MESHES(Mesh_JumpBall), Game\Stage\Root) : Animate p\Objects\JumpBall,1,1 : HideEntity(p\Objects\JumpBall)
 		p\Objects\Stomp=CopyEntity(MESHES(Mesh_Stomp), Game\Stage\Root) : Animate p\Objects\Stomp,1,1 : HideEntity(p\Objects\Stomp)
 		p\Objects\Forth=CopyEntity(MESHES(Mesh_Forth), Game\Stage\Root) : Animate p\Objects\Forth,1,1 : HideEntity(p\Objects\Forth)

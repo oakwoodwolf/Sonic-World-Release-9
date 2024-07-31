@@ -1181,7 +1181,8 @@ Function HandleMessages()
 				; finished 	; inform the joined party
 				If Game\Online\ShowMsg=False Then BP_UDPMessage(0,25, Game\Online\MsgOfTheDay$) : Game\Online\ShowMsg=True
 				If BP_My_ID = BP_Host_ID Then : Info("**" + p\Online\Name$ + " has joined!",0,255,0, "bold") : Else : Info("**" + p\Online\Name$ + " is in!",0,255,0, "bold") : EndIf
-				PlaySmartSound(Sound_CharacterChange) 								; sound for comformation			
+				PlaySmartSound(Sound_CharacterChange) 								; sound for comformation	
+				BP_UDPMessage(p\Online\NetID, 4, pp(1)\RealCharacter)		
 				;Next						
 			;------------------------------------------------------
 			Case UDPMSG_LEFT ;A player has left..
