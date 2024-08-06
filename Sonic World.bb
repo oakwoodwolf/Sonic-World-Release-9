@@ -25,8 +25,8 @@ Include "_SourceCode\Libraries\Library_FxManager.bb"
 Include "_SourceCode\Game\Menu\Menu_BlackMarket_Info.bb"
 
 ; Some constants
-Const CHAR_TOTAL = 35*2
-Const MODCHAR_AMOUNT = 26
+Const CHAR_TOTAL = 35*6
+Const MODCHAR_AMOUNT = 166
 
 ; Game code
 Include "_SourceCode\Game\Game_Settings.bb"

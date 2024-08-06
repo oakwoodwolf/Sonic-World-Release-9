@@ -482,7 +482,7 @@ Function Menu_Characters2_Update()
 	If Input\Pressed\ActionDrift Then
 		PlaySmartSound(Sound_MenuBack)
 		Menu\Option2=Menu\Option2+1
-		If Menu\Option2>2 Then Menu\Option2=1
+		If Menu\Option2>(CHAR_PLAYABLECOUNT/35) Then Menu\Option2=1
 		Menu\MeshChange=1
 	EndIf
 
