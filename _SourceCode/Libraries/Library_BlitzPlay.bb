@@ -1104,3 +1104,86 @@ Function BP_UpdateLog (txt$)
 		DebugLog(txt$)
 	End If
 End Function
+
+Function SendFile(file$)
+	DebugLog "Loading file '" + file + "'... "
+
+	If FileType(file) <> 1 Then RuntimeError "'" + file + "' not found"
+
+	Local bank = CreateBank(FileSize(file))
+	Local fh = ReadFile(file)
+	ReadBytes bank, fh, 0, BankSize(bank)
+	CloseFile fh
+	Print "done."
+
+	Write "Creating server... "
+	Local tcp = CreateTCPServer(BP_My_Port)
+	If Not tcp Then RuntimeError "Failed to start server"
+	DebugLog "done."
+
+	Local stream
+	While Not KeyDown(1)
+		stream = AcceptTCPStream(tcp)
+		If stream Then Exit
+		
+		DebugLog "Waiting for client..."
+		Delay 100
+	Wend
+
+
+	DebugLog "Sending data..."
+	BLOCKSIZE = 2400
+
+	Local sz
+	For i = 0 To (BankSize(bank) / BLOCKSIZE - (BankSize(bank) Mod BLOCKSIZE = 0))
+		If BankSize(bank) - i * BLOCKSIZE < BLOCKSIZE
+			sz = BankSize(bank) - i * BLOCKSIZE
+		Else
+			sz = BLOCKSIZE
+		EndIf
+		WriteInt stream, sz
+		WriteBytes bank, stream, i * BLOCKSIZE, sz
+	Next
+
+	DebugLog "Data sent."
+
+	DebugLog "Closing server... "
+	CloseTCPServer tcp
+	DebugLog "done."
+
+	DebugLog "Send complete."
+	End
+End Function
+
+Function ReceiveFile()
+	; Receive a file over TCP
+	Local stream = OpenTCPStream(BP_Host_IP, BP_Host_Port)
+	If Not stream Then DebugLog "Unable to connect to server; server may not be running" : Return 
+
+	DebugLog "Receiving data... "
+
+	Local bank = CreateBank()
+
+	While Not Eof(stream)
+		If ReadAvail(stream)
+			Local sz = ReadInt(stream)
+			ResizeBank bank, BankSize(bank) + sz
+			ReadBytes bank, stream, BankSize(bank) - sz, sz
+		EndIf
+	Wend
+
+	DebugLog "done."
+
+	Local file$ = "myFile2.zip"
+	DebugLog "Writing output to '" + file + "'"
+
+	Local fh = WriteFile(file)
+	WriteBytes bank, fh, 0, BankSize(bank)
+	CloseFile fh
+
+	DebugLog "done."
+
+	DebugLog "Receive complete."
+	End
+
+End Function
