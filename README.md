@@ -6,7 +6,7 @@ THIS IS A CODE OF SONIC WORLD ENGINE RELEASE 9, a fork of BlitzSonic, containing
 
 ## Requirements
 
-This version of the game is built on V1.106 of [Blitz3D](https://www.blitzcoder.org/forum/downloads.php) with various required userlibs.
+This version of the game is built on V1.106 of [Blitz3D](https://www.blitzbasic.org/forum/downloads.php) with various required userlibs.
 **Newer versions don't work as compatibility with userlibs are broken**
 
 - FastImage
