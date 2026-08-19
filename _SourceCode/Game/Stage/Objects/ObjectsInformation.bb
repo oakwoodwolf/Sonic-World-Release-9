@@ -7,7 +7,16 @@ Function Object_Acquire_Position(o.tObject,x#,y#,z#)
 	o\InitialPosition\x# = x#
 	o\InitialPosition\y# = y#
 	o\InitialPosition\z# = z#
-
+	
+;	If o\ObjType>0 And Menu\Stage<>0 Then
+;		o\DebugCube=CreateCube()
+;		
+;		EntityColor(o\DebugCube,15,255,255)
+;		
+;		EntityAlpha(o\DebugCube,0.75)
+;		o\HasDebugCube=True
+;	EndIf
+	
 	o\Particle = ParticleTemplate_Create.tParticleTemplate()
 End Function
 
@@ -25,6 +34,20 @@ End Function
 
 Function Object_Acquire_Power(o.tObject,power#)
 	o\Power# = power#
+End Function
+
+Function Object_Acquire_Visual(o.tObject,mtype,ms#,rs#,mx#,my#,mz#,rx#,ry#,rz#)
+	o\Visual\movetype=mtype
+	o\Visual\movespeed#=ms#
+	o\Visual\rotspeed#=rs#
+	
+	o\Visual\movex#=mx#
+	o\Visual\movey#=my#
+	o\Visual\movez#=mz#
+	
+	o\Visual\rotx#=rx#
+	o\Visual\roty#=ry#
+	o\Visual\rotz#=rz#
 End Function
 
 Function Object_Acquire_Lock(o.tObject,lockcontrol#,lockcam#,lockrun#)
@@ -75,7 +98,6 @@ Const HITBOXTYPE_SPEEDY_LOCKER = 21
 Const HITBOXTYPE_SPEEDY_CHECKPOINT = 22
 Const HITBOXTYPE_SPEEDY_TRANSFERER = 23
 Const HITBOXTYPE_SPEEDY_POLE = 24
-Const HITBOXTYPE_SPEEDY_THORN = 25
 Const HITBOXTYPE_RING = 3
 Const HITBOXTYPE_BOX = 4
 Const HITBOXTYPE_ENEMY = 5
@@ -84,10 +106,22 @@ Const HITBOXTYPE_FAN = 6
 Function Object_CreateHitBox(hittype,o.tObject,hitboxx#,hitboxy#,hitboxz#)
 	o\HitType=hittype
 	o\HitBox = New tVector
-	o\HitBox\x# = hitboxx#
-	o\HitBox\y# = hitboxy#
-	o\HitBox\z# = hitboxz#
+	o\HitBox\x# = hitboxx#*TempAttribute\hitboxmult#
+	o\HitBox\y# = hitboxy#*TempAttribute\hitboxmult#
+	o\HitBox\z# = hitboxz#*TempAttribute\hitboxmult#
+	
+	
+	
 End Function
+
+Function Object_CreateDebugCube(o.tObject)
+	o\HasDebugCube=True
+	o\DebugCube=CreateCube()
+	PositionEntity(o\DebugCube,o\Position\x#,o\Position\y#,o\Position\z#)
+	EntityAlpha(o\DebugCube,0.75)
+	ScaleEntity(o\DebugCube,o\HitBox\x#,o\HitBox\y#,o\HitBox\z#)
+End Function
+	
 
 Function Object_CheckHitBox(o.tObject,p.tPlayer)
 	If o\IsInBox=0 And o\Psychoed=0 And o\Rubied=0 And o\PsychoedThrown=False Then
@@ -141,16 +175,6 @@ Function Object_CheckHitBox(o.tObject,p.tPlayer)
 			EndIf
 		Case HITBOXTYPE_SPEEDY:
 			If (Abs(p\Objects\Position\x# - o\Position\x#) < o\HitBox\x#+(p\SpeedLength#/3.0)) And (Abs(EntityY(p\Objects\Entity#) - o\Position\y) < o\HitBox\y#+(p\SpeedLength#/3.0)) And (Abs(p\Objects\Position\z# - o\Position\z#) < o\HitBox\z#+(p\SpeedLength#/3.0)) Then o\Hit=True Else o\Hit=False
-		Case HITBOXTYPE_SPEEDY_THORN:
-			If (Abs(p\Objects\Position\x# - o\Position\x#) < o\HitBox\x#+(p\SpeedLength#/3.0)) And (Abs(EntityY(p\Objects\Entity#) - o\Position\y) < o\HitBox\y#) And (Abs(p\Objects\Position\z# - o\Position\z#) < o\HitBox\z#+(p\SpeedLength#/3.0)) Then
-				o\Hit=True 
-			Else 
-				o\Hit=False
-			EndIf 
-			
-			
-			
-					
 		Case HITBOXTYPE_SPEEDY_BSPRING:
 			If (Abs(p\Objects\Position\x# - o\Position\x#) < o\HitBox\x#+(p\SpeedLength#/3.0)) And (Abs(p\Objects\Position\y# - o\Position\y#) < o\HitBox\y#+(p\SpeedLength#/3.0)) And (Abs(p\Objects\Position\z# - o\Position\z#) < o\HitBox\z#+(p\SpeedLength#/3.0)) Then
 				o\Hit=True : o\Translator\BigSpringPoint=0
@@ -199,7 +223,7 @@ Function Object_CheckHitBox(o.tObject,p.tPlayer)
 				o\Hit=False
 			EndIf
 		Case HITBOXTYPE_RING:
-			If p\Action=ACTION_LIGHTDASH And (Not(o\ObjType=OBJTYPE_SPEWRING)) Then
+			If (p\Action=ACTION_LIGHTDASH Or p\TranslatorsTouchedTimer>0) And (Not(o\ObjType=OBJTYPE_SPEWRING)) Then
 				If (Abs(p\Objects\Position\x# - o\Position\x#) < o\HitBox\x#*3) And (Abs(EntityY(p\Objects\Entity#) - o\Position\y) < o\HitBox\y#*3) And (Abs(p\Objects\Position\z# - o\Position\z#) < o\HitBox\z#*3) Then o\Hit=True Else o\Hit=False
 			Else
 				If p\SpeedLength#<5 Then
@@ -215,30 +239,16 @@ Function Object_CheckHitBox(o.tObject,p.tPlayer)
 				If (Abs(p\Objects\Position\x# - o\Position\x#) < o\HitBox\x#*(1+p\ScaleFactor#/4.0)) And (Abs(p\Objects\Position\y# - o\Position\y#) < o\HitBox\y#+4.5) And p\Objects\Position\y#>(o\Position\y#-2.2) And (Abs(p\Objects\Position\z# - o\Position\z#) < o\HitBox\z#*(1+p\ScaleFactor#/4.0)) Then o\Hit=True Else o\Hit=False
 			EndIf
 		Case HITBOXTYPE_ENEMY:
-			If o\Enemy\EnemyShallAppear And o\Enemy\WasKilledByBombMonitor=False Then Object_CheckEnemyHitBox(o,p)
+			If (o\Enemy\EnemyShallAppear And o\Enemy\WasKilledByBombMonitor=False)Then Object_CheckEnemyHitBox(o,p)
 		Case HITBOXTYPE_FAN:
 			If (Abs(p\Objects\Position\x# - o\Position\x#) < o\HitBox\x#) And (p\Objects\Position\y# > o\Position\y#-5) And (p\Objects\Position\y# < o\Position\y#+o\HitBox\y#+20) And (Abs(p\Objects\Position\z# - o\Position\z#) < o\HitBox\z#) Then o\Hit=True Else o\Hit=False
-			
 	End Select
 	Else
 		o\Hit=False
 	EndIf
 
 	For ch.tCheese=Each tCheese
-	If Game\CheeseTimer>0 And (o\ThisIsAMonitor Or (o\ThisIsAnEnemy And o\AttackDetectRestrict=False)) And (Abs(ch\Position\x# - o\Position\x#) < o\HitBox\x#) And (Abs(ch\Position\y# - o\Position\y#) < o\HitBox\y#) And (Abs(ch\Position\z# - o\Position\z#) < o\HitBox\z#) Then 
-		o\CheeseHit=True  
-		Select p\ThrowType
-			Case 1 :  Game\CheeseTimer=0
-			Case 2
-				If Game\CheeseAttacked<3 Then
-					Game\CheeseAttacked=Game\CheeseAttacked+1
-					Game\CheeseTimer=Game\CheeseTimer+0.5*secs#
-				EndIf 
-				If Game\CheeseAttacked=3 Then Game\CheeseTimer=0 : Game\CheeseAttacked=0
-		End Select 
-	Else 
-		o\CheeseHit=False
-	EndIf 
+	If Game\CheeseTimer>0 And (o\ThisIsAMonitor Or (o\ThisIsAnEnemy And o\AttackDetectRestrict=False)) And (Abs(ch\Position\x# - o\Position\x#) < o\HitBox\x#) And (Abs(ch\Position\y# - o\Position\y#) < o\HitBox\y#) And (Abs(ch\Position\z# - o\Position\z#) < o\HitBox\z#) Then o\CheeseHit=True Else o\CheeseHit=False
 	Next
 
 	For f.tFroggy=Each tFroggy
@@ -254,131 +264,159 @@ End Function
 
 Function Object_CheckHitBox_Bomb(o.tObject,p.tPlayer)
 	For b.tBomb=Each tBomb
-	If b\MustDestroy=0 Then
-		If o\ThisIsAMonitor Or (o\ObjType=OBJTYPE_BALLOON And (Not(o\State>0))) Or o\ObjType=OBJTYPE_SPIKEBOMB Or o\ObjType=OBJTYPE_SPIKECRUSHER Or o\ObjType=OBJTYPE_SWITCH Or (o\ObjType=OBJTYPE_SWITCHBASE And o\State=1) Or o\ObjType=OBJTYPE_SWITCHWATER Or o\ObjType=OBJTYPE_SWITCHAIR Or (o\ObjType=OBJTYPE_HOMMER And o\Mode=0) Then
-			o\BombHittable=True
-		ElseIf o\ThisIsAnEnemy Then
-			If o\AttackDetectRestrict=False And o\Enemy\EnemyShallAppear Then o\BombHittable=True Else o\BombHittable=False
-		ElseIf (o\ThisIsAnEnemyMissile Or o\ObjType=OBJTYPE_SPIKEBALL) And (b\BombType=BOMB_BUBBLES Or b\BombType=BOMB_TYPHOON) Then
-			o\BombHittable=True
-		ElseIf (o\ObjType=OBJTYPE_BOXIRON) And (b\BombType=BOMB_BUBBLES Or b\BombType=BOMB_TYPHOON) Then
-			o\BombHittable=True
-		ElseIf (o\ObjType=OBJTYPE_BOXWOODEN Or o\ObjType=OBJTYPE_BOXMETAL Or o\ObjType=OBJTYPE_BOXTNT Or o\ObjType=OBJTYPE_BOXNITRO) And (Not(b\BombType=BOMB_RING Or b\BombType=BOMB_NOTE Or b\BombType=BOMB_ICE)) Then
-			o\BombHittable=True
-		ElseIf (o\ObjType=OBJTYPE_BOXCAGE) And (b\BombType=BOMB_PSYCHIC Or b\BombType=BOMB_BOOMERANG Or b\BombType=BOMB_GEAR Or b\BombType=BOMB_TYPHOON Or b\BombType=BOMB_PUNCH Or b\BombType=BOMB_BULLET3 Or b\BombType=BOMB_BULLET2 Or b\BombType=BOMB_BULLET Or b\BombType=BOMB_ROCK Or b\BombType=BOMB_JUSTICE Or b\BombType=BOMB_HOOKSHOT Or b\BombType=BOMB_CUBETRAIL Or b\BombType=BOMB_BELLYFLOP) Then
-			o\BombHittable=True
-		ElseIf (o\ObjType=OBJTYPE_OMOCHAO Or o\ObjType=OBJTYPE_SWITCHTOP Or o\ObjType=OBJTYPE_CHAO Or o\ObjType=OBJTYPE_BELL) And (Not(b\BombType=-1 Or b\BombType=-2)) Then
-			o\BombHittable=True
-		ElseIf (o\ObjType=OBJTYPE_ROCK Or o\ObjType=OBJTYPE_CRYSTAL Or o\ObjType=OBJTYPE_AUTO Or o\ObjType=OBJTYPE_ICICLE Or o\ObjType=OBJTYPE_ICICLEBIG Or o\ObjType=OBJTYPE_ICEDECOR) And (Not(b\BombType=BOMB_RING Or b\BombType=BOMB_NOTE)) Then
-			o\BombHittable=True
+		If b\MustDestroy=0 Then
+			If o\ThisIsAMonitor Or (o\ObjType=OBJTYPE_BALLOON And (Not(o\State>0))) Or o\ObjType=OBJTYPE_SPIKEBOMB Or o\ObjType=OBJTYPE_SPIKECRUSHER Or o\ObjType=OBJTYPE_SWITCH Or (o\ObjType=OBJTYPE_SWITCHBASE And o\State=1) Or o\ObjType=OBJTYPE_SWITCHWATER Or o\ObjType=OBJTYPE_SWITCHAIR Or (o\ObjType=OBJTYPE_HOMMER And o\Mode=0) Then
+				o\BombHittable=True
+			ElseIf o\ThisIsAnEnemy Then
+				If o\AttackDetectRestrict=False And o\Enemy\EnemyShallAppear Then o\BombHittable=True Else o\BombHittable=False
+			ElseIf (o\ThisIsAnEnemyMissile Or o\ObjType=OBJTYPE_SPIKEBALL) And (b\BombType=BOMB_BUBBLES Or b\BombType=BOMB_TYPHOON) Then
+				o\BombHittable=True
+			ElseIf (o\ObjType=OBJTYPE_BOXIRON) And (b\BombType=BOMB_BUBBLES Or b\BombType=BOMB_TYPHOON) Then
+				o\BombHittable=True
+			ElseIf (o\ObjType=OBJTYPE_BOXWOODEN Or o\ObjType=OBJTYPE_BOXMETAL Or o\ObjType=OBJTYPE_BOXTNT Or o\ObjType=OBJTYPE_BOXNITRO) And (Not(b\BombType=BOMB_RING Or b\BombType=BOMB_NOTE Or b\BombType=BOMB_ICE Or b\BombType=BOMB_NULLIFY)) Then
+				o\BombHittable=True
+			ElseIf (o\ObjType=OBJTYPE_BOXCAGE) And (b\BombType=BOMB_PSYCHIC Or b\BombType=BOMB_BOOMERANG Or b\BombType=BOMB_GEAR Or b\BombType=BOMB_TYPHOON Or b\BombType=BOMB_PUNCH Or b\BombType=BOMB_POWER Or b\BombType=BOMB_BULLET3 Or b\BombType=BOMB_BULLET2 Or b\BombType=BOMB_BULLET Or b\BombType=BOMB_ROCK Or b\BombType=BOMB_JUSTICE Or b\BombType=BOMB_HOOKSHOT Or b\BombType=BOMB_CUBETRAIL Or b\BombType=BOMB_BELLYFLOP) Then
+				o\BombHittable=True
+			ElseIf (o\ObjType=OBJTYPE_OMOCHAO Or o\ObjType=OBJTYPE_SWITCHTOP Or o\ObjType=OBJTYPE_CHAO Or o\ObjType=OBJTYPE_BELL) And (Not(b\BombType=-1 Or b\BombType=-2)) Then
+				o\BombHittable=True
+			ElseIf (o\ObjType=OBJTYPE_ROCK Or o\ObjType=OBJTYPE_CRYSTAL Or o\ObjType=OBJTYPE_AUTO Or o\ObjType=OBJTYPE_ICICLE Or o\ObjType=OBJTYPE_ICICLEBIG Or o\ObjType=OBJTYPE_ICEDECOR) And (Not(b\BombType=BOMB_RING Or b\BombType=BOMB_NOTE)) Then
+				o\BombHittable=True
+			Else
+				o\BombHittable=False
+			EndIf
 		Else
 			o\BombHittable=False
 		EndIf
-	Else
-		o\BombHittable=False
-	EndIf
-
-	If (Not(b\targetp=pp(1))) Or o\IsInBox Or p\Flags\Targeter=1 Or b\NotAffectable Then o\BombHittable=False
-
-	If o\ThisIsABox And b\Position\y#<(o\Position\y#-2.2) Then o\BombHittable=False
-
-	If o\ObjType=OBJTYPE_AUTO And b\Position\y#<o\Position\y# Then o\BombHittable=False
-
-	If o\ThisIsAnEnemy Then
-		Select o\ObjType
-			Case OBJTYPE_FIGHTER,OBJTYPE_CAMERON,OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_CLUCKOID: If o\Anim=2 Then o\BombHittable=False
+		
+		If (Not(b\targetp=pp(1))) Or o\IsInBox Or p\Flags\Targeter=1 Or b\NotAffectable Then o\BombHittable=False
+		
+		If o\ThisIsABox And b\Position\y#<(o\Position\y#-2.2) Then o\BombHittable=False
+		
+		If o\ObjType=OBJTYPE_AUTO And b\Position\y#<o\Position\y# Then o\BombHittable=False
+		
+		If o\ThisIsAnEnemy Then
+			Select o\ObjType
+				Case OBJTYPE_FIGHTER,OBJTYPE_CAMERON,OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_CLUCKOID: If o\Anim=2 Then o\BombHittable=False
 			;Case OBJTYPE_CRAWL,OBJTYPE_SHEEP: If o\Anim=3 Or o\Anim=4 Then o\BombHittable=False
-			Case OBJTYPE_CATERKILLER: If o\Anim=1 Then o\BombHittable=False
+				Case OBJTYPE_CATERKILLER: If o\Anim=1 Then o\BombHittable=False
 				;,OBJTYPE_MUSHMEANIE
-			Case OBJTYPE_MADMOLE,OBJTYPE_BURROBOT,OBJTYPE_CRAWLER: If o\Anim=4 Then o\BombHittable=False
-		End Select
-	EndIf
-
-	If o\BombHittable And o\BombHit=False And o\Psychoed=0 And o\Rubied=0 And o\ObjPickedUp=0 Then
-		bombhitted=False
-		Select b\BombType
-			Case BOMB_BUBBLES:
-				If o\ThisIsAnEnemy Or o\ThisIsAnEnemyMissile Or o\ThisIsABox Or o\ObjType=OBJTYPE_SPIKEBALL Or o\ObjType=OBJTYPE_SPIKEBOMB Or o\ObjType=OBJTYPE_SPIKECRUSHER Or o\ObjType=OBJTYPE_OMOCHAO Then
-					If (Not(o\BubbleStunTimer>0)) And (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BubbleStunTimer=4.5*secs# : bombhitted=True
-				Else
-					If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=True
-				EndIf
-			Case BOMB_BOOMERANG,BOMB_GEAR:
-				If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : b\TargetAssigned=False
-			Case BOMB_CURSE:
-				If o\ThisIsAnEnemy Or o\ThisIsAnEnemyMissile Or o\ThisIsABox Or o\ObjType=OBJTYPE_SPIKEBALL Or o\ObjType=OBJTYPE_SPIKEBOMB Or o\ObjType=OBJTYPE_SPIKECRUSHER Then
-					If (Not(o\CurseStunTimer>0)) And (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\CurseStunTimer=5.5*secs# : bombhitted=True
-				Else
-					If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=True
-				EndIf
-			Case BOMB_TYPHOON:
-				If o\ThisIsAnEnemy Or o\ThisIsAnEnemyMissile Or o\ThisIsABox Or o\ObjType=OBJTYPE_SPIKEBALL Or o\ObjType=OBJTYPE_SPIKEBOMB Or o\ObjType=OBJTYPE_SPIKECRUSHER Or o\ObjType=OBJTYPE_OMOCHAO Then
-					If (Not(o\FlowerStunTimer>0)) And (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\FlowerStunTimer=4.5*secs# : bombhitted=True
-				Else
-					If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=True
-				EndIf
-			Case BOMB_ICE:
-				If Not o\ThisIsAnEnemyMissile Then
-				If o\ThisIsAnEnemy Then
-					i=True
+				Case OBJTYPE_MADMOLE,OBJTYPE_BURROBOT,OBJTYPE_CRAWLER: If o\Anim=4 Then o\BombHittable=False
+			End Select
+		EndIf
+		
+		If o\BombHittable And o\BombHit=False And o\Psychoed=0 And o\Rubied=0 And o\ObjPickedUp=0 Then
+			bombhitted=False
+			
+			Select b\BombType
+				Case BOMB_BUBBLES:
+					If o\ThisIsAnEnemy Or o\ThisIsAnEnemyMissile Or o\ThisIsABox Or o\ObjType=OBJTYPE_SPIKEBALL Or o\ObjType=OBJTYPE_SPIKEBOMB Or o\ObjType=OBJTYPE_SPIKECRUSHER Or o\ObjType=OBJTYPE_OMOCHAO Then
+						If (Not(o\BubbleStunTimer>0)) And (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BubbleStunTimer=4.5*secs# : bombhitted=True
+					Else
+						If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=True
+					EndIf
+				Case BOMB_BOOMERANG,BOMB_GEAR:
+					If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : b\TargetAssigned=False
+				Case BOMB_CURSE:
+					If o\ThisIsAnEnemy Or o\ThisIsAnEnemyMissile Or o\ThisIsABox Or o\ObjType=OBJTYPE_SPIKEBALL Or o\ObjType=OBJTYPE_SPIKEBOMB Or o\ObjType=OBJTYPE_SPIKECRUSHER Then
+						If (Not(o\CurseStunTimer>0)) And (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\CurseStunTimer=5.5*secs# : bombhitted=True
+					Else
+						If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=True
+					EndIf
+				Case BOMB_TYPHOON:
+					If o\ThisIsAnEnemy Or o\ThisIsAnEnemyMissile Or o\ThisIsABox Or o\ObjType=OBJTYPE_SPIKEBALL Or o\ObjType=OBJTYPE_SPIKEBOMB Or o\ObjType=OBJTYPE_SPIKECRUSHER Or o\ObjType=OBJTYPE_OMOCHAO Then
+						If (Not(o\FlowerStunTimer>0)) And (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\FlowerStunTimer=4.5*secs# : bombhitted=True
+					Else
+						If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=True
+					EndIf
+				Case BOMB_ICE:
+					If Not o\ThisIsAnEnemyMissile Then
+						If o\ThisIsAnEnemy Then
+							i=True
+							If o\ThisIsAnEnemy Then
+								If o\Enemy\IsBoss=1 Then i=False
+							EndIf
+							If i And (Not(o\FrozenStunTimer>0)) And (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then
+								o\FrozenStunTimer=5.5*secs# : bombhitted=True
+								EmitSmartSound(Sound_Bounce,o\Entity)
+								Player_CreateRazer.tRazer(p,o\Entity,1,4,0.25*o\HitBox\x#,0.125*o\HitBox\y#,0.25*o\HitBox\z#,o\FrozenStunTimer,False)
+							EndIf
+						Else
+							If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=True
+						EndIf
+					EndIf
+				Case BOMB_NULLIFY:
+					If Not o\ThisIsAnEnemyMissile Then
+						If o\ThisIsAnEnemy Then
+							i=True
+							If o\ThisIsAnEnemy Then
+								If o\Enemy\IsBoss=1 Then i=False
+							EndIf
+							
+							If i And (Not(o\NullifyStunTimer>0)) And (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then
+								o\NullifyStunTimer=5.5*secs# : bombhitted=True
+								EmitSmartSound(Sound_Ruby1,o\Entity)
+								
+								Player_CreateRazer.tRazer(p,o\Entity,1,9,0.25*o\HitBox\x#,0.125*o\HitBox\y#,0.25*o\HitBox\z#,o\NullifyStunTimer,False)
+								
+							EndIf
+						Else
+							If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=True
+						EndIf
+					EndIf	
+				Case BOMB_HOOKSHOT:
+					i=False
 					If o\ThisIsAnEnemy Then
-						If o\Enemy\IsBoss=1 Then i=False
+						If o\Enemy\IsBoss=1 Or o\ObjType=OBJTYPE_SPUNA Then i=False Else i=True
 					EndIf
-					If i And (Not(o\FrozenStunTimer>0)) And (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then
-						o\FrozenStunTimer=5.5*secs# : bombhitted=True
-						EmitSmartSound(Sound_Bounce,o\Entity)
-						Player_CreateRazer.tRazer(p,o\Entity,1,4,0.25*o\HitBox\x#,0.125*o\HitBox\y#,0.25*o\HitBox\z#,o\FrozenStunTimer,False)
-					EndIf
-				Else
+					If i And (Not(o\KunaiStunTimer>0)) And (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then 
+						
+						o\KunaiStunTimer=5*secs#
+						
+						EmitSmartSound(Sound_GrindStart,b\Entity)
+						
+					EndIf 
+				Default:
 					If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=True
-				EndIf
-				EndIf
-			Case BOMB_HOOKSHOT:
-				i=True
+			End Select
+			If bombhitted Then
+				If Not o\InView Then o\InView=True
+				If (Not(b\BombType=BOMB_BOOMERANG Or b\BombType=BOMB_GEAR)) Then b\MustDestroy=1
 				If o\ThisIsAnEnemy Then
-					If o\Enemy\IsBoss=1 Then i=False
+					
+						
+					If o\Enemy\IsBoss=1 Then b\MustDestroy=1
 				EndIf
-				If i And (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=True
-			Default:
-				If (Abs(b\Position\x# - o\Position\x#) < o\HitBox\x#+b\HitBox\x#) And (Abs(b\Position\y# - o\Position\y#) < o\HitBox\y#+b\HitBox\y#) And (Abs(b\Position\z# - o\Position\z#) < o\HitBox\z#+b\HitBox\z#) Then o\BombHit=True : bombhitted=True
-		End Select
-		If bombhitted Then
-			If Not o\InView Then o\InView=True
-			If (Not(b\BombType=BOMB_BOOMERANG Or b\BombType=BOMB_GEAR)) Then b\MustDestroy=1
-			If o\ThisIsAnEnemy Then
-				If o\Enemy\IsBoss=1 Then b\MustDestroy=1
+				If b\BombType=BOMB_HOOKSHOT Then
+					b\MayNotDestroy=1
+					b\MoveTimer=0.5*secs#
+					Object_Bomb_Create_Target(b, 1, o\Position\x#, o\Position\y#, o\Position\z#)
+					Player_ConvertGroundToAir(b\targetp) : b\targetp\Motion\Ground = False
+					MoveEntity b\targetp\Objects\Entity, 0, 5, 0
+					b\targetp\Animation\Direction#=(DeltaYaw#(b\targetp\Objects\Entity,b\TargetPivot) - 180)
+					b\targetp\BombThrown=0
+					EmitSmartSound(Sound_GrindStart,b\Entity)
+				EndIf
 			EndIf
-			If b\BombType=BOMB_HOOKSHOT Then
-				b\MayNotDestroy=1
-				b\MoveTimer=0.5*secs#
-				Object_Bomb_Create_Target(b, 1, o\Position\x#, o\Position\y#, o\Position\z#)
-				Player_ConvertGroundToAir(b\targetp) : b\targetp\Motion\Ground = False
-				MoveEntity b\targetp\Objects\Entity, 0, 5, 0
-				b\targetp\Animation\Direction#=(DeltaYaw#(b\targetp\Objects\Entity,b\TargetPivot) - 180)
-				b\targetp\BombThrown=0
-				EmitSmartSound(Sound_GrindStart,b\Entity)
+			
+			If o\BombHit Then
+				o\BombHitDirection#=EntityYaw(b\Pivot)
+				o\BombHitType=b\BombType
 			EndIf
-		EndIf
-
-		If o\BombHit Then
-			o\BombHitDirection#=EntityYaw(b\Pivot)
-			o\BombHitType=b\BombType
-		EndIf
-
-		If b\TargetAssigned=False And o\GotAssignedBomb=False Then
-			i=False
-			If (Not(b\DisappearTimer=-100)) Then
-				If EntityDistance(o\Entity,b\Entity)<b\HitBox\y#+20 Then i=True
-			Else
-				If EntityDistance(o\Entity,b\Entity)<b\HitBox\y#+5 Then i=True
-			EndIf
-			If i Then
-				b\TargetAssignedObj=o
-				b\TargetAssigned=True
-				o\GotAssignedBomb=True
+			
+			If b\TargetAssigned=False And o\GotAssignedBomb=False Then
+				i=False
+				If (Not(b\DisappearTimer=-100)) Then
+					If EntityDistance(o\Entity,b\Entity)<b\HitBox\y#+20 Then i=True
+				Else
+					If EntityDistance(o\Entity,b\Entity)<b\HitBox\y#+5 Then i=True
+				EndIf
+				If i Then
+					b\TargetAssignedObj=o
+					b\TargetAssigned=True
+					o\GotAssignedBomb=True
+				EndIf
 			EndIf
 		EndIf
-	EndIf
 	Next
 End Function
 
@@ -387,8 +425,16 @@ End Function
 Function Object_UpdatePosition(o.tObject)
 	If o\ObjType=OBJTYPE_SPEWRING Or o\ObjType=OBJTYPE_SPEWSHARD Or o\HasGravity Then
 		o\Position\x# = EntityX(o\Pivot,1) : o\Position\y# = EntityY(o\Pivot,1) : o\Position\z# = EntityZ(o\Pivot,1)
+		If o\HasDebugCube Then
+			PositionEntity(o\DebugCube, o\Position\x#,o\Position\y#,o\Position\z#)
+			ScaleEntity(o\DebugCube,o\HitBox\x#,o\HitBox\y#,o\HitBox\z#)
+		EndIf
 	Else
 		o\Position\x# = EntityX(o\Entity,1) : o\Position\y# = EntityY(o\Entity,1) : o\Position\z# = EntityZ(o\Entity,1)
+		If o\HasDebugCube Then
+			PositionEntity(o\DebugCube, o\Position\x#,o\Position\y#,o\Position\z#)
+			ScaleEntity(o\DebugCube,o\HitBox\x#,o\HitBox\y#,o\HitBox\z#)
+		EndIf
 	EndIf
 End Function
 
@@ -396,6 +442,8 @@ Function Object_UpdateRotation(o.tObject)
 	If o\HasRotation Then
 		o\Rotation\x# = EntityPitch(o\Entity,1) : o\Rotation\y# = EntityYaw(o\Entity,1) : o\Rotation\z# = EntityRoll(o\Entity,1)
 	EndIf
+	
+	
 End Function
 
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -453,12 +501,12 @@ Function Object_EnforcePsychokinesis(o.tObject,p.tPlayer,d.tDeltaTime)
 				o\ThrownAsBomb=Game\Gameplay\PsychoBombCount
 				o\Psychoed=4
 			Else
-				If o\PsychokineticX>0 Then o\PsychokineticX#=o\PsychokineticX#-2*d\Delta
-				If o\PsychokineticX<0 Then o\PsychokineticX#=o\PsychokineticX#+2*d\Delta
-				If o\PsychokineticY>0 Then o\PsychokineticY#=o\PsychokineticY#-2*d\Delta
-				If o\PsychokineticY<0 Then o\PsychokineticY#=o\PsychokineticY#+2*d\Delta
-				If o\PsychokineticZ>0 Then o\PsychokineticZ#=o\PsychokineticZ#-2*d\Delta
-				If o\PsychokineticZ<0 Then o\PsychokineticZ#=o\PsychokineticZ#+2*d\Delta
+				If o\PsychokineticX#>0 Then o\PsychokineticX#=o\PsychokineticX#-2*d\Delta
+				If o\PsychokineticX#<0 Then o\PsychokineticX#=o\PsychokineticX#+2*d\Delta
+				If o\PsychokineticY#>0 Then o\PsychokineticY#=o\PsychokineticY#-2*d\Delta
+				If o\PsychokineticY#<0 Then o\PsychokineticY#=o\PsychokineticY#+2*d\Delta
+				If o\PsychokineticZ#>0 Then o\PsychokineticZ#=o\PsychokineticZ#-2*d\Delta
+				If o\PsychokineticZ#<0 Then o\PsychokineticZ#=o\PsychokineticZ#+2*d\Delta
 			EndIf
 		Default:
 			Object_HandleGlow(o,p)
@@ -507,7 +555,7 @@ End Function
 
 Function Object_HandleGlow(o.tObject,p.tPlayer)
 	If o\ThisIsAnEnemyMissile Then
-		If Game\ChaosControlTimer>0 Then
+		If p\ChaosControlActiveTimer>0 Then
 			EntityTexture o\EntityX,Object_Texture_ChaosGlow,0,3
 		ElseIf (Not(o\CurseStunTimer>0)) And (Not(o\FrozenStunTimer>0)) Then
 			EntityTexture o\EntityX,Object_Texture_AntiGlow,0,3
@@ -517,8 +565,8 @@ Function Object_HandleGlow(o.tObject,p.tPlayer)
 			EntityTexture o\EntityX,Object_Texture_CurseGlow,0,3
 		EndIf
 	ElseIf o\ThisIsAnEnemy Then
-		If Game\ChaosControlTimer>0 Then
-			EntityTexture o\Entity,Object_Texture_ChaosControl,0,3
+		If p\ChaosControlActiveTimer>0 Then
+			EntityTexture o\Entity,Object_Texture_ChaosGlow,0,3
 		ElseIf (Not(o\CurseStunTimer>0)) And (Not(o\FrozenStunTimer>0)) Then
 			EntityTexture o\Entity,Object_Texture_AntiGlow,0,3
 		ElseIf (Not(o\CurseStunTimer>0)) And ((o\FrozenStunTimer>0)) Then
@@ -551,7 +599,7 @@ End Function
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Function Object_EnforceObjPickUp_Normal(o.tObject,p.tPlayer)
-
+	
 	Select o\ObjPickedUp
 		Case 0:
 			If EntityDistance(o\Entity,p\Objects\Entity)<(o\HitBox\y#+2) Then
@@ -564,13 +612,21 @@ Function Object_EnforceObjPickUp_Normal(o.tObject,p.tPlayer)
 				Interface_ControlTipUpdate_PickUp(1)
 			EndIf
 			If p\ObjPickUp=1 And p\Action=ACTION_CARRY Then
-			If EntityDistance(o\Entity,p\Objects\Entity)<(o\HitBox\y#+2) Then
-				o\ObjPickedUp=1
-				p\ObjPickUp=3
-			EndIf
+				If EntityDistance(o\Entity,p\Objects\Entity)<(o\HitBox\y#+2) Then
+					o\ObjPickedUp=1
+					p\ObjPickUp=3
+					Select o\ObjType
+						Case OBJTYPE_MISSIONCARD
+							p\ObjPickUpType=o\ObjType
+							Menu\WarpRingPath$=o\StageFolder$+"/"+o\StageName$
+							Menu\WarpRingName$=o\StageName$
+					End Select
+				EndIf
 			EndIf
 		Case 1:
-			If (Input\Hold\Up Or Input\Hold\Left Or Input\Hold\Right Or Input\Hold\Down) Or p\Motion\Ground=False Then
+			If Game\MissionCardable=1 Then
+				Interface_ControlTipUpdate_PickUp(4)
+			ElseIf ((Input\Hold\Up Or Input\Hold\Left Or Input\Hold\Right Or Input\Hold\Down) Or p\Motion\Ground=False) And (Not(o\ObjType=OBJTYPE_MISSIONCARD)) Then
 				canthrow=True
 				If Menu\ChaoGarden=1 Then Interface_ActivateGardenAction(2, CONTROLTIPS$(TIP_THROW))
 				Interface_ControlTipUpdate_PickUp(2)
@@ -581,7 +637,7 @@ Function Object_EnforceObjPickUp_Normal(o.tObject,p.tPlayer)
 			EndIf
 			If (Not(p\Action=ACTION_CARRY Or p\Action=ACTION_CARRYJUMP Or p\Action=ACTION_CARRYTHROWN)) Then p\ObjPickUp=0
 			Select p\RealCharacter
-				Case CHAR_EGG,CHAR_TMH:
+				Case CHAR_EGG
 					PositionEntity o\Entity, EntityX(p\Objects\Extra2, 1), EntityY(p\Objects\Extra2, 1), EntityZ(p\Objects\Extra2, 1)
 					RotateEntity o\Entity, EntityPitch(p\Objects\Mesh), p\Animation\Direction#+180, EntityRoll(p\Objects\Mesh)
 					MoveEntity o\Entity, 0, 1.7, 0.8
@@ -651,24 +707,24 @@ Function Object_EnforceObjPickUp_Normal(o.tObject,p.tPlayer)
 			If o\ChaoObj\ChaoTargetedThis=False Then o\ObjPickedUp=0
 		Default:
 			For b.tBomb=Each tBomb
-			If o\ThrownAsBomb=b\ThrownMode Then
-				b\ThrownAsBomb=True
-				PositionEntity o\Entity, EntityX(b\Pivot), EntityY(b\Pivot), EntityZ(b\Pivot)
-				If o\ObjType=OBJTYPE_CHAO Then
-					PositionEntity o\ChaoObj\targetcc\Pivot, EntityX(o\Entity), EntityY(o\Entity), EntityZ(o\Entity)
-					RotateEntity o\ChaoObj\targetcc\Pivot, EntityPitch(o\Entity), EntityYaw(o\Entity), EntityRoll(o\Entity)
-					o\ChaoObj\targetcc\Action=CHAOACTION_THROWN
+				If o\ThrownAsBomb=b\ThrownMode Then
+					b\ThrownAsBomb=True
+					PositionEntity o\Entity, EntityX(b\Pivot), EntityY(b\Pivot), EntityZ(b\Pivot)
+					If o\ObjType=OBJTYPE_CHAO Then
+						PositionEntity o\ChaoObj\targetcc\Pivot, EntityX(o\Entity), EntityY(o\Entity), EntityZ(o\Entity)
+						RotateEntity o\ChaoObj\targetcc\Pivot, EntityPitch(o\Entity), EntityYaw(o\Entity), EntityRoll(o\Entity)
+						o\ChaoObj\targetcc\Action=CHAOACTION_THROWN
+					EndIf
 				EndIf
-			EndIf
 			Next			
 	End Select
-
+	
 End Function
 
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Function Object_EnforceObjPickUp_Pivot(o.tObject,p.tPlayer)
-
+	
 	Select o\ObjPickedUp
 		Case 0:
 			If EntityDistance(o\Pivot,p\Objects\Entity)<(o\HitBox\y#+2) Then
@@ -681,97 +737,37 @@ Function Object_EnforceObjPickUp_Pivot(o.tObject,p.tPlayer)
 				Interface_ControlTipUpdate_PickUp(1)
 			EndIf
 			If p\ObjPickUp=1 And p\Action=ACTION_CARRY Then
-			If EntityDistance(o\Pivot,p\Objects\Entity)<(o\HitBox\y#+2) Then
-				o\ObjPickedUp=1
-				p\ObjPickUp=3
-			EndIf
-			EndIf
-		Case 1:
-			If (Input\Hold\Up Or Input\Hold\Left Or Input\Hold\Right Or Input\Hold\Down) Or p\Motion\Ground=False Then
-				canthrow=True
-				If Menu\ChaoGarden=1 Then Interface_ActivateGardenAction(2, CONTROLTIPS$(TIP_THROW))
-				Interface_ControlTipUpdate_PickUp(2)
-			Else
-				canthrow=False
-				If Menu\ChaoGarden=1 Then Interface_ActivateGardenAction(2, CONTROLTIPS$(TIP_DROP)+" ")
-				Interface_ControlTipUpdate_PickUp(3)
-			EndIf
-			If (Not(p\Action=ACTION_CARRY Or p\Action=ACTION_CARRYJUMP Or p\Action=ACTION_CARRYTHROWN)) Then p\ObjPickUp=0
-			Select p\RealCharacter
-				Case CHAR_EGG,CHAR_TMH:
-					PositionEntity o\Pivot, EntityX(p\Objects\Extra2, 1), EntityY(p\Objects\Extra2, 1), EntityZ(p\Objects\Extra2, 1)
-					RotateEntity o\Pivot, EntityPitch(p\Objects\Mesh), p\Animation\Direction#+180, EntityRoll(p\Objects\Mesh)
-					MoveEntity o\Pivot, 0, 1.7, 0.8
-				Case CHAR_CHW:
-					PositionEntity o\Entity, EntityX(p\Objects\HandR, 1), EntityY(p\Objects\HandR, 1), EntityZ(p\Objects\HandR, 1)
-					RotateEntity o\Entity, EntityPitch(p\Objects\Mesh), p\Animation\Direction#+180, EntityRoll(p\Objects\Mesh)
-					MoveEntity o\Entity, 0, 1.7, 0.8
-				Default:
-					PositionEntity o\Pivot, EntityX(p\Objects\Spine, 1), (EntityY(p\Objects\HandR, 1)+EntityY(p\Objects\HandL, 1))/2.0, EntityZ(p\Objects\Spine, 1)
-					RotateEntity o\Pivot, EntityPitch(p\Objects\Mesh), p\Animation\Direction#+180, EntityRoll(p\Objects\Mesh)
-					MoveEntity o\Pivot, 0, 0, (2.05+p\ScaleFactor#*2.5)
-			End Select
-			Select o\ObjType
-				Case OBJTYPE_HAT:
-					Select o\ChaoObj\HatType
-						Case HAT_TIE_0,HAT_TIE_1,HAT_TIE_2,HAT_TIE_3,HAT_BOW_0,HAT_BOW_1,HAT_BOW_2,HAT_BOW_3,HAT_PACIFIER_0,HAT_PACIFIER_1,HAT_PACIFIER_2,HAT_PACIFIER_3:
-							PositionEntity o\Entity, EntityX(o\Pivot), EntityY(o\Pivot)+1.5, EntityZ(o\Pivot)
-						Default:
-							PositionEntity o\Entity, EntityX(o\Pivot), EntityY(o\Pivot), EntityZ(o\Pivot)
-					End Select
-				Default:
-					PositionEntity o\Entity, EntityX(o\Pivot), EntityY(o\Pivot), EntityZ(o\Pivot)
-			End Select
-			RotateEntity o\Entity, EntityPitch(o\Pivot), EntityYaw(o\Pivot), EntityRoll(o\Pivot)
-			If o\ObjType=OBJTYPE_FRUIT Or o\ObjType=OBJTYPE_DRIVE Then MoveEntity o\Pivot, 0, 0.5, 0
-			If p\Rotation#<0 Then MoveEntity o\Pivot, 0, -p\Rotation#*0.05, 0 Else MoveEntity o\Pivot, 0, -p\Rotation#*0.025, 0
-			If p\ObjPickUpThrowTimer>0 Then
-				If canthrow Then
-					Player_PlayAttackVoice(p)
-					o\ObjPickedUp=3
-				Else
-					Player_PlayJumpVoice(p)
-					o\ObjPickedUp=4 : Player_SetSpeed(p,0)
+				If EntityDistance(o\Pivot,p\Objects\Entity)<(o\HitBox\y#+2) Then
+					o\ObjPickedUp=1
+					p\ObjPickUp=3
+					
 				EndIf
-				p\ObjPickUp=0
-			Else
-				If p\ObjPickUp=0 Then o\ObjPickedUp=0
 			EndIf
-		Case -1:
-			If o\Hit Then
-				RotateEntity o\Pivot, 0, p\Animation\Direction#+180, 0
-			Else
-				RotateEntity o\Pivot, 0, o\BombHitDirection#, 0
-			EndIf
-			o\BombHitDirection#=0
-			o\ObjPickedUp=3
-			p\ObjPickUp=0
-		Case 3:
-			If (Not(p\Action=ACTION_CARRY Or p\Action=ACTION_CARRYJUMP Or p\Action=ACTION_CARRYTHROWN)) Then p\ObjPickUp=0
-			If o\ObjType=OBJTYPE_OMOCHAO Then StopChannel(o\Omochao\Channel_Omochao) : o\Omochao\Channel_Omochao=PlaySmartSound(Voice_OMO_Hurt[Rand(1,5)])
-			Game\Gameplay\PsychoBombCount=Game\Gameplay\PsychoBombCount+1
-			Object_Bomb_Create.tBomb(p, EntityX(o\Pivot), EntityY(o\Pivot), EntityZ(o\Pivot), 0, EntityYaw(o\Pivot), 0, -1, Game\Gameplay\PsychoBombCount)
-			o\ObjPickedUp=9
-			o\ThrownAsBomb=Game\Gameplay\PsychoBombCount
-		Case 4:
-			If o\ObjType=OBJTYPE_OMOCHAO Then StopChannel(o\Omochao\Channel_Omochao) : o\Omochao\Channel_Omochao=PlaySmartSound(Voice_OMO_Hurt[Rand(1,5)])
-			Game\Gameplay\PsychoBombCount=Game\Gameplay\PsychoBombCount+1
-			o\ObjPickedUp=0
-		Case 5:
-			Game\Gameplay\PsychoBombCount=Game\Gameplay\PsychoBombCount+1
-			Object_Bomb_Create.tBomb(p, EntityX(o\Pivot), EntityY(o\Pivot), EntityZ(o\Pivot), 0, EntityYaw(o\Pivot), 0, -1, Game\Gameplay\PsychoBombCount)
-			o\ObjPickedUp=9
-			o\ThrownAsBomb=Game\Gameplay\PsychoBombCount
-		Case 6:
-			Game\Gameplay\PsychoBombCount=Game\Gameplay\PsychoBombCount+1
-			Object_Bomb_Create.tBomb(p, EntityX(o\Pivot), EntityY(o\Pivot), EntityZ(o\Pivot), 0, EntityYaw(o\Pivot), 0, -2, Game\Gameplay\PsychoBombCount)
-			o\ObjPickedUp=9
-			o\ThrownAsBomb=Game\Gameplay\PsychoBombCount
-		Default:
-			For b.tBomb=Each tBomb
-			If o\ThrownAsBomb=b\ThrownMode Then
-				b\ThrownAsBomb=True
-				PositionEntity o\Pivot, EntityX(b\Pivot), EntityY(b\Pivot), EntityZ(b\Pivot)
+			Case 1:
+				If (Input\Hold\Up Or Input\Hold\Left Or Input\Hold\Right Or Input\Hold\Down) Or p\Motion\Ground=False Then
+					canthrow=True
+					If Menu\ChaoGarden=1 Then Interface_ActivateGardenAction(2, CONTROLTIPS$(TIP_THROW))
+					Interface_ControlTipUpdate_PickUp(2)
+				Else
+					canthrow=False
+					If Menu\ChaoGarden=1 Then Interface_ActivateGardenAction(2, CONTROLTIPS$(TIP_DROP)+" ")
+					Interface_ControlTipUpdate_PickUp(3)
+				EndIf
+				If (Not(p\Action=ACTION_CARRY Or p\Action=ACTION_CARRYJUMP Or p\Action=ACTION_CARRYTHROWN)) Then p\ObjPickUp=0
+				Select p\RealCharacter
+					Case CHAR_EGG,CHAR_TMH:
+						PositionEntity o\Pivot, EntityX(p\Objects\Extra2, 1), EntityY(p\Objects\Extra2, 1), EntityZ(p\Objects\Extra2, 1)
+						RotateEntity o\Pivot, EntityPitch(p\Objects\Mesh), p\Animation\Direction#+180, EntityRoll(p\Objects\Mesh)
+						MoveEntity o\Pivot, 0, 1.7, 0.8
+					Case CHAR_CHW:
+						PositionEntity o\Entity, EntityX(p\Objects\HandR, 1), EntityY(p\Objects\HandR, 1), EntityZ(p\Objects\HandR, 1)
+						RotateEntity o\Entity, EntityPitch(p\Objects\Mesh), p\Animation\Direction#+180, EntityRoll(p\Objects\Mesh)
+						MoveEntity o\Entity, 0, 1.7, 0.8
+					Default:
+						PositionEntity o\Pivot, EntityX(p\Objects\Spine, 1), (EntityY(p\Objects\HandR, 1)+EntityY(p\Objects\HandL, 1))/2.0, EntityZ(p\Objects\Spine, 1)
+						RotateEntity o\Pivot, EntityPitch(p\Objects\Mesh), p\Animation\Direction#+180, EntityRoll(p\Objects\Mesh)
+						MoveEntity o\Pivot, 0, 0, (2.05+p\ScaleFactor#*2.5)
+				End Select
 				Select o\ObjType
 					Case OBJTYPE_HAT:
 						Select o\ChaoObj\HatType
@@ -784,15 +780,76 @@ Function Object_EnforceObjPickUp_Pivot(o.tObject,p.tPlayer)
 						PositionEntity o\Entity, EntityX(o\Pivot), EntityY(o\Pivot), EntityZ(o\Pivot)
 				End Select
 				RotateEntity o\Entity, EntityPitch(o\Pivot), EntityYaw(o\Pivot), EntityRoll(o\Pivot)
-			EndIf
-			Next			
-	End Select
-
+				If o\ObjType=OBJTYPE_FRUIT Or o\ObjType=OBJTYPE_DRIVE Then MoveEntity o\Pivot, 0, 0.5, 0
+				If p\Rotation#<0 Then MoveEntity o\Pivot, 0, -p\Rotation#*0.05, 0 Else MoveEntity o\Pivot, 0, -p\Rotation#*0.025, 0
+				If p\ObjPickUpThrowTimer>0 Then
+					If canthrow Then
+						Player_PlayAttackVoice(p)
+						o\ObjPickedUp=3
+					Else
+						Player_PlayJumpVoice(p)
+						o\ObjPickedUp=4 : Player_SetSpeed(p,0)
+					EndIf
+					p\ObjPickUp=0
+				Else
+					If p\ObjPickUp=0 Then o\ObjPickedUp=0
+				EndIf
+			Case -1:
+				If o\Hit Then
+					RotateEntity o\Pivot, 0, p\Animation\Direction#+180, 0
+				Else
+					RotateEntity o\Pivot, 0, o\BombHitDirection#, 0
+				EndIf
+				o\BombHitDirection#=0
+				o\ObjPickedUp=3
+				p\ObjPickUp=0
+			Case 3:
+				If (Not(p\Action=ACTION_CARRY Or p\Action=ACTION_CARRYJUMP Or p\Action=ACTION_CARRYTHROWN)) Then p\ObjPickUp=0
+				If o\ObjType=OBJTYPE_OMOCHAO Then StopChannel(o\Omochao\Channel_Omochao) : o\Omochao\Channel_Omochao=PlaySmartSound(Voice_OMO_Hurt[Rand(1,5)])
+				Game\Gameplay\PsychoBombCount=Game\Gameplay\PsychoBombCount+1
+				Object_Bomb_Create.tBomb(p, EntityX(o\Pivot), EntityY(o\Pivot), EntityZ(o\Pivot), 0, EntityYaw(o\Pivot), 0, -1, Game\Gameplay\PsychoBombCount)
+				o\ObjPickedUp=9
+				o\ThrownAsBomb=Game\Gameplay\PsychoBombCount
+			Case 4:
+				If o\ObjType=OBJTYPE_OMOCHAO Then StopChannel(o\Omochao\Channel_Omochao) : o\Omochao\Channel_Omochao=PlaySmartSound(Voice_OMO_Hurt[Rand(1,5)])
+				Game\Gameplay\PsychoBombCount=Game\Gameplay\PsychoBombCount+1
+				o\ObjPickedUp=0
+			Case 5:
+				Game\Gameplay\PsychoBombCount=Game\Gameplay\PsychoBombCount+1
+				Object_Bomb_Create.tBomb(p, EntityX(o\Pivot), EntityY(o\Pivot), EntityZ(o\Pivot), 0, EntityYaw(o\Pivot), 0, -1, Game\Gameplay\PsychoBombCount)
+				o\ObjPickedUp=9
+				o\ThrownAsBomb=Game\Gameplay\PsychoBombCount
+			Case 6:
+				Game\Gameplay\PsychoBombCount=Game\Gameplay\PsychoBombCount+1
+				Object_Bomb_Create.tBomb(p, EntityX(o\Pivot), EntityY(o\Pivot), EntityZ(o\Pivot), 0, EntityYaw(o\Pivot), 0, -2, Game\Gameplay\PsychoBombCount)
+				o\ObjPickedUp=9
+				o\ThrownAsBomb=Game\Gameplay\PsychoBombCount
+			Default:
+				For b.tBomb=Each tBomb
+					If o\ThrownAsBomb=b\ThrownMode Then
+						b\ThrownAsBomb=True
+						PositionEntity o\Pivot, EntityX(b\Pivot), EntityY(b\Pivot), EntityZ(b\Pivot)
+						Select o\ObjType
+							Case OBJTYPE_HAT:
+								Select o\ChaoObj\HatType
+									Case HAT_TIE_0,HAT_TIE_1,HAT_TIE_2,HAT_TIE_3,HAT_BOW_0,HAT_BOW_1,HAT_BOW_2,HAT_BOW_3,HAT_PACIFIER_0,HAT_PACIFIER_1,HAT_PACIFIER_2,HAT_PACIFIER_3:
+										PositionEntity o\Entity, EntityX(o\Pivot), EntityY(o\Pivot)+1.5, EntityZ(o\Pivot)
+									Default:
+										PositionEntity o\Entity, EntityX(o\Pivot), EntityY(o\Pivot), EntityZ(o\Pivot)
+								End Select
+							Default:
+								PositionEntity o\Entity, EntityX(o\Pivot), EntityY(o\Pivot), EntityZ(o\Pivot)
+						End Select
+						RotateEntity o\Entity, EntityPitch(o\Pivot), EntityYaw(o\Pivot), EntityRoll(o\Pivot)
+					EndIf
+				Next			
+		End Select
+		
 End Function
 
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Function Object_EnforceTreasureRadar(o.tObject,p.tPlayer,shardno)
+Function Object_EnforceTreasureRadar(o.tObject,p.tPlayer,Shardno)
 	If Not Game\Interface\DebugPlacerOn=0 Then Return
 
 	; Radar sound
@@ -807,9 +864,9 @@ Function Object_EnforceTreasureRadar(o.tObject,p.tPlayer,shardno)
 
 			; Radar interface
 			For i=1 To 3
-			If shardno=Game\Gameplay\shard[i] Then
-				Game\Gameplay\ShardTimer[i]=2*secs#
-				Game\Gameplay\ShardBeepTimer[i]=0.105*secs#
+				If Shardno=Game\Gameplay\Shard[i] Then
+					Game\Gameplay\ShardTimer[i]=2*secs#
+					Game\Gameplay\ShardBeepTimer[i]=0.105*secs#
 				If EntityDistance(p\Objects\Entity,o\Entity)>200 Then
 					Game\Gameplay\ShardDistance[i]=1
 				ElseIf EntityDistance(p\Objects\Entity,o\Entity)>50 Then
@@ -833,7 +890,7 @@ Function Object_EnforceRingBouncing(o.tObject,p.tPlayer,d.tDeltaTime)
 	o\Spew\Gravity# = 0.04*p\Physics\UNDERWATERTRIGGER#
 	For i = 1 To CountCollisions(o\Pivot)
 		Select GetEntityType(CollisionEntity(o\Pivot, i))
-			Case COLLISION_WORLD_POLYGON,COLLISION_WORLD_POLYGON_BLOCK,COLLISION_WORLD_POLYGON_PINBALL,COLLISION_WORLD_POLYGON_ICE,COLLISION_WORLD_POLYGON_BOUNCE,COLLISION_WORLD_POLYGON_SLOW
+			Case COLLISION_WORLD_POLYGON,COLLISION_WORLD_POLYGON_WOOD,COLLISION_WORLD_POLYGON_GRASS,COLLISION_WORLD_POLYGON_METAL,COLLISION_WORLD_POLYGON_DIRT,COLLISION_WORLD_POLYGON_BLOCK,COLLISION_WORLD_POLYGON_PINBALL,COLLISION_WORLD_POLYGON_ICE,COLLISION_WORLD_POLYGON_BOUNCE,COLLISION_WORLD_POLYGON_SLOW
 				; Get the normal of the surface collided with. 
 				Nx# = CollisionNX#(o\Pivot, i) 
 				Ny# = CollisionNY#(o\Pivot, i) 
@@ -892,14 +949,47 @@ Function Object_EnforceStun(o.tObject,p.tPlayer,d.tDeltaTime,canbeothers=True)
 	Object_EnforceBubbleStun(o,p,d)
 	Object_EnforceFlowerStun(o,p,d)
 	Object_EnforceWhirlwindStun(o,p,d)
+	Object_EnforceKunaiStun(o,p)
+	
 	If canbeothers Then
 		Object_EnforceCurseStun(o,p)
 		Object_EnforcePoisonStun(o,p)
 		Object_EnforceFrozenStun(o,p)
+		Object_EnforceNullifyStun(o,p)
 	EndIf
 
 End Function
-
+Function Object_EnforceKunaiStun(o.tObject,p.tPlayer)
+	If o\HasEntityCoil Then 
+		If o\KunaiStunTimer>0 Then
+			o\KunaiStunTimer=o\KunaiStunTimer-timervalue#
+			ShowEntity(o\EntityCoil)
+			PositionEntity(o\EntityCoil,o\Position\x#,o\Position\y#,o\Position\z#,1)
+			ScaleEntity(o\EntityCoil,0.15*o\HitBox\x#,0.15*o\HitBox\y#,0.15*o\HitBox\z#)
+		Else
+			HideEntity(o\EntityCoil)
+		EndIf 
+		
+		
+	EndIf
+End Function
+Function Object_EnforceNullifyStun(o.tObject,p.tPlayer)
+	
+	If o\NullifyStunTimer>0 Then
+		o\NullifyStunTimer=o\NullifyStunTimer-timervalue#
+		EntityColor(o\Entity,5,5,5)
+		If (Not(o\NullifyStunTimer>0)) Then 
+			EntityColor(o\Entity,255,255,255)
+			Select o\ObjType
+				Case OBJTYPE_SPUNA
+					
+				Default
+					o\Enemy\SelfDestruct=True
+			End Select
+		EndIf
+	EndIf
+	
+End Function
 Function Object_EnforceBubbleStun(o.tObject,p.tPlayer,d.tDeltaTime)
 
 	If o\BubbleStunTimer>0 Then

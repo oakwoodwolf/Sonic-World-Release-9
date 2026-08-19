@@ -8,7 +8,7 @@
 	Dim CONTROLS_NEWGAMEPAD(17)
 
 	; ---- Game global settings ----
-	Global 	GAME_TITLE$ = "Sonic World DX"
+	Global 	GAME_TITLE$ = "Sonic World DX "+GAME_VERSION_TAG$
 	Global 	GAME_WINDOW_W
 	Global 	GAME_WINDOW_H
 	Global	GAME_WINDOW_DEPTH

@@ -1,11 +1,25 @@
 Function Object_CheckEnemyHitBox(o.tObject,p.tPlayer)
+	
+	Select o\ObjType
+		Case OBJTYPE_INACTIVE
+			If p\Flags\Attacking=True Then 
+				EntityType(o\Entity,COLLISION_NONE)
+			Else 
+				EntityType(o\Entity,COLLISION_OBJECT)
+			EndIf
+	End Select
+	
+	
+	
+	If (p\Character=CHAR_ROU And p\Action=ACTION_SPRINT) Then Return 
+	
 	If o\Enemy\WasJustAttacked>0 And o\Enemy\IsBoss=0 And (Not(o\ObjType=OBJTYPE_SPRINKLR Or o\ObjType=OBJTYPE_DOOMSEYE)) Then
 		If Input\Pressed\ActionJump Or Input\Pressed\ActionRoll Or Input\Pressed\ActionSkill1 Or Input\Pressed\ActionSkill2 Or Input\Pressed\ActionSkill3 Or Input\Pressed\ActionDrift Then o\Enemy\WasJustAttacked=0
 	EndIf
-	
+
 	If o\Enemy\WasJustAttacked>0 Or (o\Enemy\MayGetAttacked=False And o\Enemy\IsBoss=1) Then o\AttackDetectRestrict=True Else o\AttackDetectRestrict=False
 
-	If ((Abs(p\Objects\Position\x# - o\Position\x#) < o\HitBox\x#*(1+p\ScaleFactor#/4)+2*p\Flags\Stomping+(p\SpeedLength#/3.0)) And (Abs(p\Objects\Position\y# - o\Position\y#) < o\HitBox\y#*(1+p\ScaleFactor#/4)+1*p\Flags\Stomping+(p\SpeedLength#/3.0)) And (p\Objects\Position\y#>(o\Position\y#-1.2-(2+(p\SpeedLength#/3.0))) Or o\Enemy\FlyEnemyType) And (Abs(p\Objects\Position\z# - o\Position\z#) < o\HitBox\z#*(1+p\ScaleFactor#/4)+2*p\Flags\Stomping+(p\SpeedLength#/3.0))) And (Not(o\FrozenStunTimer>0)) Then
+	If ((Abs(p\Objects\Position\x# - o\Position\x#) < o\HitBox\x#*(1+p\ScaleFactor#/4)+2*p\Flags\Stomping+(p\SpeedLength#/3.0)) And (Abs(p\Objects\Position\y# - o\Position\y#) < o\HitBox\y#*(1+p\ScaleFactor#/4)+1*p\Flags\Stomping+(p\SpeedLength#/3.0)) And (p\Objects\Position\y#>(o\Position\y#-1.2-(2+(p\SpeedLength#/3.0))) Or o\Enemy\FlyEnemyType) And (Abs(p\Objects\Position\z# - o\Position\z#) < o\HitBox\z#*(1+p\ScaleFactor#/4)+2*p\Flags\Stomping+(p\SpeedLength#/3.0))) And (Not(o\FrozenStunTimer>0 Or o\NullifyStunTimer>0)) Then
 		i=False
 		Select o\ObjType
 			Case OBJTYPE_BEETLESPRING: If (p\Objects\Position\y#-EntityY(o\Entity))>2 Or p\Action=ACTION_STOMP Then i=True
@@ -22,7 +36,7 @@ Function Object_CheckEnemyHitBox(o.tObject,p.tPlayer)
 			Object_Enemy_SpecialBehaviour(o,p)
 		Else
 			enemyhit=False
-			If (p\Flags\Attacking And (o\Enemy\MayGetAttacked Or p\HurtTimer>0)) Or Game\Invinc=1 Then enemyhit=True
+			If (p\Flags\Attacking And (o\Enemy\MayGetAttacked Or p\HurtTimer>0)) Or Game\Invinc=1 Or p\TrailBlazerTimer>0 Then enemyhit=True
 			If (o\ObjType=OBJTYPE_GRABBER Or o\ObjType=OBJTYPE_KLAGEN) And (p\Action=ACTION_JUMP Or p\Action=ACTION_HOP) And p\Objects\Position\y#<(o\Position\y#-0.5) Then enemyhit=False
 
 			If enemyhit Then
@@ -58,7 +72,13 @@ Function Object_CheckEnemyHitBox(o.tObject,p.tPlayer)
 							End Select
 						EndIf
 						If o\PsychoedThrown=False And (Not(o\Enemy\MayNotHurtTimer>0)) Then
-							Player_Hit(p)
+							Select o\ObjType
+								Case OBJTYPE_INACTIVE
+									
+								Default
+									If (Not(o\KunaiStunTimer>0)) Then Player_Hit(p)
+							End Select
+							
 							If o\Enemy\IsBoss=1 Then
 								If (Not(Rand(1,1+2)=1)) And (Not(ChannelPlaying(o\Enemy\Channel_EnemyState))) And (Not(o\Enemy\VoiceTimer>0)) Then o\Enemy\Channel_EnemyState=EmitSmartSound(Voice_EGG_Win[Rand(1,2)],o\Entity2) : o\Enemy\VoiceTimer=3*secs#
 							EndIf
@@ -106,6 +126,7 @@ Function Object_PlayRobotDestroySound(o.tObject,defeated=True)
 			End Select
 		Else
 			EmitSmartSound(Sound_EggmanHurt,o\Entity)
+			If o\ObjType=OBJTYPE_SPUNA Then EmitSmartSound(Sound_EnemyPing,o\Entity)
 		EndIf
 	Else
 		Select o\ObjType
@@ -131,7 +152,14 @@ Function Object_PlayRobotDestroySound(o.tObject,defeated=True)
 		EndIf
 	EndIf
 End Function
-
+Function Object_Enemy_SpecialBehaviour_GunnerRingDrain(p.tPlayer)
+	If (Not(Game\Interface\RingStolenTimer>0)) And Game\Gameplay\Rings>0 Then
+		Game\Interface\RingStolenTimer=0.25*secs#
+		EmitSmartSound(Sound_Ring,p\Objects\Entity)
+		Gameplay_SubstractRings(1)
+	EndIf
+	If Game\Gameplay\Rings=0 Then Player_Hit(p)
+End Function
 Function Object_PlayRobotSteps(o.tObject,firstframe,otherframe)
 	If (Not(firstframe=0 And otherframe=0)) And (Not(ChannelPlaying(o\Enemy\Channel_EnemyStep))) Then
 		If o\Enemy\Frame=firstframe Or o\Enemy\Frame=otherframe Then
@@ -155,6 +183,8 @@ Function Object_PlayRobotSteps(o.tObject,firstframe,otherframe)
 								Case 6: o\Enemy\Channel_EnemyStep2=EmitSmartSound(Sound_GroundStep6Soldier,o\Entity)
 							End Select
 					End Select
+				Case OBJTYPE_PAWN,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNSWORD
+					o\Enemy\Channel_EnemyStep=EmitSmartSound(Sound_GroundStepPawn,o\Entity)
 				Default:
 					Select(Rand(1,5))
 						Case 1: o\Enemy\Channel_EnemyStep=EmitSmartSound(Sound_GroundStep1Metal,o\Entity)
@@ -208,100 +238,97 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
 Function Object_AnimateEnemy(o.tObject)
-	If Not(o\PreviousAnim=o\Anim) Then
-		Select o\ObjType
-			Case OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_SPONA,OBJTYPE_SPRINKLR:
-				Animate o\Entity,1,0.6,o\Anim,10
-			Case OBJTYPE_SPINY,OBJTYPE_LEECH,OBJTYPE_SHEEP,OBJTYPE_SPLATS:
-				Animate o\Entity,1,0.3,o\Anim,10
-			Case OBJTYPE_CATERKILLER,OBJTYPE_BALKIRY,OBJTYPE_MADMOLE:
-				If o\Anim=3 Then Animate o\Entity,1,0.3,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
-			Case OBJTYPE_FIGHTER,OBJTYPE_NEWTRON,OBJTYPE_PENGUINATOR:
-				If o\Anim=2 Then Animate o\Entity,1,0.3,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
-			Case OBJTYPE_BOOSCARE:
-				If o\Anim=2 Then Animate o\Entity,1,0.25,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
-			Case OBJTYPE_BOMBIE:
-				If o\Anim=2 Then Animate o\Entity,1,0.55,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
-			Case OBJTYPE_STEELION,OBJTYPE_CRAWL,OBJTYPE_E1000:
-				If o\Anim=2 Then Animate o\Entity,1,0.35,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
-			Case OBJTYPE_DRAGONFLY:
-				Animate o\Entity,1,0.25,o\Anim,10
-			Case OBJTYPE_OCTUS:
-				If o\Anim=3 Or o\Anim=6 Then Animate o\Entity,1,0.1,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
-			Case OBJTYPE_ZOOMER:
-				If o\Anim=2 Then Animate o\Entity,1,0.275,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
-			Case OBJTYPE_BITER,OBJTYPE_CRAWLER:
-				If o\Anim=2 Or o\Anim=3 Then Animate o\Entity,1,0.35,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
-			Case OBJTYPE_TAKER:
-				If o\Anim=1 Or o\Anim=3 Then Animate o\Entity,1,0.35,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
-			Case OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2:
-				If o\Anim=3 Then
-					Animate o\Entity,1,0.225,o\Anim,10
-				Else
-					If Not(o\Anim=1 Or o\Anim=4 Or o\Anim=7) Then Animate o\Entity,1,0.3,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
-				EndIf
-			Case OBJTYPE_OAKSWORD:
-				If o\Anim=4 Then
-					Animate o\Entity,1,0.225,o\Anim,10
-				Else
-					If Not(o\Anim=1 Or o\Anim=2) Then Animate o\Entity,1,0.3,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
-				EndIf
-			Case OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO:
-				If o\Anim=1 Then
-					Animate o\Entity,1,0.075,o\Anim,10
-				Else
-					If o\Anim=3 Then Animate o\Entity,1,0.45,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
-				EndIf
-			Case OBJTYPE_WING:
-				Animate o\Entity,1,0.2,o\Anim,10
-			Case OBJTYPE_ROLLER:
-				If o\Anim=3 Then
-					Animate o\Entity,1,0.8,o\Anim,10
-				ElseIf o\Anim=2 Then
-					Animate o\Entity,1,0.45,o\Anim,10
-				Else
-					Animate o\Entity,1,0.15,o\Anim,10
-				EndIf
-			Case OBJTYPE_MANTIS:
-				If o\Anim=2 Then Animate o\Entity,1,0.85,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
-			Case OBJTYPE_SNOWY:
-				If o\Anim=3 Or o\Anim=4 Then Animate o\Entity,1,0.625,o\Anim,10 Else Animate o\Entity,1,0.3,o\Anim,10
-			Case OBJTYPE_BOSSBETA:
-				Select o\Anim
-					Case 3,6,8:
-						Animate o\Entity,3,0.3,o\Anim,10
-					Case 2:
-						Animate o\Entity,3,0.15,o\Anim,10
-					Default:
+	If o\Psychoed=1 Then
+		Animate o\Entity,0,0,o\Anim,0
+	Else
+		If (Not(o\PreviousAnim=o\Anim)) And (Not(o\NullifyStunTimer>0)) Then
+			Select o\ObjType
+				Case OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_SPONA,OBJTYPE_SPUNA,OBJTYPE_SPRINKLR:
+					Animate o\Entity,1,0.6,o\Anim,10
+				Case OBJTYPE_SPINY,OBJTYPE_LEECH,OBJTYPE_SHEEP,OBJTYPE_SPLATS:
+					Animate o\Entity,1,0.3,o\Anim,10
+				Case OBJTYPE_CATERKILLER,OBJTYPE_BALKIRY,OBJTYPE_MADMOLE:
+					If o\Anim=3 Then Animate o\Entity,1,0.3,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
+				Case OBJTYPE_FIGHTER,OBJTYPE_NEWTRON,OBJTYPE_PENGUINATOR:
+					If o\Anim=2 Then Animate o\Entity,1,0.3,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
+				Case OBJTYPE_BOOSCARE:
+					If o\Anim=2 Then Animate o\Entity,1,0.25,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
+				Case OBJTYPE_BOMBIE:
+					If o\Anim=2 Then Animate o\Entity,1,0.55,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
+				Case OBJTYPE_STEELION,OBJTYPE_CRAWL,OBJTYPE_E1000:
+					If o\Anim=2 Then Animate o\Entity,1,0.35,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
+				Case OBJTYPE_DRAGONFLY:
+					Animate o\Entity,1,0.25,o\Anim,10
+				Case OBJTYPE_OCTUS:
+					If o\Anim=3 Or o\Anim=6 Then Animate o\Entity,1,0.1,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
+				Case OBJTYPE_ZOOMER:
+					If o\Anim=2 Then Animate o\Entity,1,0.275,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
+				Case OBJTYPE_BITER,OBJTYPE_CRAWLER:
+					If o\Anim=2 Or o\Anim=3 Then Animate o\Entity,1,0.35,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
+				Case OBJTYPE_TAKER:
+					If o\Anim=1 Or o\Anim=3 Then Animate o\Entity,1,0.35,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
+				Case OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2:
+					If o\Anim=3 Then
+						Animate o\Entity,1,0.225,o\Anim,10
+					Else
+						If Not(o\Anim=1 Or o\Anim=4 Or o\Anim=7) Then Animate o\Entity,1,0.3,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
+					EndIf
+				Case OBJTYPE_OAKSWORD:
+					If o\Anim=4 Then
+						Animate o\Entity,1,0.225,o\Anim,10
+					Else
+						If Not(o\Anim=1 Or o\Anim=2) Then Animate o\Entity,1,0.3,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
+					EndIf
+				Case OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO:
+					If o\Anim=1 Then
+						Animate o\Entity,1,0.075,o\Anim,10
+					Else
+						If o\Anim=3 Then Animate o\Entity,1,0.45,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
+					EndIf
+				Case OBJTYPE_WING:
+					Animate o\Entity,1,0.2,o\Anim,10
+				Case OBJTYPE_ROLLER:
+					If o\Anim=3 Then
+						Animate o\Entity,1,0.8,o\Anim,10
+					ElseIf o\Anim=2 Then
+						Animate o\Entity,1,0.45,o\Anim,10
+					Else
 						Animate o\Entity,1,0.15,o\Anim,10
-				End Select
-			Case OBJTYPE_BOSSMECHA:
-				If o\Anim=3 Then
-					Animate o\Entity,1,0.45,o\Anim,10 : Animate o\Entity2,1,0.45,o\Anim,10
-				Else
-					Animate o\Entity,1,0.15,o\Anim,10 : Animate o\Entity2,1,0.15,o\Anim,10
-				EndIf
-			Case OBJTYPE_DOOMSEYE:
-				Animate o\Entity,1,0.075,o\Anim,10
-			Case OBJTYPE_HAMMERHAMMER:
-				If o\Anim=6 Then Animate o\Entity,1,0.275,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
-			Case OBJTYPE_PAWNGUN
-				If o\EggpawnShootTimer>0 Then 
-					Animate o\Entity,1,0.15,6,10
-				Else
+					EndIf
+				Case OBJTYPE_MANTIS:
+					If o\Anim=2 Then Animate o\Entity,1,0.85,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
+				Case OBJTYPE_SNOWY:
+					If o\Anim=3 Or o\Anim=4 Then Animate o\Entity,1,0.625,o\Anim,10 Else Animate o\Entity,1,0.3,o\Anim,10
+				Case OBJTYPE_BOSSBETA:
+					Select o\Anim
+						Case 3,6,8:
+							Animate o\Entity,3,0.3,o\Anim,10
+						Case 2:
+							Animate o\Entity,3,0.15,o\Anim,10
+						Default:
+							Animate o\Entity,1,0.15,o\Anim,10
+					End Select
+				Case OBJTYPE_BOSSMECHA:
+					If o\Anim=3 Then
+						Animate o\Entity,1,0.45,o\Anim,10 : Animate o\Entity2,1,0.45,o\Anim,10
+					Else
+						Animate o\Entity,1,0.15,o\Anim,10 : Animate o\Entity2,1,0.15,o\Anim,10
+					EndIf
+				Case OBJTYPE_DOOMSEYE:
+					Animate o\Entity,1,0.075,o\Anim,10
+				Case OBJTYPE_HAMMERHAMMER:
+					If o\Anim=6 Then Animate o\Entity,1,0.275,o\Anim,10 Else Animate o\Entity,1,0.15,o\Anim,10
+				Case OBJTYPE_EGUNNER
+					Select o\Anim
+						Case 1 : Animate o\Entity,1,0.15,o\Anim,10
+						Case 2 : Animate o\Entity,1,0.25,o\Anim,10
+						Case 3 : Animate o\Entity,1,0.05,o\Anim,10
+					End Select 
+				Default:
 					Animate o\Entity,1,0.15,o\Anim,10
-				EndIf 
-			Case OBJTYPE_GUNNER
-				Select o\Anim
-					Case 1 : Animate o\Entity,1,0.15,o\Anim,10
-					Case 2 : Animate o\Entity,1,0.25,o\Anim,10
-					Case 3 : Animate o\Entity,1,0.05,o\Anim,10
-				End Select 
-			Default:
-				Animate o\Entity,1,0.15,o\Anim,10
-				
-		End Select
-		o\PreviousAnim=o\Anim
+			End Select
+			o\PreviousAnim=o\Anim
+		EndIf
 	EndIf
 End Function
 
@@ -315,7 +342,7 @@ Function Object_Enemy_GravityStuff(o.tObject,p.tPlayer,d.tDeltaTime)
 
 	; Gravity stuff
 	Select o\ObjType
-		Case OBJTYPE_GUNNER,OBJTYPE_PAWN,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSWORD,OBJTYPE_MOTOBUG,OBJTYPE_CRABMEAT,OBJTYPE_KIKI,OBJTYPE_SPINY,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_ACHAOS,OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES,OBJTYPE_FIGHTER,OBJTYPE_CAMERON,OBJTYPE_KLAGEN,OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_ANTON,OBJTYPE_BOMBIE,OBJTYPE_NEWTRON,OBJTYPE_PENGUINATOR,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_SPIKES,OBJTYPE_CRAWL,OBJTYPE_BITER,OBJTYPE_CRAWLER,OBJTYPE_BALLHOG,OBJTYPE_RHINOTANK,OBJTYPE_TECHNOSQU,OBJTYPE_COPRACER,OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_OAKSWORD,OBJTYPE_LEECH,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_CLUCKOID,OBJTYPE_SHEEP,OBJTYPE_SNOWY,OBJTYPE_TOXO,OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER,OBJTYPE_HAMMERSHIELD,OBJTYPE_WITCH1,OBJTYPE_WITCH2,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
+		Case OBJTYPE_PAWN,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSWORD,OBJTYPE_MOTOBUG,OBJTYPE_CRABMEAT,OBJTYPE_KIKI,OBJTYPE_SPINY,OBJTYPE_HUNTER,OBJTYPE_EGUNNER,OBJTYPE_HUNTERSHIELD,OBJTYPE_ACHAOS,OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES,OBJTYPE_FIGHTER,OBJTYPE_CAMERON,OBJTYPE_KLAGEN,OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_ANTON,OBJTYPE_BOMBIE,OBJTYPE_NEWTRON,OBJTYPE_PENGUINATOR,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_SPIKES,OBJTYPE_CRAWL,OBJTYPE_BITER,OBJTYPE_CRAWLER,OBJTYPE_BALLHOG,OBJTYPE_RHINOTANK,OBJTYPE_TECHNOSQU,OBJTYPE_COPRACER,OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_OAKSWORD,OBJTYPE_LEECH,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_CLUCKOID,OBJTYPE_SHEEP,OBJTYPE_SNOWY,OBJTYPE_TOXO,OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER,OBJTYPE_HAMMERSHIELD,OBJTYPE_WITCH1,OBJTYPE_WITCH2,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
 			Object_EnforceGravity(o,d)
 		Case OBJTYPE_CHOPPER,OBJTYPE_JAWS,OBJTYPE_STEELION,OBJTYPE_OCTUS,OBJTYPE_MUSHMEANIE,OBJTYPE_BURROBOT,OBJTYPE_E1000,OBJTYPE_MANTIS,OBJTYPE_ROLLER,OBJTYPE_SPLATS:
 			If Not o\Enemy\FlyEnemyType Then Object_EnforceGravity(o,d)
@@ -332,7 +359,7 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
 Function Object_IsStun(o.tObject)
-	If (Not(o\BubbleStunTimer>0)) And (Not(o\CurseStunTimer>0)) And (Not(o\FroggyStunTimer>0)) And (Not(o\FlowerStunTimer>0)) And (Not(o\FrozenStunTimer>0)) And (Not(o\WhirlwindStunTimer>0)) Then
+	If (Not(o\BubbleStunTimer>0)) And (Not(o\CurseStunTimer>0)) And (Not(o\FroggyStunTimer>0)) And (Not(o\FlowerStunTimer>0)) And (Not(o\FrozenStunTimer>0 Or o\NullifyStunTimer>0 Or o\KunaiStunTimer>0)) And (Not(o\WhirlwindStunTimer>0)) Then
 		Return False
 	Else
 		Return True
@@ -340,7 +367,7 @@ Function Object_IsStun(o.tObject)
 End Function
 
 Function Object_EnemyIsStun(o.tObject)
-	If (pp(1)\Invisibility=0 Or o\ThisIsAnEnemyMissile) And (Not(Object_IsStun(o) Or Game\ChaosControlTimer>0)) And o\Psychoed=0 And o\Rubied=0 Then
+	If (pp(1)\Invisibility=0 Or o\ThisIsAnEnemyMissile) And (Not(Object_IsStun(o) Or pp(1)\ChaosControlActiveTimer>0)) And o\Psychoed=0 And o\Rubied=0 Then
 		Return False
 	Else
 		Return True
@@ -369,7 +396,7 @@ Function Object_CreateEnemyPieces(o.tObject,dontspawnmesh=False)
 			Object_Pieces_Create(True,o\ObjType,situation,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold,dontspawnmesh)
 	End Select
 	Select o\ObjType
-		Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_GUNNER:
+		Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD:
 			Object_Pieces_Create(True,o\ObjType,situation,o\Position\x#,o\Position\y#+12,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold,True)
 		Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA:
 			Object_Pieces_Create(True,o\ObjType,situation,o\Position\x#,o\Position\y#+5,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold,True)
@@ -379,305 +406,318 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	Function Object_Enemy_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, switchno, carnivalno)
-		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
-		o\ThisIsAnEnemy=True : o\Enemy = New tObject_Enemy : o\HasValuesetEnemy=True
-		o\Switch = New tObject_Switch : o\HasValuesetSwitch=True
-		If Object_IsActualEnemy(o\ObjType) Then
-			Gameplay_AddTotalEnemies(1)
-			o\Enemy\EnemyNo=Game\Gameplay\TotalEnemies
-		Else
-			switchno=0
-			carnivalno=0
-		EndIf
-
-		o\Switch\s1 = Object_SwitchManager_Create.tSwitchManager(switchno, switchstatus)
-		o\Switch\SwitchNo[0]=switchno
-		o\Enemy\CarnivalNo=carnivalno
-
-		Select o\ObjType
-			Case OBJTYPE_PAWN,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSWORD,OBJTYPE_KLAGEN,OBJTYPE_EGGROBO,OBJTYPE_MOTOBUG,OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_ANTON,OBJTYPE_STEELION,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE,OBJTYPE_WITCH1,OBJTYPE_WITCH2: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,13,6.5)
-			Case OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_SEARCHER,OBJTYPE_EGGHUNTER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,7.5,7,7.5)
-			Case OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_SPONA: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,9.5,11.5,9.5)
-			Case OBJTYPE_CATERKILLER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,7.5,13,7.5)
-			Case OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_CHOPPER,OBJTYPE_JAWS,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_AQUIS,OBJTYPE_BOMBIE,OBJTYPE_NEWTRON,OBJTYPE_PENGUINATOR,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_SPIKES,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_BURROBOT,OBJTYPE_CRAWL,OBJTYPE_MADMOLE,OBJTYPE_OCTUS,OBJTYPE_TAKER,OBJTYPE_DRAGONFLY,OBJTYPE_SPLATS: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,8,6.5)
-			Case OBJTYPE_CRABMEAT: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,8.5,13,8.5)
-			Case OBJTYPE_SPINY: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,8,11,8)
-			Case OBJTYPE_GRABBER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,11.5,12,11.5)
-			Case OBJTYPE_KIKI,OBJTYPE_ASTERON,OBJTYPE_PATABATA,OBJTYPE_TECHNOSQU,OBJTYPE_LEECH: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,7,6.5)
-			Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_GUNNER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,26,6.5)
-			Case OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,8,8,8)
-			Case OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_BITER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,8.5,16,8.5)
-			Case OBJTYPE_AEROC: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,8.5,9,8.5)
-			Case OBJTYPE_CHASER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,8.5,10,8.5)
-			Case OBJTYPE_FIGHTER,OBJTYPE_E1000: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,7.5,16,7.5)
-			Case OBJTYPE_CAMERON: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,10,15,10)
-			Case OBJTYPE_COP,OBJTYPE_COPRACER,OBJTYPE_BOO,OBJTYPE_BOOSCARE,OBJTYPE_BALLHOG,OBJTYPE_RHINOTANK,OBJTYPE_MANTIS,OBJTYPE_NEBULA: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,10,6.5)
-			Case OBJTYPE_ACHAOS,OBJTYPE_ACHAOSBLOB: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,7.5,14.5,7.5)
-			Case OBJTYPE_ORBINAUT: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,3.5,4,3.5)
-			Case OBJTYPE_BALKIRY,OBJTYPE_MANTA: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,8,5,8)
-			Case OBJTYPE_MUSHMEANIE: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,5.5,4,5.5)
-			Case OBJTYPE_ZOOMER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,5,6.5,5)
-			Case OBJTYPE_CRAWLER,OBJTYPE_OAKSWORD: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,18,6.5)
-			Case OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,15,6.5)
-			Case OBJTYPE_WING: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,7,6.5)
-			Case OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,5.5,15,5.5)
-			Case OBJTYPE_CATAKILLER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,4.5,4.5,4.5)
-			Case OBJTYPE_CLUCKOID: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,4.5,15.25,4.5)
-			Case OBJTYPE_SHEEP,OBJTYPE_GHOST: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,11,6.5)
-			Case OBJTYPE_SNOWY: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,10.5,20,10.5)
-			Case OBJTYPE_TOXO: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,3.5,10.5,3.5)
-			Case OBJTYPE_ROLLER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,5,10,5)
-			Case OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER,OBJTYPE_HAMMERSHIELD: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,14.25,21,14.25)
-			Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,10,8,10) : o\Enemy\IsBoss=1
-			Case OBJTYPE_BOSSMECHA: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,5,5.5,5) : o\Enemy\IsBoss=1
-			Case OBJTYPE_FCANNON1: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,16.5,25,16.5)
-			Case OBJTYPE_FCANNON2: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,15,39,15)
-			Case OBJTYPE_FCANNON3: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,21.5,17.5,21.5)
-		End Select
-
-		Object_Acquire_Position(o,x#,y#,z#)
-		Object_Acquire_Rotation(o,0,yaw#,0)
-		Object_Acquire_Speed(o,0,-1,0)
-
-		Select o\ObjType
-			Case OBJTYPE_PAWNSHIELD,OBJTYPE_HUNTERSHIELD,OBJTYPE_HAMMERSHIELD: o\Enemy\InitialShield=1
-		End Select
-
-		Select o\ObjType
-			Case OBJTYPE_PAWN: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Pawn)), Game\Stage\Root)
-			Case OBJTYPE_PAWNSHIELD: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Pawn)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_PawnShield)
-			Case OBJTYPE_PAWNGUN: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Pawn)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_PawnGun)
-			Case OBJTYPE_PAWNSWORD: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Pawn)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_PawnSword)
-			Case OBJTYPE_FLAPPER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Flapper)), Game\Stage\Root)
-			Case OBJTYPE_FLAPPERGUN: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_FlapperGun)), Game\Stage\Root)
-			Case OBJTYPE_FLAPPERBOMB: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_FlapperBomb)), Game\Stage\Root)
-			Case OBJTYPE_FLAPPERNEEDLE: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_FlapperNeedle)), Game\Stage\Root)
-			Case OBJTYPE_SPINA: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Spina)), Game\Stage\Root)
-			Case OBJTYPE_SPANA: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Spana)), Game\Stage\Root)
-			Case OBJTYPE_SPONA: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Spona)), Game\Stage\Root)
-			Case OBJTYPE_MOTOBUG: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Motobug)), Game\Stage\Root)
-			Case OBJTYPE_CATERKILLER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Caterkiller)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_CaterkillerBody) : CheckLoadSmartEntity(Mesh_Enemy_CaterkillerBase)
-			Case OBJTYPE_BUZZBOMBER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BuzzBomber)), Game\Stage\Root) : EntityBlend o\Entity, 1
-			Case OBJTYPE_BUZZER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Buzzer)), Game\Stage\Root) : EntityBlend o\Entity, 1
-			Case OBJTYPE_CHOPPER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Chopper)), Game\Stage\Root)
-			Case OBJTYPE_CRABMEAT: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Crabmeat)), Game\Stage\Root)
-			Case OBJTYPE_JAWS: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Jaws)), Game\Stage\Root)
-			Case OBJTYPE_SPINY: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Spiny)), Game\Stage\Root)
-			Case OBJTYPE_GRABBER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Grabber)), Game\Stage\Root)
-			Case OBJTYPE_KIKI: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Kiki)), Game\Stage\Root)
-			Case OBJTYPE_COP: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_CopSpeeder)), Game\Stage\Root)
-			Case OBJTYPE_COPRACER: o\Entity2=Rand(1,6) : o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_CopRacer1+o\Entity2-1)), Game\Stage\Root)
-			Case OBJTYPE_HUNTER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Hunter)), Game\Stage\Root)
-			Case OBJTYPE_GUNNER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Gunner)), Game\Stage\Root)	
-			Case OBJTYPE_HUNTERSHIELD: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Hunter)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_HunterShield)
-			Case OBJTYPE_BEETLE: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Beetle)), Game\Stage\Root)
-			Case OBJTYPE_BEETLEMONO: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BeetleMono)), Game\Stage\Root)
-			Case OBJTYPE_BEETLESPARK: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BeetleSpark)), Game\Stage\Root)
-			Case OBJTYPE_BEETLESPRING: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BeetleSpring)), Game\Stage\Root)
-			Case OBJTYPE_ACHAOS: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_ArtificialChaos)), Game\Stage\Root)
-			Case OBJTYPE_ACHAOSBLOB: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_ArtificialChaos2)), Game\Stage\Root)
-			Case OBJTYPE_RHINO: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Rhino)), Game\Stage\Root)
-			Case OBJTYPE_RHINOSPIKES: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_RhinoSpikes)), Game\Stage\Root)
-			Case OBJTYPE_HORNET3,OBJTYPE_HORNET6: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Hornet)), Game\Stage\Root)
-			Case OBJTYPE_AEROC: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_AeroCannon)), Game\Stage\Root)
-			Case OBJTYPE_CHASER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Chaser)), Game\Stage\Root)
-			Case OBJTYPE_FIGHTER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Fighter)), Game\Stage\Root)
-			Case OBJTYPE_EGGROBO: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_EggRobo)), Game\Stage\Root)
-			Case OBJTYPE_CAMERON: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Cameron)), Game\Stage\Root)
-			Case OBJTYPE_KLAGEN: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Klagen)), Game\Stage\Root)
-			Case OBJTYPE_ORBINAUT: o\Entity2=Rand(1,6) : o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Orbinaut1+o\Entity2-1)), Game\Stage\Root)
-			Case OBJTYPE_TYPHOON: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Typhoon1)), Game\Stage\Root)
-			Case OBJTYPE_TYPHOONF: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Typhoon2)), Game\Stage\Root)
-			Case OBJTYPE_ANTON: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Anton)), Game\Stage\Root)
-			Case OBJTYPE_AQUIS: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Aquis)), Game\Stage\Root)
-			Case OBJTYPE_BOMBIE: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Bombie)), Game\Stage\Root)
-			Case OBJTYPE_NEWTRON: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Newtron)), Game\Stage\Root)
-			Case OBJTYPE_PENGUINATOR: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Penguinator)), Game\Stage\Root)
-			Case OBJTYPE_SLICER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Slicer)), Game\Stage\Root)
-			Case OBJTYPE_SNAILB: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_SnailBlaster)), Game\Stage\Root)
-			Case OBJTYPE_SPIKES: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Spikes)), Game\Stage\Root)
-			Case OBJTYPE_ASTERON: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Asteron)), Game\Stage\Root)
-			Case OBJTYPE_BATBOT: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Batbot)), Game\Stage\Root) : EntityBlend o\Entity, 1
-			Case OBJTYPE_BUBBLS: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Bubbles)), Game\Stage\Root)
-			Case OBJTYPE_BUBBLSSPIKES: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Bubbles2)), Game\Stage\Root)
-			Case OBJTYPE_STEELION: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Steelion)), Game\Stage\Root)
-			Case OBJTYPE_BOO,OBJTYPE_BOOSCARE: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Boo)), Game\Stage\Root)
-			Case OBJTYPE_GHOST: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Ghost)), Game\Stage\Root)
-			Case OBJTYPE_BALKIRY: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Balkiry)), Game\Stage\Root)
-			Case OBJTYPE_BURROBOT: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Burrobot)), Game\Stage\Root)
-			Case OBJTYPE_CRAWL: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Crawl)), Game\Stage\Root)
-			Case OBJTYPE_DRAGONFLY: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Dragonfly)), Game\Stage\Root)
-			Case OBJTYPE_MADMOLE: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Madmole)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_MadmoleBody) : CheckLoadSmartEntity(Mesh_Enemy_MadmoleBase)
-			Case OBJTYPE_MANTA: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Manta)), Game\Stage\Root)
-			Case OBJTYPE_MUSHMEANIE: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Mushmeanie)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_MushmeanieBody) : CheckLoadSmartEntity(Mesh_Enemy_MushmeanieHat)
-			Case OBJTYPE_OCTUS: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Octus)), Game\Stage\Root)
-			Case OBJTYPE_PATABATA: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Patabata)), Game\Stage\Root)
-			Case OBJTYPE_ZOOMER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Zoomer)), Game\Stage\Root)
-			Case OBJTYPE_BITER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Biter)), Game\Stage\Root)
-			Case OBJTYPE_CRAWLER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Crawler)), Game\Stage\Root)
-			Case OBJTYPE_TAKER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Taker)), Game\Stage\Root)
-			Case OBJTYPE_E1000: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_E1000)), Game\Stage\Root) : EntityBlend o\Entity, 1
-			Case OBJTYPE_BALLHOG: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BallHog)), Game\Stage\Root)
-			Case OBJTYPE_RHINOTANK: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Rhinotank)), Game\Stage\Root)
-			Case OBJTYPE_TECHNOSQU: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_TechnoSqueek)), Game\Stage\Root)
-			Case OBJTYPE_WARRIOR: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BlackWarrior)), Game\Stage\Root)
-			Case OBJTYPE_WARRIORGUN1: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BlackWarrior)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_BlackWarriorGun1)
-			Case OBJTYPE_WARRIORGUN2: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BlackWarrior)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_BlackWarriorGun2)
-			Case OBJTYPE_OAKSWORD: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BlackOak)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_BlackOakSword)
-			Case OBJTYPE_LEECH: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BlackLeech)), Game\Stage\Root)
-			Case OBJTYPE_WING: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BlackWing)), Game\Stage\Root)
-			Case OBJTYPE_SOLDIER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Soldier)), Game\Stage\Root)
-			Case OBJTYPE_SOLDIERCAMO: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Soldier2)), Game\Stage\Root)
-			Case OBJTYPE_CATAKILLER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_CatakillerJr)), Game\Stage\Root)
-			Case OBJTYPE_CLUCKOID: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Cluckoid)), Game\Stage\Root)
-			Case OBJTYPE_MANTIS: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Mantis)), Game\Stage\Root)
-			Case OBJTYPE_NEBULA: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Nebula)), Game\Stage\Root)
-			Case OBJTYPE_ROLLER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Roller)), Game\Stage\Root)
-			Case OBJTYPE_SHEEP: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Sheep)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_SheepFluff)
-			Case OBJTYPE_SNOWY: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Snowy)), Game\Stage\Root)
-			Case OBJTYPE_SPLATS: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Splats)), Game\Stage\Root)
-			Case OBJTYPE_TOXO: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Toxomister)), Game\Stage\Root)
-			Case OBJTYPE_SPRINKLR: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Sprinkler)), Game\Stage\Root)
-			Case OBJTYPE_DOOMSEYE: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_DoomsEye)), Game\Stage\Root)
-			Case OBJTYPE_HAMMER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Hammer)), Game\Stage\Root)
-			Case OBJTYPE_HAMMERSHIELD: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Hammer)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_HammerShield)
-			Case OBJTYPE_HAMMERHAMMER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Hammer)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_HammerHammer)
-			Case OBJTYPE_WITCH1: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Witch1)), Game\Stage\Root)
-			Case OBJTYPE_WITCH2: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Witch2)), Game\Stage\Root)
-			Case OBJTYPE_FCANNON1: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_FCannon1)), Game\Stage\Root)
-			Case OBJTYPE_FCANNON2: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_FCannon2)), Game\Stage\Root)
-			Case OBJTYPE_FCANNON3: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_FCannon3)), Game\Stage\Root)
-			Case OBJTYPE_SEARCHER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Searcher)), Game\Stage\Root)
-			Case OBJTYPE_EGGHUNTER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_EggHunter)), Game\Stage\Root)	
-			Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN:
-				Select BossType(Menu\Character[1])
-					Case 1:
-						o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Boss_EggMobileNega)), Game\Stage\Root)
-						o\ExtraTexture = LoadTexture("Objects/Shields/EggMobileNegaShield.png",2+256) : o\HasExtraTexture=1
-						o\Entity3 = CopyEntity(MESHES(SmartEntity(Mesh_Boss_EggMobile_Shield)), Game\Stage\Root) : EntityTexture o\Entity3, o\ExtraTexture
-						LoadCharacterMesh(CHAR_EGN,4,0,1)
-						For i=1 To 5 : LoadGoodSound(Voice_EGG_Attack[i],1,"Voices/"+"egn"+"/attack"+i+".ogg",2) : Next
-						For i=1 To 3 : LoadGoodSound(Voice_EGG_Lose[i],1,"Voices/"+"egn"+"/lose"+i+".ogg",2) : Next
-						For i=1 To 2 : LoadGoodSound(Voice_EGG_Win[i],1,"Voices/"+"egn"+"/win"+i+".ogg",2) : Next
-					Default:
-						o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Boss_EggMobile)), Game\Stage\Root)
-						o\ExtraTexture = LoadTexture("Objects/Shields/EggMobileShield.png",2+256) : o\HasExtraTexture=1
-						o\Entity3 = CopyEntity(MESHES(SmartEntity(Mesh_Boss_EggMobile_Shield)), Game\Stage\Root) : EntityTexture o\Entity3, o\ExtraTexture
-						LoadCharacterMesh(CHAR_EGG,4,0,1)
-						For i=1 To 5 : LoadGoodSound(Voice_EGG_Attack[i],1,"Voices/"+"egg"+"/attack"+i+".ogg",2) : Next
-						For i=1 To 3 : LoadGoodSound(Voice_EGG_Lose[i],1,"Voices/"+"egg"+"/lose"+i+".ogg",2) : Next
-						For i=1 To 2 : LoadGoodSound(Voice_EGG_Win[i],1,"Voices/"+"egg"+"/win"+i+".ogg",2) : Next
-				End Select
-				o\Entity2=CopyEntity(CharacterMesh, Game\Stage\Root)
-				DeleteCharacterMesh()
-				Animate(o\Entity2, 1, 0.0515, ANIMATION_JOG+1, 10)
-			Case OBJTYPE_BOSSBETA:
-				o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Boss_Betamk2)), Game\Stage\Root)
-				o\ExtraTexture = LoadTexture("Objects/Shields/EggMobileBetaShield.png",2+256) : o\HasExtraTexture=1
-				o\Entity3 = CopyEntity(MESHES(SmartEntity(Mesh_Boss_EggMobile_Shield)), Game\Stage\Root) : EntityTexture o\Entity3, o\ExtraTexture
-				o\Entity2 = CopyEntity(MESHES(SmartEntity(Mesh_Boss_BetaRainbow)), Game\Stage\Root) : EntityBlend o\Entity2, 1
-			Case OBJTYPE_BOSSMECHA:
-				o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Boss_MechaSonic)), Game\Stage\Root)
-				o\Entity2 = CopyEntity(MESHES(SmartEntity(Mesh_Boss_MechaSonicS)), Game\Stage\Root)
-				o\ExtraTexture = LoadTexture("Objects/Shields/EggMobileNegaShield.png",2+256) : o\HasExtraTexture=1
-				o\Entity3 = CopyEntity(MESHES(SmartEntity(Mesh_Boss_EggMobile_Shield)), Game\Stage\Root) : EntityTexture o\Entity3, o\ExtraTexture
-				ScaleEntity o\Entity3, 0.8, 0.8, 0.8
-		End Select
-
-		Select o\ObjType
-			Case OBJTYPE_BURROBOT:
-				o\ExtraTexture=LoadTexture("Objects\Enemies\burrobot_body2.png", 1+256) : o\HasExtraTexture=1
-				ApplyMeshTextureLayer(o\Entity, "burrobot_body2.png", o\ExtraTexture)
-			Case OBJTYPE_BITER,OBJTYPE_CRAWLER,OBJTYPE_TAKER:
-				o\ExtraTexture=LoadTexture("Objects\Enemies\monsterfire.png", 1+256) : o\HasExtraTexture=1
-				ApplyMeshTextureLayer(o\Entity, "monsterfire.png", o\ExtraTexture)
-			Case OBJTYPE_RHINOTANK:
-				o\ExtraTexture=LoadTexture("Objects\Enemies\rhinotank_body2.png", 1+256) : o\HasExtraTexture=1
-				ApplyMeshTextureLayer(o\Entity, "rhinotank_body2.png", o\ExtraTexture)
-		End Select
-
-		If o\Enemy\IsBoss Then
-			o\Entity4=CreatePivot()
-			o\HasEntity4=True
-		EndIf
-
-		Select o\ObjType
-			Case OBJTYPE_ACHAOSBLOB,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE: EntityRadius(o\Entity,o\HitBox\x#*0.5,6)
-			Case OBJTYPE_DRAGONFLY: EntityRadius(o\Entity,o\HitBox\x#*0.5,3)
-			Case OBJTYPE_ZOOMER: EntityRadius(o\Entity,o\HitBox\x#*0.5,3.5)
-			Default: EntityRadius(o\Entity,o\HitBox\x#*0.5,2.20)
-		End Select
-
-		Select o\ObjType
-			Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN:
-				o\Enemy\Center=FindChild(o\Entity, "mobile")
-			Case OBJTYPE_BEETLE,OBJTYPE_BEETLESPRING,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLEMONO:
-				o\Enemy\Center=FindChild(o\Entity, "spine")
-			Case OBJTYPE_JAWS,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
-				o\Enemy\Center=FindChild(o\Entity, "root")
-			Default:
-				o\Enemy\Center=FindChild(o\Entity, "hips")
-		End Select
-
-		o\Enemy\WaterParticle = ParticleTemplate_Create.tParticleTemplate()
-
-		Select o\ObjType
-			Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_MOTOBUG,OBJTYPE_EGGROBO,OBJTYPE_ORBINAUT,OBJTYPE_ANTON,OBJTYPE_E1000,OBJTYPE_RHINOTANK,OBJTYPE_BOSSBETA:
-				o\Enemy\Jet1=FindChild(o\Entity, "jetL")
-				o\Enemy\Jet2=FindChild(o\Entity, "jetR")
-				o\Enemy\JetParticle1 = ParticleTemplate_Create.tParticleTemplate()
-				o\Enemy\JetParticle2 = ParticleTemplate_Create.tParticleTemplate()
-			Case OBJTYPE_COP,OBJTYPE_COPRACER,OBJTYPE_BOMBIE,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_BALKIRY,OBJTYPE_ZOOMER,OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSMECHA:
-				o\Enemy\Jet1=FindChild(o\Entity, "jet")
-				o\Enemy\JetParticle1 = ParticleTemplate_Create.tParticleTemplate()
-			Case OBJTYPE_STEELION:
-				o\Enemy\Jet1=FindChild(o\Entity, "mouth")
-			Case OBJTYPE_DRAGONFLY:
-				o\Enemy\Jet1=FindChild(o\Entity, "tail4")
-				o\Enemy\Jet2=FindChild(o\Entity, "tail8")
-			Case OBJTYPE_OAKSWORD:
-				o\Enemy\Jet1=FindChild(o\Entity, "sword1")
-				o\Enemy\Jet2=FindChild(o\Entity, "sword2")
-			Case OBJTYPE_GUNNER
-				o\Enemy\Gun=FindChild(o\Entity, "forearmL")
-			Case OBJTYPE_CATAKILLER:
-				o\Enemy\Jet1=FindChild(o\Entity, "hips")
-				o\Enemy\Jet2=FindChild(o\Entity, "tail3")
-			Case OBJTYPE_SNOWY,OBJTYPE_SLICER:
-				o\Enemy\Jet1=FindChild(o\Entity, "handR")
-				o\Enemy\Jet2=FindChild(o\Entity, "handL")
-			Case OBJTYPE_HAMMERHAMMER:
-				o\Enemy\Jet1=FindChild(o\Entity, "hammer1")
-			Case OBJTYPE_FCANNON1,OBJTYPE_FCANNON2:
-				o\Enemy\Jet1=FindChild(o\Entity, "missile")
-			Case OBJTYPE_FCANNON3:
-				o\Enemy\Jet1=FindChild(o\Entity, "missileR")
-				o\Enemy\Jet2=FindChild(o\Entity, "missileL")
-		End Select
-
-		If Menu\Settings\Shadows#>0 Then o\Enemy\ShadowCircle = Init_CircleShadow(o\Entity, o\Entity, 1.5)
-
+Function Object_Enemy_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, switchno, carnivalno)
+	o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
+	o\ThisIsAnEnemy=True : o\Enemy = New tObject_Enemy : o\HasValuesetEnemy=True
+	o\Switch = New tObject_Switch : o\HasValuesetSwitch=True
+	If Object_IsActualEnemy(o\ObjType) Then
+		Gameplay_AddTotalEnemies(1)
+		o\Enemy\EnemyNo=Game\Gameplay\TotalEnemies
+	Else
+		switchno=0
+		carnivalno=0
+	EndIf
+	
+	o\Switch\s1 = Object_SwitchManager_Create.tSwitchManager(switchno, 1)
+	o\Switch\SwitchNo[0]=switchno
+	o\Enemy\CarnivalNo=carnivalno
+	o\Enemy\LeaderNo=TempAttribute\leaderno
+	o\Enemy\FollowerNo=TempAttribute\followerno
+	
+	Select o\ObjType
+		Case OBJTYPE_PAWN,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSWORD,OBJTYPE_KLAGEN,OBJTYPE_EGGROBO,OBJTYPE_MOTOBUG,OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_ANTON,OBJTYPE_STEELION,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE,OBJTYPE_WITCH1,OBJTYPE_WITCH2: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,13,6.5)
+		Case OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,7.5,7,7.5)
+		Case OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_SPONA,OBJTYPE_SPUNA: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,9.5,11.5,9.5)
+		Case OBJTYPE_CATERKILLER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,7.5,13,7.5)
+		Case OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_CHOPPER,OBJTYPE_JAWS,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_AQUIS,OBJTYPE_BOMBIE,OBJTYPE_NEWTRON,OBJTYPE_PENGUINATOR,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_SPIKES,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_BURROBOT,OBJTYPE_CRAWL,OBJTYPE_MADMOLE,OBJTYPE_OCTUS,OBJTYPE_TAKER,OBJTYPE_DRAGONFLY,OBJTYPE_SPLATS: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,8,6.5)
+		Case OBJTYPE_CRABMEAT: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,8.5,13,8.5)
+		Case OBJTYPE_SPINY: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,8,11,8)
+		Case OBJTYPE_GRABBER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,11.5,12,11.5)
+		Case OBJTYPE_KIKI,OBJTYPE_ASTERON,OBJTYPE_PATABATA,OBJTYPE_TECHNOSQU,OBJTYPE_LEECH: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,7,6.5)
+		Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_EGUNNER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,26,6.5)
+		Case OBJTYPE_INACTIVE: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,8,8,8)
+		Case OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,8,8,8)
+		Case OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_BITER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,8.5,16,8.5)
+		Case OBJTYPE_AEROC: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,8.5,9,8.5)
+		Case OBJTYPE_CHASER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,8.5,10,8.5)
+		Case OBJTYPE_FIGHTER,OBJTYPE_E1000: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,7.5,16,7.5)
+		Case OBJTYPE_CAMERON: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,10,15,10)
+		Case OBJTYPE_COP,OBJTYPE_COPRACER,OBJTYPE_BOO,OBJTYPE_BOOSCARE,OBJTYPE_BALLHOG,OBJTYPE_RHINOTANK,OBJTYPE_MANTIS,OBJTYPE_NEBULA: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,10,6.5)
+		Case OBJTYPE_ACHAOS,OBJTYPE_ACHAOSBLOB: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,7.5,14.5,7.5)
+		Case OBJTYPE_ORBINAUT: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,3.5,4,3.5)
+		Case OBJTYPE_BALKIRY,OBJTYPE_MANTA: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,8,5,8)
+		Case OBJTYPE_MUSHMEANIE: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,5.5,4,5.5)
+		Case OBJTYPE_ZOOMER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,5,6.5,5)
+		Case OBJTYPE_CRAWLER,OBJTYPE_OAKSWORD: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,18,6.5)
+		Case OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,15,6.5)
+		Case OBJTYPE_WING: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,7,6.5)
+		Case OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,5.5,15,5.5)
+		Case OBJTYPE_CATAKILLER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,4.5,4.5,4.5)
+		Case OBJTYPE_CLUCKOID: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,4.5,15.25,4.5)
+		Case OBJTYPE_SHEEP,OBJTYPE_GHOST: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,6.5,11,6.5)
+		Case OBJTYPE_SNOWY: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,10.5,20,10.5)
+		Case OBJTYPE_TOXO: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,3.5,10.5,3.5)
+		Case OBJTYPE_ROLLER: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,5,10,5)
+		Case OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER,OBJTYPE_HAMMERSHIELD: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,14.25,21,14.25)
+		Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,10,8,10) : o\Enemy\IsBoss=1
+		Case OBJTYPE_BOSSMECHA: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,5,5.5,5) : o\Enemy\IsBoss=1
+		Case OBJTYPE_FCANNON1: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,16.5,25,16.5)
+		Case OBJTYPE_FCANNON2: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,15,39,15)
+		Case OBJTYPE_FCANNON3: Object_CreateHitBox(HITBOXTYPE_ENEMY,o,21.5,17.5,21.5)
+	End Select
+	
+	Object_Acquire_Position(o,x#,y#,z#)
+	Object_Acquire_Rotation(o,0,yaw#,0)
+	Object_Acquire_Speed(o,0,-1,0)
+	
+	Select o\ObjType
+		Case OBJTYPE_PAWNSHIELD,OBJTYPE_HUNTERSHIELD,OBJTYPE_HAMMERSHIELD: o\Enemy\InitialShield=1
+	End Select
+	
+	Select o\ObjType
+		Case OBJTYPE_PAWN: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Pawn)), Game\Stage\Root)
+		Case OBJTYPE_PAWNSHIELD: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Pawn)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_PawnShield)
+		Case OBJTYPE_PAWNGUN: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Pawn)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_PawnGun)
+		Case OBJTYPE_PAWNSWORD: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Pawn)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_PawnSword)
+		Case OBJTYPE_FLAPPER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Flapper)), Game\Stage\Root)
+		Case OBJTYPE_FLAPPERGUN: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_FlapperGun)), Game\Stage\Root)
+		Case OBJTYPE_FLAPPERBOMB: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_FlapperBomb)), Game\Stage\Root)
+		Case OBJTYPE_FLAPPERNEEDLE: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_FlapperNeedle)), Game\Stage\Root)
+		Case OBJTYPE_SPINA: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Spina)), Game\Stage\Root)
+		Case OBJTYPE_SPANA: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Spana)), Game\Stage\Root)
+		Case OBJTYPE_SPONA: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Spona)), Game\Stage\Root)
+		Case OBJTYPE_SPUNA: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Spuna)), Game\Stage\Root)
+		Case OBJTYPE_MOTOBUG: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Motobug)), Game\Stage\Root)
+		Case OBJTYPE_CATERKILLER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Caterkiller)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_CaterkillerBody) : CheckLoadSmartEntity(Mesh_Enemy_CaterkillerBase)
+		Case OBJTYPE_BUZZBOMBER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BuzzBomber)), Game\Stage\Root) : EntityBlend o\Entity, 1
+		Case OBJTYPE_BUZZER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Buzzer)), Game\Stage\Root) : EntityBlend o\Entity, 1
+		Case OBJTYPE_CHOPPER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Chopper)), Game\Stage\Root)
+		Case OBJTYPE_CRABMEAT: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Crabmeat)), Game\Stage\Root)
+		Case OBJTYPE_JAWS: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Jaws)), Game\Stage\Root)
+		Case OBJTYPE_SPINY: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Spiny)), Game\Stage\Root)
+		Case OBJTYPE_GRABBER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Grabber)), Game\Stage\Root)
+		Case OBJTYPE_KIKI: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Kiki)), Game\Stage\Root)
+		Case OBJTYPE_COP: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_CopSpeeder)), Game\Stage\Root)
+		Case OBJTYPE_COPRACER: o\Entity2=Rand(1,6) : o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_CopRacer1+o\Entity2-1)), Game\Stage\Root)
+		Case OBJTYPE_HUNTER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Hunter)), Game\Stage\Root)
+		Case OBJTYPE_INACTIVE: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Inactive)), Game\Stage\Root)
+		Case OBJTYPE_EGUNNER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_EggGunner)), Game\Stage\Root)
+		Case OBJTYPE_HUNTERSHIELD: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Hunter)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_HunterShield)
+		Case OBJTYPE_BEETLE: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Beetle)), Game\Stage\Root)
+		Case OBJTYPE_BEETLEMONO: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BeetleMono)), Game\Stage\Root)
+		Case OBJTYPE_BEETLESPARK: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BeetleSpark)), Game\Stage\Root)
+		Case OBJTYPE_BEETLESPRING: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BeetleSpring)), Game\Stage\Root)
+		Case OBJTYPE_ACHAOS: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_ArtificialChaos)), Game\Stage\Root)
+		Case OBJTYPE_ACHAOSBLOB: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_ArtificialChaos2)), Game\Stage\Root)
+		Case OBJTYPE_RHINO: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Rhino)), Game\Stage\Root)
+		Case OBJTYPE_RHINOSPIKES: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_RhinoSpikes)), Game\Stage\Root)
+		Case OBJTYPE_HORNET3,OBJTYPE_HORNET6: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Hornet)), Game\Stage\Root)
+		Case OBJTYPE_AEROC: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_AeroCannon)), Game\Stage\Root)
+		Case OBJTYPE_CHASER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Chaser)), Game\Stage\Root)
+		Case OBJTYPE_FIGHTER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Fighter)), Game\Stage\Root)
+		Case OBJTYPE_EGGROBO: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_EggRobo)), Game\Stage\Root)
+		Case OBJTYPE_CAMERON: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Cameron)), Game\Stage\Root)
+		Case OBJTYPE_KLAGEN: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Klagen)), Game\Stage\Root)
+		Case OBJTYPE_ORBINAUT: o\Entity2=Rand(1,6) : o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Orbinaut1+o\Entity2-1)), Game\Stage\Root)
+		Case OBJTYPE_TYPHOON: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Typhoon1)), Game\Stage\Root)
+		Case OBJTYPE_TYPHOONF: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Typhoon2)), Game\Stage\Root)
+		Case OBJTYPE_ANTON: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Anton)), Game\Stage\Root)
+		Case OBJTYPE_AQUIS: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Aquis)), Game\Stage\Root)
+		Case OBJTYPE_BOMBIE: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Bombie)), Game\Stage\Root)
+		Case OBJTYPE_NEWTRON: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Newtron)), Game\Stage\Root)
+		Case OBJTYPE_PENGUINATOR: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Penguinator)), Game\Stage\Root)
+		Case OBJTYPE_SLICER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Slicer)), Game\Stage\Root)
+		Case OBJTYPE_SNAILB: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_SnailBlaster)), Game\Stage\Root)
+		Case OBJTYPE_SPIKES: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Spikes)), Game\Stage\Root)
+		Case OBJTYPE_ASTERON: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Asteron)), Game\Stage\Root)
+		Case OBJTYPE_BATBOT: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Batbot)), Game\Stage\Root) : EntityBlend o\Entity, 1
+		Case OBJTYPE_BUBBLS: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Bubbles)), Game\Stage\Root)
+		Case OBJTYPE_BUBBLSSPIKES: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Bubbles2)), Game\Stage\Root)
+		Case OBJTYPE_STEELION: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Steelion)), Game\Stage\Root)
+		Case OBJTYPE_BOO,OBJTYPE_BOOSCARE: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Boo)), Game\Stage\Root)
+		Case OBJTYPE_GHOST: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Ghost)), Game\Stage\Root)
+		Case OBJTYPE_BALKIRY: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Balkiry)), Game\Stage\Root)
+		Case OBJTYPE_BURROBOT: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Burrobot)), Game\Stage\Root)
+		Case OBJTYPE_CRAWL: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Crawl)), Game\Stage\Root)
+		Case OBJTYPE_DRAGONFLY: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Dragonfly)), Game\Stage\Root)
+		Case OBJTYPE_MADMOLE: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Madmole)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_MadmoleBody) : CheckLoadSmartEntity(Mesh_Enemy_MadmoleBase)
+		Case OBJTYPE_MANTA: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Manta)), Game\Stage\Root)
+		Case OBJTYPE_MUSHMEANIE: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Mushmeanie)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_MushmeanieBody) : CheckLoadSmartEntity(Mesh_Enemy_MushmeanieHat)
+		Case OBJTYPE_OCTUS: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Octus)), Game\Stage\Root)
+		Case OBJTYPE_PATABATA: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Patabata)), Game\Stage\Root)
+		Case OBJTYPE_ZOOMER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Zoomer)), Game\Stage\Root)
+		Case OBJTYPE_BITER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Biter)), Game\Stage\Root)
+		Case OBJTYPE_CRAWLER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Crawler)), Game\Stage\Root)
+		Case OBJTYPE_TAKER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Taker)), Game\Stage\Root)
+		Case OBJTYPE_E1000: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_E1000)), Game\Stage\Root) : EntityBlend o\Entity, 1
+		Case OBJTYPE_BALLHOG: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BallHog)), Game\Stage\Root)
+		Case OBJTYPE_RHINOTANK: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Rhinotank)), Game\Stage\Root)
+		Case OBJTYPE_TECHNOSQU: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_TechnoSqueek)), Game\Stage\Root)
+		Case OBJTYPE_WARRIOR: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BlackWarrior)), Game\Stage\Root)
+		Case OBJTYPE_WARRIORGUN1: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BlackWarrior)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_BlackWarriorGun1)
+		Case OBJTYPE_WARRIORGUN2: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BlackWarrior)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_BlackWarriorGun2)
+		Case OBJTYPE_OAKSWORD: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BlackOak)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_BlackOakSword)
+		Case OBJTYPE_LEECH: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BlackLeech)), Game\Stage\Root)
+		Case OBJTYPE_WING: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_BlackWing)), Game\Stage\Root)
+		Case OBJTYPE_SOLDIER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Soldier)), Game\Stage\Root)
+		Case OBJTYPE_SOLDIERCAMO: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Soldier2)), Game\Stage\Root)
+		Case OBJTYPE_CATAKILLER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_CatakillerJr)), Game\Stage\Root)
+		Case OBJTYPE_CLUCKOID: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Cluckoid)), Game\Stage\Root)
+		Case OBJTYPE_MANTIS: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Mantis)), Game\Stage\Root)
+		Case OBJTYPE_NEBULA: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Nebula)), Game\Stage\Root)
+		Case OBJTYPE_ROLLER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Roller)), Game\Stage\Root)
+		Case OBJTYPE_SHEEP: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Sheep)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_SheepFluff)
+		Case OBJTYPE_SNOWY: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Snowy)), Game\Stage\Root)
+		Case OBJTYPE_SPLATS: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Splats)), Game\Stage\Root)
+		Case OBJTYPE_TOXO: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Toxomister)), Game\Stage\Root)
+		Case OBJTYPE_SPRINKLR: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Sprinkler)), Game\Stage\Root)
+		Case OBJTYPE_DOOMSEYE: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_DoomsEye)), Game\Stage\Root)
+		Case OBJTYPE_HAMMER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Hammer)), Game\Stage\Root)
+		Case OBJTYPE_HAMMERSHIELD: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Hammer)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_HammerShield)
+		Case OBJTYPE_HAMMERHAMMER: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Hammer)), Game\Stage\Root) : CheckLoadSmartEntity(Mesh_Enemy_HammerHammer)
+		Case OBJTYPE_WITCH1: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Witch1)), Game\Stage\Root)
+		Case OBJTYPE_WITCH2: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_Witch2)), Game\Stage\Root)
+		Case OBJTYPE_FCANNON1: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_FCannon1)), Game\Stage\Root)
+		Case OBJTYPE_FCANNON2: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_FCannon2)), Game\Stage\Root)
+		Case OBJTYPE_FCANNON3: o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_FCannon3)), Game\Stage\Root)
+		Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN:
+			Select BossType(Menu\Character[1])
+				Case 1:
+					o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Boss_EggMobileNega)), Game\Stage\Root)
+					o\ExtraTexture = LoadTexture("Objects/Shields/EggMobileNegaShield.png",2+256) : o\HasExtraTexture=1
+					o\Entity3 = CopyEntity(MESHES(SmartEntity(Mesh_Boss_EggMobile_Shield)), Game\Stage\Root) : EntityTexture o\Entity3, o\ExtraTexture
+					LoadCharacterMesh(CHAR_EGN,4,0,1)
+					For i=1 To 5 : LoadGoodSound(Voice_EGG_Attack[i],1,"Characters/egn/voice/attack"+i+".ogg",2) : Next
+					For i=1 To 3 : LoadGoodSound(Voice_EGG_Lose[i],1,"Characters/egn/voice/lose"+i+".ogg",2) : Next
+					For i=1 To 2 : LoadGoodSound(Voice_EGG_Win[i],1,"Characters/egn/voice/win"+i+".ogg",2) : Next
+				Default:
+					o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Boss_EggMobile)), Game\Stage\Root)
+					o\ExtraTexture = LoadTexture("Objects/Shields/EggMobileShield.png",2+256) : o\HasExtraTexture=1
+					o\Entity3 = CopyEntity(MESHES(SmartEntity(Mesh_Boss_EggMobile_Shield)), Game\Stage\Root) : EntityTexture o\Entity3, o\ExtraTexture
+					LoadCharacterMesh(CHAR_EGG,4,0,1)
+					For i=1 To 5 : LoadGoodSound(Voice_EGG_Attack[i],1,"Characters/egg/voice/attack"+i+".ogg",2) : Next
+					For i=1 To 3 : LoadGoodSound(Voice_EGG_Lose[i],1,"Characters/egg/voice/lose"+i+".ogg",2) : Next
+					For i=1 To 2 : LoadGoodSound(Voice_EGG_Win[i],1,"Characters/egg/voice/win"+i+".ogg",2) : Next
+			End Select
+			o\Entity2=CopyEntity(CharacterMesh, Game\Stage\Root)
+			DeleteCharacterMesh()
+			Animate(o\Entity2, 1, 0.0515, ANIMATION_JOG+1, 10)
+		Case OBJTYPE_BOSSBETA:
+			o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Boss_Betamk2)), Game\Stage\Root)
+			o\ExtraTexture = LoadTexture("Objects/Shields/EggMobileBetaShield.png",2+256) : o\HasExtraTexture=1
+			o\Entity3 = CopyEntity(MESHES(SmartEntity(Mesh_Boss_EggMobile_Shield)), Game\Stage\Root) : EntityTexture o\Entity3, o\ExtraTexture
+			o\Entity2 = CopyEntity(MESHES(SmartEntity(Mesh_Boss_BetaRainbow)), Game\Stage\Root) : EntityBlend o\Entity2, 1
+		Case OBJTYPE_BOSSMECHA:
+			o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Boss_MechaSonic)), Game\Stage\Root)
+			o\Entity2 = CopyEntity(MESHES(SmartEntity(Mesh_Boss_MechaSonicS)), Game\Stage\Root)
+			o\ExtraTexture = LoadTexture("Objects/Shields/EggMobileNegaShield.png",2+256) : o\HasExtraTexture=1
+			o\Entity3 = CopyEntity(MESHES(SmartEntity(Mesh_Boss_EggMobile_Shield)), Game\Stage\Root) : EntityTexture o\Entity3, o\ExtraTexture
+			ScaleEntity o\Entity3, 0.8, 0.8, 0.8
+	End Select
+	
+	Select o\ObjType
+		Case OBJTYPE_BURROBOT:
+			o\ExtraTexture=LoadTexture("Objects\Enemies\burrobot_body2.png", 1+256) : o\HasExtraTexture=1
+			ApplyMeshTextureLayer(o\Entity, "burrobot_body2.png", o\ExtraTexture)
+		Case OBJTYPE_BITER,OBJTYPE_CRAWLER,OBJTYPE_TAKER:
+			o\ExtraTexture=LoadTexture("Objects\Enemies\monsterfire.png", 1+256) : o\HasExtraTexture=1
+			ApplyMeshTextureLayer(o\Entity, "monsterfire.png", o\ExtraTexture)
+		Case OBJTYPE_RHINOTANK:
+			o\ExtraTexture=LoadTexture("Objects\Enemies\rhinotank_body2.png", 1+256) : o\HasExtraTexture=1
+			ApplyMeshTextureLayer(o\Entity, "rhinotank_body2.png", o\ExtraTexture)
+	End Select
+	
+	If o\Enemy\IsBoss Then
+		o\Entity4=CreatePivot()
+		o\HasEntity4=True
+	EndIf
+	
+	Select o\ObjType
+		Case OBJTYPE_ACHAOSBLOB,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE: EntityRadius(o\Entity,o\HitBox\x#*0.5,6)
+		Case OBJTYPE_DRAGONFLY: EntityRadius(o\Entity,o\HitBox\x#*0.5,3)
+		Case OBJTYPE_ZOOMER: EntityRadius(o\Entity,o\HitBox\x#*0.5,3.5)
+		Default: EntityRadius(o\Entity,o\HitBox\x#*0.5,2.20)
+	End Select
+	
+	Select o\ObjType
+		Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN:
+			o\Enemy\Center=FindChild(o\Entity, "mobile")
+		Case OBJTYPE_BEETLE,OBJTYPE_BEETLESPRING,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLEMONO:
+			o\Enemy\Center=FindChild(o\Entity, "spine")
+		Case OBJTYPE_JAWS,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
+			o\Enemy\Center=FindChild(o\Entity, "root")
+		Default:
+			o\Enemy\Center=FindChild(o\Entity, "hips")
+	End Select
+	
+	o\Enemy\WaterParticle = ParticleTemplate_Create.tParticleTemplate()
+	For i = 1 To 3 : 
+		If Menu\Character[i] = CHAR_ESP Then o\EntityCoil= CopyEntity(MESHES(Mesh_KunaiCoil), o\Entity) : o\HasEntityCoil=True  
+	Next
+	
+	Select o\ObjType
+		Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_MOTOBUG,OBJTYPE_EGGROBO,OBJTYPE_ORBINAUT,OBJTYPE_ANTON,OBJTYPE_E1000,OBJTYPE_RHINOTANK,OBJTYPE_BOSSBETA:
+			o\Enemy\Jet1=FindChild(o\Entity, "jetL")
+			o\Enemy\Jet2=FindChild(o\Entity, "jetR")
+			o\Enemy\JetParticle1 = ParticleTemplate_Create.tParticleTemplate()
+			o\Enemy\JetParticle2 = ParticleTemplate_Create.tParticleTemplate()
+		Case OBJTYPE_COP,OBJTYPE_COPRACER,OBJTYPE_BOMBIE,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_BALKIRY,OBJTYPE_ZOOMER,OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSMECHA:
+			o\Enemy\Jet1=FindChild(o\Entity, "jet")
+			o\Enemy\JetParticle1 = ParticleTemplate_Create.tParticleTemplate()
+		Case OBJTYPE_STEELION:
+			o\Enemy\Jet1=FindChild(o\Entity, "mouth")
+		Case OBJTYPE_DRAGONFLY:
+			o\Enemy\Jet1=FindChild(o\Entity, "tail4")
+			o\Enemy\Jet2=FindChild(o\Entity, "tail8")
+		Case OBJTYPE_OAKSWORD:
+			o\Enemy\Jet1=FindChild(o\Entity, "sword1")
+			o\Enemy\Jet2=FindChild(o\Entity, "sword2")
+		Case OBJTYPE_CATAKILLER:
+			o\Enemy\Jet1=FindChild(o\Entity, "hips")
+			o\Enemy\Jet2=FindChild(o\Entity, "tail3")
+		Case OBJTYPE_SNOWY,OBJTYPE_SLICER:
+			o\Enemy\Jet1=FindChild(o\Entity, "handR")
+			o\Enemy\Jet2=FindChild(o\Entity, "handL")
+		Case OBJTYPE_HAMMERHAMMER:
+			o\Enemy\Jet1=FindChild(o\Entity, "hammer1")
+		Case OBJTYPE_FCANNON1,OBJTYPE_FCANNON2:
+			o\Enemy\Jet1=FindChild(o\Entity, "missile")
+		Case OBJTYPE_FCANNON3:
+			o\Enemy\Jet1=FindChild(o\Entity, "missileR")
+			o\Enemy\Jet2=FindChild(o\Entity, "missileL")
+		Case OBJTYPE_EGUNNER
+			o\Enemy\Gun=FindChild(o\Entity, "forearmL")
+		Case OBJTYPE_PAWNGUN
+			o\Enemy\Gun=FindChild(o\Entity, "muzzle")
+	End Select
+	
+	If Menu\Settings\Shadows#>0 Then o\Enemy\ShadowCircle = Init_CircleShadow(o\Entity, o\Entity, 1.5)
+	
+	If o\ObjType=OBJTYPE_INACTIVE Then 
+		EntityType(o\Entity,COLLISION_OBJECT) 
+	Else 
 		EntityType(o\Entity,COLLISION_OBJECT_GOTHRU)
-
-		Select o\ObjType
-			Case OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_SEARCHER,OBJTYPE_EGGHUNTER,OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_SPONA,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_GRABBER,OBJTYPE_COP,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_ACHAOSBLOB,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_EGGROBO,OBJTYPE_ORBINAUT,OBJTYPE_ASTERON,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_BOO,OBJTYPE_BOOSCARE,OBJTYPE_GHOST,OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_CHOPPER,OBJTYPE_JAWS,OBJTYPE_AQUIS,OBJTYPE_BALKIRY,OBJTYPE_DRAGONFLY,OBJTYPE_MANTA,OBJTYPE_PATABATA,OBJTYPE_ZOOMER,OBJTYPE_TAKER,OBJTYPE_WING,OBJTYPE_NEBULA,OBJTYPE_CATAKILLER,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE:
-				o\Enemy\FlyEnemyType=True
-			Default:
-				o\Enemy\FlyEnemyType=False
-		End Select
-
-		Select o\ObjType
-			Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA: o\Enemy\InitialHealth=10
-			Case OBJTYPE_SNOWY,OBJTYPE_CAMERON,OBJTYPE_OAKSWORD,OBJTYPE_WITCH1,OBJTYPE_WITCH2: o\Enemy\InitialHealth=3
-			Case OBJTYPE_PAWNSHIELD,OBJTYPE_HUNTERSHIELD,OBJTYPE_STEELION,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE: o\Enemy\InitialHealth=2
-			Case OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER: o\Enemy\InitialHealth=5
-			Case OBJTYPE_HAMMERSHIELD: o\Enemy\InitialHealth=7
-			Default: o\Enemy\InitialHealth=1
-		End Select
-
-		Return o
-	End Function
+	EndIf 
+	
+	Select o\ObjType
+		Case OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_SPINA,OBJTYPE_SPUNA,OBJTYPE_SPANA,OBJTYPE_SPONA,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_GRABBER,OBJTYPE_COP,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_ACHAOSBLOB,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_EGGROBO,OBJTYPE_ORBINAUT,OBJTYPE_ASTERON,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_BOO,OBJTYPE_BOOSCARE,OBJTYPE_GHOST,OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_CHOPPER,OBJTYPE_JAWS,OBJTYPE_AQUIS,OBJTYPE_BALKIRY,OBJTYPE_DRAGONFLY,OBJTYPE_MANTA,OBJTYPE_PATABATA,OBJTYPE_ZOOMER,OBJTYPE_TAKER,OBJTYPE_WING,OBJTYPE_NEBULA,OBJTYPE_CATAKILLER,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE:
+			o\Enemy\FlyEnemyType=True
+		Default:
+			o\Enemy\FlyEnemyType=False
+	End Select
+	
+	Select o\ObjType
+		Case OBJTYPE_SPUNA: o\Enemy\InitialHealth=9999
+		Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA: o\Enemy\InitialHealth=Game\MissionValue
+		Case OBJTYPE_SNOWY,OBJTYPE_CAMERON,OBJTYPE_OAKSWORD,OBJTYPE_WITCH1,OBJTYPE_WITCH2: o\Enemy\InitialHealth=3
+		Case OBJTYPE_PAWNSHIELD,OBJTYPE_HUNTERSHIELD,OBJTYPE_STEELION,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE: o\Enemy\InitialHealth=2
+		Case OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER: o\Enemy\InitialHealth=5
+		Case OBJTYPE_HAMMERSHIELD: o\Enemy\InitialHealth=7
+		Default: o\Enemy\InitialHealth=1
+	End Select
+	
+	Return o
+End Function
 
 	; =========================================================================================================
 
@@ -742,7 +782,225 @@ End Function
 			If Menu\Settings\Shadows#>0 Then Update_CircleShadow(o\Enemy\ShadowCircle, o\Entity, cam\Entity, 1)
 		EndIf
 	End Function
-
+Function Object_Enemy_CheckDelete(o.tObject, p.tPlayer, d.tDeltaTime)
+	If (o\AttackDetectRestrict=False And (o\Hit Or o\CheeseHit Or o\BombHit)) Or o\Enemy\SelfDestruct Or o\Enemy\WasKilledByBombMonitor Or o\Enemy\KilledFromLeader Then
+		If Object_ReturnCanAttackShield(p,o) Then
+			If o\BombHit And o\BombHitType=BOMB_ROCKET Then
+				
+				p\RocketBombPivot=CreatePivot()
+				PositionEntity(p\RocketBombPivot,o\Position\x#,o\Position\y#,o\Position\z#)
+				p\RocketBombTimer=0.1*secs#
+			EndIf
+			If o\Enemy\IsBoss=0 And o\Enemy\Health>1 And (Game\Victory<>0 Or (Not(o\ObjType=OBJTYPE_SPRINKLR Or o\ObjType=OBJTYPE_DOOMSEYE))) Then
+				If o\Psychoed>0 Or o\Rubied>0 Or Game\Invinc Or p\Action=ACTION_LIGHTATTACK Or p\Action=ACTION_DEMODASH Or Game\MachLock>0 Or o\Enemy\WasKilledByBombMonitor Or (o\BombHit And (o\BombHitType=BOMB_HOOKSHOT Or (o\BombHitType=BOMB_SPEAR And p\Character=CHAR_SHN) Or o\BombHitType=BOMB_BULLET3  Or (o\BombHitType=BOMB_ROCKET And o\Enemy\Health<=5))) Or p\HasVehicle>0 Or Game\Victory<>0 Then
+					o\Enemy\Health=1
+				EndIf
+			EndIf
+			
+			If Game\BishopMagicTimer>0 Then
+				Select o\ObjType
+					Case OBJTYPE_WITCH1,OBJTYPE_WITCH2,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
+					Default:
+						If Game\Invinc=0 Then o\Enemy\Health=o\Enemy\Health+1
+				End Select
+			EndIf
+			
+			If o\Enemy\Health>1 Then
+				Object_PlayRobotDestroySound(o,False)
+				If o\Enemy\IsBoss=1 Then
+					If o\Hit And o\Enemy\WasKilledByBombMonitor=False Then Game\ControlLock=0.4*secs#
+					o\Enemy\WasJustAttacked=5.31*secs#
+					Select o\ObjType
+						Case OBJTYPE_BOSSBETA:
+							If o\Anim=9 Then o\Anim=1
+						Case OBJTYPE_BOSSMECHA:
+						Default:
+							Animate(o\Entity, 3, 0.25, 1, 10)
+					End Select
+					o\Enemy\AttackMode2=0
+				Else
+					If (Not(o\ObjType=OBJTYPE_SPRINKLR Or o\ObjType=OBJTYPE_DOOMSEYE)) Then
+						o\Enemy\WasJustAttacked=0.31*secs#
+					Else
+						o\Enemy\WasJustAttacked=2*secs#
+					EndIf
+					If o\Hit Then
+						Select o\ObjType
+							Case OBJTYPE_SPUNA:
+							Default: Player_SetSpeed(p,-1.575) : Game\ControlLock=0.1*secs#
+						End Select
+						
+					EndIf
+					If Not(o\Enemy\Shield=0) Then
+						Select o\ObjType
+							Case OBJTYPE_PAWNSHIELD,OBJTYPE_HUNTERSHIELD: i=True
+							Case OBJTYPE_HAMMERSHIELD: If o\Enemy\Health<=6 Then i=True Else i=False
+						End Select
+						If i Then
+							Object_Pieces_Create(False,-o\ObjType,o\Psychoed,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold)
+							o\Enemy\Shield=0
+						EndIf
+					EndIf
+				EndIf
+				o\GotAssignedBomb=False
+				If (Not(o\ObjType=OBJTYPE_SPRINKLR Or o\ObjType=OBJTYPE_DOOMSEYE)) Then 
+					If o\BombHit And o\BombHitType=BOMB_CUBETRAIL Then
+						o\Enemy\Health=1
+					ElseIf o\BombHit And o\BombHitType=BOMB_BULLET4 Then
+						o\Enemy\Health=o\Enemy\Health-3
+					Else	
+						o\Enemy\Health=o\Enemy\Health-1
+					EndIf 
+				EndIf
+				If Object_IsEnemyRobot(o\ObjType) Then Object_CreateEnemyPieces(o,True)
+				If o\Hit Then p\Flags\HomingLocked = False : p\Flags\Targeter=0
+			Else
+				; Add to counter
+				If o\Enemy\SelfDestruct=False Then
+					Gameplay_AddScore(500+(100*o\Enemy\Gold)+(100*p\EnemyComboCounter)) : p\EnemyComboCounter=p\EnemyComboCounter+1 : p\EnemyComboTimer=1.6*secs#
+					Gameplay_AddGaugeEnergy(5)
+				EndIf
+				If Object_IsActualEnemy(o\ObjType) Then
+					Gameplay_AddEnemies(1)
+					If o\Enemy\Gold=1 Then Gameplay_AddGoldEnemies(1)
+				EndIf
+				
+				; Boom!
+				If Game\Victory=0 Then Object_PlayRobotDestroySound(o)
+				
+				If o\Enemy\LeaderNo>0 And o\Enemy\FollowerNo=0 Then
+					p\EnemyLeaderTimer=0.1*secs#
+					p\LeaderToKill=o\Enemy\LeaderNo
+				EndIf
+				
+				o\KunaiStunTimer=0
+				
+				;Release effect
+				If Object_IsEnemyRobot(o\ObjType) Then
+					ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_BOMB, o\Entity)
+				Else
+					Select o\ObjType
+						Case OBJTYPE_BITER,OBJTYPE_TAKER,OBJTYPE_CRAWLER: ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_FLAMYBLOOD, o\Entity)
+						Case OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_OAKSWORD,OBJTYPE_LEECH,OBJTYPE_WING: ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_ALIENBLOOD, o\Entity)
+					End Select
+				EndIf
+				Object_CreateEnemyPieces(o)
+				
+				;Deal bombs
+				Select o\ObjType
+					Case OBJTYPE_ORBINAUT,OBJTYPE_SPONA:
+						If o\Enemy\HasBossObj1 Then o\Enemy\BossObj1\Mode=0 : o\Enemy\HasBossObj1=False
+						If o\Enemy\HasBossObj2 Then o\Enemy\BossObj2\Mode=0 : o\Enemy\HasBossObj2=False
+						If o\Enemy\HasBossObj3 Then o\Enemy\BossObj3\Mode=0 : o\Enemy\HasBossObj3=False
+						If o\Enemy\HasBossObj4 Then o\Enemy\BossObj4\Mode=0 : o\Enemy\HasBossObj4=False
+					Case OBJTYPE_BOMBIE:
+						o\Enemy\ShouldSpawnMissile=True
+						Object_EnemyMovements_SpawnMissile(o,p)
+				End Select
+				
+				;Enemy hitting consequences
+				o\Enemy\Health=o\Enemy\Health-1
+				If Game\Invinc=1 Or p\Action=ACTION_LIGHTATTACK Then
+					o\Enemy\WasJustAttacked=0
+				Else
+					If o\Enemy\IsBoss=0 Then o\Enemy\WasJustAttacked=0.31*secs# Else o\Enemy\WasJustAttacked=4.5*secs#
+				EndIf
+				
+				If o\Enemy\IsBoss=0 Then
+					;Spawn chaos drive or flicky
+					If Menu\Mission=MISSION_FLICKY# Then
+						If Rand(1,5)=1 And Game\Gameplay\Flickies<5 Then
+							Object_Flicky_Create(o\Position\x#, o\Position\y#+4, o\Position\z#)
+						Else
+							Object_CreateDriveFromEnemy(o\ObjType, o\Position\x#, o\Position\y#+4, o\Position\z#)
+						EndIf
+					Else
+						Object_CreateDriveFromEnemy(o\ObjType, o\Position\x#, o\Position\y#+4, o\Position\z#)
+					EndIf
+					
+					; Spawn shard
+					If Object_ReturnCanAttackShield(p,o) And o\HasShard Then
+						If o\Enemy\FlyEnemyType Then
+							Object_SpewShard_Create.tObject(-o\Enemy\EnemyNo, o\Position\x#, o\Position\y#, o\Position\z#, Rnd(-0.4*1.1, 0.4*1.1), Rnd(0.6*1.1, 1.2*1.1), Rnd(-0.4*1.1, 0.4*1.1), 1)
+						Else
+							Object_SpewShard_Create.tObject(-o\Enemy\EnemyNo, o\Position\x#, o\Position\y#, o\Position\z#, Rnd(-0.4*1.1, 0.4*1.1), Rnd(0.6*1.1, 1.2*1.1), Rnd(-0.4*1.1, 0.4*1.1))
+						EndIf
+					EndIf
+				Else
+					Select o\ObjType
+						Case OBJTYPE_BOSSBETA:
+							If o\Anim=9 Then o\Anim=1
+						Case OBJTYPE_BOSSMECHA:
+						Default:
+							Animate(o\Entity, 3, 0.5, 1, 10)
+					End Select
+					If o\Hit Then Game\ControlLock=0.8*secs#
+				EndIf
+				
+				; Toggle switch
+				If o\Switch\SwitchNo[0]>0 Then o\Switch\s1\Active=0
+				Game\SwitchOn[o\Switch\SwitchNo[0]]=0
+			EndIf
+		EndIf
+		
+		If o\Hit Then
+				; Make Sonic a move
+			If p\HasVehicle=0 And o\Enemy\WasKilledByBombMonitor=False Then
+				If o\Enemy\IsBoss=1 Then
+					p\JumpTimer=0
+					p\Action=ACTION_JUMP : p\JumpMayRiseTimer=1.5*secs#
+					Player_SetSpeed(p,-3.575)
+					p\Motion\Speed\y#=0.5
+					Select o\ObjType
+						Case OBJTYPE_BOSSRUN,OBJTYPE_BOSSMECHA:
+							p\Animation\Direction#=180
+					End Select
+				ElseIf p\Motion\Ground=False And o\Enemy\SelfDestruct=False And o\CheeseHit=False And o\BombHit=False And o\Psychoed=0 And o\Rubied=0 Then
+					
+					If (Not(p\Action=ACTION_LIGHTATTACK)) Then Player_JumpActionInteract(p)
+					
+				EndIf
+				If p\Action=ACTION_LIGHTATTACK Then p\LightAttackTimer=0.75*secs#
+			EndIf
+			p\Flags\HomingLocked = False
+			p\Flags\Targeter=0 : p\Flags\InTargeterAttack=False : p\Flags\InTargeterAirAttack=False
+			
+				; Fix grabber hurt
+			If (o\ObjType=OBJTYPE_GRABBER Or o\ObjType=OBJTYPE_KLAGEN Or o\ObjType=OBJTYPE_ACHAOSBLOB Or o\ObjType=OBJTYPE_BOO) And p\Action=ACTION_GRABBED Then
+				EntityType(cam\Entity, COLLISION_CAMERA)
+				EntityType(p\Objects\Entity, COLLISION_PLAYER)
+				Player_Hit(p)
+			EndIf
+		EndIf
+		
+			; Fix hurt
+		o\Enemy\MayNotHurtTimer=0.55*secs#
+		
+			; Delete the object
+		If (Not(Object_ReturnCanAttackShield(p,o))) Or (o\Enemy\Health+1)>1 Then
+			o\Hit=False
+			o\CheeseHit=False
+			o\BombHit=False
+			o\Enemy\WillBeHomedTimer=0
+		Else
+			If o\Enemy\IsBoss=0 Then
+				o\Enemy\SelfDestruct=False
+				StopChannel(o\Enemy\Channel_EnemyStep)
+				StopChannel(o\Enemy\Channel_EnemyState)
+				o\CanHoming = False
+				o\CheeseCanHoming=False
+				o\Done=1
+				HideEntity(o\Entity)
+				Return
+			Else
+				o\Hit=False
+				o\CheeseHit=False
+				o\BombHit=False
+				o\Enemy\WillBeHomedTimer=0
+			EndIf
+		EndIf
+	EndIf
+End Function 
 	Function Object_Enemy_Update_Real(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		; Manage switch
@@ -755,19 +1013,18 @@ End Function
 			p\Flags\HomingTarget\z# = o\Position\z#
 		EndIf
 
-		; Animate and update enemy frame
-		If o\Enemy\IsBoss=0 Or (o\ObjType=OBJTYPE_BOSSBETA Or o\ObjType=OBJTYPE_BOSSMECHA) Then Object_AnimateEnemy(o) : o\Enemy\Frame = Int(AnimTime(o\Entity))
-
+				; Animate and update enemy frame
+		If (o\Enemy\IsBoss=0 Or (o\ObjType=OBJTYPE_BOSSBETA Or o\ObjType=OBJTYPE_BOSSMECHA)) And (Not(o\NullifyStunTimer>0)) Then Object_AnimateEnemy(o) : o\Enemy\Frame = Int(AnimTime(o\Entity))
+		
 		; Update collision aligning
 		Object_UpdateCollisions(o,o\Entity)
 
 		; Update timer
 		If o\Enemy\WasJustAttacked>0 Then o\Enemy\WasJustAttacked=o\Enemy\WasJustAttacked-timervalue#
 		If o\Enemy\WillBeHomedTimer>0 Then o\Enemy\WillBeHomedTimer=o\Enemy\WillBeHomedTimer-timervalue#
-		If o\EggpawnShootTimer>0 Then o\EggpawnShootTimer=o\EggpawnShootTimer-timervalue#
 
 		; Move
-		If (o\Psychoed=0 And o\Rubied=0 And (Not(p\LightDashRequestTimer>0))) Then Object_EnemyMovements(o,p,d)
+		If o\Psychoed=0 And o\Rubied=0 And (Not(p\LightDashRequestTimer>0)) Then Object_EnemyMovements(o,p,d)
 
 		; Detect the player
 		Select o\ObjType
@@ -793,7 +1050,9 @@ End Function
 				EndIf
 		End Select
 		If o\Enemy\MayNotHurtTimer>0 Then o\Enemy\MayNotHurtTimer=o\Enemy\MayNotHurtTimer-timervalue#
-
+		
+		
+		
 		; React to player
 		If o\Enemy\InRange Then
 			If o\Enemy\SearchSonic>0 Then o\Enemy\SearchSonic=o\Enemy\SearchSonic-timervalue#
@@ -844,223 +1103,8 @@ End Function
 
 		; Player collided with enemy
 		If Game\Victory>0 And o\Enemy\InRange And o\Enemy\IsBoss=0 Then o\Enemy\SelfDestruct=True
-		If (o\AttackDetectRestrict=False And (o\Hit Or o\CheeseHit Or o\BombHit)) Or o\Enemy\SelfDestruct Or o\Enemy\WasKilledByBombMonitor Then
-			If Object_ReturnCanAttackShield(p,o) Then
-			If o\Enemy\IsBoss=0 And o\Enemy\Health>1 And (Game\Victory<>0 Or (Not(o\ObjType=OBJTYPE_SPRINKLR Or o\ObjType=OBJTYPE_DOOMSEYE))) Then
-				If o\Psychoed>0 Or o\Rubied>0 Or Game\Invinc Or Game\MachLock>0 Or o\Enemy\WasKilledByBombMonitor Or (o\BombHit And (o\BombHitType=BOMB_HOOKSHOT Or o\BombHitType=BOMB_BULLET3 Or (o\BombHitType=BOMB_ROCKET And o\Enemy\Health<=5))) Or p\HasVehicle>0 Or Game\Victory<>0 Then
-					o\Enemy\Health=1
-				EndIf
-			EndIf
-			If Game\BishopMagicTimer>0 Then
-				Select o\ObjType
-					Case OBJTYPE_WITCH1,OBJTYPE_WITCH2,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
-					Default:
-						If Game\Invinc=0 Then o\Enemy\Health=o\Enemy\Health+1
-				End Select
-			EndIf
-			
-			;not one hit
-			If o\Enemy\Health>1 Then
-				
-				If o\Enemy\IsBoss=1 Then
-					If o\Hit And o\Enemy\WasKilledByBombMonitor=False Then Game\ControlLock=0.4*secs#
-					o\Enemy\WasJustAttacked=5.31*secs#
-					Select o\ObjType
-						Case OBJTYPE_BOSSBETA:
-							If o\Anim=9 Then o\Anim=1
-						Case OBJTYPE_BOSSMECHA:
-						Default:
-							Animate(o\Entity, 3, 0.25, 1, 10)
-					End Select
-					o\Enemy\AttackMode2=0
-				Else
-					If (Not(o\ObjType=OBJTYPE_SPRINKLR Or o\ObjType=OBJTYPE_DOOMSEYE)) Then
-						o\Enemy\WasJustAttacked=0.31*secs#
-					Else
-						o\Enemy\WasJustAttacked=2*secs#
-					EndIf
-					If o\Hit Then
-						Select o\ObjType
-							Case OBJTYPE_CAMERON: If p\Motion\Ground Then Player_SetSpeed(p,-1.575)
-							Default: Player_SetSpeed(p,-1.575)
-						End Select
-						Game\ControlLock=0.2*secs#
-					EndIf
-					If Not(o\Enemy\Shield=0) Then
-						Select o\ObjType
-							Case OBJTYPE_PAWNSHIELD,OBJTYPE_HUNTERSHIELD: i=True
-							Case OBJTYPE_HAMMERSHIELD: If o\Enemy\Health<=6 Then i=True Else i=False
-						End Select
-						If i Then
-							Object_Pieces_Create(False,-o\ObjType,o\Psychoed,o\Position\x#,o\Position\y#,o\Position\z#,o\Rotation\x#,o\Rotation\y#,o\Rotation\z#,1.1,o\Enemy\Gold)
-							o\Enemy\Shield=0
-						EndIf
-					EndIf
-				EndIf
-				o\GotAssignedBomb=False
-				If (Not(o\ObjType=OBJTYPE_SPRINKLR Or o\ObjType=OBJTYPE_DOOMSEYE)) Then 
-					If Game\ChaosSnapTimer>0 Then
-						o\Enemy\Health=o\Enemy\Health-2
-					Else
-						o\Enemy\Health=o\Enemy\Health-1
-					EndIf 
-				EndIf 
-				
-				If o\Hit Then p\Flags\HomingLocked = False : p\Flags\Targeter=0
-				If o\Enemy\Health=0 Then 
-					Object_PlayRobotDestroySound(o)
-					If Object_IsEnemyRobot(o\ObjType) Then Object_CreateEnemyPieces(o)
-				Else
-					Object_PlayRobotDestroySound(o,False)
-					If Object_IsEnemyRobot(o\ObjType) Then Object_CreateEnemyPieces(o,True)
-				EndIf 
-			Else
-				; Add to counter
-				If o\Enemy\SelfDestruct=False Then
-					Gameplay_AddScore(100+150*o\Enemy\Gold+40*p\EnemyComboCounter) : p\EnemyComboCounter=p\EnemyComboCounter+1 : p\EnemyComboTimer=1.6*secs#
-					If Menu\Mission=MISSION_DECLINE# Then Game\DeclineTime=Game\DeclineTime+(2*p\EnemyComboCounter)*secs#
-					Gameplay_AddGaugeEnergy(o\Enemy\InitialHealth*5)
-				EndIf
-				If Object_IsActualEnemy(o\ObjType) Then
-					Gameplay_AddEnemies(1)
-					If o\Enemy\Gold=1 Then Gameplay_AddGoldEnemies(1)
-				EndIf
-				
-				
-				
-				; Boom!
-				If Game\Victory=0 Then Object_PlayRobotDestroySound(o)
-
-				;Release effect
-				If Object_IsEnemyRobot(o\ObjType) Then
-					ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_BOMB, o\Entity)
-				Else
-					Select o\ObjType
-						Case OBJTYPE_BITER,OBJTYPE_TAKER,OBJTYPE_CRAWLER: ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_FLAMYBLOOD, o\Entity)
-						Case OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_OAKSWORD,OBJTYPE_LEECH,OBJTYPE_WING: ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_ALIENBLOOD, o\Entity)
-					End Select
-				EndIf
-				Object_CreateEnemyPieces(o)
-
-				;Deal bombs
-				Select o\ObjType
-					Case OBJTYPE_ORBINAUT,OBJTYPE_SPONA:
-						If o\Enemy\HasBossObj1 Then o\Enemy\BossObj1\Mode=0 : o\Enemy\HasBossObj1=False
-						If o\Enemy\HasBossObj2 Then o\Enemy\BossObj2\Mode=0 : o\Enemy\HasBossObj2=False
-						If o\Enemy\HasBossObj3 Then o\Enemy\BossObj3\Mode=0 : o\Enemy\HasBossObj3=False
-						If o\Enemy\HasBossObj4 Then o\Enemy\BossObj4\Mode=0 : o\Enemy\HasBossObj4=False
-					Case OBJTYPE_BOMBIE:
-						o\Enemy\ShouldSpawnMissile=True
-						Object_EnemyMovements_SpawnMissile(o,p)
-				End Select
-
-				;Enemy hitting consequences
-				o\Enemy\Health=o\Enemy\Health-1
-				If Game\Invinc=1 Then
-					o\Enemy\WasJustAttacked=0
-				Else
-					If o\Enemy\IsBoss=0 Then o\Enemy\WasJustAttacked=0.31*secs# Else o\Enemy\WasJustAttacked=4.5*secs#
-				EndIf
-
-				If o\Enemy\IsBoss=0 Then
-					;Spawn chaos drive or flicky
-					If Menu\Mission=MISSION_FLICKY# Then
-						If Rand(1,5)=1 And Game\Gameplay\Flickies<5 Then
-							Object_Flicky_Create(o\Position\x#, o\Position\y#+4, o\Position\z#)
-						Else
-							Object_CreateDriveFromEnemy(o\ObjType, o\Position\x#, o\Position\y#+4, o\Position\z#)
-						EndIf
-					Else
-						Object_CreateDriveFromEnemy(o\ObjType, o\Position\x#, o\Position\y#+4, o\Position\z#)
-					EndIf
-
-					; Spawn red ring
-					If Object_ReturnCanAttackShield(p,o) And o\HasShard Then
-						If o\Enemy\FlyEnemyType Then
-							Object_SpewShard_Create.tObject(-o\Enemy\EnemyNo, o\Position\x#, o\Position\y#, o\Position\z#, Rnd(-0.4*1.1, 0.4*1.1), Rnd(0.6*1.1, 1.2*1.1), Rnd(-0.4*1.1, 0.4*1.1), 1)
-						Else
-							Object_SpewShard_Create.tObject(-o\Enemy\EnemyNo, o\Position\x#, o\Position\y#, o\Position\z#, Rnd(-0.4*1.1, 0.4*1.1), Rnd(0.6*1.1, 1.2*1.1), Rnd(-0.4*1.1, 0.4*1.1))
-						EndIf
-					EndIf
-				Else
-					Select o\ObjType
-						Case OBJTYPE_BOSSBETA:
-							If o\Anim=9 Then o\Anim=1
-						Case OBJTYPE_BOSSMECHA:
-						Default:
-							Animate(o\Entity, 3, 0.5, 1, 10)
-					End Select
-					If o\Hit Then Game\ControlLock=0.8*secs#
-				EndIf
-
-				; Toggle switch
-				If o\Switch\SwitchNo[0]>0 Then o\Switch\s1\Active=0
-			EndIf
-			EndIf
-
-			If o\Hit Then
-				; Make Sonic a move
-				If p\HasVehicle=0 And o\Enemy\WasKilledByBombMonitor=False Then
-					If o\Enemy\IsBoss=1 Then
-						p\JumpTimer=0
-						p\Action=ACTION_JUMP : p\JumpMayRiseTimer=1.5*secs#
-						Player_SetSpeed(p,-3.575)
-						p\Motion\Speed\y#=0.5
-						Select o\ObjType
-							Case OBJTYPE_BOSSRUN,OBJTYPE_BOSSMECHA:
-								p\Animation\Direction#=180
-						End Select
-					ElseIf p\Motion\Ground=False And o\Enemy\SelfDestruct=False And o\CheeseHit=False And o\BombHit=False And o\Psychoed=0 And o\Rubied=0 Then
-						If (p\Flags\Stomping=1 And p\Bouncing=0) Or p\Action=ACTION_BOOSTFALL Or p\Action=ACTION_LIGHTATTACK Then 
-							
-						Else 
-							If (Not(Object_ReturnCanAttackShield(p,o))) Or (o\Enemy\Health+1)>1 Then
-								Player_JumpActionInteract(p,3)
-							Else
-								Player_JumpActionInteract(p)
-							EndIf 
-						EndIf 
-						If p\Action=ACTION_LIGHTATTACK Then p\LightAttackHits=p\LightAttackHits+1 : p\LightAttackTimer=0.75*secs#
-					EndIf
-				EndIf
-				p\Flags\HomingLocked = False
-				p\Flags\Targeter=0 : p\Flags\InTargeterAttack=False : p\Flags\InTargeterAirAttack=False
-
-				; Fix grabber hurt
-				If (o\ObjType=OBJTYPE_GRABBER Or o\ObjType=OBJTYPE_KLAGEN Or o\ObjType=OBJTYPE_ACHAOSBLOB Or o\ObjType=OBJTYPE_BOO) And p\Action=ACTION_GRABBED Then
-					EntityType(cam\Entity, COLLISION_CAMERA)
-					EntityType(p\Objects\Entity, COLLISION_PLAYER)
-					Player_Hit(p)
-				EndIf
-			EndIf
-
-			; Fix hurt
-			o\Enemy\MayNotHurtTimer=0.55*secs#
 		
-			; Delete the object
-			If (Not(Object_ReturnCanAttackShield(p,o))) Or (o\Enemy\Health+1)>1 Then
-				o\Hit=False
-				o\CheeseHit=False
-				o\BombHit=False
-				o\Enemy\WillBeHomedTimer=0
-			Else
-				If o\Enemy\IsBoss=0 Then
-					o\Enemy\SelfDestruct=False
-					StopChannel(o\Enemy\Channel_EnemyStep)
-					StopChannel(o\Enemy\Channel_EnemyState)
-					o\CanHoming = False
-					o\CheeseCanHoming=False
-					o\Done=1
-					HideEntity(o\Entity)
-					Return
-				Else
-					o\Hit=False
-					o\CheeseHit=False
-					o\BombHit=False
-					o\Enemy\WillBeHomedTimer=0
-				EndIf
-			EndIf
-		EndIf
+		Object_Enemy_CheckDelete(o,p,d)
 
 		; Jets
 		Select o\ObjType
@@ -1168,8 +1212,8 @@ End Function
 
 		o\Entity = CreatePivot()
 		Select enemyno#
-			Case OBJTYPE_PAWNGUN,OBJTYPE_FLAPPERGUN,OBJTYPE_SEARCHER,OBJTYPE_EGGHUNTER: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_EnemyMissile_PawnMissile)), o\Entity)
-			Case OBJTYPE_GUNNER: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_Bullet)), o\Entity)	
+			Case OBJTYPE_EGUNNER: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_Bullet)), o\Entity)	
+			Case OBJTYPE_PAWNGUN,OBJTYPE_FLAPPERGUN: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_EnemyMissile_PawnMissile)), o\Entity)
 			Case OBJTYPE_BUZZBOMBER: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_EnemyMissile_BuzzMissile2)), o\Entity)
 			Case OBJTYPE_BUZZER: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_EnemyMissile_BuzzMissile1)), o\Entity)
 			Case OBJTYPE_CRABMEAT,OBJTYPE_BOSS: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_EnemyMissile_CrabMissile)), o\Entity) : o\EnemyMissile\RealMissile=1
@@ -1214,18 +1258,13 @@ End Function
 			Case OBJTYPE_PAWNGUN:
 				o\EnemyMissile\FollowTimer=0
 				o\EnemyMissile\DisappearTimer=2.1*secs#
-				
-				MoveEntity o\Entity,0,3.5,6.5
+
+				MoveEntity o\Entity,0,3,6
 				EntityRadius o\Entity, 1.5
 			Case OBJTYPE_FLAPPERGUN:
 				o\EnemyMissile\FollowTimer=0
 				o\EnemyMissile\DisappearTimer=2.1*secs#
 				MoveEntity o\Entity,0,-4.5,3.5
-				EntityRadius o\Entity, 1.5
-			Case OBJTYPE_SEARCHER,OBJTYPE_EGGHUNTER:
-				o\EnemyMissile\FollowTimer=0
-				o\EnemyMissile\DisappearTimer=2.1*secs#
-				MoveEntity o\Entity,0,-2.5,3.5
 				EntityRadius o\Entity, 1.5
 			Case OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER:
 				o\EnemyMissile\FollowTimer=0.57*secs#
@@ -1287,6 +1326,10 @@ End Function
 						End Select
 				End Select
 				EntityRadius o\Entity, 3
+			Case OBJTYPE_EGUNNER
+				o\EnemyMissile\FollowTimer=0.5*secs#
+				o\EnemyMissile\DisappearTimer=1.35*secs#
+				EntityRadius o\Entity, 1.25
 			Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,-OBJTYPE_BOSSBETA:
 				o\EnemyMissile\FollowTimer=0.99*secs#
 				o\EnemyMissile\DisappearTimer=3.1*secs#
@@ -1295,12 +1338,6 @@ End Function
 					Case 2: MoveEntity o\Entity,4.85,10,12.5
 					Case 3,4: MoveEntity o\Entity,-1.78,0.44,13.4
 				End Select
-				EntityRadius o\Entity, 1.25
-			Case OBJTYPE_GUNNER
-				o\EnemyMissile\FollowTimer=0.5*secs#
-				o\EnemyMissile\DisappearTimer=1.35*secs#
-				;PositionEntity o\Entity
-				; MoveEntity o\Entity,8,5,-3
 				EntityRadius o\Entity, 1.25
 			Case OBJTYPE_FLAPPERBOMB:
 				o\EnemyMissile\FollowTimer=0
@@ -1532,19 +1569,21 @@ End Function
 	
 	; =========================================================================================================
 	
-	Function Object_EnemyMissile_Update(o.tObject, p.tPlayer, d.tDeltaTime)
-
+Function Object_EnemyMissile_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+	
 		; Update missile timer
-		If o\EnemyMissile\FollowTimer>0 Then o\EnemyMissile\FollowTimer=o\EnemyMissile\FollowTimer-timervalue#
+	If o\EnemyMissile\FollowTimer>0 Then o\EnemyMissile\FollowTimer=o\EnemyMissile\FollowTimer-timervalue#
+	If o\DeflectionTimer>0 Then o\DeflectionTimer=o\DeflectionTimer-timervalue#
+	If o\Psychoed=0 Then
 		If o\EnemyMissile\DisappearTimer>0 Then o\EnemyMissile\DisappearTimer=o\EnemyMissile\DisappearTimer-timervalue#
-
+	EndIf
+	
 		; Movement
-		If (Not(Object_EnemyIsStun(o))) Then
+	If (Not(Object_EnemyIsStun(o))) Then
 		Select o\EnemyMissile\MissileType
-			Case OBJTYPE_PAWNGUN,OBJTYPE_FLAPPERGUN,OBJTYPE_SEARCHER,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_DOOMSEYE:
+			Case OBJTYPE_PAWNGUN,OBJTYPE_FLAPPERGUN,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_DOOMSEYE:
 				MoveEntity(o\Entity,0,0,0.85*d\Delta*0.75)
-			Case OBJTYPE_EGGHUNTER
-				MoveEntity(o\Entity,0,0,0.85*d\Delta*1.1)
+				;PointEntity(o\Entity,p\Objects\Entity)
 			Case OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER:
 				MoveEntity(o\Entity,0,0,0.85*d\Delta*0.75)
 				If o\EnemyMissile\FollowTimer>0 And o\EnemyMissile\FollowTimer<0.42*secs#*0.5 Then PointEntity(o\Entity,p\Objects\Entity)
@@ -1573,6 +1612,10 @@ End Function
 				MoveEntity(o\Entity,0,0,1.85*d\Delta*0.75)
 			Case -OBJTYPE_BOSSRUN:
 				MoveEntity(o\Entity,0,-1.85*d\Delta*0.75,1.85*d\Delta*0.75)
+			Case OBJTYPE_EGUNNER
+				PointEntity(o\Entity,p\Objects\Entity)
+				MoveEntity(o\Entity,0,0,0.85*d\Delta*2)
+				EntityColor(o\EntityX,50,0,0)
 			Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE:
 				If o\EnemyMissile\FollowTimer>0 And o\EnemyMissile\FollowTimer<0.64*secs#*0.5 Then
 					PointEntity(o\Entity,p\Objects\Entity)
@@ -1580,10 +1623,6 @@ End Function
 				Else
 					MoveEntity(o\Entity,0,0,0.348*d\Delta*0.75)
 				EndIf
-			Case OBJTYPE_GUNNER
-				PointEntity(o\Entity,p\Objects\Entity)
-				MoveEntity(o\Entity,0,0,0.85*d\Delta*2)
-				EntityColor(o\EntityX,50,0,0)
 			Case OBJTYPE_FLAPPERBOMB:
 				MoveEntity(o\Entity,0,-2*d\Delta*0.75,0)
 			Case OBJTYPE_AEROC:
@@ -1649,8 +1688,8 @@ End Function
 				MoveEntity(o\Entity,0,0,0.85*d\Delta*0.75)
 			Case OBJTYPE_DRAGONFLY,OBJTYPE_OAKSWORD,OBJTYPE_CATAKILLER,OBJTYPE_SNOWY:
 				Select o\Mode
-				Case 1: PositionEntity o\Entity, EntityX(o\EnemyMissile\Sender\Enemy\Jet1,1), EntityY(o\EnemyMissile\Sender\Enemy\Jet1,1), EntityZ(o\EnemyMissile\Sender\Enemy\Jet1,1), 1
-				Case 2: PositionEntity o\Entity, EntityX(o\EnemyMissile\Sender\Enemy\Jet2,1), EntityY(o\EnemyMissile\Sender\Enemy\Jet2,1), EntityZ(o\EnemyMissile\Sender\Enemy\Jet2,1), 1
+					Case 1: PositionEntity o\Entity, EntityX(o\EnemyMissile\Sender\Enemy\Jet1,1), EntityY(o\EnemyMissile\Sender\Enemy\Jet1,1), EntityZ(o\EnemyMissile\Sender\Enemy\Jet1,1), 1
+					Case 2: PositionEntity o\Entity, EntityX(o\EnemyMissile\Sender\Enemy\Jet2,1), EntityY(o\EnemyMissile\Sender\Enemy\Jet2,1), EntityZ(o\EnemyMissile\Sender\Enemy\Jet2,1), 1
 				End Select
 				Select o\EnemyMissile\MissileType
 					Case OBJTYPE_CATAKILLER:
@@ -1662,8 +1701,8 @@ End Function
 					MoveEntity(o\Entity,0,0,o\EnemyMissile\KikiBombSpeed#*0.21*d\Delta*0.85)
 				Else
 					Select o\Mode
-					Case 1: PointEntity(o\Entity,o\EnemyMissile\Sender\Enemy\Jet1)
-					Case 2: PointEntity(o\Entity,o\EnemyMissile\Sender\Enemy\Jet2)
+						Case 1: PointEntity(o\Entity,o\EnemyMissile\Sender\Enemy\Jet1)
+						Case 2: PointEntity(o\Entity,o\EnemyMissile\Sender\Enemy\Jet2)
 					End Select
 					If o\EnemyMissile\DisappearTimer>2.1*secs# Then
 						MoveEntity(o\Entity,0,o\EnemyMissile\KikiBombSpeed#*0.21*d\Delta*0.85,o\EnemyMissile\KikiBombSpeed#*0.21*d\Delta*0.85)
@@ -1739,49 +1778,61 @@ End Function
 			Case OBJTYPE_BOMBER1:
 				MoveEntity(o\Entity,0,0,0.9*d\Delta*0.75)
 		End Select
-		EndIf
-
+	EndIf
+	
 		; Turn mesh around
-		Select o\EnemyMissile\MissileType
-			Case OBJTYPE_KIKI,OBJTYPE_FLAPPERBOMB,-OBJTYPE_BOSS2,OBJTYPE_BOMBIE,OBJTYPE_STEELION,OBJTYPE_OCTUS,OBJTYPE_DRAGONFLY,OBJTYPE_BITER,OBJTYPE_TAKER,OBJTYPE_CRAWLER,OBJTYPE_E1000,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_OAKSWORD,OBJTYPE_CATAKILLER,-OBJTYPE_CATAKILLER,OBJTYPE_TOXO,OBJTYPE_SNOWY,OBJTYPE_HAMMERHAMMER,OBJTYPE_BOMBER2:
-			Case OBJTYPE_ORBINAUT,OBJTYPE_SPONA,OBJTYPE_SPIKES,OBJTYPE_ASTERON,OBJTYPE_MANTA,OBJTYPE_NEBULA,OBJTYPE_SPRINKLR: TurnEntity o\EntityX, 0, 0.3*20*d\Delta, 0
-			Case OBJTYPE_SLICER,OBJTYPE_MADMOLE: TurnEntity o\EntityX, 0.7*20*d\Delta, 0, 0
-			Default: TurnEntity o\EntityX, 0, 0, 0.4*20*d\Delta
-		End Select
-
+	Select o\EnemyMissile\MissileType
+		Case OBJTYPE_KIKI,OBJTYPE_FLAPPERBOMB,-OBJTYPE_BOSS2,OBJTYPE_BOMBIE,OBJTYPE_STEELION,OBJTYPE_OCTUS,OBJTYPE_DRAGONFLY,OBJTYPE_BITER,OBJTYPE_TAKER,OBJTYPE_CRAWLER,OBJTYPE_E1000,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_OAKSWORD,OBJTYPE_CATAKILLER,-OBJTYPE_CATAKILLER,OBJTYPE_TOXO,OBJTYPE_SNOWY,OBJTYPE_HAMMERHAMMER,OBJTYPE_BOMBER2:
+		Case OBJTYPE_ORBINAUT,OBJTYPE_SPONA,OBJTYPE_SPIKES,OBJTYPE_ASTERON,OBJTYPE_MANTA,OBJTYPE_NEBULA,OBJTYPE_SPRINKLR: TurnEntity o\EntityX, 0, 0.3*20*d\Delta, 0
+		Case OBJTYPE_SLICER,OBJTYPE_MADMOLE: TurnEntity o\EntityX, 0.7*20*d\Delta, 0, 0
+		Default: TurnEntity o\EntityX, 0, 0, 0.4*20*d\Delta
+	End Select
+	
 		; Psychokinesis and stun
-		Select o\EnemyMissile\MissileType
-			Case OBJTYPE_BOMBIE:
-			Default:
-				Object_EnforcePsychokinesis(o,p,d)
-				Object_EnforceRubyGravity(o,p,d)
-				Object_EnforceStun(o,p,d)
-		End Select
-
+	Select o\EnemyMissile\MissileType
+		Case OBJTYPE_BOMBIE:
+		Default:
+			Object_EnforcePsychokinesis(o,p,d)
+			Object_EnforceRubyGravity(o,p,d)
+			Object_EnforceStun(o,p,d)
+	End Select
+	
 		; Bullet particle
-		Select o\EnemyMissile\MissileType
-			Case OBJTYPE_PAWNGUN,OBJTYPE_FLAPPERGUN,OBJTYPE_SEARCHER,OBJTYPE_EGGHUNTER,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_ACHAOS:
-				ParticleTemplate_Call(o\Particle, PARTICLE_PLAYER_BULLETHEAT, o\Entity, 1, 1, 1, 0, 0, 0.025)
-			Case OBJTYPE_CRABMEAT,OBJTYPE_HUNTER,OBJTYPE_GUNNER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_BOSS,-OBJTYPE_BOSSBETA,OBJTYPE_EXPLOSION2,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
-				ParticleTemplate_Call(o\Particle, PARTICLE_PLAYER_SMOKE, o\Entity, 0.2, 0.099, 1, 0, 3, 0.1)
-			Case OBJTYPE_STEELION:
-				ParticleTemplate_Call(o\Particle, PARTICLE_PLAYER_ICE, o\Entity)
-			Case OBJTYPE_BITER,OBJTYPE_TAKER,OBJTYPE_CRAWLER:
-				ParticleTemplate_Call(o\Particle, PARTICLE_PLAYER_FIRE, o\Entity)
-			Case OBJTYPE_OCTUS:
-				ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_INK, o\Entity)
-			Case OBJTYPE_E1000,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO:
-				ParticleTemplate_Call(o\Particle, PARTICLE_PLAYER_ATTACKTRAIL, o\Entity, 0.5, 0.075, 3, 0, 8)
-			Case OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_DOOMSEYE:
-				ParticleTemplate_Call(o\Particle, PARTICLE_PLAYER_BULLETHEATALIEN, o\Entity, 1, 1, 1, 0, 0, 0.025)
-			Case -OBJTYPE_CATAKILLER,OBJTYPE_BOSSBETA:
-				ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_ELECTRIC, o\Entity, 0, 0, 0, 0, 0, 0.05)
-			Case OBJTYPE_TOXO:
-				ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_POISONFOG, o\Entity)
-		End Select
-
+	Select o\EnemyMissile\MissileType
+		Case OBJTYPE_PAWNGUN,OBJTYPE_FLAPPERGUN,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_ACHAOS:
+			ParticleTemplate_Call(o\Particle, PARTICLE_PLAYER_BULLETHEAT, o\Entity, 1, 1, 1, 0, 0, 0.025)
+		Case OBJTYPE_CRABMEAT,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_BOSS,-OBJTYPE_BOSSBETA,OBJTYPE_EXPLOSION2,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
+			ParticleTemplate_Call(o\Particle, PARTICLE_PLAYER_SMOKE, o\Entity, 0.2, 0.099, 1, 0, 3, 0.1)
+		Case OBJTYPE_STEELION:
+			ParticleTemplate_Call(o\Particle, PARTICLE_PLAYER_ICE, o\Entity)
+		Case OBJTYPE_BITER,OBJTYPE_TAKER,OBJTYPE_CRAWLER:
+			ParticleTemplate_Call(o\Particle, PARTICLE_PLAYER_FIRE, o\Entity)
+		Case OBJTYPE_OCTUS:
+			ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_INK, o\Entity)
+		Case OBJTYPE_E1000,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO:
+			ParticleTemplate_Call(o\Particle, PARTICLE_PLAYER_ATTACKTRAIL, o\Entity, 0.5, 0.075, 3, 0, 8)
+		Case OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_DOOMSEYE:
+			ParticleTemplate_Call(o\Particle, PARTICLE_PLAYER_BULLETHEATALIEN, o\Entity, 1, 1, 1, 0, 0, 0.025)
+		Case -OBJTYPE_CATAKILLER,OBJTYPE_BOSSBETA:
+			ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_ELECTRIC, o\Entity, 0, 0, 0, 0, 0, 0.05)
+		Case OBJTYPE_TOXO:
+			ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_POISONFOG, o\Entity)
+	End Select
+	
 		; Delete the object
-	 	If o\Hit Or (Not(o\EnemyMissile\DisappearTimer>0)) Or o\EnemyMissile\DeleteDestroy Then
+	If o\Hit Or (Not(o\EnemyMissile\DisappearTimer>0)) Or o\EnemyMissile\DeleteDestroy Then
+		
+		candeflect=False
+		If (p\Character=CHAR_MIG And p\Animation\Animation=ANIMATION_SPIN) Or (p\Character=CHAR_RAY And p\Action=ACTION_THRUST) Then candeflect=True
+		
+		
+		If o\Hit And candeflect And o\BeenDeflected=0 Then 
+			TurnEntity(o\Entity,0,EntityYaw#(o\Entity)-180,0)
+			EmitSmartSound(Sound_Deflect,p\Objects\Entity)
+			o\BeenDeflected=1
+			o\DeflectionTimer=1*secs#
+		ElseIf (Not(o\DeflectionTimer>0)) Then
+			
 	 		If (Not(o\EnemyMissile\DeleteDestroy)) Then
 	 			; If hurt player
 				If o\Hit And o\PsychoedThrown=False And o\EnemyMissile\MayNotHurt=0 Then
@@ -1799,8 +1850,8 @@ End Function
 						Case OBJTYPE_OCTUS,OBJTYPE_TOXO:
 							p\InkFloorTimer=3*secs#
 							Select o\EnemyMissile\MissileType
-							Case OBJTYPE_TOXO: p\Inked=2 : EntityColor(p\Objects\Mesh,248,16,234)
-							Default: p\Inked=1 : EntityColor(p\Objects\Mesh,20,20,20)
+								Case OBJTYPE_TOXO: p\Inked=2 : EntityColor(p\Objects\Mesh,248,16,234)
+								Default: p\Inked=1 : EntityColor(p\Objects\Mesh,20,20,20)
 							End Select
 						Case OBJTYPE_MADMOLE:
 							If Not(p\BumpedTimer>0) Then
@@ -1818,13 +1869,14 @@ End Function
 							If (Not(Game\Shield=OBJTYPE_FSHIELD Or p\Character=CHAR_BLA)) Then Player_Hit(p)
 						Case OBJTYPE_TAKER,OBJTYPE_CRAWLER:
 							If (Not(Game\Shield=OBJTYPE_FSHIELD)) Then Player_Hit(p)
-						Case OBJTYPE_GUNNER
+						Case OBJTYPE_EGUNNER
 							Object_Enemy_SpecialBehaviour_GunnerRingDrain(p)
-							ParticleTemplate_Call(o\Particle, PARTICLE_PLAYER_SMOKE, p\Objects\Entity, 0.2, 0.099, 1, 0, 3, 0.1)
+						Case OBJTYPE_INACTIVE
+							
 						Default: Player_Hit(p)
 					End Select
 				EndIf
-
+				
 				; Upon always
 				Select o\EnemyMissile\MissileType
 					Case OBJTYPE_CRABMEAT,OBJTYPE_KIKI,OBJTYPE_FLAPPERBOMB,OBJTYPE_BOSS,OBJTYPE_MANTA,OBJTYPE_EXPLOSION2,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
@@ -1842,7 +1894,7 @@ End Function
 						EmitSmartSound(Sound_Paddle2,o\Entity)
 				End Select
 			EndIf
-
+			
 			; Deletion
 			Select o\EnemyMissile\MissileType
 				Case OBJTYPE_ORBINAUT,OBJTYPE_SPONA:
@@ -1860,8 +1912,9 @@ End Function
 			Delete o
 			Return
 		EndIf
-
-	End Function
+	EndIf
+	
+End Function
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
@@ -1885,13 +1938,13 @@ End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
 Function Object_EnemyLookAtPlayer(o.tObject, p.tPlayer)
-	If (Not(p\Action=ACTION_HOMING)) And (Abs(p\Objects\Position\x# - o\Position\x#) > 2.5) And (Abs(p\Objects\Position\z# - o\Position\z#) > 2.5) Then
+	If (Not(p\Action=ACTION_HOMING Or p\Action=ACTION_LIGHTDASH)) And (Abs(p\Objects\Position\x# - o\Position\x#) > 2.5) And (Abs(p\Objects\Position\z# - o\Position\z#) > 2.5) Then
 		RotateEntity o\Entity,EntityPitch(o\Entity),(DeltaYaw#(p\Objects\Entity,o\Entity) - 180),EntityRoll(o\Entity)
 	EndIf
 End Function
 
 Function Object_EnemyPointAtPlayer(o.tObject, p.tPlayer)
-	If (Not(p\Action=ACTION_HOMING)) And (Abs(p\Objects\Position\x# - o\Position\x#) > 2.5) And (Abs(p\Objects\Position\z# - o\Position\z#) > 2.5) Then
+	If (Not(p\Action=ACTION_HOMING Or p\Action=ACTION_LIGHTDASH)) And (Abs(p\Objects\Position\x# - o\Position\x#) > 2.5) And (Abs(p\Objects\Position\z# - o\Position\z#) > 2.5) Then
 		PointEntity(o\Entity,p\Objects\Entity)
 	EndIf
 End Function
@@ -1916,11 +1969,11 @@ End Function
 Function Object_EnemyMovements_SpawnMissile(o.tObject, p.tPlayer)
 	If o\Enemy\ShouldSpawnMissile Then
 		Select o\ObjType
-			Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD:
-				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 2)
-			Case OBJTYPE_GUNNER
+			Case OBJTYPE_EGUNNER,OBJTYPE_PAWNGUN
 				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, EntityX(o\Enemy\Gun,1), EntityY(o\Enemy\Gun,1), EntityZ(o\Enemy\Gun,1), 0, EntityYaw(o\Entity), 0, 2)
 				
+			Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD:
+				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 2)
 			Case OBJTYPE_BEETLE:
 				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0, 1)
 			Case OBJTYPE_CRABMEAT,OBJTYPE_CHASER,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_WARRIORGUN2:
@@ -2090,20 +2143,21 @@ Function Object_EnemyMovements_SpawnMissile(o.tObject, p.tPlayer)
 				If o\ObjType=OBJTYPE_FCANNON3 Then
 					obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, EntityX(o\Enemy\Jet2,1), EntityY(o\Enemy\Jet2,1), EntityZ(o\Enemy\Jet2,1), EntityPitch(o\Enemy\Jet2,1), EntityYaw(o\Entity), 0)
 				EndIf
-			Default:
+			Default
 				obj.tObject = Object_EnemyMissile_Create(o, o\ObjType, o\Position\x#, o\Position\y#, o\Position\z#, 0, EntityYaw(o\Entity), 0)
-				If o\ObjType=OBJTYPE_PAWNGUN Then o\EggpawnShootTimer=0.25*secs#
+				
 		End Select
 		o\Enemy\ShouldSpawnMissile=False
 	EndIf
 End Function
 
 Function Object_EnemyMovements(o.tObject, p.tPlayer, d.tDeltaTime)
-
+	
+	If p\Character=CHAR_ESP And p\HurtTimer>0 Then Return
+	
 	Object_EnemyMovements_SpawnMissile(o,p)
 
 	If o\Enemy\WaitTimer>0 Then o\Enemy\WaitTimer=o\Enemy\WaitTimer-timervalue#
-	
 	If o\Enemy\WaitTimer2>0 Then o\Enemy\WaitTimer2=o\Enemy\WaitTimer2-timervalue#
 	If o\Enemy\AttackTimer>0 Then o\Enemy\AttackTimer=o\Enemy\AttackTimer-timervalue#
 
@@ -2114,17 +2168,17 @@ Function Object_EnemyMovements(o.tObject, p.tPlayer, d.tDeltaTime)
 			Object_Enemy_Behaviour(o,p,d,8,1)
 		Case OBJTYPE_PAWNSHIELD,OBJTYPE_HAMMERSHIELD:
 			Object_Enemy_Behaviour(o,p,d,5,1)
-		Case OBJTYPE_FLAPPERGUN,OBJTYPE_SEARCHER:
+		Case OBJTYPE_FLAPPERGUN:
 			Object_Enemy_Behaviour(o,p,d,5.25,3.5,0.5)
-		Case OBJTYPE_EGGHUNTER
-			Object_Enemy_Behaviour(o,p,d,5.25,3.5,0.3)
+		Case OBJTYPE_PAWNGUN
+			Object_Enemy_Behaviour(o,p,d,5.25,3.5,0.5)
 		Case OBJTYPE_HAMMERHAMMER:
 			Object_Enemy_Behaviour(o,p,d,7.0,5.5,0.1)
 		Case OBJTYPE_PAWNSWORD:
 			Object_Enemy_Behaviour(o,p,d,5.25,3.5,4,1)
 		Case OBJTYPE_FLAPPERBOMB,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE:
 			Object_Enemy_Behaviour(o,p,d,5.5,5,5.65)
-		Case OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES:
+		Case OBJTYPE_SPINA,OBJTYPE_SPUNA,OBJTYPE_SPANA,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES:
 			Object_Enemy_Behaviour(o,p,d,9)
 			Select o\ObjType
 				Case OBJTYPE_BUBBLSSPIKES: Object_Enemy_SpecialBehaviour(o,p)
@@ -2166,10 +2220,10 @@ Function Object_EnemyMovements(o.tObject, p.tPlayer, d.tDeltaTime)
 			Object_Enemy_Behaviour(o,p,d,4.5,3.5,2.3)
 		Case OBJTYPE_COP,OBJTYPE_COPRACER:
 			Object_Enemy_Behaviour(o,p,d,6.5,1)
+		Case OBJTYPE_EGUNNER
+			Object_Enemy_Behaviour(o,p,d,7.5,5.5,0.25)
 		Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD:
 			Object_Enemy_Behaviour(o,p,d,7.5,5.5,2.65)
-		Case OBJTYPE_GUNNER
-			Object_Enemy_Behaviour(o,p,d,7.5,5.5,0.25)
 		Case OBJTYPE_BEETLE:
 			Object_Enemy_Behaviour(o,p,d,5,3.5,1.5)
 		Case OBJTYPE_BEETLESPARK,OBJTYPE_FLAPPERNEEDLE:
@@ -2325,12 +2379,13 @@ End Function
 
 	Function Object_Enemy_MoveBehaviour(o.tObject, p.tPlayer, d.tDeltaTime)
 		Select o\ObjType
-			Case OBJTYPE_PAWN,OBJTYPE_GUNNER,OBJTYPE_MOTOBUG,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES,OBJTYPE_CAMERON,OBJTYPE_ANTON,OBJTYPE_BOMBIE,OBJTYPE_BALKIRY,OBJTYPE_CRAWL,OBJTYPE_BITER,OBJTYPE_TAKER,OBJTYPE_RHINOTANK,OBJTYPE_TECHNOSQU,OBJTYPE_WARRIOR,OBJTYPE_WING,OBJTYPE_SNOWY,OBJTYPE_SPLATS,OBJTYPE_HAMMER: o\Anim=2
+			Case OBJTYPE_PAWN,OBJTYPE_MOTOBUG,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES,OBJTYPE_CAMERON,OBJTYPE_ANTON,OBJTYPE_BOMBIE,OBJTYPE_BALKIRY,OBJTYPE_CRAWL,OBJTYPE_BITER,OBJTYPE_TAKER,OBJTYPE_RHINOTANK,OBJTYPE_TECHNOSQU,OBJTYPE_WARRIOR,OBJTYPE_WING,OBJTYPE_SNOWY,OBJTYPE_SPLATS,OBJTYPE_HAMMER: o\Anim=2
 			Case OBJTYPE_PAWNSHIELD,OBJTYPE_HAMMERSHIELD: If o\Enemy\Shield Then o\Anim=4 Else o\Anim=2
 			Case OBJTYPE_PAWNGUN,OBJTYPE_HAMMERHAMMER: o\Anim=7
 			Case OBJTYPE_PAWNSWORD: o\Anim=10
 			Case OBJTYPE_CHOPPER,OBJTYPE_JAWS,OBJTYPE_AQUIS: If o\Enemy\FlyEnemyType Then o\Anim=1 Else o\Anim=2
 			Case OBJTYPE_HUNTER,OBJTYPE_OAKSWORD: o\Anim=3
+			Case OBJTYPE_EGUNNER: o\Anim=2
 			Case OBJTYPE_HUNTERSHIELD: If o\Enemy\Shield Then o\Anim=6 Else o\Anim=3
 			Case OBJTYPE_PENGUINATOR: If o\Enemy\WaitTimer>6*secs# Then o\Anim=2 Else o\Anim=3
 			Case OBJTYPE_SLICER: If o\Enemy\AttackMode=0 Then o\Anim=1 Else o\Anim=3
@@ -2369,18 +2424,14 @@ End Function
 				Object_EnemyLookAtPlayer(o,p)
 				Object_EnemyMoveToPlayer(o,p,d,0.35)
 				Object_PlayRobotSteps(o,3,7)
-			Case OBJTYPE_GUNNER
-				Object_PlayRobotSteps(o,6,13)
-				Object_EnemyLookAtPlayer(o,p)
-				Object_EnemyMoveToPlayer(o,p,d,0.35)
-			Case OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_SEARCHER,OBJTYPE_EGGHUNTER,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_WITCH1,OBJTYPE_WITCH2:
+			Case OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_WITCH1,OBJTYPE_WITCH2:
 				Object_EnemyLookAtPlayer(o,p)
 				Object_EnemyMoveToPlayer(o,p,d,0.025)
 				Select o\ObjType
 					Case OBJTYPE_FLAPPERNEEDLE:
 						Object_Enemy_BlockBehaviour(o,p,3.5,7.5)
 				End Select
-			Case OBJTYPE_SPINA,OBJTYPE_SPANA:
+			Case OBJTYPE_SPINA,OBJTYPE_SPUNA,OBJTYPE_SPANA:
 				Object_EnemyPointAtPlayer(o,p)
 				Select o\ObjType
 					Case OBJTYPE_SPANA:
@@ -2500,6 +2551,10 @@ End Function
 						Object_EnemyMoveToPlayer(o,p,d,0.3)
 				End Select
 				o\Enemy\MayNotBeTargeted=False
+			Case OBJTYPE_EGUNNER
+				Object_PlayRobotSteps(o,6,13)
+				Object_EnemyLookAtPlayer(o,p)
+				Object_EnemyMoveToPlayer(o,p,d,0.3)
 			Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD:
 				Object_EnemyLookAtPlayer(o,p)
 				Object_EnemyMoveToPlayer(o,p,d,0.23)
@@ -2739,9 +2794,10 @@ End Function
 
 	Function Object_Enemy_AttackBehaviour_Initiate(o.tObject, p.tPlayer)
 		Select o\ObjType
-			Case OBJTYPE_WARRIORGUN1,OBJTYPE_HAMMERHAMMER: o\Anim=6
+			Case OBJTYPE_EGUNNER
+				o\Anim=3
+			Case OBJTYPE_PAWNGUN,OBJTYPE_WARRIORGUN1,OBJTYPE_HAMMERHAMMER: o\Anim=6
 			Case OBJTYPE_PAWNSWORD,OBJTYPE_WARRIORGUN2: o\Anim=9
-			Case  OBJTYPE_GUNNER: o\Anim=3
 			Case OBJTYPE_CRABMEAT,OBJTYPE_SPINY,OBJTYPE_KIKI,OBJTYPE_HUNTER,OBJTYPE_CHASER,OBJTYPE_EGGROBO,OBJTYPE_NEWTRON,OBJTYPE_BALLHOG,OBJTYPE_WITCH1,OBJTYPE_WITCH2: o\Anim=2
 			Case OBJTYPE_HUNTERSHIELD: If o\Enemy\Shield Then o\Anim=5 Else o\Anim=2
 			Case OBJTYPE_AQUIS: If o\Enemy\FlyEnemyType Then o\Anim=3 Else o\Anim=2
@@ -2764,14 +2820,14 @@ End Function
 			Default: o\Anim=1
 		End Select
 		Select o\ObjType
-			Case OBJTYPE_PAWNGUN,OBJTYPE_GUNNER,OBJTYPE_FLAPPERGUN,OBJTYPE_SEARCHER,OBJTYPE_EGGHUNTER,OBJTYPE_FLAPPERBOMB,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_CRABMEAT,OBJTYPE_SPINY,OBJTYPE_KIKI,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_CHASER,OBJTYPE_EGGROBO,OBJTYPE_CAMERON,OBJTYPE_ACHAOS,OBJTYPE_ORBINAUT,OBJTYPE_SPONA,OBJTYPE_NEWTRON,OBJTYPE_SNAILB,OBJTYPE_STEELION,OBJTYPE_MANTA,OBJTYPE_OCTUS,OBJTYPE_E1000,OBJTYPE_BALLHOG,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_NEBULA,OBJTYPE_TOXO,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE,OBJTYPE_HAMMERHAMMER,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
+			Case OBJTYPE_PAWNGUN,OBJTYPE_EGUNNER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_CRABMEAT,OBJTYPE_SPINY,OBJTYPE_KIKI,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_CHASER,OBJTYPE_EGGROBO,OBJTYPE_CAMERON,OBJTYPE_ACHAOS,OBJTYPE_ORBINAUT,OBJTYPE_SPONA,OBJTYPE_NEWTRON,OBJTYPE_SNAILB,OBJTYPE_STEELION,OBJTYPE_MANTA,OBJTYPE_OCTUS,OBJTYPE_E1000,OBJTYPE_BALLHOG,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_NEBULA,OBJTYPE_TOXO,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE,OBJTYPE_HAMMERHAMMER,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
 				o\Enemy\ShouldSpawnMissile=True
 				Select o\ObjType
 					Case OBJTYPE_ORBINAUT,OBJTYPE_SPONA,OBJTYPE_STEELION,OBJTYPE_TOXO,OBJTYPE_HAMMERHAMMER:
 					Case OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_SPINY,OBJTYPE_CAMERON: EmitSmartSound(Sound_EnemyShot2,o\Entity)
 					Case OBJTYPE_FLAPPERBOMB,OBJTYPE_CRABMEAT,OBJTYPE_MANTA,OBJTYPE_BALLHOG,OBJTYPE_NEBULA,OBJTYPE_SPRINKLR,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3: EmitSmartSound(Sound_EnemyCannon,o\Entity)
 					Case OBJTYPE_KIKI: EmitSmartSound(Sound_EnemyThrow,o\Entity)
-					Case OBJTYPE_HUNTER,OBJTYPE_GUNNER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_HORNET3,OBJTYPE_HORNET6: EmitSmartSound(Sound_EnemyShot3,o\Entity)
+					Case OBJTYPE_HUNTER,OBJTYPE_EGUNNER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_HORNET3,OBJTYPE_HORNET6: EmitSmartSound(Sound_EnemyShot3,o\Entity)
 					Case OBJTYPE_AEROC: EmitSmartSound(Sound_EnemyShot4,o\Entity)
 					Case OBJTYPE_NEWTRON,OBJTYPE_SNAILB: EmitSmartSound(Sound_EnemyShotPoof,o\Entity)
 					Case OBJTYPE_OCTUS: EmitSmartSound(Sound_Gum,o\Entity)
@@ -2852,7 +2908,6 @@ End Function
 		Select o\ObjType
 			Case OBJTYPE_CRABMEAT,OBJTYPE_SPINY,OBJTYPE_KIKI,OBJTYPE_NEWTRON,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_ASTERON:
 				Object_EnemyLookAtPlayer(o,p)
-				
 			Case OBJTYPE_CHASER:
 				Object_EnemyMoveUp(o,p,d,0.54)
 				o\Enemy\FlyEnemyType=True
@@ -2872,8 +2927,9 @@ End Function
 
 	Function Object_Enemy_AttackBehaviour(o.tObject, p.tPlayer, d.tDeltaTime)
 		Select o\ObjType
+			Case OBJTYPE_PAWNGUN: o\Anim=6
 			Case OBJTYPE_PAWNSWORD,OBJTYPE_WARRIORGUN2: o\Anim=9
-			Case OBJTYPE_CATERKILLER,OBJTYPE_BALKIRY,OBJTYPE_TAKER,OBJTYPE_CRAWLER,OBJTYPE_WARRIOR: o\Anim=3
+			Case OBJTYPE_CATERKILLER,OBJTYPE_BALKIRY,OBJTYPE_TAKER,OBJTYPE_CRAWLER,OBJTYPE_WARRIOR,OBJTYPE_EGUNNER: o\Anim=3
 			Case OBJTYPE_KIKI: If o\Enemy\AttackTimer>1.875*secs# Then o\Anim=2 Else o\Anim=1
 			Case OBJTYPE_HUNTERSHIELD: If o\Enemy\Shield Then o\Anim=4 Else o\Anim=1
 			Case OBJTYPE_OAKSWORD,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO: o\Anim=4
@@ -2885,7 +2941,6 @@ End Function
 			Case OBJTYPE_STEELION,OBJTYPE_OCTUS: If o\Enemy\Underwater=1 Then o\Anim=6 Else o\Anim=3
 			Case OBJTYPE_CRAWL: If o\Enemy\AttackMode=0 Then o\Anim=3 Else o\Anim=4
 			Case OBJTYPE_MADMOLE: If o\Enemy\AttackMode=2 Then o\Anim=2 Else o\Anim=3
-				
 			Case OBJTYPE_ZOOMER:
 				Select o\Enemy\AttackMode
 					Case 0: o\Anim=1
@@ -3044,7 +3099,7 @@ End Function
 
 	Function Object_Enemy_DefaultBehaviour(o.tObject, p.tPlayer, d.tDeltaTime)
 		Select o\ObjType
-			Case OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_SEARCHER,OBJTYPE_EGGHUNTER,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_GRABBER,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_CHASER,OBJTYPE_KLAGEN,OBJTYPE_EGGROBO,OBJTYPE_COP,OBJTYPE_COPRACER,OBJTYPE_SPONA,OBJTYPE_ORBINAUT,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_BALKIRY,OBJTYPE_DRAGONFLY,OBJTYPE_MANTA,OBJTYPE_OCTUS,OBJTYPE_PATABATA,OBJTYPE_E1000,OBJTYPE_NEBULA:
+			Case OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_SPINA,OBJTYPE_SPUNA,OBJTYPE_SPANA,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_GRABBER,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_CHASER,OBJTYPE_KLAGEN,OBJTYPE_EGGROBO,OBJTYPE_COP,OBJTYPE_COPRACER,OBJTYPE_SPONA,OBJTYPE_ORBINAUT,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_BALKIRY,OBJTYPE_DRAGONFLY,OBJTYPE_MANTA,OBJTYPE_OCTUS,OBJTYPE_PATABATA,OBJTYPE_E1000,OBJTYPE_NEBULA:
 				If (Not(ChannelPlaying(o\Enemy\Channel_EnemyStep))) And o\InView Then
 					Select o\ObjType
 						Case OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_SPONA,OBJTYPE_GRABBER,OBJTYPE_MANTA,OBJTYPE_NEBULA:
@@ -3327,14 +3382,6 @@ End Function
 			Gameplay_SubstractRings(1)
 		EndIf
 	End Function
-Function Object_Enemy_SpecialBehaviour_GunnerRingDrain(p.tPlayer)
-	If (Not(Game\Interface\RingStolenTimer>0)) And Game\Gameplay\Rings>0 Then
-		Game\Interface\RingStolenTimer=0.25*secs#
-		EmitSmartSound(Sound_Ring,p\Objects\Entity)
-		Gameplay_SubstractRings(1)
-	EndIf
-	If Game\Gameplay\Rings=0 Then Player_Hit(p)
-End Function
 	Function Object_Enemy_SpecialBehaviour(o.tObject, p.tPlayer)
 		Select o\ObjType
 			Case OBJTYPE_GRABBER,OBJTYPE_KLAGEN,OBJTYPE_ACHAOSBLOB,OBJTYPE_BOO:

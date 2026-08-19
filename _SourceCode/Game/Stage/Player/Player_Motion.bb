@@ -2,170 +2,133 @@
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
-
+	
 	; ---- Motion routines ----
 	; =========================================================================================================
 	; =========================================================================================================
 Function Player_Motion(p.tPlayer, d.tDeltaTime)
-
+	
 		; Acquire position
-		Player_UpdatePosition(p)
-
+	Player_UpdatePosition(p)
+	
 		; Test out collisions with scenery since last update. While doing this, calculate if character's on
 		; ground, and if so, set the alignment.
-		p\Motion\GroundTest = Player_TestCollisions(p, d)
-
+	p\Motion\GroundTest = Player_TestCollisions(p, d)
+	
 		; Once we know if the character's on ground, check for the ground flag and change motion speed in
 		; consecuence.
-		Select p\Motion\GroundTest
-			Case True
-				Player_Align(p)
-
-				If p\Physics\Rolling Then
-					Player_ConvertGroundToRoll(p, d)
-				End If
-
-				If p\Motion\Ground=False And (Not(p\OnDeathMeshTimer>0)) Then					
+	Select p\Motion\GroundTest
+		Case True
+			Player_Align(p)
+			
+			If p\Physics\Rolling Then
+				Player_ConvertGroundToRoll(p, d)
+			End If
+			
+			If p\Motion\Ground=False And (Not(p\OnDeathMeshTimer>0)) Then					
 					; If character just landed, transpose air speed to ground					
-					Player_ConvertAirToGround(p)
-					p\Motion\Ground = True
-					Player_ResetAirRestrictionStuff(p)
-
+				Player_ConvertAirToGround(p)
+				p\Motion\Ground = True
+				Player_ResetAirRestrictionStuff(p)
+				
 					; Change alignment
-					p\Animation\Align\x# = p\Motion\Align\x#
-					p\Animation\Align\y# = p\Motion\Align\y#
-					p\Animation\Align\z# = p\Motion\Align\z#
-				End If
-			Case False
+				p\Animation\Align\x# = p\Motion\Align\x#
+				p\Animation\Align\y# = p\Motion\Align\y#
+				p\Animation\Align\z# = p\Motion\Align\z#
+			End If
+		Case False
 				; If character just landed, transpose air speed to ground
-				If p\Motion\Ground Then
-					Player_ConvertGroundToAir(p)
-					p\Motion\Ground = False
-					Player_ResetAirRestrictionStuff(p)
-				End If
-
-				Player_Align(p)
-		End Select
-
+			If p\Motion\Ground Then
+				Player_ConvertGroundToAir(p)
+				p\Motion\Ground = False
+				Player_ResetAirRestrictionStuff(p)
+			End If
+			
+			Player_Align(p)
+	End Select
+	
 		; Place hommer
-		If p\Objects\Hommer\Done=0 Then
-			PositionEntity p\Objects\Hommer\Entity, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 1
-			If Not(Player_IsPlayable(p)) Then
-				If p\Action=ACTION_RIVALDIE Then
-					p\Objects\Hommer\CanHoming=False
-					p\Objects\Hommer\Done=1
-				EndIf
+	If p\Objects\Hommer\Done=0 Then
+		PositionEntity p\Objects\Hommer\Entity, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 1
+		If Not(Player_IsPlayable(p)) Then
+			If p\Action=ACTION_RIVALDIE Then
+				p\Objects\Hommer\CanHoming=False
+				p\Objects\Hommer\Done=1
 			EndIf
 		EndIf
-
+	EndIf
+	
 		; Smoothly change animation alignment to the one of the player
-		Vector_LinearInterpolation(p\Animation\Align, p\Motion\Align, (0.01+Vector_Length#(p\Motion\Speed)*0.07)*d\Delta#)
-		Vector_Normalize(p\Animation\Align)
-
-		If p\No#=1 Or (Not(p\FollowerIsHoldingLeaderTimer>0)) Then
-			Player_Motion_Placements(p)
-
+	Vector_LinearInterpolation(p\Animation\Align, p\Motion\Align, (0.01+Vector_Length#(p\Motion\Speed)*0.07)*d\Delta#)
+	Vector_Normalize(p\Animation\Align)
+	
+	If p\No#=1 Or (Not(p\FollowerIsHoldingLeaderTimer>0)) Then
+		Player_Motion_Placements(p)
+		
 			; dummy fix for turning back
-			If Abs(p\Animation\Direction#-180)<0.05 Or Abs(p\Animation\Direction#-0)<0.05 Then
-				Select(Rand(1,2))
+		If Abs(p\Animation\Direction#-180)<0.05 Or Abs(p\Animation\Direction#-0)<0.05 Then
+			Select(Rand(1,2))
 				Case 1: p\Animation\Direction#=p\Animation\Direction#+0.1
 				Case 2: p\Animation\Direction#=p\Animation\Direction#-0.1
-				End Select
-			EndIf
-		
-			; Now, just move over the character to the new position, based on it's speed.
-			If p\Motion\Ground Then
-				MoveEntity(p\Objects\Entity, p\Motion\Speed\x#*p\Physics\ICETRIGGER3#*d\Delta, p\Motion\Speed\y#*d\Delta-(0.015+(Vector_Length#(p\Motion\Speed)*0.33*d\Delta)), p\Motion\Speed\z#*p\Physics\ICETRIGGER3#*d\Delta)
-			Else	
-				MoveEntity(p\Objects\Entity, p\Motion\Speed\x#*p\Physics\ICETRIGGER3#*d\Delta, p\Motion\Speed\y#*d\Delta, p\Motion\Speed\z#*p\Physics\ICETRIGGER3#*d\Delta)
-			EndIf
-		EndIf
-
-		; Followers holding
-		If p\No#=1 Then
-			Select p\Action
-				Case ACTION_FLY,ACTION_LEVITATE,ACTION_VICTORYHOLD:
-					Player_FollowerHolding_ByFeet(p)
-				Case ACTION_GLIDE,ACTION_SOAR,ACTION_SOARFLAP:
-					Player_FollowerHolding_ByTriangleDive(p)
-				Case ACTION_SLOWGLIDE,ACTION_HOVER,ACTION_SHOOTHOVER,ACTION_SLEET:
-					Select p\Character
-						Case CHAR_TIA,CHAR_EGR: Player_FollowerHolding_ByFeet(p)
-						Default: Player_FollowerHolding_ByLatchOn(p)
-					End Select
 			End Select
 		EndIf
-
-		; Apply minimum speed
-		If p\SpeedLength#<p\Physics\COMMON_XZMINSPEED# Then
-			If Abs(p\SpeedLength#-p\Physics\COMMON_XZMINSPEED#)<1 Then
-				Player_SetSpeed(p,p\SpeedLength#+Abs(p\SpeedLength#-p\Physics\COMMON_XZMINSPEED#)*d\Delta)
-			Else
-				Player_SetSpeed(p,p\SpeedLength#+1*d\Delta)
-			EndIf
-		EndIf
-
-		; Deal trails
-		If p\No#=1 And (Game\MachLock>0 Or Game\SpeedShoes=1 Or (p\Action=ACTION_SKYDIVE And Input\Hold\ActionRoll)) And (Not(p\Action=ACTION_HOMING Or p\Action=ACTION_DEBUG)) And (p\SpeedLength#>0 Or Abs(p\Motion\Speed\y#)>1) And (Game\SuperForm=0 Or Game\MachLock>0) And Game\Victory=0 Then
-			If (Not(p\SonicBoomTrailTimer>0)) Then
-				Player_FreeTrails(p,1)
-				For i=0 To 4
-					PositionEntity(p\Objects\PPivot[i], EntityX#(p\Objects\Mesh),EntityY#(p\Objects\Mesh),EntityZ#(p\Objects\Mesh), True)
-					MoveEntity(p\Objects\PPivot[i], 0.5*Rand(-3,3)+Rand(-1,1)*p\ScaleFactor#,0.5*Rand(-3,3)+Rand(-1,1)*p\ScaleFactor#,0.15*Rand(-2,2)+Rand(-1,1)*p\ScaleFactor#)
-					Player_SpawnTrail(p,i)
-				Next
-				p\SonicBoomTrailTimer=0.15*secs#
-			EndIf
-			For i=0 To 4
-				RotateEntity(p\Objects\PPivot[i],EntityPitch(p\Objects\Entity),p\Animation\Direction#,EntityRoll(p\Objects\Entity))
-			Next
-		Else
-			Player_FreeTrails(p,1)
-		EndIf
 		
-		; Deal longtrail
-		Select p\Action
-			Case ACTION_JUMPDASH,ACTION_SPRINT,ACTION_LIGHTATTACK,ACTION_HOMING,ACTION_STOMP,ACTION_BUMPED,ACTION_ROLL,ACTION_DRIFT,ACTION_BELLYFLOP,ACTION_BOOST,ACTION_BOOSTFALL
-				If p\Flags\LongTrailCreated=0 Then 
-					Player_LongTrail(p, 1)
-					p\Flags\LongTrailCreated=1
-				EndIf
-			Case ACTION_SOAR,ACTION_GLIDE,ACTION_DOUBLEJUMP:
-				If p\Motion\Ground=False Then
-					If p\Flags\LongTrailCreated=0 Then 
-						Player_LongTrail(p, 1)
-						p\Flags\LongTrailCreated=1
-						p\TrailTimer = 0.175*secs#
-					EndIf
-				End If
-				If (Not p\TrailTimer>0) Then Player_FreeLongTrails(p,2)
-			Default:
-				p\Flags\LongTrailCreated=0
-				Player_FreeLongTrails(p,2)
-		End Select
-
-		; Deal places
-		If Game\Vehicle=0 Then Player_Motion_PetPlacements(p)
-		If p\No#=1 Then
-			If Menu\Members>1 Then
-				PositionEntity p\Objects\Follower, EntityX(p\Objects\Mesh), EntityY(p\Objects\Mesh), EntityZ(p\Objects\Mesh), 1
-				RotateEntity p\Objects\Follower, EntityPitch(p\Objects\Mesh), EntityYaw(p\Objects\Mesh), EntityRoll(p\Objects\Mesh), 1
-				MoveEntity p\Objects\Follower, Player_ReturnFollowerPosition(p,1,2), 0, Player_ReturnFollowerPosition(p,2,2)
-				PositionEntity p\Objects\FollowerPlace[2-1], EntityX(p\Objects\Follower), EntityY(p\Objects\Follower), EntityZ(p\Objects\Follower), 1
-				RotateEntity p\Objects\FollowerPlace[2-1], EntityPitch(p\Objects\Follower), EntityYaw(p\Objects\Follower), EntityRoll(p\Objects\Follower), 1
-			EndIf
-			If Menu\Members>2 Then
-				PositionEntity p\Objects\Follower, EntityX(p\Objects\Mesh), EntityY(p\Objects\Mesh), EntityZ(p\Objects\Mesh), 1
-				RotateEntity p\Objects\Follower, EntityPitch(p\Objects\Mesh), EntityYaw(p\Objects\Mesh), EntityRoll(p\Objects\Mesh), 1
-				MoveEntity p\Objects\Follower, Player_ReturnFollowerPosition(p,1,3), 0, Player_ReturnFollowerPosition(p,2,3)
-				PositionEntity p\Objects\FollowerPlace[3-1], EntityX(p\Objects\Follower), EntityY(p\Objects\Follower), EntityZ(p\Objects\Follower), 1
-				RotateEntity p\Objects\FollowerPlace[3-1], EntityPitch(p\Objects\Follower), EntityYaw(p\Objects\Follower), EntityRoll(p\Objects\Follower), 1
-			EndIf
+			; Now, just move over the character to the new position, based on it's speed.
+		If p\Motion\Ground Then
+			MoveEntity(p\Objects\Entity, p\Motion\Speed\x#*p\Physics\ICETRIGGER3#*d\Delta, p\Motion\Speed\y#*d\Delta-(0.015+(Vector_Length#(p\Motion\Speed)*0.33*d\Delta)), p\Motion\Speed\z#*p\Physics\ICETRIGGER3#*d\Delta)
+		Else	
+			MoveEntity(p\Objects\Entity, p\Motion\Speed\x#*p\Physics\ICETRIGGER3#*d\Delta, p\Motion\Speed\y#*d\Delta, p\Motion\Speed\z#*p\Physics\ICETRIGGER3#*d\Delta)
 		EndIf
+	EndIf
+	
+		; Followers holding
+	If p\No#=1 Then
+		Select p\Action
+			Case ACTION_FLY,ACTION_LEVITATE,ACTION_VICTORYHOLD:
+				Player_FollowerHolding_ByFeet(p)
+			Case ACTION_GLIDE,ACTION_SOAR,ACTION_SOARFLAP:
+				Player_FollowerHolding_ByTriangleDive(p)
+			Case ACTION_SLOWGLIDE,ACTION_HOVER,ACTION_SHOOTHOVER,ACTION_SLEET:
+				Select p\Character
+					Case CHAR_TIA,CHAR_EGR: Player_FollowerHolding_ByFeet(p)
+					Default: Player_FollowerHolding_ByLatchOn(p)
+				End Select
+		End Select
+	EndIf
+	
+		; Apply minimum speed
+	If p\SpeedLength#<p\Physics\COMMON_XZMINSPEED# Then
+		If Abs(p\SpeedLength#-p\Physics\COMMON_XZMINSPEED#)<1 Then
+			Player_SetSpeed(p,p\SpeedLength#+Abs(p\SpeedLength#-p\Physics\COMMON_XZMINSPEED#)*d\Delta)
+		Else
+			Player_SetSpeed(p,p\SpeedLength#+1*d\Delta)
+		EndIf
+	EndIf
+	
+	Player_DealTrails(p)
+	
+		; Deal places
+	If Game\Vehicle=0 Then Player_Motion_PetPlacements(p)
+	If p\No#=1 Then
+		If Menu\Members>1 Then
+			PositionEntity p\Objects\Follower, EntityX(p\Objects\Mesh), EntityY(p\Objects\Mesh), EntityZ(p\Objects\Mesh), 1
+			RotateEntity p\Objects\Follower, EntityPitch(p\Objects\Mesh), EntityYaw(p\Objects\Mesh), EntityRoll(p\Objects\Mesh), 1
+			MoveEntity p\Objects\Follower, Player_ReturnFollowerPosition(p,1,2), 0, Player_ReturnFollowerPosition(p,2,2)
+			PositionEntity p\Objects\FollowerPlace[2-1], EntityX(p\Objects\Follower), EntityY(p\Objects\Follower), EntityZ(p\Objects\Follower), 1
+			RotateEntity p\Objects\FollowerPlace[2-1], EntityPitch(p\Objects\Follower), EntityYaw(p\Objects\Follower), EntityRoll(p\Objects\Follower), 1
+		EndIf
+		If Menu\Members>2 Then
+			PositionEntity p\Objects\Follower, EntityX(p\Objects\Mesh), EntityY(p\Objects\Mesh), EntityZ(p\Objects\Mesh), 1
+			RotateEntity p\Objects\Follower, EntityPitch(p\Objects\Mesh), EntityYaw(p\Objects\Mesh), EntityRoll(p\Objects\Mesh), 1
+			MoveEntity p\Objects\Follower, Player_ReturnFollowerPosition(p,1,3), 0, Player_ReturnFollowerPosition(p,2,3)
+			PositionEntity p\Objects\FollowerPlace[3-1], EntityX(p\Objects\Follower), EntityY(p\Objects\Follower), EntityZ(p\Objects\Follower), 1
+			RotateEntity p\Objects\FollowerPlace[3-1], EntityPitch(p\Objects\Follower), EntityYaw(p\Objects\Follower), EntityRoll(p\Objects\Follower), 1
+		EndIf
+	EndIf
+	
+End Function
 
-	End Function
-
-Function Player_ReturnFollowerPosition(p.tPlayer,xz,follower)
+	Function Player_ReturnFollowerPosition(p.tPlayer,xz,follower)
 		Select follower
 			Case 2: side=1
 			Case 3: side=-1
@@ -200,60 +163,63 @@ Function Player_ReturnFollowerPosition(p.tPlayer,xz,follower)
 						Return ( -((5+5*(follower-2))+1*p\ScaleFactor#+1*pp(follower)\ScaleFactor#) )
 				End Select
 		End Select
-	End Function
+End Function
 
 	; =========================================================================================================
 	; =========================================================================================================
 Function Player_TestCollisions(p.tPlayer, d.tDeltaTime)
 		; Define values for the dot product to be considered up and down collisions
-		p\Collision\CeilingTest# = -p\Physics\MOTION_CEILING#
-		p\Collision\GroundTest#  = p\Physics\MOTION_GROUND#
-		p\Collision\FrontTest#	 = p\Physics\MOTION_WALL_DIRECTION#
-		p\Collision\FrontFactor# = 0
-
-		p\Collision\Align = False
-		p\Collision\ShouldAlign = False
-		p\Collision\Result = False
-		
+	p\Collision\CeilingTest# = -p\Physics\MOTION_CEILING#
+	p\Collision\GroundTest#  = p\Physics\MOTION_GROUND#
+	p\Collision\FrontTest#	 = p\Physics\MOTION_WALL_DIRECTION#
+	p\Collision\FrontFactor# = 0
+	
+	p\Collision\Align = False
+	p\Collision\ShouldAlign = False
+	p\Collision\Result = False
+	
 		; Create normal vectors for temporaly storing the alignment
-		p\Collision\Normal  		= Vector(0, 0, 0)
-		p\Collision\GroundNormal	= Vector(0, 0, 0)
-		p\Collision\CeilingNormal	= Vector(0, 0, 0)
-		p\Collision\SpeedNormal		= Vector_Copy(p\Motion\Speed) : Vector_Normalize(p\Collision\SpeedNormal)
-		
+	p\Collision\Normal  		= Vector(0, 0, 0)
+	p\Collision\GroundNormal	= Vector(0, 0, 0)
+	p\Collision\CeilingNormal	= Vector(0, 0, 0)
+	p\Collision\SpeedNormal		= Vector_Copy(p\Motion\Speed) : Vector_Normalize(p\Collision\SpeedNormal)
+	
 		; Iterate through each collision and register all the collision data
 		; that may have ocurred within the player sphere.
-		For i = 1 To CountCollisions(p\Objects\Entity)
+	For i = 1 To CountCollisions(p\Objects\Entity)
 			; Clear current collision normal
-			Vector_Set(p\Collision\Normal, 0, 0, 0)
-			p\Collision\ShouldAlign = False
-			
+		Vector_Set(p\Collision\Normal, 0, 0, 0)
+		p\Collision\ShouldAlign = False
+		
 			; Add vertex normals to our normal vector
-			p\Collision\GroundType=GetEntityType(CollisionEntity(p\Objects\Entity, i))
-			Select p\Collision\GroundType
-				Case COLLISION_WORLD_POLYGON,COLLISION_WORLD_POLYGON_DEATH,COLLISION_WORLD_POLYGON_DEATH_GOTHRU,COLLISION_WORLD_POLYGON_HURT,COLLISION_WORLD_POLYGON_RAIL,COLLISION_WORLD_POLYGON_BLOCK,COLLISION_WORLD_POLYGON_PINBALL,COLLISION_WORLD_POLYGON_ICE,COLLISION_WORLD_POLYGON_BOUNCE,COLLISION_WORLD_POLYGON_SLOW,COLLISION_PLAYER,COLLISION_OBJECT,COLLISION_OBJECT2
+		p\Collision\GroundType=GetEntityType(CollisionEntity(p\Objects\Entity, i))
+		Select p\Collision\GroundType
+			Case COLLISION_WORLD_POLYGON,COLLISION_WORLD_POLYGON_ROLL,COLLISION_WORLD_POLYGON_WATER,COLLISION_WORLD_POLYGON_RUN,COLLISION_OBJECT_TELEPORTER,COLLISION_WORLD_POLYGON_WOOD,COLLISION_WORLD_POLYGON_METAL,COLLISION_WORLD_POLYGON_DIRT,COLLISION_WORLD_POLYGON_GRASS,COLLISION_WORLD_POLYGON_DEATH,COLLISION_WORLD_POLYGON_DEATH_GOTHRU,COLLISION_WORLD_POLYGON_HURT,COLLISION_WORLD_POLYGON_RAIL,COLLISION_WORLD_POLYGON_BLOCK,COLLISION_WORLD_POLYGON_PINBALL,COLLISION_WORLD_POLYGON_ICE,COLLISION_WORLD_POLYGON_BOUNCE,COLLISION_WORLD_POLYGON_SLOW,COLLISION_PLAYER,COLLISION_OBJECT,COLLISION_OBJECT2
 					; Setup
-					p\Collision\ShouldAlign = True
-
+				p\Collision\ShouldAlign = True
+				
 					; Acquire collided surface & triangle
-					p\Collision\Surface 	= CollisionSurface(p\Objects\Entity, i)
-					p\Collision\Triangle 	= CollisionTriangle(p\Objects\Entity, i)
-
-					For j = 0 To 2
-						p\Collision\Vertex	= TriangleVertex(p\Collision\Surface, p\Collision\Triangle, j)
-						p\Collision\Normal\x#	= p\Collision\Normal\x#+VertexNX#(p\Collision\Surface, p\Collision\Vertex)
-						p\Collision\Normal\y#	= p\Collision\Normal\y#+VertexNY#(p\Collision\Surface, p\Collision\Vertex)
-						p\Collision\Normal\z#	= p\Collision\Normal\z#+VertexNZ#(p\Collision\Surface, p\Collision\Vertex)
-					Next
-					Vector_Normalize(p\Collision\Normal)
-
+				p\Collision\Surface 	= CollisionSurface(p\Objects\Entity, i)
+				p\Collision\Triangle 	= CollisionTriangle(p\Objects\Entity, i)
+				
+				For j = 0 To 2
+					p\Collision\Vertex	= TriangleVertex(p\Collision\Surface, p\Collision\Triangle, j)
+					p\Collision\Normal\x#	= p\Collision\Normal\x#+VertexNX#(p\Collision\Surface, p\Collision\Vertex)
+					p\Collision\Normal\y#	= p\Collision\Normal\y#+VertexNY#(p\Collision\Surface, p\Collision\Vertex)
+					p\Collision\Normal\z#	= p\Collision\Normal\z#+VertexNZ#(p\Collision\Surface, p\Collision\Vertex)
+				Next			
+				Vector_Normalize(p\Collision\Normal)	
+				
 					; Calculate dot product
-					p\Collision\DotProduct# = Vector_DotProduct#(p\Collision\Normal, p\Motion\Align)
-
-					If Not(p\Action=ACTION_DEBUG) Then
+				p\Collision\DotProduct# = Vector_DotProduct#(p\Collision\Normal, p\Motion\Align)
+				
+				If Not(p\Action=ACTION_DEBUG) Then
 					Select p\Collision\GroundType
-						Case COLLISION_WORLD_POLYGON:
+						Case COLLISION_WORLD_POLYGON,COLLISION_WORLD_POLYGON_WATER,COLLISION_WORLD_POLYGON_WOOD,COLLISION_WORLD_POLYGON_METAL,COLLISION_WORLD_POLYGON_DIRT,COLLISION_WORLD_POLYGON_GRASS:
 							If p\Action=ACTION_GRIND Then p\Action=ACTION_COMMON
+							If p\Action=ACTION_FLY And p\Character=CHAR_RAY Then p\Action=ACTION_JUMP
+						Case COLLISION_WORLD_POLYGON_RUN
+							Player_SetSpeed(p,4.5)
 						Case COLLISION_WORLD_POLYGON_DEATH,COLLISION_WORLD_POLYGON_DEATH_GOTHRU:
 							p\OnDeathMeshTimer=0.1*secs#
 							Player_TouchDie(p)
@@ -263,10 +229,22 @@ Function Player_TestCollisions(p.tPlayer, d.tDeltaTime)
 						Case COLLISION_WORLD_POLYGON_HURT:
 							If Game\Victory=0 Then Player_Hit(p)
 						Case COLLISION_WORLD_POLYGON_RAIL:
+							If (EntityCollided(p\Objects\R_GrindAffector, COLLISION_WORLD_POLYGON_RAIL))  Then
+								p\Animation\Direction# = p\Animation\Direction# - (1.2*d\Delta)
+								;cam\TargetRotation\y#=cam\TargetRotation\y# - (1.2*d\Delta)
+								
+							EndIf
+							
+							If (EntityCollided(p\Objects\L_GrindAffector, COLLISION_WORLD_POLYGON_RAIL))  Then
+								p\Animation\Direction# = p\Animation\Direction# + (1.2*d\Delta)
+								;cam\TargetRotation\y#=cam\TargetRotation\y# + (1.2*d\Delta)
+								
+							EndIf
 							If (Not(p\Action=ACTION_GRIND)) Then
 								If (Not(p\CanClimbTimer>0)) And Game\Victory=0 And (Not(p\Action=ACTION_DIE Or p\Action=ACTION_HURT)) And p\Motion\Ground And (p\Flags\CanClimb=False) Then
 									If Game\Vehicle=0 Or (p\No#=1 Or pp(1)\Action=ACTION_GRIND) Then
 										If p\No#=1 Then EmitSmartSound(Sound_GrindStart,p\Objects\Entity)
+										If Input\Hold\ActionRoll Then p\GrindTurn=2
 										p\Action=ACTION_GRIND
 									EndIf
 								EndIf
@@ -282,96 +260,102 @@ Function Player_TestCollisions(p.tPlayer, d.tDeltaTime)
 							EndIf
 					End Select
 					Select p\Collision\GroundType
-						Case COLLISION_WORLD_POLYGON_ICE: p\IceFloorTimer=2.5*secs#
+						Case COLLISION_WORLD_POLYGON_ICE: p\IceFloorTimer=2*secs#
 						Default: p\IceFloorTimer=0
 					End Select
 					Select p\Collision\GroundType
-						Case COLLISION_WORLD_POLYGON_SLOW: p\SlowFloorTimer=2.5*secs# : If p\SpeedLength#>p\Physics\COMMON_XZTOPSPEED# Then Player_SetSpeed(p,p\Physics\COMMON_XZTOPSPEED#)
+						Case COLLISION_WORLD_POLYGON_SLOW: p\SlowFloorTimer=2*secs# : If p\SpeedLength#>p\Physics\COMMON_XZTOPSPEED# Then Player_SetSpeed(p,p\Physics\COMMON_XZTOPSPEED#)
 						Default: p\SlowFloorTimer=0
 					End Select
 					Select p\Collision\GroundType
-						Case COLLISION_WORLD_POLYGON: p\CanClimbTimer=0.1*secs#
+						Case COLLISION_WORLD_POLYGON,COLLISION_WORLD_POLYGON_WOOD,COLLISION_WORLD_POLYGON_DIRT,COLLISION_WORLD_POLYGON_GRASS,COLLISION_WORLD_POLYGON_METAL: p\CanClimbTimer=0.1*secs#
 						Case COLLISION_WORLD_POLYGON_BLOCK: p\CanClimbTimer=0
 					End Select
 					Select p\Collision\GroundType
 						Case COLLISION_WORLD_POLYGON_PINBALL,COLLISION_WORLD_POLYGON_BOUNCE,COLLISION_WORLD_POLYGON_RAIL:
 							If p\No#=1 Then Game\Vehicle=0
 					End Select
+					If p\Collision\GroundType=COLLISION_WORLD_POLYGON_WATER2 Then
+						
+					Else
+						p\WaterBeg=0
+						p\WaterBegTooFar=0
 					EndIf
-			End Select
-
+				EndIf
+		End Select
+		
 			; Test for ground collision
-			If (p\Collision\DotProduct# > p\Collision\GroundTest# And (p\Motion\Speed\y#<=0.0 Or p\Motion\Ground)) Then
-				If p\Collision\ShouldAlign Then
-					p\Collision\Align = True
-					Vector_Add(p\Collision\GroundNormal, p\Collision\Normal)
-				End If
-				p\Collision\GroundTest# = p\Collision\DotProduct#
-				
+		If (p\Collision\DotProduct# > p\Collision\GroundTest# And (p\Motion\Speed\y#<=0.0 Or p\Motion\Ground)) Then
+			If p\Collision\ShouldAlign Then
+				p\Collision\Align = True
+				Vector_Add(p\Collision\GroundNormal, p\Collision\Normal)
 			End If
-
+			p\Collision\GroundTest# = p\Collision\DotProduct#
+			
+		End If
+		
 			; Test for ground collision
-			If (p\Collision\DotProduct# < p\Collision\CeilingTest# And p\Motion\Speed\y#>0.0) Then
-				Vector_Add(p\Collision\CeilingNormal, p\Collision\Normal)
-				p\Collision\CeilingTest# = p\Collision\DotProduct#
-			End If
-
+		If (p\Collision\DotProduct# < p\Collision\CeilingTest# And p\Motion\Speed\y#>0.0) Then
+			Vector_Add(p\Collision\CeilingNormal, p\Collision\Normal)
+			p\Collision\CeilingTest# = p\Collision\DotProduct#
+		End If
+		
 			; Test for front collision. 
-			If (p\Collision\DotProduct#>=p\Physics\MOTION_WALL_UP# And p\Collision\DotProduct#<=p\Physics\MOTION_WALL_DOWN#) Then
+		If (p\Collision\DotProduct#>=p\Physics\MOTION_WALL_UP# And p\Collision\DotProduct#<=p\Physics\MOTION_WALL_DOWN#) Then
 				; Even though the dot product told us there was a collision, it may have been
 				; anywhere surrounding the player. Check out the orientation of the collision
 				; with a cross product.
-				p\Collision\Cross = Null
-				
-				Vector_CrossProduct(p\Collision\Normal, p\Motion\Align, p\Collision\Normal)
-				p\Collision\DotProduct# = 1-Abs(Vector_DotProduct#(p\Collision\Normal, p\Collision\SpeedNormal))
-
-				; Finally, test for front collision
-				If (p\Collision\DotProduct#>p\Collision\FrontTest#) Then
-					p\Collision\FrontTest# = p\Collision\DotProduct#
-				End If
-			End If
-		Next
-
-		; If there was a collision in the front, calculate how much the speed should drop.
-		If (p\Collision\FrontTest#>p\Physics\MOTION_WALL_DIRECTION#) Then
-			p\Collision\FrontFactor# = 1-Min#(((p\Collision\FrontTest#-p\Physics\MOTION_WALL_DIRECTION#)/(1-p\Physics\MOTION_WALL_DIRECTION#))*d\Delta*1.2, 1.0)
-			p\Motion\Speed\x# = p\Motion\Speed\x#*p\Collision\FrontFactor#
-			p\Motion\Speed\z# = p\Motion\Speed\z#*p\Collision\FrontFactor#
-		End If
-
-		; Once we know there's ground collision for sure, change alignment.
-		If (p\Collision\GroundTest# > p\Physics\MOTION_GROUND#) Then
-			If p\Collision\Align Then
-				Vector_Normalize(p\Collision\GroundNormal)
-				Vector_SetFromVector(p\Motion\Align, p\Collision\GroundNormal)
-			Else
-				Vector_SetFromVector(p\Motion\Align, Game\Stage\GravityAlignment)
-			End If
-			p\Collision\Result = True
-		; If no ground collision was found, maybe there's ceiling collision
-		Else If (p\Collision\CeilingTest# < p\Physics\MOTION_CEILING#) Then
-			; If the ceiling slope is low enough, make Sonic land on the
-			; ceiling.
-			If (p\Collision\CeilingTest# < p\Physics\MOTION_CEILING_STOP#) Then
-				p\Motion\Speed\y# = 0
-				p\Collision\Result = False
+			p\Collision\Cross = Null
 			
-			; If not, adjust to new alignment
-			Else
-				Vector_Normalize(p\Collision\CeilingNormal)
-				Vector_SetFromVector(p\Motion\Align, p\Collision\CeilingNormal)
-				p\Collision\Result = True
+			Vector_CrossProduct(p\Collision\Normal, p\Motion\Align, p\Collision\Normal)
+			p\Collision\DotProduct# = 1-Abs(Vector_DotProduct#(p\Collision\Normal, p\Collision\SpeedNormal))
+			
+				; Finally, test for front collision
+			If (p\Collision\DotProduct#>p\Collision\FrontTest#) Then
+				p\Collision\FrontTest# = p\Collision\DotProduct#
 			End If
+		End If
+	Next
+	
+		; If there was a collision in the front, calculate how much the speed should drop.
+	If (p\Collision\FrontTest#>p\Physics\MOTION_WALL_DIRECTION#) Then
+		p\Collision\FrontFactor# = 1-Min#(((p\Collision\FrontTest#-p\Physics\MOTION_WALL_DIRECTION#)/(1-p\Physics\MOTION_WALL_DIRECTION#))*d\Delta*1.2, 1.0)
+		p\Motion\Speed\x# = p\Motion\Speed\x#*p\Collision\FrontFactor#
+		p\Motion\Speed\z# = p\Motion\Speed\z#*p\Collision\FrontFactor#
+	End If
+	
+		; Once we know there's ground collision for sure, change alignment.
+	If (p\Collision\GroundTest# > p\Physics\MOTION_GROUND#) Then
+		If p\Collision\Align Then
+			Vector_Normalize(p\Collision\GroundNormal)
+			Vector_SetFromVector(p\Motion\Align, p\Collision\GroundNormal)
 		Else
 			Vector_SetFromVector(p\Motion\Align, Game\Stage\GravityAlignment)
-			p\Collision\Result = False
 		End If
-
-		Delete p\Collision\Normal: Delete p\Collision\GroundNormal : Delete p\Collision\CeilingNormal : Delete p\Collision\SpeedNormal
-		Return p\Collision\Result
-
-	End Function
+		p\Collision\Result = True
+		; If no ground collision was found, maybe there's ceiling collision
+	Else If (p\Collision\CeilingTest# < p\Physics\MOTION_CEILING#) Then
+			; If the ceiling slope is low enough, make Sonic land on the
+			; ceiling.
+		If (p\Collision\CeilingTest# < p\Physics\MOTION_CEILING_STOP#) Then
+			p\Motion\Speed\y# = 0
+			p\Collision\Result = False
+			
+			; If not, adjust to new alignment
+		Else
+			Vector_Normalize(p\Collision\CeilingNormal)
+			Vector_SetFromVector(p\Motion\Align, p\Collision\CeilingNormal)
+			p\Collision\Result = True
+		End If
+	Else
+		Vector_SetFromVector(p\Motion\Align, Game\Stage\GravityAlignment)
+		p\Collision\Result = False
+	End If
+	
+	Delete p\Collision\Normal: Delete p\Collision\GroundNormal : Delete p\Collision\CeilingNormal : Delete p\Collision\SpeedNormal
+	Return p\Collision\Result
+	
+End Function
 
 	; =========================================================================================================
 	; =========================================================================================================
@@ -383,8 +367,15 @@ Function Player_Motion_Placements(p.tPlayer)
 		PositionEntity(p\Objects\Mesh2, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 1)
 		PositionEntity(p\Objects\Mesh3, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 1)
 		PositionEntity(p\Objects\Mesh4, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 1)
+		PositionEntity(p\Objects\DebugCube, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 1)
+		Select p\ObjType
+			Case OBJTYPE_NODE,OBJTYPE_NODE2,OBJTYPE_RAILNODE
+				ScaleEntity(p\Objects\DebugCube,8.5,6,8.5)
+			Default
+				ScaleEntity(p\Objects\DebugCube,TempAttribute\power#,TempAttribute\power#,TempAttribute\power#)
+		End Select
 	Else
-		If p\Motion\Ground And (p\Action=ACTION_CHARGE Or p\Action=ACTION_ROLL Or p\Action=ACTION_JUMP Or p\Action=ACTION_BUMPED Or p\Action=ACTION_GRABBED Or p\Action=ACTION_LAND) Then
+		If p\Motion\Ground And (p\Action=ACTION_CHARGE Or p\Action=ACTION_ROLL Or p\Action=ACTION_DRIFT Or p\Action=ACTION_JUMP Or p\Action=ACTION_BUMPED Or p\Action=ACTION_GRABBED Or p\Action=ACTION_LAND) Then
 			PositionEntity(p\Objects\Mesh, p\Objects\Position\x#, p\Objects\Position\y#+p\ScaleFactor#, p\Objects\Position\z#, 1)
 		Else
 			PositionEntity(p\Objects\Mesh, p\Objects\Position\x#, p\Objects\Position\y#, p\Objects\Position\z#, 1)
@@ -393,23 +384,42 @@ Function Player_Motion_Placements(p.tPlayer)
 	
 		; Change direction of the mesh
 	If Game\Interface\DebugPlacerOn=0 Then
-		If (Not(p\Action=ACTION_SKYDIVE Or p\Action=ACTION_TORNADO))Then 
-			Select p\Action
-				Case ACTION_PANEL2
-					RotateEntity(p\Objects\Mesh, p\PanelRotation#, p\Animation\Direction#-180, 0)
-				Default
+		If (Not(p\Action=ACTION_CLIMB)) Then p\Animation\PreviousDirection#=p\Animation\Direction#
+		Select p\Action
+			Case ACTION_PANEL2
+				RotateEntity(p\Objects\Mesh, p\PanelRotation#, p\PanelRotationY#, 0)
+			Case ACTION_SKYDIVE
+				For c.tCamera = Each tCamera
+					RotateEntity(p\Objects\Mesh, 0, c\TargetRotation\y#, 0)
+					
+				Next
+			Case ACTION_DEMODASH
+				If p\Motion\Ground=True Then
 					RotateEntity(p\Objects\Mesh, 0, p\Animation\Direction#-180, 0)
-			End Select 
-			
+				Else
+					RotateEntity(p\Objects\Mesh, 90, p\Animation\Direction#, 0)
+				EndIf
+			Case ACTION_CLIMB
+				If p\Character=CHAR_ESP Then
+					RotateEntity(p\Objects\Mesh, 0, p\Animation\PreviousDirection#, 0)
+				Else
+					RotateEntity(p\Objects\Mesh, 0, p\Animation\Direction#-180, 0)
+				EndIf
+			Default
+				RotateEntity(p\Objects\Mesh, 0, p\Animation\Direction#-180, 0)
+		End Select
+		
+		
+		
+		
+		
+		If (Not(p\Action=ACTION_PANEL2 Or p\Action=ACTION_DEMODASH)) Then AlignToVector(p\Objects\Mesh, p\Animation\Align\x#, p\Animation\Align\y#, p\Animation\Align\z#, 2)
+		
+		If SHOPITEM_ENABLED(SHOPMENU_COSMETIC,COSMETIC_FLATCHARS)=1 Then 
+			ScaleEntity(p\Objects\Mesh, 1, 0.3, 1)
 		Else
-			
-			For c.tCamera = Each tCamera
-				RotateEntity(p\Objects\Mesh, 0, c\TargetRotation\y#, 0)
-			Next
-			
-		EndIf 
-		AlignToVector(p\Objects\Mesh, p\Animation\Align\x#, p\Animation\Align\y#, p\Animation\Align\z#, 2)
-		ScaleEntity(p\Objects\Mesh, 1, 1, 1)
+			ScaleEntity(p\Objects\Mesh, 1, 1, 1)
+		EndIf
 		
 		If p\Physics\TRICK_ANGLE#>5 Then p\Physics\TRICK_ANGLE_ACTUAL#=p\Physics\TRICK_ANGLE# Else p\Physics\TRICK_ANGLE_ACTUAL#=0
 		If Abs(p\Physics\LEAN_ANGLE#)>5 Then p\Physics\LEAN_ANGLE_ACTUAL#=p\Physics\LEAN_ANGLE# Else p\Physics\LEAN_ANGLE_ACTUAL#=0
@@ -450,7 +460,7 @@ Function Player_Motion_Placements(p.tPlayer)
 				Case 5,8:
 					MoveEntity p\Objects\Vehicle, 0, 1.05+0.75*p\ScaleFactor#, -0.8+1.2*p\ScaleFactor#
 			End Select
-		EndIf
+		EndIf	
 	Else
 		Select Game\Interface\DebugMenu
 			Case DEBUGMENU_ATTRIBUTES_CAMPOSITION#,DEBUGMENU_ATTRIBUTES_CAMROTATION#,DEBUGMENU_ATTRIBUTES_CAMZOOM#,DEBUGMENU_ATTRIBUTES_CAMSPEED#:
@@ -462,6 +472,9 @@ Function Player_Motion_Placements(p.tPlayer)
 			Default:
 				HideEntity(p\Objects\Mesh4)
 				Select p\ObjType
+						
+					Case OBJTYPE_SVISUAL1,OBJTYPE_SVISUAL2,OBJTYPE_SVISUAL3,OBJTYPE_SVISUAL4,OBJTYPE_SVISUAL5,OBJTYPE_SVISUAL6,OBJTYPE_SVISUAL7,OBJTYPE_SVISUAL8,OBJTYPE_SVISUAL9,OBJTYPE_SVISUAL10
+						ScaleEntity(p\Objects\Mesh,TempAttribute\power#,TempAttribute\power#,TempAttribute\power#)
 					Case OBJTYPE_CHECK,OBJTYPE_CHECK+1000,OBJTYPE_CHECK+2000,OBJTYPE_TELEPORTER,OBJTYPE_TELEPORTER2,OBJTYPE_TELEPORTER3,OBJTYPE_TELEPORTER4,OBJTYPE_TELEPORTER5,OBJTYPE_TELEPORTER6,OBJTYPE_TELEPORTEREND,OBJTYPE_GARDENPOINT,OBJTYPE_SPRINKLER+2000:
 						RotateEntity(p\Objects\Mesh,TempAttribute\pitch#,TempAttribute\yaw#,0)
 						RotateEntity(p\Objects\Mesh2,TempAttribute\pitch#+90,TempAttribute\yaw#,0)
@@ -474,7 +487,7 @@ Function Player_Motion_Placements(p.tPlayer)
 						RotateEntity(p\Objects\Mesh,0,TempAttribute\yaw#,0)
 						RotateEntity(p\Objects\Mesh2,0,TempAttribute\yaw#,0)
 						RotateEntity(p\Objects\Mesh3,0,TempAttribute\yaw#,0)
-					Case OBJTYPE_PAWN,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSWORD,OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_SPONA,OBJTYPE_MOTOBUG,OBJTYPE_CATERKILLER,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_CHOPPER,OBJTYPE_CRABMEAT,OBJTYPE_JAWS,OBJTYPE_SPINY,OBJTYPE_GRABBER,OBJTYPE_KIKI,OBJTYPE_COP,OBJTYPE_COPRACER,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_ACHAOS,OBJTYPE_ACHAOSBLOB,OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_CHASER,OBJTYPE_FIGHTER,OBJTYPE_EGGROBO,OBJTYPE_CAMERON,OBJTYPE_KLAGEN,OBJTYPE_ORBINAUT,OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_ANTON,OBJTYPE_AQUIS,OBJTYPE_BOMBIE,OBJTYPE_NEWTRON,OBJTYPE_PENGUINATOR,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_SPIKES,OBJTYPE_ASTERON,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_STEELION,OBJTYPE_BOO,OBJTYPE_BOOSCARE,OBJTYPE_GHOST,OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BALKIRY,OBJTYPE_BURROBOT,OBJTYPE_CRAWL,OBJTYPE_DRAGONFLY,OBJTYPE_MADMOLE,OBJTYPE_MANTA,OBJTYPE_MUSHMEANIE,OBJTYPE_OCTUS,OBJTYPE_PATABATA,OBJTYPE_ZOOMER,OBJTYPE_BITER,OBJTYPE_CRAWLER,OBJTYPE_TAKER,OBJTYPE_E1000,OBJTYPE_BALLHOG,OBJTYPE_RHINOTANK,OBJTYPE_TECHNOSQU,OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_OAKSWORD,OBJTYPE_LEECH,OBJTYPE_WING,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_CATAKILLER,OBJTYPE_CLUCKOID,OBJTYPE_MANTIS,OBJTYPE_NEBULA,OBJTYPE_ROLLER,OBJTYPE_SHEEP,OBJTYPE_SNOWY,OBJTYPE_SPLATS,OBJTYPE_TOXO,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE,OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER,OBJTYPE_HAMMERSHIELD,OBJTYPE_WITCH1,OBJTYPE_WITCH2,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3,OBJTYPE_BOMBER1,OBJTYPE_BOMBER2:
+					Case OBJTYPE_EGUNNER,OBJTYPE_PAWN,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSWORD,OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_SPINA,OBJTYPE_SPUNA,OBJTYPE_SPANA,OBJTYPE_SPONA,OBJTYPE_MOTOBUG,OBJTYPE_CATERKILLER,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_CHOPPER,OBJTYPE_CRABMEAT,OBJTYPE_JAWS,OBJTYPE_SPINY,OBJTYPE_GRABBER,OBJTYPE_KIKI,OBJTYPE_COP,OBJTYPE_COPRACER,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_ACHAOS,OBJTYPE_ACHAOSBLOB,OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_CHASER,OBJTYPE_FIGHTER,OBJTYPE_EGGROBO,OBJTYPE_CAMERON,OBJTYPE_KLAGEN,OBJTYPE_ORBINAUT,OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_ANTON,OBJTYPE_AQUIS,OBJTYPE_BOMBIE,OBJTYPE_NEWTRON,OBJTYPE_PENGUINATOR,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_SPIKES,OBJTYPE_ASTERON,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_STEELION,OBJTYPE_BOO,OBJTYPE_BOOSCARE,OBJTYPE_GHOST,OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BALKIRY,OBJTYPE_BURROBOT,OBJTYPE_CRAWL,OBJTYPE_DRAGONFLY,OBJTYPE_MADMOLE,OBJTYPE_MANTA,OBJTYPE_MUSHMEANIE,OBJTYPE_OCTUS,OBJTYPE_PATABATA,OBJTYPE_ZOOMER,OBJTYPE_BITER,OBJTYPE_CRAWLER,OBJTYPE_TAKER,OBJTYPE_E1000,OBJTYPE_BALLHOG,OBJTYPE_RHINOTANK,OBJTYPE_TECHNOSQU,OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_OAKSWORD,OBJTYPE_LEECH,OBJTYPE_WING,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_CATAKILLER,OBJTYPE_CLUCKOID,OBJTYPE_MANTIS,OBJTYPE_NEBULA,OBJTYPE_ROLLER,OBJTYPE_SHEEP,OBJTYPE_SNOWY,OBJTYPE_SPLATS,OBJTYPE_TOXO,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE,OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER,OBJTYPE_HAMMERSHIELD,OBJTYPE_WITCH1,OBJTYPE_WITCH2,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3,OBJTYPE_BOMBER1,OBJTYPE_BOMBER2:
 						RotateEntity(p\Objects\Mesh,0,TempAttribute\yaw#,0)
 						RotateEntity(p\Objects\Mesh2,0,TempAttribute\yaw#,0)
 						RotateEntity(p\Objects\Mesh3,0,TempAttribute\yaw#,0)
@@ -491,7 +504,7 @@ Function Player_Motion_Placements(p.tPlayer)
 	EndIf
 End Function
 
-Function Player_Motion_PetPlacements(p.tPlayer)
+	Function Player_Motion_PetPlacements(p.tPlayer)
 		Select p\Character
 			Case CHAR_CRE:
 				PositionEntity p\Objects\Follower, EntityX(p\Objects\Mesh), EntityY(p\Objects\Mesh), EntityZ(p\Objects\Mesh), 1
@@ -508,7 +521,7 @@ Function Player_Motion_PetPlacements(p.tPlayer)
 
 	; =========================================================================================================
 	; =========================================================================================================
-Function Player_Align(p.tPlayer)
+	Function Player_Align(p.tPlayer)
 		RotateEntity(p\Objects\Entity, 0, 0, 0)
 		AlignToVector(p\Objects\Entity, p\Motion\Align\x#, p\Motion\Align\y#, p\Motion\Align\z#, 2)
 		; dummy fix
@@ -517,7 +530,7 @@ Function Player_Align(p.tPlayer)
 
 	; =========================================================================================================
 	; =========================================================================================================
-Function Player_ConvertAirToGround(p.tPlayer)
+	Function Player_ConvertAirToGround(p.tPlayer)
 		TFormVector(p\Motion\Speed\x#, p\Motion\Speed\y#, p\Motion\Speed\z#, Game\Stage\Gravity, p\Objects\Entity)
 		p\Motion\Speed\x# = TFormedX#()
 		p\Motion\Speed\y# = 0
@@ -526,7 +539,7 @@ Function Player_ConvertAirToGround(p.tPlayer)
 
 	; =========================================================================================================
 	; =========================================================================================================
-Function Player_ConvertGroundToAir(p.tPlayer)
+	Function Player_ConvertGroundToAir(p.tPlayer)
 		TFormVector(p\Motion\Speed\x#, p\Motion\Speed\y#, p\Motion\Speed\z#, p\Objects\Entity, Game\Stage\Gravity)
 		p\Motion\Speed\x# = TFormedX#()
 		p\Motion\Speed\y# = TFormedY#()
@@ -535,7 +548,7 @@ Function Player_ConvertGroundToAir(p.tPlayer)
 
 	; =========================================================================================================
 	; =========================================================================================================
-Function Player_ConvertGroundToRoll(p.tPlayer, d.tDeltaTime)
+	Function Player_ConvertGroundToRoll(p.tPlayer, d.tDeltaTime)
 	If p\Motion\Align\x#<>0 Or p\Motion\Align\z#<>0 Then
 		TFormVector(p\Motion\Align\x#, p\Motion\Speed\y#, p\Motion\Align\z#, Game\Stage\Gravity, p\Objects\Entity)
 		
@@ -583,7 +596,7 @@ Function Player_ConvertGroundToRoll(p.tPlayer, d.tDeltaTime)
 	; =========================================================================================================
 	; =========================================================================================================
 
-Function Player_FollowerHolding_ByFeet(p.tPlayer, groundnotforced=False)
+	Function Player_FollowerHolding_ByFeet(p.tPlayer, groundnotforced=False)
 		If p\Invisibility=1 Then Return
 
 		holdingpivot=CreatePivot()
@@ -652,7 +665,7 @@ Function Player_FollowerHolding_ByFeet(p.tPlayer, groundnotforced=False)
 		If Menu\Members>=3 Then FreeEntity holdingpivot2
 	End Function
 
-Function Player_FollowerHolding_ByTriangleDive(p.tPlayer)
+	Function Player_FollowerHolding_ByTriangleDive(p.tPlayer)
 		If p\Invisibility=1 Then Return
 
 		holdingpivot=CreatePivot()
@@ -723,7 +736,7 @@ Function Player_FollowerHolding_ByTriangleDive(p.tPlayer)
 		FreeEntity holdingpivot_right
 	End Function
 
-Function Player_FollowerHolding_ByLatchOn(p.tPlayer)
+	Function Player_FollowerHolding_ByLatchOn(p.tPlayer)
 		If p\Invisibility=1 Then Return
 
 		Select p\Character
@@ -800,23 +813,23 @@ Function Player_FollowerHolding_ByLatchOn(p.tPlayer)
 		FreeEntity holdingpivot_right
 	End Function
 
-Function Player_FollowerHolding_EveryoneJumpDashes_Real(p.tPlayer)
+	Function Player_FollowerHolding_EveryoneJumpDashes_Real(p.tPlayer)
 		If EntityDistance(pp(1)\Objects\Entity,p\Objects\Entity)<50 And (p\Motion\Ground=False) Then
 			Player_Action_JumpDash_Initiate_Generic(p)
 		EndIf
 	End Function
-Function Player_FollowerHolding_EveryoneJumpDashes(p.tPlayer)
+	Function Player_FollowerHolding_EveryoneJumpDashes(p.tPlayer)
 		If p\Invisibility=1 Then Return
 		If Menu\Members>=2 Then Player_FollowerHolding_EveryoneJumpDashes_Real(pp(2))
 		If Menu\Members>=3 Then Player_FollowerHolding_EveryoneJumpDashes_Real(pp(3))
 	End Function
 
-Function Player_FollowerHolding_EveryoneDoubleJumps_Real(p.tPlayer)
+	Function Player_FollowerHolding_EveryoneDoubleJumps_Real(p.tPlayer)
 		If EntityDistance(pp(1)\Objects\Entity,p\Objects\Entity)<50 And (p\Motion\Ground=False) Then
 			Player_Action_DoubleJump_Initiate_Generic(p)
 		EndIf
 	End Function
-Function Player_FollowerHolding_EveryoneDoubleJumps(p.tPlayer)
+	Function Player_FollowerHolding_EveryoneDoubleJumps(p.tPlayer)
 		If p\Invisibility=1 Then Return
 		If Menu\Members>=2 Then Player_FollowerHolding_EveryoneDoubleJumps_Real(pp(2))
 		If Menu\Members>=3 Then Player_FollowerHolding_EveryoneDoubleJumps_Real(pp(3))

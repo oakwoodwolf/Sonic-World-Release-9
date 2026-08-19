@@ -34,6 +34,10 @@ Function LoadChaoVoices()
 	LoadGoodSound(Sound_ChaoDeath,1,"Sounds/ChaoDeath.ogg")
 	LoadGoodSound(Sound_ChaoHeroEvo,1,"Sounds/ChaoHeroEvo.ogg")
 	LoadGoodSound(Sound_ChaoMating,1,"Sounds/ChaoMating.ogg")
+	LoadGoodSound(Sound_ChaoLevelUp,1,"Sounds/ChaoLevelUp.ogg")
+	LoadGoodSound(Sound_ChaoStatup,1,"Sounds/ChaoStatup.ogg")
+	LoadGoodSound(Sound_ChaoStatus,1,"Sounds/ChaoStatus.ogg")
+	LoadGoodSound(Sound_ChaoSwim,3,"Sounds/ChaoSwim.ogg")
 	LoadGoodSound(Sound_ChaoNeutralEvo,1,"Sounds/ChaoNeutralEvo.ogg")
 	LoadGoodSound(Sound_ChaoReincarnation,1,"Sounds/ChaoReincarnation.ogg")
 
@@ -163,7 +167,7 @@ End Function
 ;_________________________________________________________________________________________________________
 
 Function Chao_Particle_Swim(cc.tChaoManager, size#=0.1)
-	ParticleTemplate_Call(cc\Particle, PARTICLE_CHAO_SWIM, cc\Pivot, size#, 0, 0, 0, 0, 0.325)
+	ParticleTemplate_Call(cc\Particle, PARTICLE_ChaoSwim, cc\Pivot, size#, 0, 0, 0, 0, 0.325)
 End Function
 
 ;_________________________________________________________________________________________________________
@@ -196,6 +200,20 @@ Function Chao_Interface_NameTag(cc.tChaoManager, c.tCamera)
 				Case CHAOCOLOR_GREY:	SetColor(134, 134, 134)
 				Case CHAOCOLOR_LIME:	SetColor(158, 243, 010)
 				Case CHAOCOLOR_BLACK:	SetColor(016, 016, 016)
+				Case CHAOCOLOR_CELESTE2:	SetColor(000, 240, 255)
+				Case CHAOCOLOR_WHITE2:	SetColor(250, 250, 250)
+				Case CHAOCOLOR_BLUE2:	SetColor(015, 086, 247)
+				Case CHAOCOLOR_RED2:		SetColor(255, 010, 010)
+				Case CHAOCOLOR_YELLOW2:	SetColor(253, 239, 008)
+				Case CHAOCOLOR_ORANGE2:	SetColor(255, 163, 003)
+				Case CHAOCOLOR_AZURE2:	SetColor(005, 193, 255)
+				Case CHAOCOLOR_PINK2:	SetColor(255, 061, 203)
+				Case CHAOCOLOR_PURPLE2:	SetColor(178, 011, 248)
+				Case CHAOCOLOR_GREEN2:	SetColor(064, 194, 034)
+				Case CHAOCOLOR_BROWN2:	SetColor(115, 062, 029)
+				Case CHAOCOLOR_GREY2:	SetColor(134, 134, 134)
+				Case CHAOCOLOR_LIME2:	SetColor(158, 243, 010)
+				Case CHAOCOLOR_BLACK2:	SetColor(016, 016, 016)
 			End Select
 			DrawImageEx(INTERFACE(Interface_Indicator), x, y)
 			SetColor(255, 255, 255)
@@ -523,7 +541,7 @@ Function ChaoManager_Race_EndRace_End()
 	Game\Victory=2
 
 	Game\Channel_MissionCompleted=PlaySmartSound(Sound_ChaoRaceCompleted)
-	ChannelVolume(Game\Channel_MissionCompleted,Menu\Settings\VolumeM#*Menu\Settings\Volume#)
+	ChannelVolume(Game\Channel_MissionCompleted,Menu\Settings\VolumeM#*(Menu\Settings\Volume#*0.175))
 
 End Function
 
@@ -782,7 +800,7 @@ Function ChaoManager_Karate_EndRace_End(lose)
 	Case 0: Game\Channel_MissionCompleted=PlaySmartSound(Sound_ChaoKarateWin)
 	Case 1: Game\Channel_MissionCompleted=PlaySmartSound(Sound_ChaoKarateLose)
 	End Select
-	ChannelVolume(Game\Channel_MissionCompleted,Menu\Settings\VolumeM#*Menu\Settings\Volume#)
+	ChannelVolume(Game\Channel_MissionCompleted,Menu\Settings\VolumeM#*(Menu\Settings\Volume#*0.175))
 
 End Function
 

@@ -43,16 +43,16 @@ Function Menu_BlackMarket_Update()
 	End Select
 
 	Select Menu\Menu2
-		Case MENU_BLACKMARKET_MAIN#: Menu_BlackMarket_Main()
-		Case MENU_BLACKMARKET_BUY#: Menu_BlackMarket_Buy()
-		Case MENU_BLACKMARKET_SELLLIST#: Menu_BlackMarket_SellList()
-		Case MENU_BLACKMARKET_EXIT#: Menu_BlackMarket_Exit()
-		Case MENU_BLACKMARKET_BUYLIST#: Menu_BlackMarket_BuyList()
-		Case MENU_BLACKMARKET_BUYCONFIRM#: Menu_BlackMarket_BuyConfirm()
-		Case MENU_BLACKMARKET_BUYREFUSE#: Menu_BlackMarket_BuyRefuse()
-		Case MENU_BLACKMARKET_SELLCONFIRM#: Menu_BlackMarket_SellConfirm()
-		Case MENU_BLACKMARKET_SELLREFUSE#: Menu_BlackMarket_SellRefuse()
-		Case MENU_BLACKMARKET_EXITREAL#: Menu_BlackMarket_ExitReal()
+		Case Menu_BlackMarket_Main#: Menu_BlackMarket_Main()
+		Case Menu_BlackMarket_Buy#: Menu_BlackMarket_Buy()
+		Case Menu_BlackMarket_SellList#: Menu_BlackMarket_SellList()
+		Case Menu_BlackMarket_Exit#: Menu_BlackMarket_Exit()
+		Case Menu_BlackMarket_BuyList#: Menu_BlackMarket_BuyList()
+		Case Menu_BlackMarket_BuyConfirm#: Menu_BlackMarket_BuyConfirm()
+		Case Menu_BlackMarket_BuyRefuse#: Menu_BlackMarket_BuyRefuse()
+		Case Menu_BlackMarket_SellConfirm#: Menu_BlackMarket_SellConfirm()
+		Case Menu_BlackMarket_SellRefuse#: Menu_BlackMarket_SellRefuse()
+		Case Menu_BlackMarket_ExitReal#: Menu_BlackMarket_ExitReal()
 	End Select
 
 	EndIf;!
@@ -85,7 +85,7 @@ Function Menu_BlackMarket_Main()
 		If Menu\Option<1 Then Menu\Option=3
 	EndIf
 
-	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+	If Input\Pressed\ActionJump Then
 		PlaySmartSound(Sound_MenuAccept)
 		Menu\Transition=1
 		Menu\NewMenu2=Menu\Option
@@ -127,7 +127,7 @@ Function Menu_BlackMarket_Buy()
 		If Menu\Option<1 Then Menu\Option=4
 	EndIf
 
-	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+	If Input\Pressed\ActionJump  Then
 		PlaySmartSound(Sound_MenuAccept)
 		Select Menu\Option
 			Case 4: Menu\BlackMarketBuyCategory=5
@@ -266,7 +266,7 @@ Function Menu_BlackMarket_BuyList()
 		DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W/2+(270-45)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*2+117.5)*GAME_WINDOW_SCALE#, 19)
 	EndIf
 
-	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+	If Input\Pressed\ActionJump  Then
 		If Menu\Wallet>=(Menu\CurrentPrice*Menu\ItemAmount) Then
 			PlaySmartSound(Sound_MenuAccept)
 			Menu\Transition=1
@@ -359,7 +359,7 @@ Function Menu_BlackMarket_BuyConfirm()
 			If Menu\Option2<1 Then Menu\Option2=2
 		EndIf
 
-		If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+		If Input\Pressed\ActionJump Then
 			PlaySmartSound(Sound_MenuAccept)
 			Select Menu\Option2
 				Case 1:
@@ -506,7 +506,7 @@ Function Menu_BlackMarket_SellList()
 	DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W/2+(137.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*2-32.5)*GAME_WINDOW_SCALE#, 2)
 	DrawBetterNumber(Menu\Wallet, GAME_WINDOW_W/2+(277.5)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-(CARD_PLACE#*2-32.5)*GAME_WINDOW_SCALE#, 0, 1)
 
-	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+	If Input\Pressed\ActionJump Then
 		PlaySmartSound(Sound_MenuAccept)
 		Menu\Transition=1
 		Menu\NewOption=Menu\Option
@@ -530,7 +530,7 @@ Function Menu_BlackMarket_SellList()
 		PlaySmartSound(Sound_MenuRefuse)
 		Menu\Transition=1
 		Menu\MeshChange=3
-		Menu\NewMenu2=MENU_BLACKMARKET_SELLREFUSE#
+		Menu\NewMenu2=Menu_BlackMarket_SellRefuse#
 		Menu\ChaoMenuTimer=1.82*secs#
 	EndIf
 
@@ -589,7 +589,7 @@ Function Menu_BlackMarket_SellConfirm()
 			If Menu\Option2<1 Then Menu\Option2=2
 		EndIf
 
-		If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+		If Input\Pressed\ActionJump  Then
 			PlaySmartSound(Sound_MenuAccept)
 			Select Menu\Option2
 				Case 1:
@@ -625,7 +625,7 @@ Function Menu_BlackMarket_SellConfirm()
 		If (Not(Menu\ChaoMenuTimer>0)) And Menu\Transition=0 Then
 			PlaySmartSound(Sound_MenuBack)
 			Menu\Transition=1
-			Menu\NewMenu2=MENU_BLACKMARKET_SELLLIST#
+			Menu\NewMenu2=Menu_BlackMarket_SellList#
 			Menu\NewOption=1
 			Menu\OptionOrder=0 : Menu\CurrentItem=0
 		EndIf
@@ -676,12 +676,12 @@ Function Menu_BlackMarket_Exit()
 		If Menu\Option<1 Then Menu\Option=2
 	EndIf
 
-	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+	If Input\Pressed\ActionJump Then
 		PlaySmartSound(Sound_MenuAccept)
 		Select Menu\Option
 			Case 1:
 				Menu\Transition=1
-				Menu\NewMenu2=MENU_BLACKMARKET_EXITREAL#
+				Menu\NewMenu2=Menu_BlackMarket_ExitReal#
 				Menu\ChaoMenuTimer=1.62*secs#
 				SaveGame_Inventory()
 			Case 2:
@@ -738,9 +738,9 @@ Function Menu_Principal_Update()
 	If Menu\WentToChaoMenu=1 Then;!
 
 	Select Menu\Menu2
-		Case MENU_PRINCIPAL_MAIN#: Menu_Principal_Main()
-		Case MENU_PRINCIPAL_LESSONS#: Menu_Principal_Lessons()
-		Case MENU_PRINCIPAL_EXITREAL#: Menu_Principal_ExitReal()
+		Case Menu_Principal_Main#: Menu_Principal_Main()
+		Case Menu_Principal_Lessons#: Menu_Principal_Lessons()
+		Case Menu_Principal_ExitReal#: Menu_Principal_ExitReal()
 	End Select
 
 	EndIf;!
@@ -771,7 +771,7 @@ Function Menu_Principal_Main()
 		If Menu\Option<1 Then Menu\Option=2
 	EndIf
 
-	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+	If Input\Pressed\ActionJump Then
 		PlaySmartSound(Sound_MenuAccept)
 		Menu\Transition=1
 		Menu\NewMenu2=Menu\Option

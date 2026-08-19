@@ -1,4 +1,506 @@
+Function Player_UpdateBoneEntities(p.tPlayer)
+	
+	Select p\Character
+		Case CHAR_SHA,CHAR_SHN:
+			Select p\Animation\Animation
+				Case ANIMATION_RUN,ANIMATION_MACHRUN,ANIMATION_DRIFTL,ANIMATION_DRIFTR:
+					If (Game\SuperForm=0 Or (Not(Player_IsPlayable(p)))) Then
+						ParticleTemplate_Call(p\JetParticle1,PARTICLE_PLAYER_ROCKET,p\Objects\Jet1)
+						ParticleTemplate_Call(p\JetParticle2,PARTICLE_PLAYER_ROCKET,p\Objects\Jet2)
+						ParticleTemplate_Call(p\JetParticle3,PARTICLE_PLAYER_ROCKET,p\Objects\Jet3)
+						ParticleTemplate_Call(p\JetParticle4,PARTICLE_PLAYER_ROCKET,p\Objects\Jet4)
+					EndIf
+				Case ANIMATION_THROW:
+					ParticleTemplate_Call(p\JetParticle1,PARTICLE_PLAYER_ROCKET,p\Objects\Jet1)
+					ParticleTemplate_Call(p\JetParticle2,PARTICLE_PLAYER_ROCKET,p\Objects\Jet2)
+					ParticleTemplate_Call(p\JetParticle3,PARTICLE_PLAYER_ROCKET,p\Objects\Jet3)
+					ParticleTemplate_Call(p\JetParticle4,PARTICLE_PLAYER_ROCKET,p\Objects\Jet4)
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandR,1.25,0.2,2,p\Character,5)
+				Case ANIMATION_KICK:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\FootR,1.0,0.34,2,p\Character,1)
+			End Select
+		Case CHAR_BLA
+			If p\Animation\Animation= ANIMATION_KICK2 Or p\Animation\Animation=ANIMATION_KICK Then
+				ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_FIRE,p\Objects\FootL,0.6,0.64,3,p\Character,2)
+				ParticleTemplate_Call(p\Particle2,PARTICLE_PLAYER_FIRE,p\Objects\FootR,0.6,0.64,3,p\Character,2)
+			EndIf
+		Case CHAR_OME,CHAR_EGR:
+			Select p\Animation\Animation
+				Case ANIMATION_RUN,ANIMATION_MACHRUN,ANIMATION_DRIFTL,ANIMATION_DRIFTR:
+					If (Game\SuperForm=0 Or (Not(Player_IsPlayable(p)))) Then
+						ParticleTemplate_Call(p\JetParticle1,PARTICLE_PLAYER_ROCKET,p\Objects\Jet1)
+						ParticleTemplate_Call(p\JetParticle2,PARTICLE_PLAYER_ROCKET,p\Objects\Jet2)
+					EndIf
+				Case ANIMATION_GLIDE,ANIMATION_FLY:
+					ParticleTemplate_Call(p\JetParticle1,PARTICLE_PLAYER_ROCKET,p\Objects\Jet1)
+					ParticleTemplate_Call(p\JetParticle2,PARTICLE_PLAYER_ROCKET,p\Objects\Jet2)
+			End Select
+		Case CHAR_MET,CHAR_MT3:
+			Select p\Animation\Animation
+				Case ANIMATION_RUN,ANIMATION_FLY:
+					If (Game\SuperForm=0 Or (Not(Player_IsPlayable(p)))) Then
+						ParticleTemplate_Call(p\JetParticle1,PARTICLE_PLAYER_ROCKET,p\Objects\Jet1)
+					EndIf
+			End Select
+		Case CHAR_MKN:
+			Select p\Animation\Animation
+				Case ANIMATION_GLIDE:
+					ParticleTemplate_Call(p\JetParticle1,PARTICLE_PLAYER_ROCKET,p\Objects\Jet1)
+					ParticleTemplate_Call(p\JetParticle2,PARTICLE_PLAYER_ROCKET,p\Objects\Jet2)
+				Case ANIMATION_PUNCH1,ANIMATION_PUNCH3,ANIMATION_PUNCHAIR:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandL,1.55,0.2,2,p\Character,1)
+				Case ANIMATION_PUNCH2:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandL,1.55,0.2,2,p\Character,1)
+				Case ANIMATION_KICK:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandL,2,0.125,2,p\Character,1)
+			End Select
+	 	Case CHAR_KNU,CHAR_COM:
+			Select p\Animation\Animation
+				Case ANIMATION_PUNCH1,ANIMATION_PUNCH3,ANIMATION_PUNCHAIR:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandR,1.55,0.2,2,p\Character,1)
+				Case ANIMATION_PUNCH2:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandL,1.55,0.2,2,p\Character,1)
+				Case ANIMATION_KICK:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandR,2,0.125,2,p\Character,1)
+			End Select
+	 	Case CHAR_ROU:
+			Select p\Animation\Animation
+				Case ANIMATION_PUNCH1,ANIMATION_PUNCH3,ANIMATION_PUNCHAIR:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\FootR,1.55,0.2,2,p\Character,1)
+				Case ANIMATION_PUNCH2:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\FootL,1.55,0.2,2,p\Character,1)
+				Case ANIMATION_KICK:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\FootR,1.0,0.34,2,p\Character,2)
+			End Select
+	 	Case CHAR_MIG:
+			Select p\Animation\Animation
+				Case ANIMATION_PUNCH1:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandR,1.55,0.2,2,p\Character,1)
+				Case ANIMATION_PUNCH2:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandL,1.55,0.2,2,p\Character,1)
+			End Select
+	 	Case CHAR_SON:
+			Select p\Animation\Animation
+				Case ANIMATION_KICK:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\FootL,1.0,0.34,3,p\Character,2)
+				Case ANIMATION_THROW:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandR,1.25,0.2,2,p\Character,5)
+			End Select
+	 	Case CHAR_BAR:
+			Select p\Animation\Animation
+				Case ANIMATION_PUNCH1,ANIMATION_PUNCH3,ANIMATION_PUNCHAIR:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandL,1.55,0.2,3,p\Character,2)
+				Case ANIMATION_PUNCH2:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandR,1.55,0.2,3,p\Character,2)
+				Case ANIMATION_GLIDE:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_SNOW,p\Objects\HandL)
+					ParticleTemplate_Call(p\Particle2,PARTICLE_PLAYER_SNOW,p\Objects\HandR)
+			End Select
+		Case CHAR_STO:
+			Select p\Animation\Animation
+				Case ANIMATION_GLIDE:
+					ParticleTemplate_Call(p\JetParticle1,PARTICLE_PLAYER_ROCKET,p\Objects\Jet1)
+					ParticleTemplate_Call(p\JetParticle2,PARTICLE_PLAYER_ROCKET,p\Objects\Jet2)
+					ParticleTemplate_Call(p\JetParticle3,PARTICLE_PLAYER_ROCKET,p\Objects\Jet3)
+					ParticleTemplate_Call(p\JetParticle4,PARTICLE_PLAYER_ROCKET,p\Objects\Jet4)
+				Case ANIMATION_PUNCH1:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandR,1.55,0.2,3,p\Character,2)
+				Case ANIMATION_PUNCH2:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandL,1.55,0.2,3,p\Character,2)
+				Case ANIMATION_PUNCH3,ANIMATION_PUNCHAIR:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandR,1.55,0.2,3,p\Character,2)
+					ParticleTemplate_Call(p\Particle2,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandL,1.55,0.2,3,p\Character,2)
+			End Select
+	 	Case CHAR_TIK:
+			Select p\Animation\Animation
+				Case ANIMATION_FLY,ANIMATION_GLIDE,ANIMATION_THROW:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandR,1.55,0.2,2,p\Character,1)
+					ParticleTemplate_Call(p\Particle2,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandL,1.55,0.2,2,p\Character,1)
+				Case ANIMATION_PUNCH1:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandR,1.55,0.2,2,p\Character,1)
+				Case ANIMATION_PUNCH2:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandL,1.55,0.2,2,p\Character,1)
+				Case ANIMATION_PUNCH3,ANIMATION_PUNCHAIR:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandR,1.55,0.2,2,p\Character,1)
+					ParticleTemplate_Call(p\Particle2,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandL,1.55,0.2,2,p\Character,1)
+			End Select
+	 	Case CHAR_HON,CHAR_TIA:
+			Select p\Animation\Animation
+				Case ANIMATION_PUNCH1,ANIMATION_PUNCHAIR:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\FootR,1.0,0.34,2,p\Character,2)
+				Case ANIMATION_PUNCH2:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\FootL,1.0,0.34,2,p\Character,2)
+			End Select
+		Case CHAR_CHO:
+			Select p\Animation\Animation
+				Case ANIMATION_THROW:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandR,1.25,0.2,2,p\Character,5)
+			End Select
+		Case CHAR_GAM
+			Select p\Animation\Animation
+				Case ANIMATION_FLY,ANIMATION_THROWAIR:
+					ParticleTemplate_Call(p\JetParticle1,PARTICLE_PLAYER_ROCKET2,p\Objects\Jet1)
+					ParticleTemplate_Call(p\JetParticle2,PARTICLE_PLAYER_ROCKET2,p\Objects\Jet2)
+					ParticleTemplate_Call(p\JetParticle3,PARTICLE_PLAYER_ROCKET2,p\Objects\Jet3)
+					ParticleTemplate_Call(p\JetParticle4,PARTICLE_PLAYER_ROCKET2,p\Objects\Jet4)
+			End Select
+		Case CHAR_TMH:
+			Select p\Animation\Animation
+				Case ANIMATION_GLIDE,ANIMATION_THROWAIR:
+					ParticleTemplate_Call(p\JetParticle1,PARTICLE_PLAYER_ROCKET2,p\Objects\Jet1)
+			End Select
+		Case CHAR_EME,CHAR_GME:
+			Select p\Animation\Animation
+				Case ANIMATION_FLY,ANIMATION_GLIDE,ANIMATION_GLIDE2:
+					ParticleTemplate_Call(p\JetParticle1,PARTICLE_PLAYER_ROCKET,p\Objects\Jet1)
+					ParticleTemplate_Call(p\JetParticle2,PARTICLE_PLAYER_ROCKET,p\Objects\Jet2)
+				Case ANIMATION_KICK,ANIMATION_KICK2,ANIMATION_KICKAIR2:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\FootL,1.0,0.34,3,p\Character,2)
+				Case ANIMATION_PUNCH1,ANIMATION_PUNCHAIR:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandR,1.55,0.2,2,p\Character,1)
+				Case ANIMATION_PUNCH2:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandL,1.55,0.2,2,p\Character,1)
+			End Select
+		Case CHAR_SIL:
+			Select p\Animation\Animation
+				Case ANIMATION_THROW2:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandR,1.55,0.2,2,p\Character,1)
+			End Select
+	 	Case CHAR_PRS:
+			Select p\Animation\Animation
+				Case ANIMATION_KICK:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\FootL,1.0,0.34,3,p\Character,2)
+			End Select
+	 	Case CHAR_ESP:
+			Select p\Animation\Animation
+				Case ANIMATION_PUNCH1:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\FootR,1.55,0.2,2,p\Character,1)
+				Case ANIMATION_PUNCH2:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\FootL,1.55,0.2,2,p\Character,1)
+			End Select
+		Case CHAR_BEA:
+			Select p\Animation\Animation
+				Case ANIMATION_FLY:
+					ParticleTemplate_Call(p\JetParticle1,PARTICLE_PLAYER_ROCKET,p\Objects\Jet1)
+					ParticleTemplate_Call(p\JetParticle2,PARTICLE_PLAYER_ROCKET,p\Objects\Jet2)
+			End Select
+		Case CHAR_INF:
+			Select p\Animation\Animation
+				Case ANIMATION_KICK:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\FootR,1.55,0.2,2,p\Character,1)
+				Case ANIMATION_THROW:
+					ParticleTemplate_Call(p\Particle,PARTICLE_PLAYER_ATTACKTRAIL,p\Objects\HandR,1.55,0.2,2,p\Character,1)
+			End Select
+	End Select
+	
+End Function
 
+Function DeformCharacter_FixUps(p.tPlayer)
+	p\ScaleFactor#=0.125*GetCharScaleFactor#(p\RealCharacter)
+	If p\No#=1 Then CAMERA_CONTROL_SIZEFACTOR#=5*p\ScaleFactor#
+	
+	p\DrownState=0
+	If Menu\Members=1 Then p\Invisibility=0
+End Function
+
+Function DeformCharacter(p.tPlayer,dontstartoutlock=False)
+	p\Flags\LongTrailCreated=0
+	Player_FreeLongTrails(p,2)
+	
+	Select p\Character
+		Case CHAR_EME: If p\CharacterMode=0 Then p\CharacterMode=CHAR_SON
+		Case CHAR_GME: If p\CharacterMode=0 Then p\CharacterMode=CHAR_ESP
+		Default: p\CharacterMode=0
+	End Select
+	
+	
+	
+	If p\Objects\Mesh<>0 Then ShowEntity(p\Objects\Mesh)
+	FreeEntity p\Objects\Mesh
+	
+	If Menu\Stage=0 Then
+		p\Objects\Mesh=CopyEntity(MESHES(Mesh_Empty), Game\Stage\Root)
+	Else
+		If (Menu\Members>1 Or Game\CheaterChangedCharacter=0) And Player_IsPlayable(p) Then
+			If (Game\SuperForm=0 Or (Not(Player_IsPlayable(p)))) Then
+				Select p\RealCharacter
+					Case Menu\Character[1]: p\Objects\Mesh=CopyEntity(Game\CharacterMesh[1], Game\Stage\Root)
+					Case Menu\Character[2]: p\Objects\Mesh=CopyEntity(Game\CharacterMesh[2], Game\Stage\Root)
+					Case Menu\Character[3]: p\Objects\Mesh=CopyEntity(Game\CharacterMesh[3], Game\Stage\Root)
+				End Select
+			ElseIf Game\SuperForm=1 Then
+				Select p\RealCharacter
+					Case Menu\Character[1]: p\Objects\Mesh=CopyEntity(Game\SuperCharacterMesh[1], Game\Stage\Root)
+					Case Menu\Character[2]: p\Objects\Mesh=CopyEntity(Game\SuperCharacterMesh[2], Game\Stage\Root)
+					Case Menu\Character[3]: p\Objects\Mesh=CopyEntity(Game\SuperCharacterMesh[3], Game\Stage\Root)
+				End Select
+			EndIf
+		Else
+			If Game\SuperForm=0 Or (Not(Player_IsPlayable(p))) Then
+				LoadCharacterMesh(p\RealCharacter,0)
+			ElseIf Game\SuperForm=1 Then
+				LoadCharacterMesh(p\RealCharacter,0,CharHasSuperModel(Game\SuperForm,p\RealCharacter))
+			EndIf
+			p\Objects\Mesh=CopyEntity(CharacterMesh, Game\Stage\Root)
+			DeleteCharacterMesh()
+			For t.tTrail=Each tTrail : t\char=p\RealCharacter : Next
+			For trail.tLongTrail=Each tLongTrail : trail\char=p\RealCharacter : Next
+		EndIf
+	EndIf
+	
+	
+	DeformCharacter_GetTheBoneEntities(p)
+	
+	
+	
+	EntityShininess(p\Objects\Mesh, 0)
+	
+	
+	;Set up grind affectors
+    p\Objects\R_GrindAffector = CreateCylinder(8, 1, p\Objects\Mesh)
+    p\Objects\L_GrindAffector = CreateCylinder(8, 1, p\Objects\Mesh)
+    ScaleEntity(p\Objects\R_GrindAffector, 0.5, 0.5, 0.5)
+    ScaleEntity(p\Objects\L_GrindAffector, 0.5, 0.5, 0.5)
+    EntityType(p\Objects\R_GrindAffector,COLLISION_GRINDAFFECTOR)
+    EntityType(p\Objects\L_GrindAffector,COLLISION_GRINDAFFECTOR)
+	
+	p\Action=ACTION_FALL
+	If p\Motion\Ground Then p\Motion\Ground=False
+	Select p\Character
+		Case CHAR_CHA: p\Motion\Speed\y#=0.20*p\Physics\UNDERWATERTRIGGER#
+		Case CHAR_VEC,CHAR_BIG: p\Motion\Speed\y#=0.35*p\Physics\UNDERWATERTRIGGER#
+		Default: p\Motion\Speed\y#=0.30*p\Physics\UNDERWATERTRIGGER#
+	End Select
+	
+	If dontstartoutlock=False And p\No#=1 Then
+		Game\ControlLock=0.5*secs#
+	EndIf
+	
+	
+	
+	If Menu\Members=1 Then
+		If Player_IsPlayable(p) Then Menu\Character[1]=p\RealCharacter
+		
+		Player_LoadVoices(p)
+	EndIf
+	
+	
+	
+	Animate(p\Objects\Mesh, 1, ((p\SpeedLength#+0.4531+(1/0.1)*0.1))/2.0, ANIMATION_SPIN, 1)
+	
+	DeformCharacter_FixUps(p)
+	
+	If Game\Shield>0 Then ScaleEntity p\Objects\Shield, 1+p\ScaleFactor#, 1+p\ScaleFactor#, 1+p\ScaleFactor#
+	
+	Game\SmartCameraRangeDontAffectTimer=5*secs#
+End Function
+
+
+
+Function CharHasSuperModel(superform,char)
+	If superform=0 Then
+		Return 0
+	Else
+		If IsCharMod(char) Then
+			If superform=1 And CharModHasSuper(char) Then
+				Return 1
+			Else
+				Return 0
+			EndIf
+		Else
+			If Player_HasSuperModel(char) Then
+				Return superform
+			Else
+				Return 0
+			EndIf
+		EndIf
+	EndIf
+End Function
+
+Function ChangeCharacter(newcharacter)
+	pp(1)\Psychokinesis=0
+	If pp(1)\ObjPickUp=1 Then pp(1)\Action=ACTION_COMMON : pp(1)\ObjPickUp=0
+	
+	If Menu\Members>1 Then
+		Player_ReassignMember(Game\NewLeader)
+		Game\Leader=Game\NewLeader
+		DeformCharacter_FixUps(pp(1))
+	Else
+		DeformCharacter_DeleteTheBoneEntities(pp(1))
+		Player_DetermineChar(pp(1),newcharacter)
+		DeformCharacter(pp(1),True)
+		Game\Vehicle=0
+		Player_SetRadius#(pp(1))
+	EndIf
+	
+	For ppp.tPlayer = Each tPlayer
+		If ppp\No#>0 Then ppp\JustDeformedCharacterTimer=0.5*secs#
+	Next
+	
+	Player_PlayTurnVoice(pp(1))
+	Delay(1)
+End Function
+
+Function DeformCharacter_GetTheBoneEntities(p.tPlayer)
+	Select p\Character
+		Case CHAR_SHA,CHAR_STO,CHAR_SHN::
+			p\Objects\Jet1=FindChild(p\Objects\Mesh, "jetBL")
+			p\Objects\Jet2=FindChild(p\Objects\Mesh, "jetBR")
+			p\Objects\Jet3=FindChild(p\Objects\Mesh, "jetFL")
+			p\Objects\Jet4=FindChild(p\Objects\Mesh, "jetFR")
+			If p\Character=CHAR_SHN Then
+				p\Objects\Extra=FindChild(p\Objects\Mesh, "gatling1")
+				p\Objects\Extra2=FindChild(p\Objects\Mesh, "muzzleR")
+				p\Objects\Extra3=FindChild(p\Objects\Mesh, "muzzleE")
+			EndIf
+		Case CHAR_OME
+			p\Objects\Jet1=FindChild(p\Objects\Mesh, "jetL")
+			p\Objects\Jet2=FindChild(p\Objects\Mesh, "jetR")
+			p\Objects\Extra=FindChild(p\Objects\Mesh, "gunL")
+			p\Objects\Extra2=FindChild(p\Objects\Mesh, "gunR")
+		Case CHAR_EGR:
+			p\Objects\Jet1=FindChild(p\Objects\Mesh, "jetL")
+			p\Objects\Jet2=FindChild(p\Objects\Mesh, "jetR")
+			p\Objects\Extra2=FindChild(p\Objects\Mesh, "backpack")
+		Case CHAR_VEC:
+			p\Objects\Gum=FindChild(p\Objects\Mesh, "gum")
+			p\Objects\Extra=FindChild(p\Objects\Mesh, "tail1")
+		Case CHAR_MET,CHAR_MT3:
+			p\Objects\Jet1=FindChild(p\Objects\Mesh, "jet")
+		Case CHAR_BIG,CHAR_RAY:
+			p\Objects\Extra=FindChild(p\Objects\Mesh, "tail1")
+		Case CHAR_TAI,CHAR_TDL:
+			p\Objects\Extra=FindChild(p\Objects\Mesh, "tailroot")
+		Case CHAR_HBO:
+			p\Objects\Extra=FindChild(p\Objects\Mesh, "spine_b")
+		Case CHAR_SHD:
+			p\Objects\Extra=FindChild(p\Objects\Mesh, "head2")
+		Case CHAR_GAM:
+			p\Objects\Jet1=FindChild(p\Objects\Mesh, "jetBL")
+			p\Objects\Jet2=FindChild(p\Objects\Mesh, "jetBR")
+			p\Objects\Jet3=FindChild(p\Objects\Mesh, "jetFL")
+			p\Objects\Jet4=FindChild(p\Objects\Mesh, "jetFR")
+			p\Objects\Extra=FindChild(p\Objects\Mesh, "scanner")
+			p\Objects\Extra2=FindChild(p\Objects\Mesh, "booster")
+		Case CHAR_BET:
+			p\Objects\Jet1=FindChild(p\Objects\Mesh, "jetBL")
+			p\Objects\Jet2=FindChild(p\Objects\Mesh, "jetBR")
+			p\Objects\Jet3=FindChild(p\Objects\Mesh, "jetFL")
+			p\Objects\Jet4=FindChild(p\Objects\Mesh, "jetFR")
+			p\Objects\Extra2=FindChild(p\Objects\Mesh, "booster")
+		Case CHAR_EME:
+			p\Objects\Jet1=FindChild(p\Objects\Mesh, "jetL")
+			p\Objects\Jet2=FindChild(p\Objects\Mesh, "jetR")
+			p\Objects\Extra=FindChild(p\Objects\Mesh, "lidU")
+			p\Objects\Extra2=FindChild(p\Objects\Mesh, "lidD")
+		Case CHAR_EGG:
+			p\Objects\Jet1=FindChild(p\Objects\Mesh, "jet1L")
+			p\Objects\Jet2=FindChild(p\Objects\Mesh, "jet1R")
+			p\Objects\Jet3=FindChild(p\Objects\Mesh, "jet2L")
+			p\Objects\Jet4=FindChild(p\Objects\Mesh, "jet2R")
+			p\Objects\Extra=FindChild(p\Objects\Mesh, "scanner")
+			p\Objects\Extra2=FindChild(p\Objects\Mesh, "handX")
+		Case CHAR_CHW:
+			p\Objects\Jet1=FindChild(p\Objects\Mesh, "jet1L")
+			p\Objects\Jet2=FindChild(p\Objects\Mesh, "jet1R")
+			p\Objects\Jet3=FindChild(p\Objects\Mesh, "jet2L")
+			p\Objects\Jet4=FindChild(p\Objects\Mesh, "jet2R")
+			p\Objects\Extra=FindChild(p\Objects\Mesh, "scanner")
+			p\Objects\Extra2=FindChild(p\Objects\Mesh, "office")
+		Case CHAR_AMY:
+			p\Objects\Extra=FindChild(p\Objects\Mesh, "hammer2")
+	End Select
+	p\Objects\Head=FindChild(p\Objects\Mesh, "head")
+	Select p\Character
+		Case CHAR_EGG:
+			p\Objects\HandR=FindChild(p\Objects\Mesh, "handR_e")
+			p\Objects\HandL=FindChild(p\Objects\Mesh, "handL_e")
+		Default:
+			p\Objects\HandR=FindChild(p\Objects\Mesh, "handR")
+			p\Objects\HandL=FindChild(p\Objects\Mesh, "handL")
+	End Select
+	p\Objects\ArmR=FindChild(p\Objects\Mesh, "armR")
+	p\Objects\ArmL=FindChild(p\Objects\Mesh, "armL")
+	p\Objects\ToeR=FindChild(p\Objects\Mesh, "toeR")
+	p\Objects\ToeL=FindChild(p\Objects\Mesh, "toeL")
+	p\Objects\FootR=FindChild(p\Objects\Mesh, "footR")
+	p\Objects\FootL=FindChild(p\Objects\Mesh, "footL")
+	Select p\RealCharacter
+		Case CHAR_GAM,CHAR_BET:
+			p\Objects\LegR=FindChild(p\Objects\Mesh, "leg1R")
+			p\Objects\LegL=FindChild(p\Objects\Mesh, "leg1L")
+		Default:
+			p\Objects\LegR=FindChild(p\Objects\Mesh, "legR")
+			p\Objects\LegL=FindChild(p\Objects\Mesh, "legL")
+	End Select
+	p\Objects\HipR=FindChild(p\Objects\Mesh, "hipR")
+	p\Objects\HipL=FindChild(p\Objects\Mesh, "hipL")
+	p\Objects\Spine=FindChild(p\Objects\Mesh, "spine")
+	p\Objects\Hips=FindChild(p\Objects\Mesh, "hips")
+End Function
+
+Function DeformCharacter_DeleteTheBoneEntities(p.tPlayer)
+	Select p\Character
+		
+				Case CHAR_SHA,CHAR_STO,CHAR_SHN:
+					FreeEntity p\Objects\Jet1
+					FreeEntity p\Objects\Jet2
+					FreeEntity p\Objects\Jet3
+					FreeEntity p\Objects\Jet4
+					If p\Character=CHAR_SHN
+						FreeEntity p\Objects\Extra
+						FreeEntity p\Objects\Extra2
+						FreeEntity p\Objects\Extra3
+					EndIf
+		Case CHAR_OME,CHAR_MKN,CHAR_GME,CHAR_BEA:
+			FreeEntity p\Objects\Jet1
+			FreeEntity p\Objects\Jet2
+		Case CHAR_EGR:
+			FreeEntity p\Objects\Jet1
+			FreeEntity p\Objects\Jet2
+			FreeEntity p\Objects\Extra2
+		Case CHAR_VEC:
+			FreeEntity p\Objects\Gum
+			FreeEntity p\Objects\Extra
+		Case CHAR_MET,CHAR_MT3:
+			FreeEntity p\Objects\Jet1
+		Case CHAR_BIG,CHAR_HBO,CHAR_SHD,CHAR_AMY,CHAR_TAI,CHAR_TDL,CHAR_RAY:
+			FreeEntity p\Objects\Extra
+		Case CHAR_GAM,CHAR_EGG,CHAR_CHW:
+			FreeEntity p\Objects\Jet1
+			FreeEntity p\Objects\Jet2
+			FreeEntity p\Objects\Jet3
+			FreeEntity p\Objects\Jet4
+			FreeEntity p\Objects\Extra
+			FreeEntity p\Objects\Extra2
+		Case CHAR_BET:
+			FreeEntity p\Objects\Jet1
+			FreeEntity p\Objects\Jet2
+			FreeEntity p\Objects\Jet3
+			FreeEntity p\Objects\Jet4
+			FreeEntity p\Objects\Extra2
+		Case CHAR_EME:
+			FreeEntity p\Objects\Jet1
+			FreeEntity p\Objects\Jet2
+			FreeEntity p\Objects\Extra
+			FreeEntity p\Objects\Extra2
+	End Select
+	FreeEntity p\Objects\Head
+	FreeEntity p\Objects\HandR
+	FreeEntity p\Objects\HandL
+	FreeEntity p\Objects\ArmR
+	FreeEntity p\Objects\ArmL
+	FreeEntity p\Objects\ToeR
+	FreeEntity p\Objects\ToeL
+	FreeEntity p\Objects\FootR
+	FreeEntity p\Objects\FootL
+	FreeEntity p\Objects\LegR
+	FreeEntity p\Objects\LegL
+	FreeEntity p\Objects\HipR
+	FreeEntity p\Objects\HipL
+	FreeEntity p\Objects\Spine
+	FreeEntity p\Objects\Hips
+End Function
 ;============================================================================================
 ;============================================================================================
 ;============================================================================================
@@ -43,7 +545,7 @@ Function Player_UpdateTrails()
 				t\tdz[i] = (VertexZ(t\surface,i-2) - VertexZ(t\surface,i))/trail_update#
 				t\alpha=1.0-Float(i)/30.0
 				If t\alpha<0 Then t\alpha=0
-				VertexColor t\surface,i,0,0,255,t\alpha
+				VertexColor t\surface,i,255,255,255,t\alpha
 			Next
 		End If
 
@@ -132,7 +634,22 @@ Function Player_UpdateLongTrail()
 				trail\tdz[i] = (VertexZ(trail\surface,i-2) - VertexZ(trail\surface,i))/longtrail_update#
 				trail\alpha=1.0-Float(i)/30.0
 				If trail\alpha<0 Then trail\alpha=0
-				VertexColor(trail\surface,i,Interface_Circle_R[InterfaceChar(trail\char)], Interface_Circle_G[InterfaceChar(trail\char)], Interface_Circle_B[InterfaceChar(trail\char)],trail\alpha)
+				Select Game\Shield
+					Case OBJTYPE_TSHIELD
+						VertexColor(trail\surface,i,255,255,216,trail\alpha)
+					Case OBJTYPE_ESHIELD
+						VertexColor(trail\surface,i,255, 196, 32,trail\alpha)
+					Case OBJTYPE_BSHIELD
+						VertexColor(trail\surface,i, 128, 216, 216,trail\alpha)
+					Case OBJTYPE_FSHIELD
+						VertexColor(trail\surface,i, 255, 96, 0,trail\alpha)
+					Default
+						If Game\SuperForm=1 
+							VertexColor(trail\surface,i,Interface_SCircle_R[InterfaceChar(trail\char)], Interface_SCircle_G[InterfaceChar(trail\char)], Interface_SCircle_B[InterfaceChar(trail\char)],trail\alpha)
+						Else 
+							VertexColor(trail\surface,i,Interface_Circle_R[InterfaceChar(trail\char)], Interface_Circle_G[InterfaceChar(trail\char)], Interface_Circle_B[InterfaceChar(trail\char)],trail\alpha)
+						EndIf 	   
+				End Select
 			Next
 		End If
 
@@ -366,7 +883,7 @@ Function Player_CreateRazer.tRazer(p.tPlayer,entity,alphastart#,mode,scalex#=1,s
 		Default:
 			If p\RazerSpawningTimer>0 Then Return Else p\RazerSpawningTimer=0.025*secs#
 	End Select
-
+	
 	rz.tRazer = New tRazer
 	rz\Threshold = entity
 	x# = EntityX(rz\Threshold)
@@ -375,6 +892,7 @@ Function Player_CreateRazer.tRazer(p.tPlayer,entity,alphastart#,mode,scalex#=1,s
 	rz\Owner = p
 	rz\BelongsToPlayer = belongstoplayer
 	rz\Pivot = CreatePivot(Game\Stage\Root)
+	rz\Timer=timer#
 	PositionEntity(rz\Pivot, x#, y#, z#)
 	RotateEntity(rz\Pivot, EntityPitch(entity), EntityYaw(entity), EntityRoll(entity))
 	Select mode
@@ -382,23 +900,22 @@ Function Player_CreateRazer.tRazer(p.tPlayer,entity,alphastart#,mode,scalex#=1,s
 		Case 2:	rz\Mesh = CopyEntity(MESHES(Mesh_BlackShield1), rz\Pivot)
 		Case 3:	rz\Mesh = CopyEntity(MESHES(Mesh_BlackShield2), rz\Pivot)
 		Case 4: rz\Mesh = CopyEntity(MESHES(Mesh_Ice), rz\Pivot) : EntityBlend(rz\Mesh, 1)
-				ScaleEntity(rz\Mesh,scalex#,scaley#,scalez#) : EntityType(rz\Mesh,COLLISION_WORLD_POLYGON_ICE)
+			ScaleEntity(rz\Mesh,scalex#,scaley#,scalez#) : EntityType(rz\Mesh,COLLISION_WORLD_POLYGON_ICE)
 		Case 5,6,7: rz\Mesh = CopyEntity(MESHES(Mesh_Cube), rz\Pivot) : Animate(rz\Mesh,1,0.5,1,10)
-				Select mode
+			Select mode
 				Case 6: MoveEntity rz\Pivot, Rand(-2,2)/2.0, Rand(-2,2)/2.0, Rand(-2,2)/2.0
 				Default: MoveEntity rz\Pivot, Rand(-5,5)/2.0, 1+Rand(-5,5)/2.0, Rand(-5,5)/2.0
-				End Select
+			End Select
 		Case 8: rz\Mesh = CopyEntity(MESHES(Mesh_SuperShield), rz\Pivot) : EntityBlend(rz\Mesh, 3)
-				If Game\SuperForm=2 Then
-					EntityColorEmerald(rz\Mesh,Rand(1,7),0.5)
-				Else
-					If Player_SuperAuraShouldFire(p\Character) Then
-						EntityColor(rz\Mesh,250,110,110)
-					Else
-						EntityColor(rz\Mesh,249,228,51)
-					EndIf
-				EndIf
-				ScaleEntity rz\Mesh, 1+p\ScaleFactor#, 1+p\ScaleFactor#, 1+p\ScaleFactor#
+			If Player_SuperAuraShouldFire(p\Character) Then
+				EntityColor(rz\Mesh,250,110,110)
+			Else
+				EntityColor(rz\Mesh,249,228,51)
+			EndIf
+			ScaleEntity rz\Mesh, 1+p\ScaleFactor#, 1+p\ScaleFactor#, 1+p\ScaleFactor#
+		Case 9: rz\Mesh = CopyEntity(MESHES(Mesh_CubePlatform), rz\Pivot) : EntityBlend(rz\Mesh, 1)
+			ScaleEntity(rz\Mesh,scalex#,scaley#,scalez#) : EntityType(rz\Mesh,COLLISION_WORLD_POLYGON)
+			rz\Timer=5.5*secs#
 	End Select
 	rz\Mode = mode
 	rz\Alpha# = alphastart#
@@ -406,9 +923,9 @@ Function Player_CreateRazer.tRazer(p.tPlayer,entity,alphastart#,mode,scalex#=1,s
 	rz\MoveTypeX=Rand(-1,1)
 	rz\MoveTypeY=Rand(-1,1)
 	rz\MoveTypeZ=Rand(-1,1)
-	rz\Timer=timer#
+	
 	Return rz
-
+	
 End Function
 
 Function Player_SuperAuraShouldFire(char)
@@ -421,9 +938,9 @@ Function Player_SuperAuraShouldFire(char)
 End Function
 
 Function Player_UpdateRazer(rz.tRazer, d.tDeltaTime)
-
+	
 	If rz\Timer>0 Then rz\Timer=rz\Timer-timervalue#
-
+	
 	Select rz\Mode
 		Case 1,8:
 			rz\Alpha# = rz\Alpha# - 0.0825*d\Delta
@@ -431,7 +948,7 @@ Function Player_UpdateRazer(rz.tRazer, d.tDeltaTime)
 			MoveEntity rz\Pivot, (0.15+0.1*rz\Owner\SpeedLength#)*d\Delta*rz\MoveTypeX, (0.15+0.1*rz\Owner\SpeedLength#)*d\Delta*rz\MoveTypeY, (0.15+0.1*rz\Owner\SpeedLength#)*d\Delta*rz\MoveTypeZ
 		Case 2,3:
 			PositionEntity(rz\Pivot,EntityX(rz\Threshold,1),EntityY(rz\Threshold,1),EntityZ(rz\Threshold,1),1)
-		Case 4:
+		Case 4,9,10:
 			PositionEntity(rz\Pivot,EntityX(rz\Threshold,1),EntityY(rz\Threshold,1)-2.2,EntityZ(rz\Threshold,1),1)
 			RotateEntity(rz\Pivot,0,EntityYaw(rz\Threshold,1),0,1)
 			If rz\BelongsToPlayer Then
@@ -449,26 +966,32 @@ Function Player_UpdateRazer(rz.tRazer, d.tDeltaTime)
 				Default: MoveEntity rz\Pivot, 0.02*d\Delta*rz\MoveTypeX, 0.02*d\Delta*rz\MoveTypeY, 0.02*d\Delta*rz\MoveTypeZ
 			End Select
 	End Select
-
+	
 	Select rz\Mode
 		Case 1,8: TurnEntity(rz\Mesh, 0, 50*d\Delta, 0)
 		Case 2,3: TurnEntity(rz\Mesh, 0, 2*d\Delta, 0)
 	End Select
-
+	
 	i=False
 	Select rz\Mode
 		Case 1,5,6,7,8: If rz\Alpha# < 0 Then i=True
 		Case 2,3: If rz\Mode<>1 And (Not(rz\Owner\Action=ACTION_SWIPE)) Then i=True
 		Case 4: If (Not(rz\Timer>0)) Then i=True
+		Case 9,10: If (Not(rz\Timer>0)) Then i=True
 	End Select
-
+	
 	If i=True Then 
+		Select rz\Mode
+			Case 9
+				
+				
+		End Select
 		FreeEntity(rz\Mesh)
 		FreeEntity(rz\Pivot)
 		rz\Alpha# = 0.0
 		Delete rz
 	EndIf
-
+	
 End Function
 
 Function Player_RubyCubes(p.tPlayer,alpha#=0.65,amount=5,mode=5)
@@ -596,20 +1119,20 @@ Function Create_Spark.tSpark(p.tPlayer, entity, mesh, camera, yaw#, mode#=0, no#
 
 	Select sp\Mode#
 		Case 0:
-			RotateEntity sp\Entity, 0, Yaw#+90, EntityRoll#(entity)
+			RotateEntity sp\Entity, 0, yaw#+90, EntityRoll#(entity)
 			sp\XR# = Rnd(0,180)
 			sp\YR# = Rnd(-30,30)
 			sp\ZR# = Rnd(0,30)
 		Case 1:
-			RotateEntity sp\Entity, 0, Yaw#+90, EntityRoll#(p\Objects\Mesh)
+			RotateEntity sp\Entity, 0, yaw#+90, EntityRoll#(p\Objects\Mesh)
 			sp\XR# = 0
 			sp\YR# = Rnd(-15,15)
 			sp\ZR# = Rnd(0,15)
 		Case 2:
-			RotateEntity sp\Entity, 0, Yaw#+90, EntityRoll#(entity)
+			RotateEntity sp\Entity, 0, yaw#+90, EntityRoll#(entity)
 			sp\XR# = Rnd(0,180)
 			sp\YR# = Rnd(-30,30)
-			sp\ZR# = Rnd(0,30)
+			sp\ZR# = Rnd(0,30)	
 	End Select
 
 	sp\timer = MilliSecs()+220
@@ -633,7 +1156,7 @@ Function Update_Spark(sp.tSpark, p.tPlayer, d.tDeltaTime)
 	EndIf
 
 	EntityAlpha sp\Entity, sp\alpha#
-	ScaleEntity sp\Entity, sp\scale#,1,1
+	ScaleEntity sp\Entity, sp\scale#*0.7,1*0.7,1*0.7
 	
 	If sp\Mode = 0 Then
 		If sp\No#=p\No# Then EntityColor(sp\Entity,Interface_Circle_R[InterfaceChar(p\RealCharacter)], Interface_Circle_G[InterfaceChar(p\RealCharacter)], Interface_Circle_B[InterfaceChar(p\RealCharacter)])

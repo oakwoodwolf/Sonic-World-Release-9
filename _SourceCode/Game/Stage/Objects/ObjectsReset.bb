@@ -1,38 +1,50 @@
 Function Objects_Reset()
 		;reset camera if told to
-		If Game\ResetCamera=1 Then
-			cam\TargetRotation\x#=15 : cam\TargetRotation\z#=0
-			If Game\Gameplay\CheckDirection#<0 Then cam\TargetRotation\y#=Game\Gameplay\CheckDirection#+360 Else cam\TargetRotation\y#=Game\Gameplay\CheckDirection#
-			CAMERA_DISTANCE_NEAR# = CAMERA_ZOOMVALUE# : CAMERA_DISTANCE_FAR# = CAMERA_ZOOMVALUE#
-			Game\ControlLock = 0
-			Game\CamLock = 0
-			Game\RunLock = 0
-			Game\MachLock = 0
+	If Game\ResetCamera=1 Then
+		cam\TargetRotation\x#=15 : cam\TargetRotation\z#=0
+		If Game\Gameplay\CheckDirection#<0 Then cam\TargetRotation\y#=Game\Gameplay\CheckDirection#+360 Else cam\TargetRotation\y#=Game\Gameplay\CheckDirection#
+		CAMERA_DISTANCE_NEAR# = CAMERA_ZOOMVALUE# : CAMERA_DISTANCE_FAR# = CAMERA_ZOOMVALUE#
+		Game\ControlLock = 0
+		Game\CamLock = 0
+		Game\RunLock = 0
+		Game\MachLock = 0
 		Game\ResetCamera=0
-		EndIf
-
+	EndIf
+	
 		;reset checks if told to
-		If Game\ResetChecks=1 Then
-			For o.tObject=Each tObject
-				If o\ObjType=OBJTYPE_CHECK Then	o\State=0
-			Next
-		Game\ResetChecks=0
-		EndIf
-
-		;reset objects if told to
-		If Game\ResetObjects=1 Then
-			Objects_Reset_All()
-		EndIf
-
-		;repose all obj
-		For o.tobject=Each tObject
-			If o\Repose=0 Then Objects_Reset_Repose(o)
+	If Game\ResetChecks=1 Then
+		For o.tObject=Each tObject
+			If o\ObjType=OBJTYPE_CHECK Then	o\State=0
 		Next
+		Game\ResetChecks=0
+	EndIf
+	
+	
+	
+		;reset objects if told to
+	If Game\ResetObjects=1 Then
+		Objects_Reset_All()
+	EndIf
+	
+		;repose all obj
+	For o.tobject=Each tObject
+		If o\Repose=0 Then Objects_Reset_Repose(o)
+	Next
 End Function
 
 ;--------------------------------------------------------------------------
-
+Function Objects_Reset_Switches()
+	For s.tSwitchManager=Each tSwitchManager
+		s\Active=s\InitialStatus
+	Next
+End Function
 Function Objects_Reset_All()
+	
+	For m.MeshStructure = Each MeshStructure
+		PositionEntity(m\Entity,m\InitialPosX#,m\InitialPosY#,m\InitialPosZ#)
+		RotateEntity(m\Entity,m\InitialRotX#,m\InitialRotY#,m\InitialRotZ#)
+	Next
+	
 		For p.tPlayer=Each tPlayer
 			If p\ObjPickUp>0 Then p\Action=ACTION_COMMON : p\ObjPickUp=0
 
@@ -56,9 +68,7 @@ Function Objects_Reset_All()
 			b\MustDestroy=2
 		Next
 
-		For s.tSwitchManager=Each tSwitchManager
-			s\Active=s\InitialStatus
-		Next
+		Objects_Reset_Switches()
 
 		For o.tObject=Each tObject
 			Objects_Reset_Object(o)
@@ -97,20 +107,51 @@ Function Objects_Reset_Object(o.tObject, dontdelete=0)
 	o\CheeseHit=False
 	o\BombHit=False
 	o\GotAssignedBomb=False
-	o\Done=0
+	
+	Select o\ObjType
+		Case OBJTYPE_COLLECTIBLE
+			If Game\ResetCollectibles=1 Then 
+				o\Done=0 
+			Else
+				
+			EndIf
+		Case OBJTYPE_TRIGGER_VOICE
+			o\MiscVal=0
+		Case OBJTYPE_TOKEN
+			
+		Default
+			o\Done=0
+	End Select
+	
+	If o\HasValuesetSwitch Then
+		If o\Switch\IsSwitcher Then
+			If o\Switch\SwitchNo[0]>0 Then 
+				For s.tSwitchManager=Each tSwitchManager
+					Game\SwitchOn[o\Switch\SwitchNo[0]]=s\InitialStatus
+				Next
+			EndIf
+		EndIf
+	EndIf
+	
+	
+	
+	
+	
+	
 	o\IsInBox=0
 	o\BubbleStunTimer=0
 	o\CurseStunTimer=0
 	o\FroggyStunTimer=0
 	o\FlowerStunTimer=0
 	o\FrozenStunTimer=0
+	o\NullifyStunTimer=0
 	o\WhirlwindStunTimer=0
 	o\ObjPickedUp=0
 	o\Psychoed=0
-	o\RingDrawIn=0
 	o\PsychoedThrown=False
 	o\Rubied=0
 	o\Repose=0
+	
 	o\ThrownAsBomb=0
 	o\AimedAt=0
 	o\SavedFromInsideBoxOnce=0
@@ -160,6 +201,7 @@ Function Objects_Reset_Object(o.tObject, dontdelete=0)
 		o\Enemy\AttackTimer=0
 		o\Enemy\AttackTimer2=0
 		o\Enemy\WasKilledByBombMonitor=False
+		o\Enemy\KilledFromLeader=False
 		o\Anim=1
 		o\PreviousAnim=0
 		o\Enemy\AttackMode=0
@@ -203,6 +245,26 @@ Function Objects_Reset_Object(o.tObject, dontdelete=0)
 				o\State=0
 				o\CanRingDash=True
 				o\AlwaysPresent=False
+				If o\Power#>1 Then
+					ScaleEntity o\EntityX,0.8,0.8,0.8
+					ScaleEntity o\Entity2,0.65,0.65,0.65
+					EntityAlpha(o\EntityX,1) : EntityAlpha(o\Entity2,1)
+					ShowEntity(o\EntityX)
+				EndIf
+				o\ScaleTimer=0
+				o\AlphaTimer=0
+				
+				
+			Case OBJTYPE_REDRING
+				If REDRING(o\Power#,Menu\Stage)=1 Then
+					EntityAlpha(o\EntityX,0.55) : EntityAlpha(o\Entity2,0.55)
+				Else
+					EntityAlpha(o\EntityX,1) : EntityAlpha(o\Entity2,1)
+				EndIf
+				o\AlphaTimer=0
+				o\ScaleTimer=0
+				ScaleEntity o\EntityX,1.1,1.1,1.1
+				ScaleEntity o\Entity2,1.1,1.1,1.1
 			Case OBJTYPE_SHARD:
 				o\HasShard=False
 				o\AlwaysPresent=False
@@ -291,8 +353,37 @@ Function Objects_Reset_Object(o.tObject, dontdelete=0)
 	Select o\ObjType
 		Case OBJTYPE_BOXLIGHT,OBJTYPE_LASERH,OBJTYPE_LASERV,OBJTYPE_GOAL2:
 			If o\Switch\SwitchFound=False Then Object_SwitchManager_FindSwitchAndAssign(o)
+		Case OBJTYPE_COLLECTIBLE,OBJTYPE_RING
+			If o\HasValuesetSwitch Then 
+				If o\Switch\SwitchFound=False Then Object_SwitchManager_FindSwitchAndAssign(o) 
+				If o\ObjType=OBJTYPE_RING Then 
+					Select o\Switch\SwitchMode
+						Case 0
+							o\Effected=o\Switch\SwitchOn
+							Select o\Switch\SwitchOn
+								Case 0: 
+									o\Effected=0
+								Case 1: 
+									o\Effected=1
+							End Select
+						Case 1
+							Select o\Switch\SwitchOn
+								Case 0: 
+									o\Effected=1
+								Case 1: 
+									o\Effected=0
+							End Select
+					End Select
+				EndIf
+			EndIf
+		Default
+			For vs = 1 To VISUAL_AMOUNT
+				If o\ObjType=OBJTYPE_VISUAL[vs] And o\HasValuesetSwitch Then
+					If o\Switch\SwitchFound=False Then Object_SwitchManager_FindSwitchAndAssign(o)
+				EndIf
+			Next
 	End Select
-
+	
 	If Not dontdelete Then
 		If o\Repeated Then Game_Stage_End_Objects_ObjectIndividual(o)
 	EndIf
@@ -373,7 +464,7 @@ Function Objects_Reset_HasMesh(o.tObject)
 	o\HasEntity=True
 
 	Select o\ObjType
-		Case OBJTYPE_CHECK,OBJTYPE_BALLBUMPER,OBJTYPE_GROUNDBUMPER,OBJTYPE_METROBUMPER,OBJTYPE_PLATEBUMPER,OBJTYPE_SWITCH,OBJTYPE_SWITCHWATER,OBJTYPE_SWITCHBASE,OBJTYPE_SPIKEBAR,OBJTYPE_PULLEY,OBJTYPE_ROCKET,OBJTYPE_ELEVATOR,OBJTYPE_TROPICAL,OBJTYPE_BUTTERFLY,OBJTYPE_SEAGULL,OBJTYPE_SEAC,OBJTYPE_SPIKESWING,OBJTYPE_BOSS,OBJYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA,OBJTYPE_CAPSULE:
+		Case OBJTYPE_RING,OBJTYPE_REDRING,OBJTYPE_CHECK,OBJTYPE_BALLBUMPER,OBJTYPE_GROUNDBUMPER,OBJTYPE_METROBUMPER,OBJTYPE_PLATEBUMPER,OBJTYPE_SWITCH,OBJTYPE_SWITCHWATER,OBJTYPE_SWITCHBASE,OBJTYPE_SPIKEBAR,OBJTYPE_PULLEY,OBJTYPE_ROCKET,OBJTYPE_ELEVATOR,OBJTYPE_TROPICAL,OBJTYPE_BUTTERFLY,OBJTYPE_SEAGULL,OBJTYPE_SEAC,OBJTYPE_SPIKESWING,OBJTYPE_BOSS,OBJYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA,OBJTYPE_CAPSULE:
 			o\HasEntity2=True
 	End Select
 
@@ -388,7 +479,7 @@ Function Objects_Reset_HasMesh(o.tObject)
 	End Select
 
 	Select o\ObjType
-		Case OBJTYPE_RING,OBJTYPE_SPRINGTHORN,OBJTYPE_REDRING,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_ACCEL,OBJTYPE_SWITCH,OBJTYPE_SWITCHWATER,OBJTYPE_SWITCHBASE,OBJTYPE_LASERV,OBJTYPE_LASERH,OBJTYPE_RINGGATEV,OBJTYPE_RINGGATEH,OBJTYPE_PULLEY,OBJTYPE_BELL,OBJTYPE_BUTTERFLY,OBJTYPE_SEAGULL,OBJTYPE_SEAC,OBJTYPE_FLICKY,OBJTYPE_FPLAT,OBJTYPE_WISP,OBJTYPE_BOXLIGHT:
+		Case OBJTYPE_RING,OBJTYPE_PULLEYROPE,OBJTYPE_TIMER,OBJTYPE_REDRING,OBJTYPE_PAD,OBJTYPE_RAILPAD,OBJTYPE_RAMP,OBJTYPE_TRAMP,OBJTYPE_ACCEL,OBJTYPE_BOXLIGHT,OBJTYPE_SWITCH,OBJTYPE_SWITCHWATER,OBJTYPE_SWITCHBASE,OBJTYPE_LASERV,OBJTYPE_LASERH,OBJTYPE_RINGGATEV,OBJTYPE_RINGGATEH,OBJTYPE_PULLEY,OBJTYPE_BELL,OBJTYPE_BUTTERFLY,OBJTYPE_SEAGULL,OBJTYPE_SEAC,OBJTYPE_FLICKY,OBJTYPE_FPLAT,OBJTYPE_WISP:
 			o\HasEntityX=True
 		Default:
 			If o\ThisIsAMonitor Or o\ThisIsAPlant Then
@@ -418,10 +509,10 @@ Function Objects_Reset_HasMesh(o.tObject)
 	;_____________________________________________________________________________
 
 		Select o\ObjType
-			Case OBJTYPE_RING,OBJTYPE_REDRING,OBJTYPE_SHARD,OBJTYPE_SWITCH,OBJTYPE_SWITCHBASE,OBJTYPE_SWITCHTOP,OBJTYPE_SWITCHWATER,OBJTYPE_SWITCHAIR,OBJTYPE_SPIKEBALL,OBJTYPE_SPIKEBOMB,OBJTYPE_SPIKECRUSHER,OBJTYPE_OMOCHAO,OBJTYPE_TELEPORTER,OBJTYPE_TELEPORTER2,OBJTYPE_TELEPORTER3,OBJTYPE_TELEPORTER5,OBJTYPE_TELEPORTER6,OBJTYPE_ELEVATOR,OBJTYPE_BOMBER2,OBJTYPE_BELL:
+			Case OBJTYPE_RING,OBJTYPE_SHARD,OBJTYPE_SWITCH,OBJTYPE_SWITCHBASE,OBJTYPE_SWITCHTOP,OBJTYPE_SWITCHWATER,OBJTYPE_SWITCHAIR,OBJTYPE_SPIKEBALL,OBJTYPE_SPIKEBOMB,OBJTYPE_SPIKECRUSHER,OBJTYPE_OMOCHAO,OBJTYPE_TELEPORTER,OBJTYPE_TELEPORTER2,OBJTYPE_TELEPORTER3,OBJTYPE_TELEPORTER5,OBJTYPE_TELEPORTER6,OBJTYPE_ELEVATOR,OBJTYPE_BOMBER2,OBJTYPE_BELL:
 				o\CanBeInsideBox=True
 			Default:
-				If o\ThisIsABox Or o\ThisIsATranslator Or o\ThisIsAMonitor Or o\ThisIsAnEnemy Or (Not(o\ObjType=OBJTYPE_SPRING)) Then
+				If o\ThisIsABox Or o\ThisIsATranslator Or o\ThisIsAMonitor Or o\ThisIsAnEnemy Then
 					o\CanBeInsideBox=True
 				EndIf
 		End Select
@@ -462,15 +553,15 @@ Function Objects_Reset_Shards()
 End Function
 
 Function Objects_Reset_DecideShards()
-	sharddecision#=Rand(1,Game\Gameplay\TotalEnemies/2.5+Game\Gameplay\TotalShards)
+	Sharddecision#=Rand(1,Game\Gameplay\TotalEnemies/2.5+Game\Gameplay\TotalShards)
 
-	If sharddecision#<=Game\Gameplay\TotalEnemies/2.5 Then
-		sharddecision=-Rand(1,Game\Gameplay\TotalEnemies)
+	If Sharddecision#<=Game\Gameplay\TotalEnemies/2.5 Then
+		Sharddecision=-Rand(1,Game\Gameplay\TotalEnemies)
 	Else
-		sharddecision=Rand(1,Game\Gameplay\TotalShards)
+		Sharddecision=Rand(1,Game\Gameplay\TotalShards)
 	EndIf
 
-	Return sharddecision
+	Return Sharddecision
 End Function
 ;~IDEal Editor Parameters:
 ;~C#Blitz3D

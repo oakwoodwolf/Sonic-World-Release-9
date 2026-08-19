@@ -7,10 +7,10 @@ Global BOMB_BOX = i : i=i+1
 Global BOMB_BULLET = i : i=i+1
 Global BOMB_BULLET2 = i : i=i+1
 Global BOMB_BULLET3 = i : i=i+1
+Global BOMB_BULLET4 = i : i=i+1
 Global BOMB_SPEAR = i : i=i+1
 Global BOMB_SPEARWATER = i : i=i+1
 Global BOMB_BOOMERANG = i : i=i+1
-Global BOMB_RINGBOOMERANG = i : i=i+1
 Global BOMB_NOTE = i : i=i+1
 Global BOMB_BLOB = i : i=i+1
 Global BOMB_FLAME = i : i=i+1
@@ -19,20 +19,23 @@ Global BOMB_ROCKET = i : i=i+1
 Global BOMB_TYPHOON = i : i=i+1
 Global BOMB_BUBBLES = i : i=i+1
 Global BOMB_PUNCH = i : i=i+1
+Global BOMB_POWER = i : i=i+1
+
 Global BOMB_MINION = i : i=i+1
 Global BOMB_GUM = i : i=i+1
 Global BOMB_ICE = i : i=i+1
 Global BOMB_SHOCK = i : i=i+1
 Global BOMB_CHEESE = i : i=i+1
 Global BOMB_FROGGY = i : i=i+1
+Global BOMB_CANNONSHOT = i : i=i+1
 Global BOMB_HANDBLADE = i : i=i+1
 Global BOMB_RING = i : i=i+1
 Global BOMB_HEART = i : i=i+1
+Global BOMB_NULLIFY = i : i=i+1
 Global BOMB_FLOWER = i : i=i+1
 Global BOMB_BOMB = i : i=i+1
 Global BOMB_BLADE = i : i=i+1
 Global BOMB_SHOT = i : i=i+1
-Global BOMB_CANNONSHOT = i : i=i+1
 Global BOMB_CURSE = i : i=i+1
 Global BOMB_DART = i : i=i+1
 Global BOMB_EXPLOSIVE = i : i=i+1
@@ -51,6 +54,7 @@ Global BOMB_JUSTICE = i : i=i+1
 Global BOMB_HOOKSHOT = i : i=i+1
 Global BOMB_CUBETRAIL = i : i=i+1
 Global BOMB_BELLYFLOP = i : i=i+1
+Global BOMB_FLAMETHROW = i : i=i+1
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
@@ -134,15 +138,16 @@ End Function
 		If isfrom5# Then b\InitialSpeed#=b\InitialSpeed#/8.0
 
 		Select bombtype#
-		Case BOMB_BULLET,BOMB_BULLET2,BOMB_BULLET3: Object_Bomb_CreateHitBox(b,2.5,2.5,2.5)
-		Case BOMB_SPEAR,BOMB_SPEARWATER,BOMB_FLAME,BOMB_WIND,BOMB_FIREBALL,BOMB_KNIFE,BOMB_HURRICANE,BOMB_ORB,BOMB_CUBETRAIL: Object_Bomb_CreateHitBox(b,4.5,4.5,4.5)
+			Case BOMB_BULLET,BOMB_BULLET2,BOMB_BULLET3,BOMB_BULLET4,BOMB_CUBETRAIL: Object_Bomb_CreateHitBox(b,2.5,2.5,2.5)
+			Case BOMB_SPEAR,BOMB_SPEARWATER,BOMB_FLAME,BOMB_WIND,BOMB_FIREBALL,BOMB_KNIFE,BOMB_FLAMETHROW,BOMB_HURRICANE,BOMB_ORB: Object_Bomb_CreateHitBox(b,4.5,4.5,4.5)
 		Case BOMB_PSYCHIC,BOMB_ROCKET,-1,-2: Object_Bomb_CreateHitBox(b,5,5,5)
-		Case BOMB_BOOMERANG,BOMB_RINGBOOMERANG,BOMB_NOTE,BOMB_LEAF,BOMB_GEAR,BOMB_ROCK: Object_Bomb_CreateHitBox(b,5.5,5.5,5.5)
+		Case BOMB_BOOMERANG,BOMB_NOTE,BOMB_LEAF,BOMB_GEAR,BOMB_ROCK: Object_Bomb_CreateHitBox(b,5.5,5.5,5.5)
 		Case BOMB_TYPHOON,BOMB_JUSTICE: Object_Bomb_CreateHitBox(b,6,6,6)
 		Case BOMB_BUBBLES,BOMB_PUNCH,BOMB_BIGBOMB: Object_Bomb_CreateHitBox(b,7,7,7)
+		Case BOMB_POWER: Object_Bomb_CreateHitBox(b,15,15,15)
 		Case BOMB_MINION: Object_Bomb_CreateHitBox(b,7.5,7.5,7.5)
 		Case BOMB_GUM: Object_Bomb_CreateHitBox(b,8,8,8)
-		Case BOMB_ICE,BOMB_TIRE: Object_Bomb_CreateHitBox(b,9.5,9.5,9.5)
+		Case BOMB_ICE,BOMB_TIRE,BOMB_NULLIFY: Object_Bomb_CreateHitBox(b,9.5,9.5,9.5)
 		Case BOMB_SHOCK: Object_Bomb_CreateHitBox(b,10,10,10)
 		Case BOMB_BOX,BOMB_HOOKSHOT: Object_Bomb_CreateHitBox(b,7,7,7)
 		Case BOMB_CHEESE,BOMB_FROGGY,BOMB_HANDBLADE: Object_Bomb_CreateHitBox(b,4,4,4)
@@ -186,7 +191,7 @@ End Function
 				b\DisappearTimer=1.25*secs# : b\MoveTimer=1*secs#
 			Case BOMB_BUBBLES:
 				b\DisappearTimer=1.417*secs#
-			Case BOMB_BOOMERANG,BOMB_GEAR,BOMB_RINGBOOMERANG:
+			Case BOMB_BOOMERANG,BOMB_GEAR:
 				b\DisappearTimer=4*secs# : b\MoveTimer=1.124*secs#
 			Case BOMB_CURSE:
 				b\DisappearTimer=1.417*secs#
@@ -197,12 +202,19 @@ End Function
 			Case BOMB_BULLET:
 				b\DisappearTimer=1.26*secs#
 			Case BOMB_BULLET2:
-				b\DisappearTimer=0.86*secs#
-			Case BOMB_BULLET3:
+				If b\Targetp\Character=CHAR_OME Then
+					b\DisappearTimer=1.5*secs#
+				Else
+					b\DisappearTimer=0.86*secs#
+				EndIf
+			Case BOMB_BULLET3,BOMB_BULLET4:
 				b\DisappearTimer=1.86*secs#
-			Case BOMB_PUNCH:
+			Case BOMB_FLAMETHROW
+				b\DisappearTimer=0.2*secs#
+				b\MoveTimer=0.457*secs#
+			Case BOMB_PUNCH,BOMB_POWER:
 				b\DisappearTimer=0.12*secs#
-			Case BOMB_ICE:
+			Case BOMB_ICE,BOMB_NULLIFY:
 				b\DisappearTimer=2.12*secs# : b\MoveTimer=1*secs#
 			Case BOMB_EXPLOSIVE:
 				b\DisappearTimer=2.25*secs# : b\MoveTimer=1*secs#
@@ -249,21 +261,16 @@ End Function
 
 		Select bombtype#
 			Case BOMB_RING: b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_DummyRing)), b\Pivot)
-			Case BOMB_RINGBOOMERANG
-				If Game\SuperForm=1 Then
-					b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_FlickyS)), b\Pivot)
-				Else
-					 b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_DummyRing)), b\Pivot)
-				EndIf 
 			Case BOMB_HEART: b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_HeartBomb)), b\Pivot)
+			Case BOMB_NULLIFY: b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Nullify)), b\Pivot) : Animate b\Entity,1,0.38,1,10
 			Case BOMB_EXPLOSIVE: b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_ExplosiveBomb)), b\Pivot)
 			Case BOMB_MINION: b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Minion)), b\Pivot) : Animate b\Entity,1,0.38,1,10
 			Case BOMB_BLADE: b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_NinjaStar)), b\Pivot) : EntityRadius(b\Pivot,2)
 			Case BOMB_FLOWER: b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Flower)), b\Pivot)
 			Case BOMB_SHOT: b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_EnemyMissile_PawnMissile)), b\Pivot) : MoveEntity b\Pivot,0,0,1 : EntityRadius(b\Pivot,1.5)
-			Case BOMB_CANNONSHOT: b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_CannonShot)), b\Pivot) : MoveEntity b\Pivot,0,0,1 : EntityRadius(b\Pivot,1.5)	
+			Case BOMB_CANNONSHOT: b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_CannonShot)), b\Pivot) : MoveEntity b\Pivot,0,0,1 : EntityRadius(b\Pivot,1.5) : Animate b\Entity
 			Case BOMB_SHOCK,BOMB_ICE: b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Empty)), b\Pivot) : MoveEntity b\Pivot,0,0,1
-			Case BOMB_SPEAR,BOMB_SPEARWATER,BOMB_FLAME,BOMB_PUNCH,BOMB_FIREBALL,BOMB_CUBETRAIL,BOMB_PSYCHIC,-1,-2,-100,BOMB_BELLYFLOP: b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Empty)), b\Pivot)
+			Case BOMB_SPEAR,BOMB_SPEARWATER,BOMB_FLAME,BOMB_PUNCH,BOMB_POWER,BOMB_FIREBALL,BOMB_CUBETRAIL,BOMB_PSYCHIC,-1,-2,-100,BOMB_BELLYFLOP: b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Empty)), b\Pivot)
 			Case BOMB_BUBBLES:
 				b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Empty)), b\Pivot) : MoveEntity b\Pivot,0,0,1
 				b\Channel_Bomb=EmitSmartSound(Sound_BubbleBeam,b\Entity)
@@ -284,6 +291,8 @@ End Function
 			Case BOMB_JUSTICE:
 				b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Empty)), b\Pivot)
 				b\Channel_Bomb=EmitSmartSound(Sound_WindBlow,b\Entity)
+			Case BOMB_FLAMETHROW: b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Flamethrow)), b\Pivot) : EntityRadius(b\Pivot,3.5) : MoveEntity b\Pivot,0,0,3 : Animate b\Entity,1,0.35,1,10
+				
 			Case BOMB_DART:
 				Select(Rand(1,3))
 					Case 1: b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Dart1)), b\Pivot)
@@ -302,6 +311,8 @@ End Function
 				End Select
 			Case BOMB_BULLET2,BOMB_BULLET3:
 				b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Bullet)), b\Pivot)
+			Case BOMB_BULLET4
+				b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_LockOn)), b\Pivot)
 			Case BOMB_BEAM:
 				b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Beam)), b\Pivot)
 				MoveEntity b\Pivot,1.73,4.6283,4.7181
@@ -340,11 +351,12 @@ End Function
 				RotateEntity(b\Entity,0,Rand(1,360),0,1)
 				EntityRadius(b\Pivot,3.5)
 			Case BOMB_HOOKSHOT:
-				b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Hookshot)), b\Pivot)
+				b\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Kunai)), b\Pivot)
 				b\BombRoot=FindChild(b\Entity, "rope")
 		End Select
 
 		EntityType(b\Pivot,COLLISION_OBJECT_GOTHRU)
+		If b\Targetp\character=CHAR_OME And b\BombType=BOMB_CANNONSHOT Then  TurnEntity(b\Pivot,25,0,0)
 
 		b\MayDestroyTimer=0.25*secs#
 
@@ -434,9 +446,14 @@ End Function
 					TurnEntity b\Entity, 0, 0.55*20*d\Delta, 0
 					MoveEntity b\Pivot,0,0,(2.5+b\InitialSpeed#)*d\Delta
 				Case BOMB_SHOT,BOMB_CANNONSHOT:
-					MoveEntity b\Pivot,0,0,(1.8+b\InitialSpeed#)*d\Delta
+					If b\targetp\Character=CHAR_SHN Then
+						MoveEntity b\Pivot,0,-1,(1.8+b\InitialSpeed#)*d\Delta
+					ElseIf b\targetp\Character=CHAR_GAM Then
+						MoveEntity b\Pivot,0,-(1.8+b\InitialSpeed#)*d\Delta,0
+					Else
+						MoveEntity b\Pivot,0,0,(1.8+b\InitialSpeed#)*d\Delta
+					EndIf
 					TurnEntity b\Entity, 0, 0, 0.4*20*d\Delta
-					PointEntity b\Entity, cam\Entity
 				Case BOMB_SPEAR,BOMB_SPEARWATER,BOMB_FLAME:
 					MoveEntity b\Pivot,0,0,(3+b\InitialSpeed#)*d\Delta
 					If b\DisappearTimer<0.75*secs# Then MoveEntity b\Pivot,0,-0.34*d\Delta,0
@@ -467,21 +484,6 @@ End Function
 					EndIf
 					MoveEntity b\Pivot,0,0,(1.78+b\InitialSpeed#)*d\Delta
 					If Not(pp(1)\Character=b\targetp\Character) Then b\MustDestroy=1
-				Case BOMB_RINGBOOMERANG
-					TurnEntity b\Entity, 0, 0.46*20*d\Delta, 0
-					
-					If Not(b\MoveTimer>0) Then
-						PointEntity(b\Pivot,b\targetp\Objects\Entity)
-						If EntityDistance(b\Pivot,b\targetp\Objects\Entity)<3 Then b\MustDestroy=1
-					EndIf
-					
-					Select Game\SuperForm
-						Case 0 : MoveEntity b\Pivot,0,0,(1.78+b\InitialSpeed#)*d\Delta
-						Case 1 : MoveEntity b\Pivot,0,0,(1.78+b\InitialSpeed#*1.5)*d\Delta
-					End Select
-					
-					If Not(pp(1)\Character=b\targetp\Character) Then b\MustDestroy=1
-
 				Case BOMB_PSYCHIC,BOMB_BOX:
 					MoveEntity b\Pivot,0,0.001*d\Delta,(4+b\InitialSpeed#)*d\Delta
 				Case BOMB_CURSE:
@@ -489,6 +491,10 @@ End Function
 				Case BOMB_ROCKET:
 					MoveEntity b\Pivot,0,0,(1.6+b\InitialSpeed#)*d\Delta
 					TurnEntity b\Entity, 0, 0, 0.4*20*d\Delta
+				Case BOMB_FLAMETHROW
+					MoveEntity b\Pivot,0,0,(1.4+b\InitialSpeed#)*d\Delta
+					If b\MoveTimer>0 Then MoveEntity b\Pivot,0.82*b\ThrownMode#*d\Delta,0,0
+					If EntityCollided(b\Pivot,COLLISION_WORLD_POLYGON) Then b\MustDestroy=1
 				Case BOMB_TYPHOON,BOMB_JUSTICE:
 					MoveEntity b\Pivot,0,0,(1.5+b\InitialSpeed#)*d\Delta
 				Case -1:
@@ -543,10 +549,14 @@ End Function
 					If EntityCollided(b\Pivot,COLLISION_WORLD_POLYGON) Then b\MustDestroy=1
 				Case BOMB_DART:
 					MoveEntity b\Pivot,0,0,(1.82+b\InitialSpeed#)*d\Delta
-				Case BOMB_BULLET,BOMB_BULLET2:
+				Case BOMB_BULLET,BOMB_BULLET2,BOMB_NULLIFY:
 					MoveEntity b\Pivot,0,0,(1.46+b\InitialSpeed#)*d\Delta
 				Case BOMB_BULLET3:
 					MoveEntity b\Pivot,0,0,(4.5185+b\InitialSpeed#)*d\Delta
+					PointEntity(b\Entity,cam\Entity)
+				Case BOMB_BULLET4:
+					MoveEntity b\Pivot,0,0,(12+b\InitialSpeed#)*d\Delta
+					PointEntity(b\Entity,cam\Entity)
 				Case BOMB_ICE:
 					If b\MoveTimer>0.9*secs# Then
 						MoveEntity b\Pivot,(b\ThrownMode#/3)*d\Delta,1*d\Delta,(0.25*1.25+1+b\InitialSpeed#)*d\Delta
@@ -678,41 +688,24 @@ End Function
 					TurnEntity b\Entity, 0, 0, 0.4*20*d\Delta
 					MoveEntity b\Pivot,0,0,(1.4+b\InitialSpeed#)*d\Delta
 					If b\MoveTimer>0 Then MoveEntity b\Pivot,0.82*b\ThrownMode#*d\Delta,0,0
-					If EntityCollided(b\Pivot,COLLISION_WORLD_POLYGON) Then b\MustDestroy=1
-					
 				Case BOMB_HOOKSHOT:
 					PositionEntity b\BombRoot, EntityX(b\targetp\Objects\HandR,1), EntityY(b\targetp\Objects\HandR,1), EntityZ(b\targetp\Objects\HandR,1), 1
 					If b\HasTarget And b\MayNotDestroy=1 Then
 						PositionEntity b\Pivot, EntityX(b\TargetPivot,1), EntityY(b\TargetPivot,1), EntityZ(b\TargetPivot,1), 1
-						If b\targetp\Action=ACTION_HOOKSHOT Then
-							Player_SetSpeed(b\targetp,2)
-							Player_SetSpeedY(b\targetp,1.5)
-							Player_ActuallyJump(b\targetp)
-						EndIf
 						If Not(b\MoveTimer>0) Then b\MayNotDestroy=0
 					Else
-						MoveEntity b\Pivot,0,0.375*d\Delta,(3.8+b\InitialSpeed#)*d\Delta
+						MoveEntity b\Pivot,0,0.375*d\Delta,((3.8+b\InitialSpeed#)*d\Delta)*2
 					EndIf
+					If (Not(ChannelPlaying(b\Channel_Bomb))) Then b\Channel_Bomb=EmitSmartSound(Sound_Grabber,b\Pivot)
 				Case BOMB_CUBETRAIL:
 					Bomb_RubyCubes(pp(1),b)
-					If Not(b\MoveTimer>0) Then
-						b\MoveTimer=0.5*secs#
-						TurnEntity b\Pivot, 0, 90, 0
-					EndIf
-					MoveEntity b\Pivot,0,0,(0.54+b\InitialSpeed#)*d\Delta
+					MoveEntity b\Pivot,0,0,((0.54+b\InitialSpeed#)*1.67)*d\Delta
 			End Select
 		EndIf
 
 		; Destroy bomb if time is over
 		If (Not(b\DisappearTimer>0)) And (Not(b\DisappearTimer=-100)) Then b\MustDestroy=1
-		
-		;effects
-		Select b\BombType
-			Case BOMB_ORB
-				ParticleTemplate_Call(b\Particle, PARTICLE_CHAO_CHEESE, b\Pivot)
-		End Select
-				
-		
+
 		; Hurt player
 		Select b\HurtPlayer
 			Case 1:
@@ -750,14 +743,6 @@ End Function
 			Case BOMB_BOOMERANG,BOMB_GEAR:
 				If Not(ChannelPlaying(b\Channel_Bomb)) Then b\Channel_Bomb=EmitSmartSound(Sound_Boomerang,b\Entity)
 				ParticleTemplate_Call(b\Particle, PARTICLE_PLAYER_ATTACKTRAIL, b\Entity, 2.25, 0.075, 3, 0, 7)
-			Case BOMB_RINGBOOMERANG:
-				Select Game\SuperForm
-					Case 0 : If Not(ChannelPlaying(b\Channel_Bomb)) Then b\Channel_Bomb=EmitSmartSound(Sound_Boomerang,b\Entity)
-					Case 1 : If Not(ChannelPlaying(b\Channel_Bomb)) Then b\Channel_Bomb=EmitSmartSound(Sound_Flicky,b\Entity)
-				End Select 
-				
-				ParticleTemplate_Call(b\Particle, PARTICLE_PLAYER_ATTACKTRAIL, b\Entity, 2.25, 0.075, 3, 0, 7)
-
 			Case BOMB_CURSE:
 				ParticleTemplate_Call(b\Particle, PARTICLE_BOMB_CURSE, b\Pivot)
 			Case BOMB_ROCKET:
@@ -766,7 +751,7 @@ End Function
 				ParticleTemplate_Call(b\Particle, PARTICLE_BOMB_FLOWERS, b\Pivot, 2.5)
 			Case BOMB_JUSTICE:
 				ParticleTemplate_Call(b\Particle, PARTICLE_BOMB_JUSTICE, b\Pivot, 2.5)
-			Case BOMB_BULLET,BOMB_BULLET2,BOMB_BULLET3:
+			Case BOMB_BULLET,BOMB_BULLET2,BOMB_BULLET3,BOMB_BULLET4:
 				ParticleTemplate_Call(b\Particle, PARTICLE_PLAYER_ATTACKTRAIL, b\Entity, 0.5, 0.075, 3, 0, 8)
 			Case BOMB_ICE:
 				ParticleTemplate_Call(b\Particle, PARTICLE_BOMB_SNOW, b\Pivot)
@@ -795,7 +780,9 @@ End Function
 					If b\MustDestroy<=1 Then ParticleTemplate_Call(b\Particle, PARTICLE_BOMB_CURSE, b\Pivot) : EmitSmartSound(Sound_Minion,b\Pivot)
 				Case BOMB_SPEAR,BOMB_SPEARWATER:
 					If b\MustDestroy<=1 Then EmitSmartSound(Sound_SpearImpact,b\Entity)
-				Case BOMB_BOOMERANG,BOMB_GEAR,BOMB_RINGBOOMERANG:
+				Case BOMB_FLAMETHROW
+					ParticleTemplate_Call(b\Particle, PARTICLE_BOMB_FIRE, b\Pivot, 1.65)
+				Case BOMB_BOOMERANG,BOMB_GEAR:
 					StopChannel(b\Channel_Bomb) : b\targetp\BoomerangAway=0
 				Case BOMB_PSYCHIC:
 					For o.tObject=Each tObject
@@ -830,7 +817,7 @@ End Function
 						o\ThrownAsBomb=0
 					EndIf
 					Next
-				Case BOMB_CURSE,BOMB_BUBBLES,BOMB_CHEESE,BOMB_TYPHOON,BOMB_HURRICANE,BOMB_TIRE,BOMB_LEAF,BOMB_JUSTICE:
+				Case BOMB_CURSE,BOMB_BUBBLES,BOMB_CHEESE,BOMB_TYPHOON,BOMB_HURRICANE,BOMB_TIRE,BOMB_LEAF,BOMB_JUSTICE,BOMB_HOOKSHOT:
 					StopChannel(b\Channel_Bomb)
 				Case BOMB_BEAM,BOMB_NOTE:
 					If b\MustDestroy<=1 Then EmitSmartSound(Sound_Beam,b\Pivot)
@@ -841,17 +828,11 @@ End Function
 					EndIf
 				Case BOMB_HANDBLADE:
 					EmitSmartSound(Sound_Blade,b\Pivot)
-				Case BOMB_ORB
-					ParticleTemplate_Call(b\Particle, PARTICLE_PLAYER_SHOTDESPAWN, b\Pivot)
 				Case BOMB_KNIFE:
 					If b\MustDestroy<=1 Then EmitSmartSound(Sound_PsychoHold,b\Entity)
 				Case BOMB_ROCK:
 					EmitSmartSound(Sound_Break,b\Pivot)
 					Object_Pieces_Create(False,OBJTYPE_ROCK,0,b\Position\x#,b\Position\y#,b\Position\z#,b\Rotation\x#,b\Rotation\y#,b\Rotation\z#,0.65,0,False,1)
-				Case BOMB_HOOKSHOT:
-					If b\targetp\Action=ACTION_HOOKSHOT Then
-						If b\targetp\Motion\Ground Then b\targetp\Action=ACTION_COMMON Else b\targetp\Action=ACTION_JUMPFALL
-					EndIf
 			End Select
 
 			; Make Sonic a move

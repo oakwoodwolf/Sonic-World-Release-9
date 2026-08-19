@@ -1,83 +1,149 @@
-
-; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
-; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
-Function Object_RedRing_Create.tObject(x#, y#, z#,number#)
-	o.tObject = New tObject : o\ObjType = OBJTYPE_REDRING : o\ID=TempAttribute\ObjectID
+Function Object_MoonRing_Create.tObject(x#, y#, z#, timer#, group, reward$, switchno)
+	o.tObject = New tObject : o\ObjType = OBJTYPE_MOONRING : o\ID=TempAttribute\ObjectID : 
+	o\Switch = New tObject_Switch : o\HasValuesetSwitch=True
+	
+	If reward$ = "switch" Then
+		o\Switch\s1 = Object_SwitchManager_Create.tSwitchManager(switchno, switchstatus)
+		o\Switch\SwitchNo[0]=switchno
+	EndIf
+	
+	o\MiscVal=group
+	
+	o\Reward$=reward$
 	
 	Object_CreateHitBox(HITBOXTYPE_RING,o,5,5,5)
-	
 	Object_Acquire_Position(o,x#,y#,z#)
-	Object_Acquire_Power(o,number#)
+	Object_Acquire_Rotation(o,0,TempAttribute\yaw#,0)
+	Object_Acquire_Power(o,timer#)
+	
+	If o\Power#=-1 Then o\Power#=99999999
 	
 	o\State=0
 	
-	o\Entity = CreatePivot()
-	o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_RedRing)), Game\Stage\Root)
+	o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_MoonRing))   , Game\Stage\Root)
 	
 	EntityType(o\Entity, COLLISION_OBJECT_GOTHRU)
-	
-	Select o\Power#
-		Case 1 : If REDRING1(Menu\Stage)=1 Then EntityAlpha(o\EntityX,0.25)
-		Case 2 : If REDRING2(Menu\Stage)=1 Then EntityAlpha(o\EntityX,0.25)
-		Case 3 : If REDRING3(Menu\Stage)=1 Then EntityAlpha(o\EntityX,0.25)
-		Case 4 : If REDRING4(Menu\Stage)=1 Then EntityAlpha(o\EntityX,0.25)
-		Case 5 : If REDRING5(Menu\Stage)=1 Then EntityAlpha(o\EntityX,0.25)
-	End Select 
 	
 	Return o
 End Function
 
-; =========================================================================================================
+	; =========================================================================================================
 
-Function Object_RedRing_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+Function Object_MoonRing_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 	
-		; Movement
-	PositionEntity o\EntityX, o\Position\x#, o\Position\y#, o\Position\z#
-	RotateEntity o\EntityX, 0, EntityYaw(Menu\RingRotator), 0
+	RotateEntity o\Entity, 0, EntityYaw(Menu\SlowRingRotator), 0
+	
 	
 		; Player collided with object
-	If o\Hit Then
+	If o\Hit  Then
 		
-		Select o\Power#
-			Case 1
-				If REDRING1(Menu\Stage)=0 Then
-					REDRINGS=REDRINGS+1 
-					REDRING1(Menu\Stage)=1
-					Game\Interface\ShowRedRingTimer=3*secs#
-				EndIf 
-			Case 2
-				If REDRING2(Menu\Stage)=0 Then
-					REDRINGS=REDRINGS+1 
-					REDRING2(Menu\Stage)=1
-					Game\Interface\ShowRedRingTimer=3*secs#
-				EndIf 
-			Case 3
-				If REDRING3(Menu\Stage)=0 Then
-					REDRINGS=REDRINGS+1 
-					REDRING3(Menu\Stage)=1
-					Game\Interface\ShowRedRingTimer=3*secs#
-				EndIf 
-			Case 4
-				If REDRING4(Menu\Stage)=0 Then
-					REDRINGS=REDRINGS+1 
-					REDRING4(Menu\Stage)=1
-					Game\Interface\ShowRedRingTimer=3*secs#
-				EndIf 
-			Case 5
-				If REDRING5(Menu\Stage)=0 Then
-					REDRINGS=REDRINGS+1 
-					REDRING5(Menu\Stage)=1
-					Game\Interface\ShowRedRingTimer=3*secs#
-				EndIf 
-		End Select 
+		If Game\MoonRingState=0 Then 
+			Game\MoonRingTimer=o\Power#*secs#
+			Game\MoonRingState=1
+			Game\MoonRingCount=o\MiscVal
+		ElseIf Game\MoonRingState=1 Then
+			Game\MoonRingCurrent=Game\MoonRingCurrent+1
+			If Game\MoonRingCurrent=Game\MoonRingCount-1 Then
+				Game\MoonRingTimer=0
+				PlaySmartSound(Sound_MoonAll)
+				
+				Select o\Reward$
+					Case "10ring"
+						Gameplay_AddRings(10)
+						Gameplay_AddGaugeEnergy(10)
+						MonitorIcon_Draw(22) 
+						EmitSmartSound(Sound_RingSuper,o\Entity)
+					Case "5ring"
+						Gameplay_AddRings(5)
+						Gameplay_AddGaugeEnergy(5)
+						MonitorIcon_Draw(21) 
+						EmitSmartSound(Sound_RingSuper,o\Entity)
+					Case "20ring"
+						Gameplay_AddRings(20)
+						Gameplay_AddGaugeEnergy(20)
+						MonitorIcon_Draw(23) 
+						EmitSmartSound(Sound_RingSuper,o\Entity)
+					Case "switch"
+						o\Switch\s1\Active=1
+						
+				End Select
+				Game\MoonRingCurrent=0
+				Game\MoonRingState=0
+			EndIf
+		EndIf
+		
+		EmitSmartSound(Sound_MoonCollect,o\Entity)
+		
+		;Release effect
+		ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_RING, o\Entity, 1)
+		
+		; Delete the object
+		o\Done=1
+		Return
+	EndIf
+	
+End Function
+
+Function Object_Collectible_Create.tObject(x#, y#, z#)
+	o.tObject = New tObject : o\ObjType = OBJTYPE_COLLECTIBLE : o\ID=TempAttribute\ObjectID : 
+	
+	If TempAttribute\switch1#>0  Then
+		o\Switch = New tObject_Switch :  : o\HasValuesetSwitch=True
+		o\Switch\SwitchNo[0]=TempAttribute\switch1#
+		o\Switch\SwitchNo[1]=TempAttribute\switch2#
+		o\Switch\SwitchNo[2]=TempAttribute\switch3#
+	EndIf
+	
+	Object_CreateHitBox(HITBOXTYPE_RING,o,4,4,4)
+	Object_Acquire_Position(o,x#,y#,z#)
+	
+	o\State=0
+	
+	o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Collectible))   , Game\Stage\Root)
+	
+	EntityType(o\Entity, COLLISION_OBJECT_GOTHRU)
+	
+	Return o
+End Function
+
+	; =========================================================================================================
+
+Function Object_Collectible_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+	
+	RotateEntity o\Entity, 0, EntityYaw(Menu\SlowRingRotator), 0
+	
+	cancollect=True
+	
+	; Hide/show according to active
+	If o\HasValuesetSwitch=True Then
+		If Object_WhetherHasSwitches(o) Then
+			Object_SwitchManager_PerObjectUpdate(o)
+			Select o\Switch\SwitchOn
+				Case 0: EntityAlpha(o\Entity,0.5) : cancollect=False
+				Case 1: EntityAlpha(o\Entity,1) : cancollect=True
+			End Select
+		EndIf
+	EndIf
+	
+	
+	
+		; Player collided with object
+	If o\Hit And cancollect Then
+		
+			; Add to counter
+		Game\Gameplay\Collectibles=Game\Gameplay\Collectibles+1
+		Gameplay_AddScore(250)
+		Player_SaveSituation(o,p,0,False)
 		
 		
-			; Bling!
-		EmitSmartSound(Sound_RedRing,o\Entity)
+		; Bling!
+		StopChannel(Game\Channel_Collectible)
+		Game\Channel_Collectible=EmitSmartSound(Sound_Collectible,o\Entity)
 		
 			;Release effect
-		ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_REDRING, o\Entity, 1)
+		ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_RING, o\Entity, 1)
 		
+			; Delete the object
 		
 		o\Done=1
 		Return
@@ -86,118 +152,452 @@ Function Object_RedRing_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 	
 	
 End Function
+; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+Function Object_Token_Create.tObject(x#, y#, z#)
+	o.tObject = New tObject : o\ObjType = OBJTYPE_TOKEN : o\ID=TempAttribute\ObjectID 
+	
+	Object_CreateHitBox(HITBOXTYPE_RING,o,5,5,5)
+	Object_Acquire_Position(o,x#,y#,z#)
+	
+	o\State=0
+	
+	o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Token))   , Game\Stage\Root)
+	
+	EntityType(o\Entity, COLLISION_OBJECT_GOTHRU)
+	
+	Return o
+	
+End Function
 
-Function Object_Ring_Create.tObject(x#, y#, z#,amount#)
-		o.tObject = New tObject : o\ObjType = OBJTYPE_RING : o\ID=TempAttribute\ObjectID
+	; =========================================================================================================
 
-		Object_CreateHitBox(HITBOXTYPE_RING,o,3.5,3.5,3.5)
+Function Object_Token_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+	
+	; Movement
+	
+	RotateEntity o\Entity, 0, EntityYaw(Menu\SlowRingRotator), 0
+	
+	
+		; Player collided with object
+	If o\Hit And Game\Cheater=0 Then
+		
+		Gameplay_AddScore(250)
+		
+		If Menu\CollectionRoom=1 Then
+			TOKENS=TOKENS+1
+		Else
+			Game\TokensToAdd=Game\TokensToAdd+1
+		EndIf
+		
+		Game\Interface\WorldTokenTimer=2.2*secs#
+		EmitSmartSound(Sound_Token,o\Entity)
+		
+			;Release effect
+		ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_RING, o\Entity, 1)
+		
+			; Delete the object
+		
+		o\Done=1
+		Return
+	EndIf
+End Function 	
 
-		Object_Acquire_Position(o,x#,y#,z#)
-		Object_Acquire_Power(o,amount#)
+Function Object_MissionCard_Create.tObject(x#, y#, z#, stagename$,mission)
+	
+	If stagename$="Worst Cave" And UNLOCKEDCHAR[CHAR_EGR]=0 Then Return
+	
+	o.tObject = New tObject : o\ObjType = OBJTYPE_MISSIONCARD : o\ID=TempAttribute\ObjectID
+	
+	
+	
+	Object_CreateHitBox(HITBOXTYPE_BOX,o,4,4,4)
+	
+	Object_Acquire_Position(o,x#,y#,z#)
+	
+	o\StageFolder$=TempAttribute\teleportername$
+	o\StageName$=stagename$
+	
+	o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_MissionCard)), Game\Stage\Root)
+	
+	
+	
+	Return o
+End Function
 
-		o\State=0
+	; =========================================================================================================
 
-		o\Entity = CreatePivot()
+Function Object_MissionCard_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+	
+	RotateEntity o\Entity, 0, EntityYaw(Menu\SlowRingRotator), 0
+	
+		; Obj pick up
+	Object_EnforceObjPickUp(o,p)
+	
+		; Player collided with object
+	If (Not(p\ObjPickUpTimer>0)) And o\ObjPickedUp=0 Then
+		If o\BombHit Then o\BombHit=False : o\ObjPickedUp=-1
+	EndIf
+	
+End Function
+Function Object_Diamond_Create.tObject(x#, y#, z#,power#)
+	o.tObject = New tObject : o\ObjType = OBJTYPE_DIAMOND : o\ID=TempAttribute\ObjectID 
+	
+	Object_CreateHitBox(HITBOXTYPE_RING,o,5,5,5)
+	Object_Acquire_Position(o,x#,y#,z#)
+	Object_Acquire_Power(o,power#)
+	
+	o\State=0
+	
+	o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Diamond))   , Game\Stage\Root)
+	EntityAlpha(o\Entity,0.7)
+	
+	If o\Power#=5 Or o\Power#=50 Then EntityColor(o\Entity,15,15,255)
+	If o\Power#=10 Or o\Power#=100 Then EntityColor(o\Entity,15,255,15)
+	If o\Power#=15 Or o\Power#=150 Then EntityColor(o\Entity,255,15,15)
+	
+	If o\Power#>=50 Then ScaleEntity(o\Entity,1.15,1.7,1.15)
+	
+	EntityType(o\Entity, COLLISION_OBJECT_GOTHRU)
+	
+	Return o
+	
+End Function
+
+	; =========================================================================================================
+
+Function Object_Diamond_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+	
+	
+		; Player collided with object
+	If o\Hit Then
+		
+		Gameplay_AddScore(o\Power#*10)
 		
 		
+			;Release effect
+		ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_RING, o\Entity, 1)
 		Select o\Power#
-			Case 5	:  o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_BRing5)) , Game\Stage\Root)
-			Case 10	:  o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_BRing10)), Game\Stage\Root)
-			Case 20	:  o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_BRing20)), Game\Stage\Root)
-			Default	:  o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_Ring))   , Game\Stage\Root)
-		End Select 
+			Case 5,50
+				EmitSmartSound(Sound_DiamondBlue1+Game\DiamondCount,o\Entity)
+			Case 10,100
+				EmitSmartSound(Sound_DiamondGreen1+Game\DiamondCount,o\Entity)
+			Case 15,150
+				EmitSmartSound(Sound_DiamondRed1+Game\DiamondCount,o\Entity)
+		End Select
 		
-		If o\Power#>1 Then ScaleEntity(o\EntityX,0.75,0.75,0.75)
-		
-		EntityType(o\Entity, COLLISION_OBJECT_GOTHRU)
+		If o\Power#>25 Then EmitSmartSound(Sound_DiamondBig,o\Entity)
+			; Delete the object
+		Game\DiamondCount=Abs(Game\DiamondCount-1)
+		o\Done=1
+		Return
+	EndIf
+End Function 	
+Function Object_Timer_Create.tObject(x#, y#, z#, amount#)
+	o.tObject = New tObject : o\ObjType = OBJTYPE_TIMER : o\ID=TempAttribute\ObjectID 
+	
+	Object_CreateHitBox(HITBOXTYPE_RING,o,5,5,5)
+	Object_Acquire_Position(o,x#,y#,z#)
+	Object_Acquire_Power(o,amount#)
+	
+	o\State=0
+	
+	o\Entity = CreatePivot()
+	
+	Select o\Power#
+		Case 5: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_Timer5))   , Game\Stage\Root)
+		Case 10: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_Timer10))   , Game\Stage\Root)
+		Case 20: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_Timer20))   , Game\Stage\Root)
+		Default: o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_Timer5))   , Game\Stage\Root)
+	End Select
+	
+	
+	
+	Animate o\EntityX,1,0.2,1,10
+	EntityType(o\Entity, COLLISION_OBJECT_GOTHRU)
+	
+	Return o
+End Function
 
-		Return o
-	End Function
+	; =========================================================================================================
+
+Function Object_Timer_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+	
+	; Movement
+	PositionEntity o\EntityX, o\Position\x#, o\Position\y#, o\Position\z#
+	RotateEntity o\EntityX, 0, EntityYaw(Menu\RingRotator), 0
+	
+	
+		; Player collided with object
+	If o\Hit Then
+		
+		Gameplay_AddScore(100)
+		Game\Gameplay\Time=Game\Gameplay\Time-(o\Power#*secs#)
+		EmitSmartSound(Sound_Timer,o\Entity)
+		
+			;Release effect
+		ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_RING, o\Entity, 1)
+		
+			; Delete the object
+		
+		o\Done=1
+		Return
+	EndIf
+End Function 	
+
+
+Function Object_Ring_Create.tObject(x#, y#, z#,amount#,switchno1=0, switchno2=0, switchno3=0, switchmode=0)
+	o.tObject = New tObject : o\ObjType = OBJTYPE_RING : o\ID=TempAttribute\ObjectID
+	
+	If amount#=1 Then
+		Object_CreateHitBox(HITBOXTYPE_RING,o,3.5,3.5,3.5)
+	Else
+		Object_CreateHitBox(HITBOXTYPE_RING,o,6.5,6.5,6.5)
+	EndIf
+	
+	o\MiscVal=Rand(1,360)
+	;Game\RingRotation : Game\RingRotation=Game\RingRotation+15
+	
+	Object_Acquire_Position(o,x#,y#,z#)
+	Object_Acquire_Power(o,amount#)
+	
+	o\State=0
+	o\Entity = CreatePivot()
+	
+	
+	o\EntityX = CopySmartEntity(Mesh_Ring)
+	If o\Power#>1 Then ScaleEntity(o\EntityX,0.8,0.8,0.8)
+	
+	Select o\Power#
+		Case 5	:  
+			o\Entity2 = CopyEntity(MESHES(SmartEntity(Mesh_BRing5S)) , Game\Stage\Root)
+		Case 10	:  
+			o\Entity2 = CopyEntity(MESHES(SmartEntity(Mesh_BRing10S)) , Game\Stage\Root)
+		Case 20	:  
+			o\Entity2 = CopyEntity(MESHES(SmartEntity(Mesh_BRing20S)) , Game\Stage\Root)
+		Default	:  
+			o\Entity2 = CopyEntity(MESHES(SmartEntity(Mesh_Empty)) , Game\Stage\Root)
+	End Select 
+	
+	EntityType(o\Entity, COLLISION_OBJECT_GOTHRU)
+	
+	If switchno1>0 Then
+		o\Switch = New tObject_Switch : o\HasValuesetSwitch=True
+		o\Switch\SwitchNo[0]=switchno1
+		o\Switch\SwitchNo[1]=switchno2
+		o\Switch\SwitchNo[2]=switchno3
+		o\Switch\SwitchMode=switchmode
+	EndIf
+	
+	Return o
+	
+End Function
+
+Function Object_Ring_Update_Always(o.tObject)	
+	
+	RotateEntity o\EntityX, 0, o\MiscVal+EntityYaw(Menu\RingRotator), 0
+	PointEntity(o\Entity2,cam\Entity)
+	
+	If o\HasValuesetSwitch=True Then
+		If Object_WhetherHasSwitches(o) Then
+			Object_SwitchManager_PerObjectUpdate(o)
+			Select o\Switch\SwitchMode
+				Case 0
+					Select o\Switch\SwitchOn
+						Case 0: 
+							o\Effected=0
+							HideEntity(o\EntityX) : HideEntity(o\Entity2) : o\HitSwitch=1
+						Case 1: 
+							If o\Effected=0 Then
+								EmitSmartSound(Sound_RingSparkle1+(Rand(0,3)),o\Entity)
+								ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_RING, o\Entity, 1)
+								o\Effected=1
+							EndIf
+							ShowEntity(o\EntityX) : ShowEntity(o\Entity2) : o\HitSwitch=0
+					End Select
+				Case 1
+					Select o\Switch\SwitchOn
+						Case 0: 
+							If o\Effected=0 Then
+								EmitSmartSound(Sound_RingSparkle1+(Rand(0,3)),o\Entity)
+								ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_RING, o\Entity, 1)
+								o\Effected=1
+							EndIf
+							ShowEntity(o\EntityX) : ShowEntity(o\Entity2) : o\HitSwitch=0
+						Case 1: 
+							o\Effected=0
+							HideEntity(o\EntityX) : HideEntity(o\Entity2) : o\HitSwitch=1
+					End Select
+			End Select
+		EndIf
+	EndIf
+	
+End Function	
 	
 	; =========================================================================================================
 	
 Function Object_Ring_Update(o.tObject, p.tPlayer, d.tDeltaTime)
-
+	
+	Object_Ring_Update_Always(o)
 	; Movement
-		PositionEntity o\EntityX, o\Position\x#, o\Position\y#, o\Position\z#
-		Select o\State
-			Case 0:
-				RotateEntity o\EntityX, 0, EntityYaw(Menu\RingRotator), 0
-				If Game\Shield=OBJTYPE_TSHIELD Or p\Action=ACTION_BOOST And (Not(p\Action=ACTION_LIGHTDASH)) Then
-					If (EntityDistance(p\Objects\Entity,o\Entity)<30) Then
-						o\RingDrawIn=1	
-					EndIf
-				EndIf
-				
-				For b.tBomb=Each tBomb
-					Select b\BombType
-						Case BOMB_RINGBOOMERANG
-							If (EntityDistance(o\Entity,b\Entity)<15) Then
-								o\RingDrawIn=1
-							EndIf 
-					End Select
-				Next 
-				
-				If o\RingDrawIn=1 Then 
-					PointEntity o\Entity, p\Objects\Entity
-					PointEntity o\EntityX, p\Objects\Entity
-					MoveEntity o\Entity, 0,0,2.5*d\Delta
-					o\State=1 : o\AlwaysPresent=True
-					ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_RING, o\Entity, 1)
-				EndIf 
-
-			Case 1:
-				If (Not(Game\Shield=OBJTYPE_TSHIELD)) Or EntityDistance(p\Objects\Entity,o\Entity)>OBJECT_VIEWDISTANCE_UPDATEDISTANCE#*10 Then
-					o\State=0 : o\AlwaysPresent=False
-				EndIf
+	
+	PositionEntity o\EntityX, o\Position\x#, o\Position\y#, o\Position\z#
+	PositionEntity o\Entity2, o\Position\x#, o\Position\y#, o\Position\z#
+	
+	Select o\State
+		Case 0:
+			If EntityDistance(p\Objects\Entity,o\Entity)<30 And p\Flags\CanDrawInRing=True Then
 				PointEntity o\Entity, p\Objects\Entity
 				PointEntity o\EntityX, p\Objects\Entity
-				If EntityDistance(o\Entity, p\Objects\Entity)>2 Then MoveEntity o\Entity, 0,0,2*d\Delta Else MoveEntity o\Entity, 0,0,EntityDistance(o\Entity, p\Objects\Entity)*d\Delta
-		End Select
-
+				MoveEntity o\Entity, 0,0,10*d\Delta
+				o\State=1 : o\AlwaysPresent=True
+			EndIf
+		Case 1:
+			If p\Flags\CanDrawInRing=False Or EntityDistance(p\Objects\Entity,o\Entity)>OBJECT_VIEWDISTANCE_UPDATEDISTANCE#*10 Then
+				o\State=0 : o\AlwaysPresent=False
+			EndIf
+			PointEntity o\Entity, p\Objects\Entity
+			PointEntity o\EntityX, p\Objects\Entity
+			If EntityDistance(o\Entity, p\Objects\Entity)>2 Then MoveEntity o\Entity, 0,0,10*d\Delta Else MoveEntity o\Entity, 0,0,EntityDistance(o\Entity, p\Objects\Entity)*d\Delta
+	End Select
+	
 		; Player collided with object
-		If o\Hit Then
-
+	If o\Hit And o\HitSwitch=0 Then
+		
+		If Menu\CollectionRoom=1 Then
+			Menu\Wallet=Menu\Wallet+o\Power#
+		Else
 			; Add to counter
-			Gameplay_AddRings(o\Power#)
-			Gameplay_AddGaugeEnergy(o\Power#)
-			Gameplay_AddScore(o\Power#*10)
-
-			; Make Sonic a move
-			If p\Action=ACTION_LIGHTDASH Then p\Action=ACTION_JUMPFALL : p\LightDashRequestTimer=0.1*secs# : Player_SetSpeed(p,2)
-
-			; Bling!
-			StopChannel(Game\Channel_Ring)
-			If o\Power=1 Then 
-				Game\Channel_Ring=EmitSmartSound(Sound_Ring,o\Entity)
+			If o\Power#=1 Then
+				Gameplay_AddRings(o\Power#)
 			Else
-				Game\Channel_Ring=EmitSmartSound(Sound_RingSuper,o\Entity)
-			EndIf 
-			
-			;sparkles
-			Select Rand(1,3)
-				Case 1 : EmitSmartSound(Sound_RingSparkle1,o\Entity)
-				Case 2 : EmitSmartSound(Sound_RingSparkle2,o\Entity)
-				Case 3 : EmitSmartSound(Sound_RingSparkle3,o\Entity)
-			End Select 
-
+				Game\SuperRingTimer=0.1*secs#
+				Game\SuperRingsToAdd=Game\SuperRingsToAdd+o\Power#
+				Game\AddSuperRing=1
+			EndIf
+		EndIf
+		
+		Gameplay_AddScore(o\Power#*100)
+		
+		
+			; Make Sonic a move
+		If p\Action=ACTION_LIGHTDASH Then p\Action=ACTION_JUMPFALL : p\LightDashRequestTimer=0.1*secs# : Player_SetSpeed(p,2)
+		
+			; Bling!
+		StopChannel(Game\Channel_Ring)
+		If o\Power#<=1 Then
+			Game\Channel_Ring=EmitSmartSound(Sound_Ring,o\Entity)
+		Else
+			Game\Channel_Ring=EmitSmartSound(Sound_RingSuper,o\Entity)
+		EndIf
+		EmitSmartSound(Sound_RingSparkle1+(Rand(0,3)),o\Entity)
+		
 			;Release effect
-			ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_RING, o\Entity, 1)
+		ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_RING, o\Entity, 1)
 		
 			; Delete the object
-			o\CanRingDash=False
-			o\Done=1
-			Return
+		o\CanRingDash=False
+		o\Done=1
+		Return
+		
+	EndIf
+	
+	
+	If EntityDistance(o\Entity, p\Objects\Entity)<35 And o\HitSwitch=0  Then p\AroundLightDashTimer=0.25*secs#
+	
+End Function
+Function Object_RedRing_Create.tObject(x#, y#, z#,number#)
+	o.tObject = New tObject : o\ObjType = OBJTYPE_REDRING : o\ID=TempAttribute\ObjectID
+	
+	Object_CreateHitBox(HITBOXTYPE_RING,o,5,8,5)
+	Object_Acquire_Position(o,x#,y#,z#)
+	Object_Acquire_Power(o,number#)
+	
+	o\State=0
+	
+	o\Entity = CreatePivot()
+	
+	o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_RedRing))   , Game\Stage\Root)
+	o\Entity2 = CopyEntity(MESHES(SmartEntity(Mesh_RedRingStar)) , Game\Stage\Root)
+			
+	Game\Gameplay\GotRedRing[o\Power#]=REDRING(o\Power#,Menu\Stage)
+	EntityType(o\Entity, COLLISION_OBJECT_GOTHRU)
+	
+	Return o
+End Function
+
+	; =========================================================================================================
+Function Object_RedRing_Timers(o.tObject)
+	
+		If o\ScaleTimer>0 Then o\ScaleTimer=o\ScaleTimer+(timervalue#*3)
+		If o\AlphaTimer>0 Then o\AlphaTimer=o\AlphaTimer-(timervalue#*3)
+		
+		If o\AlphaTimer>0 Then
+			EntityAlpha(o\EntityX,o\AlphaTimer/secs#)
+			EntityAlpha(o\Entity2,o\AlphaTimer/secs#)
 		EndIf
-
-		If EntityDistance(o\Entity, p\Objects\Entity)<25 Then p\AroundLightDashTimer=0.25*secs#
-
-	End Function
-
+		
+		If o\ScaleTimer>0 Then
+			ScaleEntity o\Entity2,1.1*o\ScaleTimer/secs#,1.1*o\ScaleTimer/secs#,1.1*o\ScaleTimer/secs#
+		Else
+			ScaleEntity o\Entity2,1.1,1.1,1.1
+		EndIf
+	
+End Function
+Function Object_RedRing_Update(o.tObject, p.tPlayer)
+	
+	Object_RedRing_Timers(o)
+	
+		; Movement
+	PositionEntity o\EntityX, o\Position\x#, o\Position\y#, o\Position\z#
+	RotateEntity o\EntityX, 0, EntityYaw(Menu\SlowRingRotator), 0
+	
+	PositionEntity o\Entity2, o\Position\x#, o\Position\y#, o\Position\z#
+	RotateEntity o\Entity2, 0, EntityYaw(Menu\SlowRingRotator2), 0
+	
+		; Player collided with object
+	If o\Hit And (Not(o\ScaleTimer>0)) Then
+		
+		Gameplay_AddScore(5000)
+		
+		; Bling1
+		EmitSmartSound(Sound_RingRed,o\Entity)
+		EmitSmartSound(Sound_RingSparkle1+(Rand(0,3)),o\Entity)
+		
+		If Game\Gameplay\GotRedRing[o\Power#]=0 Then 
+			Game\Interface\ShowRedRingTimer=3*secs#
+			Game\Gameplay\GotRedRing[o\Power#]=1
+			o\AlphaTimer=1*secs#
+			If Game\Gameplay\GotRedRing[1]=1 And Game\Gameplay\GotRedRing[2]=1 And Game\Gameplay\GotRedRing[3]=1 And Game\Gameplay\GotRedRing[4]=1 And Game\Gameplay\GotRedRing[5]=1  Then 
+				Achievement_Grant("Collect all Red Star Rings in "+Menu\StageName$,2,100,Sound_RingSuper)
+				Menu\Wallet=Menu\Wallet+100
+			EndIf
+		Else
+			o\AlphaTimer=0.5*secs#
+		EndIf
+		
+		;timers
+		o\ScaleTimer=1*secs#
+		
+		
+			;Release effect
+		ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_REDRING, o\Entity, 1.25)
+		
+			; Delete the object
+		o\CanRingDash=False
+	EndIf
+	
+	If o\ScaleTimer>2*secs# Then 
+		o\Done=1
+		Return
+	EndIf
+	
+	
+End Function
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_SpewRing_Create.tObject(x#, y#, z#, xspeed#, yspeed#, zspeed#, magnetized=0)
+	Function Object_SpewRing_Create.tObject(x#, y#, z#, xspeed#, yspeed#, zspeed#, magnetized=0)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_SPEWRING
 		o\AlwaysPresent=True
 		o\Spew = New tObject_Spew : o\HasValuesetSpew=True
@@ -225,7 +625,7 @@ Function Object_SpewRing_Create.tObject(x#, y#, z#, xspeed#, yspeed#, zspeed#, m
 
 	; =========================================================================================================
 	
-Function Object_SpewRing_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+	Function Object_SpewRing_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		If o\Spew\CollectTimer#>=10 Then
 			If o\IValues[0]=0 Then o\IValues[0]=1 : EntityType(o\Pivot, COLLISION_OBJECT_GOTHRU)
@@ -281,7 +681,7 @@ Function Object_SpewRing_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_Monitor_Create.tObject(monitortype, x#, y#, z#,pitch#=0,yaw#=0,roll#=0)
+	Function Object_Monitor_Create.tObject(monitortype, x#, y#, z#, mode#=0)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\ThisIsAMonitor=True : o\Monitor = New tObject_Monitor : o\HasValuesetMonitor=True
 
@@ -294,24 +694,31 @@ Function Object_Monitor_Create.tObject(monitortype, x#, y#, z#,pitch#=0,yaw#=0,r
 		End Select
 
 		Object_Acquire_Position(o,x#,y#,z#)
-		Object_Acquire_Rotation(o,pitch#,yaw#,roll#)
+		Object_Acquire_Rotation(o,0,Rand(1,360),0)
+		
+		If o\ObjType=OBJTYPE_RSHIELD Then
+			Select Rand(1,5)
+				Case 1: o\ObjType=OBJTYPE_NSHIELD
+				Case 2: o\ObjType=OBJTYPE_ESHIELD
+				Case 3: o\ObjType=OBJTYPE_TSHIELD
+				Case 4: o\ObjType=OBJTYPE_BSHIELD
+				Case 5: o\ObjType=OBJTYPE_FSHIELD
+			End Select
+		EndIf
 
 		o\State=0
 
 		If o\ObjType=OBJTYPE_RINGS Then
-			Select(Rand(1,7))
-				Case 1,2: o\Monitor\RingsType=5
-				Case 3,4,5,6: o\Monitor\RingsType=10
-				Case 7: o\Monitor\RingsType=20
+			Select(Rand(1,11))
+				Case 1,2,3,4: o\Monitor\RingsType=5
+				Case 4,5,6,7,8,9: o\Monitor\RingsType=10
+				Case 10,11: o\Monitor\RingsType=20
 			End Select
 		EndIf
 
 		Select monitortype
 			Case 0:
-				o\Entity = LoadAnimMesh("Objects/Monitors/Monitor.b3d", Game\Stage\Root)
-				ExtractAnimSeq(o\Entity,0,1);idle
-				ExtractAnimSeq(o\Entity,1,19);boom
-				ScaleEntity o\Entity,1.1,1.1,1.1
+				o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Monitor)), Game\Stage\Root)
 			Case 1:
 				o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_MonitorBalloon)), Game\Stage\Root)
 		End Select
@@ -346,10 +753,12 @@ Function Object_Monitor_Create.tObject(monitortype, x#, y#, z#,pitch#=0,yaw#=0,r
 				o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_Bomb)), Game\Stage\Root)
 			Case OBJTYPE_BOARD:
 				o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_BoardX)), Game\Stage\Root)
+				
 			Case OBJTYPE_GLIDER:
 				o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_GliderX)), Game\Stage\Root)
 			Case OBJTYPE_CAR:
-				o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_CopRacer1Car+(Rand(1,6))-1)), Game\Stage\Root)
+				If mode#=0 Then o\Mode=Rand(1,6) Else o\Mode=mode#
+				o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_Enemy_CopRacer1Car+o\Mode-1)), Game\Stage\Root)
 				ScaleEntity o\EntityX, 0.35, 0.35, 0.35
 			Case OBJTYPE_BIKE:
 				o\EntityX = CopyEntity(MESHES(SmartEntity(Mesh_Bike)), Game\Stage\Root)
@@ -375,10 +784,10 @@ Function Object_Monitor_Create.tObject(monitortype, x#, y#, z#,pitch#=0,yaw#=0,r
 	
 	; =========================================================================================================
 	
-Function Object_Monitor_ItemRotate(o.tObject, p.tPlayer)
+	Function Object_Monitor_ItemRotate(o.tObject, p.tPlayer)
 		If o\ThisIsAMonitorBalloon Then PointEntity(o\Entity,cam\Entity)
-
-		If o\ObjType=OBJTYPE_LIFE And o\Monitor\MonitorTakenOnce=1 Then HideEntity(o\EntityX)
+		
+		If o\Monitor\SoundTimer>0 Then o\Monitor\SoundTimer=o\Monitor\SoundTimer-timervalue#
 
 		Select o\ObjType
 			Case OBJTYPE_TRAP,OBJTYPE_INVINC,OBJTYPE_NSHIELD,OBJTYPE_WINGS:
@@ -389,209 +798,217 @@ Function Object_Monitor_ItemRotate(o.tObject, p.tPlayer)
 	End Function
 
 Function Object_Monitor_Update(o.tObject, p.tPlayer)
-
+	
+	
+	
+	
+	
 		; Movement
-		Object_Monitor_ItemRotate(o,p)
-		
+	Object_Monitor_ItemRotate(o,p)
+	
 		; Player collided with object
-		If (o\Hit Or o\CheeseHit Or o\FroggyHit Or o\BombHit) And o\State=0 Then
+	If (o\Hit Or o\CheeseHit Or o\FroggyHit Or o\BombHit) And o\State=0 Then
 		
 			; Add to counter
-			Select o\ObjType
-				Case OBJTYPE_RINGS:
-					Gameplay_AddRings(o\Monitor\RingsType)
-					Gameplay_AddGaugeEnergy(o\Monitor\RingsType)
-				Case OBJTYPE_LIFE:
-					If o\Monitor\MonitorTakenOnce=0 Then Gameplay_AddLives(1)
-				Case OBJTYPE_TRAP:
-					Gameplay_SubstractRings(10)
-				Case OBJTYPE_INVINC:
-					If Game\SuperForm=0 Then
-						Game\Invinc=1 : Game\InvincTimer=20.046391*secs#
-						StopChannel(Game\Channel_Invincible) : StopChannel(Game\Channel_SpeedShoes)
-						If (ChannelPlaying(Game\Channel_Drown)=False) Then Game\Channel_Invincible=PlaySmartSound(Sound_Invincible)
-					EndIf
-				Case OBJTYPE_SHOES:
-					If Game\SuperForm=0 Then
-						Game\SpeedShoes=1 : Game\SpeedShoeTimer=15.177130*secs#
-						StopChannel(Game\Channel_Invincible) : StopChannel(Game\Channel_SpeedShoes)
-						If (ChannelPlaying(Game\Channel_Drown)=False) Then Game\Channel_SpeedShoes=PlaySmartSound(Sound_SpeedShoes)
-					EndIf
-				Case OBJTYPE_NSHIELD,OBJTYPE_FSHIELD,OBJTYPE_BSHIELD,OBJTYPE_TSHIELD,OBJTYPE_ESHIELD:
-					If p\CheeseShieldTimer>0 Then p\CheeseShieldTimer=0
-					Game\Shield=o\ObjType
-				Case OBJTYPE_BOMB:
-					p\BombMonitorTimer=0.1*secs#
-				Case OBJTYPE_BOARD:
-					If Game\WholeVehicle=0 Then
-						Game\Vehicle=1
-						For ppp.tPlayer = Each tPlayer
-							ppp\Action = ACTION_BOARD
-						Next
-					EndIf
-				Case OBJTYPE_GLIDER:
-					If Game\WholeVehicle=0 Then
-						Game\Vehicle=2
-						For ppp.tPlayer = Each tPlayer
-							ppp\Action = ACTION_GLIDER
-							p\Motion\Ground=False
-							p\Motion\Speed\y#=0.5
-						Next
-					EndIf
-				Case OBJTYPE_CAR:
-					If Game\WholeVehicle=0 Then
-						Game\Vehicle=3
-						For ppp.tPlayer = Each tPlayer
-							ppp\Action = ACTION_CAR
-							ppp\VehicleColor=o\Mode
-						Next
-					EndIf
-				Case OBJTYPE_BIKE:
-					If Game\WholeVehicle=0 Then
-						Game\Vehicle=4
-						For ppp.tPlayer = Each tPlayer
-							ppp\Action = ACTION_CAR
-						Next
-					EndIf
-				Case OBJTYPE_BOBSLEIGH:
-					If Game\WholeVehicle=0 Then
-						Game\Vehicle=5
-						For ppp.tPlayer = Each tPlayer
-							ppp\Action = ACTION_BOARD
-						Next
-					EndIf
-				Case OBJTYPE_TORNADO:
-					If Game\WholeVehicle=0 Then
-						Game\Vehicle=6
-						For ppp.tPlayer = Each tPlayer
-							ppp\Action = ACTION_TORNADO
-						Next
-					EndIf
-				Case OBJTYPE_CYCLONE:
-					If Game\WholeVehicle=0 Then
-						Game\Vehicle=8
-						For ppp.tPlayer = Each tPlayer
-							ppp\Action = ACTION_BOARD
-						Next
-					EndIf
-				Case OBJTYPE_KART:
-					If Game\WholeVehicle=0 Then
-						Game\Vehicle=9
-						For ppp.tPlayer = Each tPlayer
-							ppp\Action = ACTION_CAR
-						Next
-					EndIf
-				Case OBJTYPE_WINGS:
-					If p\Motion\Ground=False Then Player_ResetJumpActionStuff(p)
-			End Select
-			Gameplay_AddScore(100)
-
-			; Icon drawer
-			If Not(o\ObjType=OBJTYPE_LIFE And o\Monitor\MonitorTakenOnce=1) Then MonitorIcon_Draw(o\ObjType-(OBJTYPE_RINGS-1)) Else MonitorIcon_Draw(OBJTYPE_WINGS-OBJTYPE_RINGS+2)
-
-			; Sound effect!
-			If o\ThisIsAMonitorBalloon Then
-				EmitSmartSound(Sound_MonitorBalloon,o\Entity)
-				If (Not(o\ObjType=OBJTYPE_TRAP)) Then p\TrickTimer=1*secs#
-			EndIf
-			Select o\ObjType
-				Case OBJTYPE_TRAP: EmitSmartSound(Sound_MonitorTrap,o\Entity)
-				Case OBJTYPE_RINGS: EmitSmartSound(Sound_MonitorRing,o\Entity)
-				Case OBJTYPE_NSHIELD: EmitSmartSound(Sound_MonitorShield,o\Entity)
-				Case OBJTYPE_FSHIELD: EmitSmartSound(Sound_MonitorShieldFlame,o\Entity)
-				Case OBJTYPE_BSHIELD: EmitSmartSound(Sound_MonitorShieldBubble,o\Entity)
-				Case OBJTYPE_TSHIELD: EmitSmartSound(Sound_MonitorShieldThunder,o\Entity)
-				Case OBJTYPE_ESHIELD: EmitSmartSound(Sound_MonitorShieldEarth,o\Entity)
-				Case OBJTYPE_BOMB: EmitSmartSound(Sound_Bombed,o\Entity)
-				Default: EmitSmartSound(Sound_Monitor,o\Entity)
-			End Select
-
-			; Make Sonic a move
-			If o\CheeseHit=False And o\FroggyHit=False And o\BombHit=False And (Not(o\ObjType=OBJTYPE_BOARD)) Then
-				If p\Motion\Ground=False And (Not(p\Action=ACTION_BOARD Or p\Action=ACTION_BOARDJUMP Or p\Action=ACTION_SKYDIVE Or p\Action=ACTION_HOOKSHOT)) Then
-					;If o\ThisIsAMonitorBalloon Then Player_SetSpeed(p,0.1)
-					If Game\Vehicle=0 Then Player_JumpActionInteract(p,2)
+		Select o\ObjType
+			Case OBJTYPE_RINGS:
+				Gameplay_AddRings(o\Monitor\RingsType)
+			Case OBJTYPE_LIFE:
+				Gameplay_AddLives(1)
+			Case OBJTYPE_TRAP:
+				Gameplay_SubstractRings(10)
+			Case OBJTYPE_INVINC:
+				If Game\SuperForm=0 Then
+					Game\Invinc=1 : Game\InvincTimer=20.046391*secs#
+					StopChannel(Game\Channel_Invincible) : StopChannel(Game\Channel_SpeedShoes)
+					If (ChannelPlaying(Game\Channel_Drown)=False) Then Game\Channel_Invincible=PlaySmartSound(Sound_Invincible)
 				EndIf
+			Case OBJTYPE_SHOES:
+				If Game\SuperForm=0 Then
+					Game\SpeedShoes=1 : Game\SpeedShoeTimer=15.177130*secs#
+					StopChannel(Game\Channel_Invincible) : StopChannel(Game\Channel_SpeedShoes)
+					If (ChannelPlaying(Game\Channel_Drown)=False) Then Game\Channel_SpeedShoes=PlaySmartSound(Sound_SpeedShoes)
+				EndIf
+			Case OBJTYPE_NSHIELD,OBJTYPE_FSHIELD,OBJTYPE_BSHIELD,OBJTYPE_TSHIELD,OBJTYPE_ESHIELD:
+				Game\Shield=o\ObjType
+			Case OBJTYPE_BOMB:
+				p\BombMonitorTimer=0.1*secs#
+			Case OBJTYPE_BOARD:
+				If Game\WholeVehicle=0 Then
+					Game\Vehicle=1
+					For ppp.tPlayer = Each tPlayer
+						ppp\Action = ACTION_BOARD
+					Next
+				EndIf
+			Case OBJTYPE_GLIDER:
+				If Game\WholeVehicle=0 Then
+					Game\Vehicle=2
+					For ppp.tPlayer = Each tPlayer
+						ppp\Action = ACTION_GLIDER
+						p\Motion\Ground=False
+						p\Motion\Speed\y#=0.5
+					Next
+				EndIf
+			Case OBJTYPE_CAR:
+				If Game\WholeVehicle=0 Then
+					Game\Vehicle=3
+					For ppp.tPlayer = Each tPlayer
+						ppp\Action = ACTION_CAR
+						ppp\VehicleColor=o\Mode
+					Next
+				EndIf
+			Case OBJTYPE_BIKE:
+				If Game\WholeVehicle=0 Then
+					Game\Vehicle=4
+					For ppp.tPlayer = Each tPlayer
+						ppp\Action = ACTION_CAR
+					Next
+				EndIf
+			Case OBJTYPE_BOBSLEIGH:
+				If Game\WholeVehicle=0 Then
+					Game\Vehicle=5
+					For ppp.tPlayer = Each tPlayer
+						ppp\Action = ACTION_BOARD
+					Next
+				EndIf
+			Case OBJTYPE_TORNADO:
+				If Game\WholeVehicle=0 Then
+					Game\Vehicle=6
+					For ppp.tPlayer = Each tPlayer
+						ppp\Action = ACTION_TORNADO
+					Next
+				EndIf
+			Case OBJTYPE_CYCLONE:
+				If Game\WholeVehicle=0 Then
+					Game\Vehicle=8
+					For ppp.tPlayer = Each tPlayer
+						ppp\Action = ACTION_BOARD
+					Next
+				EndIf
+			Case OBJTYPE_KART:
+				If Game\WholeVehicle=0 Then
+					Game\Vehicle=9
+					For ppp.tPlayer = Each tPlayer
+						ppp\Action = ACTION_CAR
+					Next
+				EndIf
+			Case OBJTYPE_WINGS:
+				If p\Motion\Ground=False Then Player_ResetJumpActionStuff(p)
+		End Select
+		Gameplay_AddScore(250)
+		
+			; Icon drawer
+		; Icon drawer
+		
+		If o\ObjType=OBJTYPE_RINGS Then
+			Select o\Monitor\RingsType
+				Case 5: MonitorIcon_Draw(21) 
+				Case 10: MonitorIcon_Draw(22) 
+				Case 20: MonitorIcon_Draw(23) 
+			End Select
+		Else
+			MonitorIcon_Draw(o\ObjType-(OBJTYPE_RINGS-1)) 
+		EndIf 
+		
+		
+			; Sound effect!
+		If o\ThisIsAMonitorBalloon Then
+			EmitSmartSound(Sound_MonitorBalloon,o\Entity)
+			If (Not(o\ObjType=OBJTYPE_TRAP)) Then p\TrickTimer=1*secs#
+		Else
+			EmitSmartSound(Sound_Monitor,o\Entity)
+		EndIf
+		
+		Select o\ObjType
+			Case OBJTYPE_BOMB: 
+				EmitSmartSound(Sound_Bombed,o\Entity)
+			Case OBJTYPE_RINGS
+				EmitSmartSound(Sound_RingSuper,o\Entity)
+			Case OBJTYPE_NSHIELD
+				EmitSmartSound(Sound_Shield,o\Entity)
+			Case OBJTYPE_BSHIELD
+				EmitSmartSound(Sound_ShieldBubble,o\Entity)
+			Case OBJTYPE_TSHIELD
+				EmitSmartSound(Sound_ShieldThunder,o\Entity)
+			Case OBJTYPE_FSHIELD
+				EmitSmartSound(Sound_ShieldFire,o\Entity)
+		End Select
+		o\Monitor\SoundTimer=0.35*secs#
+		
+			; Make Sonic a move
+		If o\CheeseHit=False And o\FroggyHit=False And o\BombHit=False And (Not(o\ObjType=OBJTYPE_BOARD)) Then
+			If p\Motion\Ground=False And (Not(p\Action=ACTION_BOARD Or p\Action=ACTION_BOARDJUMP Or p\Action=ACTION_SKYDIVE Or p\Action=ACTION_HOOKSHOT Or p\Action=ACTION_FLY Or p\Action=ACTION_GLIDE)) Then
+				
+				Player_JumpActionInteract(p,2)
 			EndIf
-
-			; Update monitor taken once
-			o\Monitor\MonitorTakenOnce=1
+		EndIf
+		
 		
 			; Delete the object
-			o\CanHoming=False
-			o\CheeseCanHoming=False
-			Animate o\Entity,3,2.05,2,10
-			o\State=1
-			Return
-		EndIf
-
+		o\CanHoming=False
+		o\CheeseCanHoming=False
+		Animate o\Entity,3,2.05,2,10
+		o\State=1
+		Return
+	EndIf
+	
 		; Delete the object
-		If (Not(Animating(o\Entity))) And o\State=1 Then
-			o\Done=1
-			Return
-		EndIf
-
+	If (Not(Animating(o\Entity))) And o\State=1 And (Not(o\Monitor\SoundTimer>0)) Then
+		o\Done=1
+		Return
+	EndIf
+	
 		; Aiming and shooting
-		Object_EnforceAimingShooting(o,p)
-		
-	End Function
+	Object_EnforceAimingShooting(o,p)
+	
+End Function
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_Goal_Create.tObject(mode#, x#, y#, z#, teleportername$=0, switchno1=0, switchno2=0, switchno3=0,missionno#=1)
-		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
-		o\Goal = New tObject_Goal : o\Teleporter = New tObject_Teleporter : o\HasValuesetTeleporter=True
-		If (o\ObjType=OBJTYPE_GOAL2) Then
-			o\Switch = New tObject_Switch : o\HasValuesetSwitch=True
-			o\Switch\SwitchNo[0]=switchno1
-			o\Switch\SwitchNo[1]=switchno2
-			o\Switch\SwitchNo[2]=switchno3
-		EndIf
-
-		Object_Acquire_Position(o,x#,y#,z#)
-		Object_Acquire_Power(o,missionno#)
-		o\Mode=mode#
-		If mode#=1 Or o\ObjType=OBJTYPE_WARPRING Then
-			j=0
-			For i=0 To StageAmount
-				If StageName$(i)=teleportername$ And j=0 Then j=i
-			Next
-			o\Teleporter\TeleporterNo=j
-			o\TagTip$=teleportername$
-		EndIf
-
-		If Menu\Stage>0 Then
-			If (Not(Menu\Mission=MISSION_ESCAPE#)) Then
-				Object_CreateHitBox(HITBOXTYPE_SPEEDY,o,15,15,15)
-				If o\Objtype=OBJTYPE_WARPRING Then 
-					o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Ring)), Game\Stage\Root)
-					ScaleEntity(o\Entity,3.5,3.5,3.5)
-				Else
-					If Menu\Mission=MISSION_ENCORE# Then
-						o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_GoalRuby)), Game\Stage\Root)
-					Else
-						o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_GoalRing)), Game\Stage\Root)
-					EndIf 
-				EndIf 
-			Else
-				Object_CreateHitBox(HITBOXTYPE_SPEEDY_TRANSFERER,o,7.875,5.25,7.875)
-				o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Escaper)), Game\Stage\Root)
-				Animate(o\Entity,1,0.075,1,10)
-			EndIf
-		Else
-			Object_CreateHitBox(HITBOXTYPE_SPEEDY,o,50,50,50)
-			o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_EmeraldGoal)), Game\Stage\Root)
-			EntityColorEmerald(o\Entity,Abs(Menu\Stage))
-			Animate o\Entity,1,0.025,1
-		EndIf
-
-		Return o
-	End Function
+Function Object_Goal_Create.tObject(mode#, x#, y#, z#, teleportername$=0, switchno1=0, switchno2=0, switchno3=0)
+	o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
+	o\Goal = New tObject_Goal : o\Teleporter = New tObject_Teleporter : o\HasValuesetTeleporter=True
+	If (o\ObjType=OBJTYPE_GOAL2) Then
+		o\Switch = New tObject_Switch : o\HasValuesetSwitch=True
+		o\Switch\SwitchNo[0]=switchno1
+		o\Switch\SwitchNo[1]=switchno2
+		o\Switch\SwitchNo[2]=switchno3
+	EndIf
+	
+	Object_Acquire_Position(o,x#,y#,z#)
+	o\Mode=mode#
+	If mode#=1 Then
+		j=0
+		For i=0 To StageAmount
+			If StageName$(i)=teleportername$ And j=0 Then j=i
+		Next
+		o\Teleporter\TeleporterNo=j
+	EndIf
+	
+	Select Menu\Mission
+		Case MISSION_ESCAPE# 
+			Object_CreateHitBox(HITBOXTYPE_SPEEDY_TRANSFERER,o,7.875,5.25,7.875)
+			o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Escaper)), Game\Stage\Root)
+			Animate(o\Entity,1,0.075,1,10)
+		Case MISSION_ENCORE#
+			Object_CreateHitBox(HITBOXTYPE_SPEEDY,o,15,15,15)
+			o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_GoalRuby)), Game\Stage\Root)
+		Case MISSION_ENEMY#,MISSION_RING#,MISSION_HUNT#,MISSION_GOLD#,MISSION_BALLOONS#,MISSION_FREEROAM#,MISSION_RIVAL#,MISSION_CARNIVAL#,MISSION_BOSS#:
+			Object_CreateHitBox(HITBOXTYPE_SPEEDY,o,15,15,15)
+			o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Ring)), Game\Stage\Root)
+			ScaleEntity(o\Entity,3.5,3.5,3.5)
+		Default
+			Object_CreateHitBox(HITBOXTYPE_SPEEDY,o,15,15,15)
+			o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_GoalRing)), Game\Stage\Root)
+	End Select
+	
+	Return o
+End Function
 	
 	; =========================================================================================================
 	
-Function Object_Goal_Switch(o.tObject)
+	Function Object_Goal_Switch(o.tObject)
 		If Object_WhetherHasSwitches(o) Then
 			Object_SwitchManager_PerObjectUpdate(o)
 			Select o\Switch\SwitchOn
@@ -600,145 +1017,82 @@ Function Object_Goal_Switch(o.tObject)
 			End Select
 		EndIf
 	End Function
-Function Object_Goal_Sound(o.tObject, p.tPlayer)
-	If ChannelPlaying(o\Goal\Channel_GoalIdle)=False Then
-		If Menu\Stage>0 Then
-			If Menu\Mission=MISSION_ENCORE# Then 
+
+Function Object_Goal_Update(o.tObject, p.tPlayer)
+	
+	If o\ObjType=OBJTYPE_GOAL2 Then Object_Goal_Switch(o)
+	
+	If (Not(Menu\Mission=MISSION_ESCAPE#)) Then
+		If p\Action=ACTION_STOMP Or p\Action=ACTION_LAND Then o\HitBox\y#=10 Else o\HitBox\y#=15
+		
+		RotateEntity o\Entity, 0, EntityYaw(Menu\SlowRingRotator), 0
+		
+		If ChannelPlaying(o\Goal\Channel_GoalIdle)=False Then
+			If Menu\Mission=MISSION_ENCORE# Then
 				o\Goal\Channel_GoalIdle=EmitSmartSound(Sound_RubyIdle,o\Entity)
 			Else
 				o\Goal\Channel_GoalIdle=EmitSmartSound(Sound_GoalIdle,o\Entity)
-			EndIf 
-			If EntityDistance(p\Objects\Entity,o\Entity) >= 500 Then
-				ChannelVolume(o\Goal\Channel_GoalIdle,0)
-			ElseIf EntityDistance(p\Objects\Entity,o\Entity) >= 475 Then 
-				ChannelVolume(o\Goal\Channel_GoalIdle,0.05)
-			ElseIf EntityDistance(p\Objects\Entity,o\Entity) >= 450 Then 
-				ChannelVolume(o\Goal\Channel_GoalIdle,0.1)
-			ElseIf EntityDistance(p\Objects\Entity,o\Entity) >= 425 Then 
-				ChannelVolume(o\Goal\Channel_GoalIdle,0.15)
-			ElseIf EntityDistance(p\Objects\Entity,o\Entity) >= 400 Then 
-				ChannelVolume(o\Goal\Channel_GoalIdle,0.2)
-			ElseIf EntityDistance(p\Objects\Entity,o\Entity) >= 375 Then 
-				ChannelVolume(o\Goal\Channel_GoalIdle,0.25)
-			ElseIf EntityDistance(p\Objects\Entity,o\Entity) >= 350 Then 
-				ChannelVolume(o\Goal\Channel_GoalIdle,0.3)
-			ElseIf EntityDistance(p\Objects\Entity,o\Entity) >= 325 Then 
-				ChannelVolume(o\Goal\Channel_GoalIdle,0.35)
-			ElseIf EntityDistance(p\Objects\Entity,o\Entity) >= 300 Then 
-				ChannelVolume(o\Goal\Channel_GoalIdle,0.4)
-			ElseIf EntityDistance(p\Objects\Entity,o\Entity) >= 275 Then 
-				ChannelVolume(o\Goal\Channel_GoalIdle,0.45)
-			ElseIf EntityDistance(p\Objects\Entity,o\Entity) >= 250 Then 
-				ChannelVolume(o\Goal\Channel_GoalIdle,0.5)
-			ElseIf EntityDistance(p\Objects\Entity,o\Entity) >= 225 Then 
-				ChannelVolume(o\Goal\Channel_GoalIdle,0.55)
-			ElseIf EntityDistance(p\Objects\Entity,o\Entity) >= 200 Then 
-				ChannelVolume(o\Goal\Channel_GoalIdle,0.6)
-			ElseIf EntityDistance(p\Objects\Entity,o\Entity) >= 175 Then 
-				ChannelVolume(o\Goal\Channel_GoalIdle,0.65)
-			ElseIf EntityDistance(p\Objects\Entity,o\Entity) >= 150 Then 
-				ChannelVolume(o\Goal\Channel_GoalIdle,0.7)
-			ElseIf EntityDistance(p\Objects\Entity,o\Entity) >= 125 Then 
-				ChannelVolume(o\Goal\Channel_GoalIdle,0.75)
-			ElseIf EntityDistance(p\Objects\Entity,o\Entity) >= 100 Then 
-				ChannelVolume(o\Goal\Channel_GoalIdle,0.8)
-			ElseIf EntityDistance(p\Objects\Entity,o\Entity) >= 75 Then 
-				ChannelVolume(o\Goal\Channel_GoalIdle,0.85)
-			ElseIf EntityDistance(p\Objects\Entity,o\Entity) >= 50 Then 
-				ChannelVolume(o\Goal\Channel_GoalIdle,0.9)
-			ElseIf EntityDistance(p\Objects\Entity,o\Entity) >= 25 Then 
-				ChannelVolume(o\Goal\Channel_GoalIdle,0.95)
-			ElseIf EntityDistance(p\Objects\Entity,o\Entity) >= 1 Then 
-				ChannelVolume(o\Goal\Channel_GoalIdle,1)
-			EndIf 
-			
+			EndIf
+		EndIf
+		
+		ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_GOAL, o\Entity, 1.25, 0, 0, 0, 0, 0.2)
+	Else
+		If o\Hit Then
+			RotateEntity o\Entity,0,p\Animation\Direction#+180,0
 		Else
-			o\Goal\Channel_GoalIdle=EmitSmartSound(Sound_Emerald,o\Entity)
+			RotateEntity o\Entity,0,(DeltaYaw#(p\Objects\Entity,o\Entity) - 180),0
+		EndIf
+		
+		If p\Action=ACTION_VICTORYHOLD Then
+			p\Motion\Speed\y#=0.5
+			PositionEntity o\Entity, EntityX(p\Objects\Mesh,1), EntityY(p\Objects\Mesh,1), EntityZ(p\Objects\Mesh,1), 1
+			MoveEntity o\Entity, 0, 0.75+p\ScaleFactor#, 0.2
 		EndIf
 	EndIf
-End Function
-Function Object_Goal_Update(o.tObject, p.tPlayer)
-
-		If o\ObjType=OBJTYPE_GOAL2 Then Object_Goal_Switch(o)
-
-		If (Not(Menu\Mission=MISSION_ESCAPE#)) Then
-			If p\Action=ACTION_STOMP Or p\Action=ACTION_LAND Then o\HitBox\y#=10 Else o\HitBox\y#=15
-
-			RotateEntity o\Entity, 0, EntityYaw(Menu\RingRotator), 0
-
-			If (Not(o\ObjType=OBJTYPE_WARPRING)) Then Object_Goal_Sound(o,p)
-
-			ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_GOAL, o\Entity, 1.25, 0, 0, 0, 0, 0.2)
-		Else
-			If o\Hit Then
-				RotateEntity o\Entity,0,p\Animation\Direction#+180,0
-			Else
-				RotateEntity o\Entity,0,(DeltaYaw#(p\Objects\Entity,o\Entity) - 180),0
-			EndIf
-
-			If p\Action=ACTION_VICTORYHOLD Then
-				p\Motion\Speed\y#=0.5
-				PositionEntity o\Entity, EntityX(p\Objects\Mesh,1), EntityY(p\Objects\Mesh,1), EntityZ(p\Objects\Mesh,1), 1
-				MoveEntity o\Entity, 0, 0.75+p\ScaleFactor#, 0.2
-			EndIf
-		EndIf
-		
+	
 		; Player collided with object
-		If o\Hit Then
-			If o\ObjType=OBJTYPE_WARPRING Then
-				Game\Interface\HintLine1$ = o\TagTip$ + ": Mission "+Int(o\Power#)
-				Game\Interface\HintLine2$ = "Press Interact to Warp"
-				Game\Interface\ShowHintTimer = (1)*secs#
-				If Input\Pressed\ActionAct And Game\HasStartedStageTeleport=0 Then
-					Menu\SelectedStage=o\Teleporter\TeleporterNo
-					Menu\HubStage=Menu\Stage
-					Menu\MissionNo=Int(o\Power#)
-					Game_Stage_Quit(2)
-					Game\HasStartedStageTeleport=1
-				EndIf 
-			Else
-				If Game\Victory=0 Then
+	If o\Hit Then
+		If Game\Victory=0 Then
 				; Finish stage
-					Select Menu\Mission
-						Case MISSION_ENEMY#,MISSION_RING#,MISSION_HUNT#,MISSION_GOLD#,MISSION_BALLOONS#,MISSION_FREEROAM#,MISSION_RIVAL#,MISSION_CARNIVAL#,MISSION_BOSS#:
-							Object_Goal_Update_Teleport(o,p)
-						Case MISSION_FLICKY#:
-							If Game\Gameplay\Flickies>=5 Then
-								Player_Goal(p,o\Mode,o\Teleporter\TeleporterNo,True)
-								For o2.tObject = Each tObject
-									If o2\ObjType=OBJTYPE_FLICKY Then o2\State=-1
-								Next
-							Else
-								Object_Goal_Update_Teleport(o,p)
-							EndIf
-						Default:
-							Player_Goal(p,o\Mode,o\Teleporter\TeleporterNo,True)
-					End Select
-					
-					If (Not(Menu\Mission=MISSION_ESCAPE#)) Then
-					; Bling!
-						StopChannel(o\Goal\Channel_GoalIdle)
-						If Menu\Mission=MISSION_ENCORE Then
-							EmitSmartSound(Sound_RubyGoal,o\Entity)
-						Else
-							EmitSmartSound(Sound_Goal,o\Entity)
-						EndIf 
-					;Release effect
-						ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_RING, o\Entity, 3)
-						
-					; Delete the object
-						o\Done=1
-						Return
+			Select Menu\Mission
+				Case MISSION_ENEMY#,MISSION_RING#,MISSION_HUNT#,MISSION_GOLD#,MISSION_BALLOONS#,MISSION_FREEROAM#,MISSION_RIVAL#,MISSION_CARNIVAL#,MISSION_BOSS#:
+					Object_Goal_Update_Teleport(o,p)
+				Case MISSION_FLICKY#:
+					If Game\Gameplay\Flickies>=5 Then
+						Player_Goal(p,o\Mode,o\Teleporter\TeleporterNo,True)
+						For o2.tObject = Each tObject
+							If o2\ObjType=OBJTYPE_FLICKY Then o2\State=-1
+						Next
 					Else
-						EmitSmartSound(Sound_Grab,o\Entity)
+						Object_Goal_Update_Teleport(o,p)
 					EndIf
+				Default:
+					Player_Goal(p,o\Mode,o\Teleporter\TeleporterNo,True)
+			End Select
+			
+			If (Not(Menu\Mission=MISSION_ESCAPE#)) Then
+					; Bling!
+				StopChannel(o\Goal\Channel_GoalIdle)
+				If Menu\Mission=MISSION_ENCORE# Then
+					EmitSmartSound(Sound_Ruby1,o\Entity)
+				Else
+					EmitSmartSound(Sound_Goal,o\Entity)
 				EndIf
-			EndIf 
+					;Release effect
+				ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_RING, o\Entity, 3)
+				
+					; Delete the object
+				o\Done=1
+				Return
+			Else
+				EmitSmartSound(Sound_Grab,o\Entity)
+			EndIf
 		EndIf
-		
-	End Function
+	EndIf
+	
+End Function
 
-Function Object_Goal_Update_Teleport(o.tObject, p.tPlayer)
+	Function Object_Goal_Update_Teleport(o.tObject, p.tPlayer)
 		Stage_ResetStageMusic()
 		Game\Gameplay\CheckX#=Game\Stage\Properties\StartX#
 		Game\Gameplay\CheckY#=Game\Stage\Properties\StartY#
@@ -758,8 +1112,58 @@ Function Object_Goal_Update_Teleport(o.tObject, p.tPlayer)
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+Function Object_WarpRing_Create.tObject(x#, y#, z#, stagename$,missionno)
+	o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
+	
+	
+	Object_Acquire_Position(o,x#,y#,z#)
+	o\StageFolder$=TempAttribute\teleportername$
+	o\StageName$=stagename$
+	o\MiscVal=missionno
+	
+	Object_CreateHitBox(HITBOXTYPE_SPEEDY,o,15,15,15)
+	o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Ring)), Game\Stage\Root)
+	ScaleEntity(o\Entity,3.5,3.5,3.5)
+	
+	Return o
+End Function
 
-Function Object_Bubbles_Create.tObject(x#, y#, z#, bubbletype)
+
+Function Object_WarpRing_Update(o.tObject, p.tPlayer)
+		
+	RotateEntity o\Entity, 0, EntityYaw(Menu\SlowRingRotator), 0
+		ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_GOAL, o\Entity, 1.25, 0, 0, 0, 0, 0.2)
+		
+	
+		; Player collided with object
+	If o\Hit Then
+		
+		
+		
+		Game\Interface\HintLine1$ = o\StageName$ + ": Act "+o\MiscVal
+		Game\Interface\HintLine2$ = "Press Interact To Warp"
+		Game\Interface\ShowHintTimer = (0.1)*secs#
+		If Input\Pressed\ActionAct And Menu\StartedStageWarp=0 Then
+			Menu\StartedStageWarp=1
+			Menu\HubStage=Menu\Stage
+			Menu\HubMission=Menu\Mission
+			Menu\HubMissionNo=Menu\MissionNo
+			Menu\HubMissionMach=Menu\MissionMach
+			Menu\HubMissionPerfect=Menu\MissionPerfect
+			Menu\HubMissionTime=Menu\MissionTime
+			Menu\MissionNo=o\MiscVal
+			If Menu\CollectionRoom=1 Then Menu\HubStage=9999
+			Menu\WarpRingPath$=o\StageFolder$+"/"+o\StageName$
+			Menu\WarpRingName$=o\StageName$
+			Menu_Stage_LoadMissions(0,True,1)
+			Menu_GoToStage_SetMission(Menu\MissionNo)
+			
+			Game_Stage_Quit(2)
+		EndIf
+	EndIf
+	
+End Function
+	Function Object_Bubbles_Create.tObject(x#, y#, z#, bubbletype)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_BUBBLES
 		o\Bubble = New tObject_Bubble : o\HasValuesetBubble=True
 
@@ -788,7 +1192,7 @@ Function Object_Bubbles_Create.tObject(x#, y#, z#, bubbletype)
 	
 	; =========================================================================================================
 	
-Function Object_Bubbles_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+	Function Object_Bubbles_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		; Update timers
 		If o\Bubble\BubbleCreateTimer>0 Then o\Bubble\BubbleCreateTimer=o\Bubble\BubbleCreateTimer-timervalue#
@@ -897,7 +1301,7 @@ Function Object_Shard_Update_Real(o.tObject, p.tPlayer)
 			Player_SaveSituation(o,p,1,False)
 
 			;Release effect
-			ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_SHARD, o\Entity, 2)
+			ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_Shard, o\Entity, 2)
 
 			; Cancel radar
 			For i=1 To 3
@@ -916,13 +1320,13 @@ Function Object_Shard_Update_Real(o.tObject, p.tPlayer)
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_SpewShard_Create.tObject(shardno, x#, y#, z#, xspeed#, yspeed#, zspeed#, shardfly=False)
-		o.tObject = New tObject : o\ObjType = OBJTYPE_SPEWSHARD
+Function Object_SpewShard_Create.tObject(Shardno, x#, y#, z#, xspeed#, yspeed#, zspeed#, Shardfly=False)
+	o.tObject = New tObject : o\ObjType = OBJTYPE_SPEWShard
 		o\AlwaysPresent=True
 		o\Treasure = New tObject_Treasure : o\HasValuesetTreasure=True
 		o\Spew = New tObject_Spew : o\HasValuesetSpew=True
 
-		o\Treasure\ShardNo=shardno
+		o\Treasure\ShardNo=Shardno
 		
 		o\Pivot = CreatePivot()
 
@@ -931,7 +1335,7 @@ Function Object_SpewShard_Create.tObject(shardno, x#, y#, z#, xspeed#, yspeed#, 
 		Object_Acquire_Position(o,x#,y#,z#)
 		Object_Acquire_Speed(o,xspeed#,yspeed#,zspeed#)
 
-		o\Treasure\ShardFly=shardfly
+		o\Treasure\ShardFly=Shardfly
 		If o\Treasure\ShardFly Then o\Treasure\ShardFlyStopTimer=0.25*secs#
 				
 		o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_SpewShard)), o\Pivot)
@@ -986,7 +1390,7 @@ Function Object_SpewShard_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 			Player_SaveSituation(o,p,1,False)
 
 			;Release effect
-			ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_SHARD, o\Entity, 2)
+			ParticleTemplate_Call(o\Particle, PARTICLE_OBJECT_Shard, o\Entity, 2)
 
 			; Cancel radar
 			For i=1 To 3
@@ -1008,8 +1412,7 @@ Function Object_SpewShard_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-	
-Function Object_Hint_Create.tObject(x#, y#, z#, hintline1$, hintline2$,length#,soundpath$)
+Function Object_Hint_Create.tObject(x#, y#, z#, hintline1$, hintline2$,length#,soundpath$,invis=0,emittype=0)
 	o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 	o\Hint = New tObject_Hint : o\HasValuesetHint=True
 	
@@ -1018,37 +1421,83 @@ Function Object_Hint_Create.tObject(x#, y#, z#, hintline1$, hintline2$,length#,s
 	Object_Acquire_Position(o,x#,y#,z#)
 	Object_Acquire_Power(o,length#)
 	
-	o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Hint)), Game\Stage\Root)
+	If invis = 1 Then 
+		o\MiscVal=1
+		o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Empty)), Game\Stage\Root)
+	Else 
+		o\Entity = CopyEntity(MESHES(SmartEntity(Mesh_Hint)), Game\Stage\Root)
+	EndIf
 	
 	o\Hint\HintLine1$=hintline1$
 	o\Hint\HintLine2$=hintline2$
 	
 	
-	If Len(soundpath$)>0 Then o\Hint\Sound=LoadSound(Game\Stage\Properties\Path$+soundpath$)
-	
+	If Len(soundpath$)>0 Then
+		Select emittype
+			Case 0
+				o\Hint\Sound=LoadSound(Game\Stage\Properties\Path$+soundpath$+".ogg")
+				
+				
+				
+			Case 1,2
+				o\Hint\Sound=Load3DSound(Game\Stage\Properties\Path$+soundpath$+".ogg")
+		End Select
+		
+		SoundVolume(o\Hint\Sound,(Menu\Settings\VolumeSFX#*(Menu\Settings\Volume#*0.175))*2)
+		o\Hint\EmitType=emittype
+		
+		If o\Hint\EmitType=2 Then
+			o\Hint\Emitter=CreatePivot()
+			PositionEntity(o\Hint\Emitter,TempAttribute\emitx#,TempAttribute\emity#,TempAttribute\emitz#)
+		EndIf
+		
+	EndIf
 	Return o
 End Function
-
+Function Object_Hint_Update_Always(o.tObject)
 	; =========================================================================================================
-
-Function Object_Hint_Update(o.tObject, p.tPlayer)
-	
-		; Timer
 	If o\Hint\HintRevealTimer>0 Then o\Hint\HintRevealTimer=o\Hint\HintRevealTimer-timervalue#
 	If o\Hint\HintRevealTimer>0 And o\Hint\HintRevealTimer<1*secs# Then
 		Animate o\Entity,1,0.05,1,10
 		o\Hint\HintRevealTimer=0
 	EndIf
 	
-		; Movement
+		; Alpha
+	If Game\Interface\ShowHintTimer>0 And (Not(o\Hint\HintRevealTimer>0)) Then
+		EntityAlpha(o\Entity,0.25)
+	Else
+		EntityAlpha(o\Entity,1)
+	EndIf
+	
 	PointEntity(o\Entity,cam\Entity)
+	
+End Function
+Function Object_Hint_Update(o.tObject, p.tPlayer)
+	
+		; Timer
+	Object_Hint_Update_Always(o)
+	
+	
+		; Movement
+	
 	
 		; Player collided with object
 	If o\Hit And (Not(o\Hint\HintRevealTimer>0)) And (Not(Game\Interface\ShowHintTimer>0)) Then
 		
-		PlaySound(o\Hint\Sound)
+		Select o\Hint\EmitType
+			Case 0
+				PlaySound(o\Hint\Sound)	
+			Case 1
+				EmitSound(o\Hint\Sound,o\Entity)
+			Case 2
+				
+				
+				EmitSound(o\Hint\Sound,o\Hint\Emitter)
+				
+		End Select
+				
 			; Bling!
-		EmitSmartSound(Sound_Hint,o\Entity)
+		If o\MiscVal=0 Then EmitSmartSound(Sound_Hint,o\Entity)
 		Animate o\Entity,1,0.05,2,10
 		
 			; Give line
@@ -1059,21 +1508,13 @@ Function Object_Hint_Update(o.tObject, p.tPlayer)
 		
 	EndIf
 	
-		; Alpha
-	If Game\Interface\ShowHintTimer>0 And (Not(o\Hint\HintRevealTimer>0)) Then
-		EntityAlpha(o\Entity,0.25)
-	Else
-		EntityAlpha(o\Entity,1)
-	EndIf
 	
 End Function
 
-
-
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_Counter_Create.tObject(x#, y#, z#, counterno#, length#=5)
+	Function Object_Counter_Create.tObject(x#, y#, z#, counterno#, length#=5)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\Hint = New tObject_Hint : o\HasValuesetHint=True
 
@@ -1091,7 +1532,7 @@ Function Object_Counter_Create.tObject(x#, y#, z#, counterno#, length#=5)
 	
 	; =========================================================================================================
 	
-Function Object_Counter_Update(o.tObject, p.tPlayer)
+	Function Object_Counter_Update(o.tObject, p.tPlayer)
 
 		; Timer
 		If o\Hint\HintRevealTimer>0 Then o\Hint\HintRevealTimer=o\Hint\HintRevealTimer-timervalue#
@@ -1100,47 +1541,41 @@ Function Object_Counter_Update(o.tObject, p.tPlayer)
 		; Movement
 		PointEntity(o\Entity,cam\Entity)
 
-		; Player collided with object
+			; Player collided with object
 		If o\Hit And (Not(o\Hint\HintRevealTimer>0)) Then
-
+			
 			; Bling!
 			EmitSmartSound(Sound_Counter,o\Entity)
 			Animate o\Entity,1,0.05,2,10
-		
+			
 			; Give counting
 			If o\Hint\SignType=5 Or (o\Hint\SignType=5-Game\CounterChance And Game\CounterChanceTimer>0) Then
 				If Game\CounterChance=5-o\Hint\SignType Then Game\CounterChance=Game\CounterChance+1
 				Game\CounterChanceTimer=5*secs#
-				Select o\Hint\SignType
-					Case 5
-						Game\Channel_Counter = EmitSmartSound(Sound_Counter1,o\Entity)
-					Case 4
-						Game\Channel_Counter = EmitSmartSound(Sound_Counter2,o\Entity)
-					Case 3
-						Game\Channel_Counter = EmitSmartSound(Sound_Counter3,o\Entity)
-					Case 2
-						Game\Channel_Counter = EmitSmartSound(Sound_Counter4,o\Entity)
-					Case 1
-						Game\Channel_Counter = EmitSmartSound(Sound_Counter5,o\Entity)
-				End Select 
+				EmitSmartSound(Sound_Counter+o\Hint\SignType,o\Entity)
 			Else
 				Game\CounterChance=0
 				Game\CounterChanceTimer=0
-				Game\Channel_Counter = EmitSmartSound(Sound_CounterWrong,o\Entity)
+				EmitSmartSound(Sound_CounterWrong,o\Entity)
 			EndIf
 			o\Hint\HintRevealTimer = (1.75+1)*secs#
 			
-
+			
 		EndIf
 
-		
+		; Alpha
+		If Game\Interface\ShowHintTimer>0 And (Not(o\Hint\HintRevealTimer>0)) Then
+			EntityAlpha(o\Entity,0.25)
+		Else
+			EntityAlpha(o\Entity,1)
+		EndIf
 		
 	End Function
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_Bell_Create.tObject(x#, y#, z#)
+	Function Object_Bell_Create.tObject(x#, y#, z#)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 
 		Object_CreateHitBox(HITBOXTYPE_NORMAL,o,5,5,5)
@@ -1158,12 +1593,12 @@ Function Object_Bell_Create.tObject(x#, y#, z#)
 	
 	; =========================================================================================================
 	
-Function Object_Bell_Update_Mesh(o.tObject, d.tDeltaTime)
+	Function Object_Bell_Update_Mesh(o.tObject, d.tDeltaTime)
 		PositionEntity o\EntityX, EntityX(o\Entity), EntityY(o\Entity), EntityZ(o\Entity), 1
 		RotateEntity o\EntityX, 0, 0.15*20*d\Delta, 0
 	End Function
 
-Function Object_Bell_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+	Function Object_Bell_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		; Movement
 		If o\Mode>0 Then
@@ -1208,7 +1643,7 @@ Function Object_Bell_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_Flicky_Create.tObject(x#, y#, z#)
+	Function Object_Flicky_Create.tObject(x#, y#, z#)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_FLICKY : o\ID=TempAttribute\ObjectID
 		o\AlwaysPresent=True
 		o\Treasure = New tObject_Treasure : o\HasValuesetTreasure=True
@@ -1239,7 +1674,7 @@ Function Object_Flicky_Create.tObject(x#, y#, z#)
 	
 	; =========================================================================================================
 	
-Function Object_Flicky_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+	Function Object_Flicky_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		If o\Treasure\ShardFlyStopTimer>0 Then o\Treasure\ShardFlyStopTimer=o\Treasure\ShardFlyStopTimer-timervalue#
 
@@ -1360,7 +1795,7 @@ Function Object_Flicky_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 	End Function
 
-Function Object_Flicky_Tag(o.tObject, c.tCamera)
+	Function Object_Flicky_Tag(o.tObject, c.tCamera)
 		If EntityInView(o\EntityX,c\Entity) Then
 			height# = 4.5
 			CameraProject c\Entity, EntityX (o\Entity), EntityY (o\Entity)+height#, EntityZ (o\Entity)

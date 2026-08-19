@@ -13,7 +13,7 @@ Function DrawSmartKey(key, x#, y#, nocolor=False, forcekey=0, primary=0, gettrue
 
 	If forcekey=0 Then
 		If Not(CONTROLS(primary,key)=0) Then
-		If CONTROLS(primary,key)>=900 Then
+			If CONTROLS(primary,key)>=900 Or Menu\Settings\ControllerSupport#=1 Then
 			If Menu\Settings\ControllerLayout#<3 And gettruekey=False And CONTROLS_GAMEPAD(key)>0 Then
 				DrawImageEx(INTERFACE(Interface_Keys), x#, y#, 111+CONTROLS_GAMEPAD(key)+27*(Menu\Settings\ControllerLayout#-1))
 			Else
@@ -25,7 +25,7 @@ Function DrawSmartKey(key, x#, y#, nocolor=False, forcekey=0, primary=0, gettrue
 		EndIf
 	Else
 		If Not(forcekey=0) Then
-		If forcekey>=900 Then
+			If forcekey>=900 Or Menu\Settings\ControllerSupport#=1 Then
 			If Menu\Settings\ControllerLayout#<3 And gettruekey=False And CONTROLS_GAMEPAD(key)>0 Then
 				DrawImageEx(INTERFACE(Interface_Keys), x#, y#, 111+CONTROLS_GAMEPAD(key)+27*(Menu\Settings\ControllerLayout#-1))
 			Else
@@ -151,44 +151,318 @@ End Function
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Function Menu_Options_Video_Update()
+	
+	Menu\ControlsToShow=MENU_VIDEO#*100
+	
+	;DrawRealText(Menu\Warning$, GAME_WINDOW_W/2+(BUTTON_PLACE2#-110)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-70*GAME_WINDOW_SCALE#, (Interface_Text_3), 0, GAME_WINDOW_W/2+(BUTTON_PLACE2#+90)*GAME_WINDOW_SCALE#)
+	
+	If Menu\Settings\DepthOfField#=1 Then
+		SetColor(35,255,25)
+		DrawRealText("Depth of Field", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-80*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+		SetColor(255,255,255)
+	Else
+		
+		DrawRealText("Depth of Field", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-80*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	EndIf
+	
+	If Menu\Settings\Shadows#=1 Then
+		SetColor(35,255,25)
+		DrawRealText("Shadows", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-55*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+		SetColor(255,255,255)
+	Else
+		DrawRealText("Shadows", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-55*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	EndIf
+	
+	If Menu\Settings\sunrays#=1 Then
+		SetColor(35,255,25)
+		DrawRealText("Sun Rays", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-30*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+		SetColor(255,255,255)
+	Else
+		
+		
+		DrawRealText("Sun Rays", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-30*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+		
+	EndIf
+	
+	If Menu\Settings\BumpMaps#=1 Then
+		SetColor(35,255,25)
+		DrawRealText("Bump Maps", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-5*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+		SetColor(255,255,255)
+	Else
+		
+		DrawRealText("Bump Maps", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-5*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	EndIf
+	
+	If Menu\Settings\MotionBlur#=1 Then
+		SetColor(35,255,25)
+		DrawRealText("Motion Blur", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+20*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+		SetColor(255,255,255)
+	Else
+		
+		DrawRealText("Motion Blur", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+20*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	EndIf
+	
+	If Menu\Settings\VSync#=1 Then
+		SetColor(35,255,25)
+		DrawRealText("Vsync", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+45*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+		SetColor(255,255,255)
+	Else
+		DrawRealText("Vsync", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+45*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	EndIf
+	
+	;automatic, low, medium, high, very high
+	Select Menu\Settings\ViewRange#
+		Case 0: DrawRealText("View Range: Low", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+70*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+		Case 1: DrawRealText("View Range: Medium", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+70*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+		Case 2: DrawRealText("View Range: High", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+70*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+		Case 3: DrawRealText("View Range: Very High", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+70*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	End Select
+	
+	Select Menu\Settings\DisablePlants#
+		Case 0: DrawRealText("Plants: All", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+95*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+		Case 1: DrawRealText("Plants: Stage Only", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+95*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+		Case 2: DrawRealText("Plants: None", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+95*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	End Select
+	
+	
+	
+	Select Menu\Option2
+		Case 1: DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-140)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-80*GAME_WINDOW_SCALE#)
+		Case 2: DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-140)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-55*GAME_WINDOW_SCALE#)
+		Case 3: DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-140)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-30*GAME_WINDOW_SCALE#)
+		Case 4: DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-140)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-5*GAME_WINDOW_SCALE#)
+		Case 5: DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-140)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+20*GAME_WINDOW_SCALE#)
+		Case 6: DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-140)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+45*GAME_WINDOW_SCALE#)
+		Case 7: DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-140)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+70*GAME_WINDOW_SCALE#)
+		Case 8: DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-140)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+95*GAME_WINDOW_SCALE#)
+	End Select
+	
+	
+	
+	If Input\Pressed\Right Then
+		PlaySmartSound(Sound_MenuAccept)
+		Select Menu\Option2
+			Case 1: Menu\Settings\DepthOfField#=Abs(Menu\Settings\DepthOfField#-1)
+			Case 2:
+				Select Menu\Settings\Shadows#
+					Case 0
+						Menu\Settings\Shadows#=2
+					Case 2
+						Menu\Settings\Shadows#=0
+				End Select
+			Case 3: Menu\Settings\sunrays#=Abs(Menu\Settings\sunrays#-1)
+			Case 4: Menu\Settings\BumpMaps#=Abs(Menu\Settings\BumpMaps#-1)
+			Case 5: Menu\Settings\MotionBlur#=Abs(Menu\Settings\MotionBlur#-1)
+			Case 6: Menu\Settings\VSync#=Abs(Menu\Settings\VSync#-1) : Menu\CloseAfterOptions=True
+			Case 7:
+				Menu\Settings\ViewRange#=Menu\Settings\ViewRange#+1
+				If Menu\Settings\ViewRange#>3 Then Menu\Settings\ViewRange#=0
+			Case 8
+				Menu\Settings\DisablePlants#=Menu\Settings\DisablePlants#+1
+				If Menu\Settings\DisablePlants#>2 Then Menu\Settings\DisablePlants#=0
+		End Select
+		
+	EndIf
+	
+	If Input\Pressed\Left Then
+		PlaySmartSound(Sound_MenuAccept)
+		Select Menu\Option2
+			Case 1: Menu\Settings\DepthOfField#=Abs(Menu\Settings\DepthOfField#-1)
+			Case 2
+				Select Menu\Settings\Shadows#
+					Case 0
+						Menu\Settings\Shadows#=2
+					Case 2
+						Menu\Settings\Shadows#=0
+				End Select
+			Case 3: Menu\Settings\sunrays#=Abs(Menu\Settings\sunrays#-1)
+			Case 4: Menu\Settings\BumpMaps#=Abs(Menu\Settings\BumpMaps#-1)
+			Case 5: Menu\Settings\MotionBlur#=Abs(Menu\Settings\MotionBlur#-1)
+			Case 6: Menu\Settings\VSync#=Abs(Menu\Settings\VSync#-1)
+			Case 7:
+				Menu\Settings\ViewRange#=Menu\Settings\ViewRange#-1
+				If Menu\Settings\ViewRange#<0 Then Menu\Settings\ViewRange#=3
+			Case 8:
+				Menu\Settings\DisablePlants#=Menu\Settings\DisablePlants#-1
+				If Menu\Settings\DisablePlants#<0 Then Menu\Settings\DisablePlants#=2
+		End Select
+		
+	EndIf
+	
+	If Input\Pressed\Down Then
+		PlaySmartSound(Sound_MenuMove)
+		Menu\Option2=Menu\Option2+1
+		If Menu\Option2>8 Then Menu\Option2=1
+	EndIf
+	
+	If Input\Pressed\Up Then
+		PlaySmartSound(Sound_MenuMove)
+		Menu\Option2=Menu\Option2-1
+		If Menu\Option2<1 Then Menu\Option2=8
+	EndIf
+	
+	
+	If Input\Pressed\actionroll Or (KeyHit(KEY_ESCAPE)) Or Input\Pressed\Back Or Input\Pressed\ActionSkill1 Then
+		PlaySmartSound(Sound_MenuBack)
+		Menu\Transition=1
+		Menu\NewMenu2=0
+		Select Menu\Settings\ViewRange#
+			Case 0
+				Menu\Settings\MeshViewRange#=2500
+				Menu\Settings\ObjectViewRange#=125
+			Case 1
+				Menu\Settings\MeshViewRange#=5000
+				Menu\Settings\ObjectViewRange#=250
+			Case 2
+				Menu\Settings\MeshViewRange#=10000
+				Menu\Settings\ObjectViewRange#=500
+			Case 3
+				Menu\Settings\MeshViewRange#=20000
+				Menu\Settings\ObjectViewRange#=1000
+		End Select
+	EndIf
+	
+End Function
+Function Menu_Options_Gameplay_Update()
+	
+	Menu\ControlsToShow=MENU_GAMEPLAY#*100
+	
+	;DrawRealText(Menu\Warning$, GAME_WINDOW_W/2+(BUTTON_PLACE2#-110)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-70*GAME_WINDOW_SCALE#, (Interface_Text_3), 0, GAME_WINDOW_W/2+(BUTTON_PLACE2#+90)*GAME_WINDOW_SCALE#)
+	
+	If Menu\Settings\Debug#=1 Then
+		DrawRealText("Debug Mode:    On", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-65*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	Else
+		DrawRealText("Debug Mode:    Off", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-65*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	EndIf
+	
+	If Menu\Settings\DebugNodes#=1 Then
+		DrawRealText("Debug Nodes:   On", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-40*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	Else
+		DrawRealText("Debug Nodes:   Off", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-40*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	EndIf
+	
+	If Menu\Settings\Mods#=1 Then
+		DrawRealText("Mods:            On", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-15*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	Else
+		DrawRealText("Mods:            Off", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-15*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	EndIf
+	
+	If Menu\Settings\ThreeDSounds#=1 Then
+		DrawRealText("3D Sounds:     On", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+10*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	Else
+		DrawRealText("3D Sounds:     Off", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+10*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	EndIf
+	
+	If Menu\Settings\AutoCameraDisabled#=1 Then
+		DrawRealText("Auto Camera:    Off", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+35*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	Else
+		DrawRealText("Auto Camera:    On", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+35*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	EndIf
+	
+	If Menu\Settings\CONTROLTIPS#=1 Then
+		DrawRealText("Control Tips:    On", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+60*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	Else
+		DrawRealText("Control Tips:    Off", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+60*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	EndIf
+	
+	If Menu\Settings\ControllerSupport#=1 Then
+		DrawRealText("Controls:    Gamepad", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+85*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	Else
+		DrawRealText("Controls:    Keyboard", GAME_WINDOW_W/2+(BUTTON_PLACE2#-125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+85*GAME_WINDOW_SCALE#, (Interface_TextControls_1))
+	EndIf
+	
+	
+	Select Menu\Option2
+		Case 1: DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-140)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-65*GAME_WINDOW_SCALE#)
+		Case 2: DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-140)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-40*GAME_WINDOW_SCALE#)
+		Case 3: DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-140)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-15*GAME_WINDOW_SCALE#)
+		Case 4: DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-140)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+10*GAME_WINDOW_SCALE#)
+		Case 5: DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-140)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+35*GAME_WINDOW_SCALE#)
+		Case 6: DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-140)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+60*GAME_WINDOW_SCALE#)
+		Case 7: DrawArrow(GAME_WINDOW_W/2+(BUTTON_PLACE2#-140)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+85*GAME_WINDOW_SCALE#)
+	End Select
+	
+	
+	
+	If Input\Pressed\Right Then
+		PlaySmartSound(Sound_MenuAccept)
+		Select Menu\Option2
+			Case 1: Menu\Settings\Debug#=Abs(Menu\Settings\Debug#-1)
+			Case 2: Menu\Settings\DebugNodes#=Abs(Menu\Settings\DebugNodes#-1)
+			Case 3: Menu\Settings\Mods#=Abs(Menu\Settings\Mods#-1)
+			Case 4: Menu\Settings\ThreeDSounds#=Abs(Menu\Settings\ThreeDSounds#-1)
+			Case 5: Menu\Settings\AutoCameraDisabled#=Abs(Menu\Settings\AutoCameraDisabled#-1)
+			Case 6: Menu\Settings\CONTROLTIPS#=Abs(Menu\Settings\CONTROLTIPS#-1)
+		End Select
+		
+	EndIf
+	
+	If Input\Pressed\Left Then
+		PlaySmartSound(Sound_MenuAccept)
+		Select Menu\Option2
+			Case 1: Menu\Settings\Debug#=Abs(Menu\Settings\Debug#-1)
+			Case 2: Menu\Settings\DebugNodes#=Abs(Menu\Settings\DebugNodes#-1)
+			Case 3: Menu\Settings\Mods#=Abs(Menu\Settings\Mods#-1)
+			Case 4: Menu\Settings\ThreeDSounds#=Abs(Menu\Settings\ThreeDSounds#-1)
+			Case 5: Menu\Settings\AutoCameraDisabled#=Abs(Menu\Settings\AutoCameraDisabled#-1)
+			Case 6: Menu\Settings\CONTROLTIPS#=Abs(Menu\Settings\CONTROLTIPS#-1)
+			Case 7: Menu\Settings\ControllerSupport#=Abs(Menu\Settings\ControllerSupport#-1)
+		End Select
+		
+	EndIf
+	
+	If Input\Pressed\Down Then
+		PlaySmartSound(Sound_MenuMove)
+		Menu\Option2=Menu\Option2+1
+		If Menu\Option2>7 Then Menu\Option2=1
+	EndIf
+	
+	If Input\Pressed\Up Then
+		PlaySmartSound(Sound_MenuMove)
+		Menu\Option2=Menu\Option2-1
+		If Menu\Option2<1 Then Menu\Option2=7
+	EndIf
+	
+	
+	If Input\Pressed\actionroll Or (KeyHit(KEY_ESCAPE)) Or Input\Pressed\Back Or Input\Pressed\ActionSkill1 Then
+		PlaySmartSound(Sound_MenuBack)
+		Menu\Transition=1
+		Menu\NewMenu2=0
+	EndIf
+	
+End Function
 
 Function Menu_Options_Update()
-
+	
 	Menu\Music=3
 	Menu\Background=1
 	Menu\ShowCards=True
-
-	For i=1 To 5
-		Menu_UpdateOptionButtons(i+Menu\OptionOrder) : DrawSmartButton(i, Menu\OptionButton$, GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*50*GAME_WINDOW_SCALE#)
-		Select (i+Menu\OptionOrder)
-			Case MENU_CONTROLS#:
-				DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#-62.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*50*GAME_WINDOW_SCALE#, 61)
-				DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#-62.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*50*GAME_WINDOW_SCALE#, 57)
-				DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#-32.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*50*GAME_WINDOW_SCALE#, 61)
-				DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#-32.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*50*GAME_WINDOW_SCALE#, 56)
-			Case MENU_CONTROLS2#:
-				DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#-52.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*50*GAME_WINDOW_SCALE#, 61)
-				DrawImageEx(INTERFACE(Interface_Keys), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#-52.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*50*GAME_WINDOW_SCALE#, 111)
-		End Select
+	
+	For i=1 To 9
+		Menu_UpdateOptionButtons(i+Menu\OptionOrder) : DrawSmartButton(i, Menu\OptionButton$, GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-150*GAME_WINDOW_SCALE#+i*30*GAME_WINDOW_SCALE#,False,True)
 	Next
-
-	DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-130*GAME_WINDOW_SCALE#,20)
-	DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+130*GAME_WINDOW_SCALE#,21)
-
+	
+	
+	
+;	DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-130*GAME_WINDOW_SCALE#,20)
+;	DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W/2+BUTTON_PLACE1#*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+130*GAME_WINDOW_SCALE#,21)
+	
 	Menu_UpdateWarnings()
-
+	
 	Select Menu\Menu2
-		Case 0: Menu_Options_Main_Update()
+		Case 0: 
+			Menu_Options_Main_Update()
 		Case MENU_RESOLUTION#: Menu_Options_Resolution_Update()
 		Case MENU_SCREEN#: Menu_Options_Screen_Update()
-		Case MENU_DEBUG#,MENU_DOF#,MENU_SHADOWS#,MENU_BLUR#,MENU_SRAYS#,MENU_SOUNDS#,MENU_BUMPMAPS#,MENU_PLANTS#,MENU_VIEW#,MENU_MODS#,MENU_TIPS#,MENU_AUTOCAM#,MENU_VSYNC#:
-			Menu_Options_OnOff_Update()
 		Case MENU_VOLUME#: Menu_Options_Volume_Update()
+		Case MENU_VIDEO#: Menu_Options_Video_Update()
+		Case MENU_GAMEPLAY: Menu_Options_Gameplay_Update()
 		Case MENU_CONTROLS#,MENU_CONTROLS2#: Menu_Options_Controls_Update()
 		Case MENU_THEME#: Menu_Options_Theme_Update()
 		Case MENU_RESET#: Menu_Options_Reset_Update()
 	End Select
-
+	
 End Function
 
 ;===============================================================================================================================================================
@@ -196,72 +470,58 @@ End Function
 ;===============================================================================================================================================================
 
 Function Menu_Options_Main_Update()
-
+	
 	Menu\ControlsToShow=Menu\Menu
-
+	
 	If Input\Pressed\Down Then
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option+1
-		If Menu\Option>5 Then Menu\Option=5 : Menu\OptionOrder=Menu\OptionOrder+1
-		If Menu\OptionOrder>MENU_RESET#-1 Then Menu\OptionOrder=0
+		If Menu\Option>9 Then Menu\Option=1
 	EndIf
-
+	
 	If Input\Pressed\Up Then
 		PlaySmartSound(Sound_MenuMove)
 		Menu\Option=Menu\Option-1
-		If Menu\Option<1 Then Menu\Option=1 : Menu\OptionOrder=Menu\OptionOrder-1
-		If Menu\OptionOrder<0 Then Menu\OptionOrder=MENU_RESET#-1
+		If Menu\Option<1 Then Menu\Option=9
+		
 	EndIf
-
-	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+	
+	If Input\Pressed\ActionJump   Then
 		Menu\Menu2=999
 		PlaySmartSound(Sound_MenuAccept)
 		Menu\Transition=1
 		Menu\NewOption=Menu\Option : Menu\NewMenu=MENU_OPTIONS#
 		Menu\OptionOrder2=Menu\OptionOrder+Menu\Option
 		If Menu\OptionOrder2>MENU_RESET# Then Menu\OptionOrder2=Menu\OptionOrder2-MENU_RESET#
-		Select Menu\OptionOrder2
+		Select Menu\Option
 			Case 1: Menu\NewOption2=Menu\Settings\NewResolution# : Menu\NewMenu2=MENU_RESOLUTION#
 			Case 2: Menu\NewOption2=Menu\Settings\ScreenMode# : Menu\NewMenu2=MENU_SCREEN#
-			Case 3: Menu\NewOption2=Menu\Settings\Debug# : Menu\NewMenu2=MENU_DEBUG#
+			Case 3: Menu\NewOption2=1 : Menu\NewMenu2=MENU_VIDEO#
 			Case 4: Menu\NewOption2=1 : Menu\NewMenu2=MENU_VOLUME#
 			Case 5: Menu\NewOption2=1 : Menu\NewMenu2=MENU_CONTROLS# : Menu\ControlAssignmentSource=1 : Menu\OptionOrder2=0 : Menu\ButtonToChange=-1 : Menu\ButtonBeChangeBy=0 : Menu\ButtonWasUsed=0
 			Case 6: Menu\NewOption2=1 : Menu\NewMenu2=MENU_CONTROLS2# : Menu\ControlAssignmentSource=2 : Menu\OptionOrder2=0 : Menu\ButtonToChange=-1 : Menu\ButtonBeChangeBy=0 : Menu\ButtonWasUsed=0
-			Case 7: Menu\NewOption2=Menu\Settings\DepthOfField# : Menu\NewMenu2=MENU_DOF#
-			Case 8: Menu\NewOption2=Menu\Settings\Shadows# : Menu\NewMenu2=MENU_SHADOWS#
-			Case 9: Menu\NewOption2=Menu\Settings\MotionBlur# : Menu\NewMenu2=MENU_BLUR#
-			Case 10: Menu\NewOption2=Menu\Settings\SunRays# : Menu\NewMenu2=MENU_SRAYS#
-			Case 11: Menu\NewOption2=Menu\Settings\BumpMaps# : Menu\NewMenu2=MENU_BUMPMAPS#
-			Case 12: Menu\NewOption2=Menu\Settings\ThreeDSounds# : Menu\NewMenu2=MENU_SOUNDS#
-			Case 13: Menu\NewOption2=Menu\Settings\DisablePlants# : Menu\NewMenu2=MENU_PLANTS#
-			Case 14: Menu\NewOption2=Menu\Settings\ViewRange# : Menu\NewMenu2=MENU_VIEW#
-			Case 15: Menu\NewOption2=Menu\Settings\AutoCameraDisabled# : Menu\NewMenu2=MENU_AUTOCAM#
-			Case 16: Menu\NewOption2=Menu\Settings\VSync# : Menu\NewMenu2=MENU_VSYNC#
-			Case 17: Menu\NewOption2=Menu\Settings\Mods# : Menu\NewMenu2=MENU_MODS#
-			Case 18: Menu\NewOption2=Menu\Settings\ControlTips# : Menu\NewMenu2=MENU_TIPS#
-			Case 19: Menu\NewMenu2=MENU_THEME#
-					If Menu\Settings\Mods#=0 Then MENU_THEME_AMOUNT#=MENU_THEME_NONMODAMOUNT#
-					Menu\NewOption2=(Menu\Settings\Theme# Mod 7)
-					If Menu\NewOption2=0 Then Menu\NewOption2=7
-					Menu\OptionOrder2=(Ceil#(Menu\Settings\Theme#/7.0)-1)*7
-					If Menu\OptionOrder2>MENU_THEME_AMOUNT#-7 Then
-						Menu\OptionOrder2=MENU_THEME_AMOUNT#-7
-						Menu\NewOption2=Abs(MENU_THEME_AMOUNT#-Menu\Settings\Theme#-7)
-					EndIf
+			Case 7: Menu\NewOption2=1 : Menu\NewMenu2=MENU_GAMEPLAY#
+			Case 8: 
+				
+					Menu\NewMenu2=MENU_THEME#
+					Menu\ThemeSelectType=Menu\Settings\CustomThemeOn#
+					Menu\NewOption2=1
+					Menu\OptionOrder2=0
+					Menu_LoadThemes()
 					Menu_Options_Theme_LoadThumbnail()
-			Case 20: Menu\NewOption2=1 : Menu\NewMenu2=MENU_RESET#
+			Case 9: Menu\NewOption2=1 : Menu\NewMenu2=MENU_RESET#
 		End Select
 	EndIf
-
-	If Input\Pressed\ActionRoll Or Input\Pressed\Back Or Input\Pressed\ActionSkill1 Then
+	
+	If Input\Pressed\actionroll Or (KeyHit(KEY_ESCAPE)) Or Input\Pressed\Back Or Input\Pressed\ActionSkill1 Then
 		Menu\Menu2=0
 		PlaySmartSound(Sound_MenuBack)
 		Menu\Transition=1
-		Menu\NewOption=3 : Menu\NewMenu=MENU_MAIN#
+		Menu\NewOption=2 : Menu\NewMenu=MENU_MAIN#
 		Menu_Options_Save()
 		FlushAll()
 	EndIf
-
+	
 End Function
 
 Function Menu_Options_Save()
@@ -278,12 +538,13 @@ Function Menu_Options_Save()
 		Menu\Settings\Resolution#=Menu\Settings\NewResolution#
 	Else
 		If Menu\LoadThemeAfterOptions Then
-			For x = 0 To INTERFACE_TOTAL : FreeSmartImage(x) : Next
-			For x = 0 To SOUNDS_TOTAL : FreeSmartSound(x) : Next
-			For x=0 To INTERFACE_TOTAL : LoadSmartImage(x) : Next
-			For x = 0 To SOUNDS_TOTAL : LoadSmartSound(x) : Next
+			For x = INTERFACE_ALWAYSTOTAL+1 To INTERFACE_TOTAL : FreeSmartImage(x) : Next
+			FreeSmartImage(Interface_Card1) : FreeSmartImage(Interface_Buttons_1) : FreeSmartImage(Interface_Buttons_2)
+			For x = SOUNDS_ALWAYSTOTAL+1 To SOUNDS_TOTAL : FreeSmartSound(x) : Next
+			For x=INTERFACE_ALWAYSTOTAL+1 To INTERFACE_MENUTOTAL : LoadSmartImage(x) : Next
+			LoadSmartImage(Interface_Card1) : LoadSmartImage(Interface_Buttons_1) : LoadSmartImage(Interface_Buttons_2)
 			LoadMenuMusic()
-			Delay(150)
+			Delay(75)
 			Menu\LoadThemeAfterOptions=False
 			Menu\NewOption=1 : Menu\Menu=MENU_START# : Menu\NewMenu=MENU_START#
 		EndIf
@@ -377,7 +638,7 @@ Function Menu_Options_OnOff_Update()
 		End Select
 	EndIf
 
-	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+	If Input\Pressed\ActionJump   Then
 		PlaySmartSound(Sound_MenuAccept)
 		Menu\Transition=1
 		Select Menu\Menu2
@@ -385,7 +646,7 @@ Function Menu_Options_OnOff_Update()
 			Case MENU_DOF#: Menu\Settings\DepthOfField#=Menu\Option2
 			Case MENU_SHADOWS#: Menu\Settings\Shadows#=Menu\Option2
 			Case MENU_BLUR#: Menu\Settings\MotionBlur#=Menu\Option2
-			Case MENU_SRAYS#: Menu\Settings\SunRays#=Menu\Option2
+			Case MENU_SRAYS#: Menu\Settings\sunrays#=Menu\Option2
 			Case MENU_SOUNDS#: Menu\Settings\ThreeDSounds#=Menu\Option2
 			Case MENU_BUMPMAPS#: Menu\Settings\BumpMaps#=Menu\Option2
 			Case MENU_PLANTS#: Menu\Settings\DisablePlants#=Menu\Option2
@@ -393,7 +654,7 @@ Function Menu_Options_OnOff_Update()
 			Case MENU_AUTOCAM#: Menu\Settings\AutoCameraDisabled#=Menu\Option2
 			Case MENU_VSYNC#: Menu\Settings\VSync#=Menu\Option2 : Menu\CloseAfterOptions=True
 			Case MENU_MODS#: Menu\Settings\Mods#=Menu\Option2 : Menu\CloseAfterOptions=True
-			Case MENU_TIPS#: Menu\Settings\ControlTips#=Menu\Option2
+			Case MENU_TIPS#: Menu\Settings\CONTROLTIPS#=Menu\Option2
 		End Select
 		Menu\NewMenu2=0
 	EndIf
@@ -409,85 +670,129 @@ End Function
 ;===============================================================================================================================================================
 ;===============================================================================================================================================================
 ;===============================================================================================================================================================
-
-Global MENU_THEME_NONMODAMOUNT# = 9
-Global MENU_THEME_AMOUNT# = MENU_THEME_NONMODAMOUNT#+16
-
+Global MENU_THEME_NONMODAMOUNT# = 17
+Global MENU_THEME_MODAMOUNT# = 7
+Global MENU_THEME_AMOUNT# = MENU_THEME_NONMODAMOUNT#+MENU_THEME_MODAMOUNT#
+Function DrawStaticArrow(x#, y#,arrowtype#=1)
+	
+	If Menu\ButtonState2=0 Then Menu\ButtonSize2#=Menu\ButtonSize2#-BUTTON_SCALESPEED#*(Game\DeltaTime\Delta#*0.75) : If Menu\ButtonSize2#<0 Then Menu\ButtonState2=1 : Menu\ButtonSize2#=0
+	If Menu\ButtonState2=1 Then Menu\ButtonSize2#=Menu\ButtonSize2#+BUTTON_SCALESPEED#*(Game\DeltaTime\Delta#*0.75) : If Menu\ButtonSize2#>0.3 Then Menu\ButtonState2=0 : Menu\ButtonSize2#=0.3
+	Menu\ButtonSize#=Menu\ButtonSize2#
+	
+	SetScale(GAME_WINDOW_SCALE#+Menu\ButtonSize#, GAME_WINDOW_SCALE#+Menu\ButtonSize#)
+	DrawImageEx(INTERFACE(Interface_Icons), x#, y#, 17+arrowtype)
+	SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
+	
+	;DrawImageEx(INTERFACE(Interface_Icons), x#, y#, 17+arrowtype#)
+	
+End Function
 Function Menu_Options_Theme_Update()
-
-	Menu\ControlsToShow=Menu\Menu2*100
-
+	
+	Menu\ControlsToShow=MENU_THEME#
+	
 	For i=1 To 7
-		Select(i+Menu\OptionOrder2)
-			Case 1: j$ = "DX Default"
-			Case 2: j$ = "SW Classic"
-			Case 3: j$ = "Adventure"
-			Case 4: j$ = "Adventure 2"
-			Case 5: j$ = "Heroes"
-			Case 6: j$ = "Shadow"
-			Case 7: j$ = "Sonic 06"
-			Case 8: j$ = "Colours"
-			Case 9: j$ = "Lost World"
-				
-				
-				
-			Default:
-				If (i+Menu\OptionOrder2)>MENU_THEME_NONMODAMOUNT# Then
-					j$ = "Custom "+Int((i+Menu\OptionOrder2)-MENU_THEME_NONMODAMOUNT#)
-				Else
-					j$ = "???"
-				EndIf
-		End Select
-		DrawSmartButton(i, j$, GAME_WINDOW_W/2+(BUTTON_PLACE2#-135*1)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-75*GAME_WINDOW_SCALE#+(i-1)*30*GAME_WINDOW_SCALE#, True, True)
+		
+		
+		DrawSmartButton(i, Menu\ThemeFolder$[i+Menu\OptionOrder2], GAME_WINDOW_W/2+(BUTTON_PLACE2#-135*1)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-75*GAME_WINDOW_SCALE#+(i-1)*30*GAME_WINDOW_SCALE#, True, True)
 		If i=1 And Menu\Option2=1 Then DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W/2+(BUTTON_PLACE2#-135*1)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-75*GAME_WINDOW_SCALE#+(i-1)*30*GAME_WINDOW_SCALE#-30*GAME_WINDOW_SCALE#,20)
 		If i=7 And Menu\Option2=7 Then DrawImageEx(INTERFACE(Interface_Icons), GAME_WINDOW_W/2+(BUTTON_PLACE2#-135*1)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-75*GAME_WINDOW_SCALE#+(i-1)*30*GAME_WINDOW_SCALE#+30*GAME_WINDOW_SCALE#,21)
 	Next
-
+	
 	SetScale(GAME_WINDOW_SCALE#*0.3375, GAME_WINDOW_SCALE#*0.3375)
 	
 	DrawImageEx(INTERFACE(Interface_StageSelectThumbnails[1]), GAME_WINDOW_W/2+(BUTTON_PLACE2#-135*1)*GAME_WINDOW_SCALE#+202.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+8.75*GAME_WINDOW_SCALE#)
 	SetScale(GAME_WINDOW_SCALE#*1.025, GAME_WINDOW_SCALE#*0.825)
 	DrawImageEx(INTERFACE(Interface_Square), GAME_WINDOW_W/2+(BUTTON_PLACE2#-135*1)*GAME_WINDOW_SCALE#+202.5*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+8.75*GAME_WINDOW_SCALE#)
 	SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
-
+	
 	DrawRealText(Menu\Warning$, GAME_WINDOW_W/2+(BUTTON_PLACE2#-110)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2-116.75*GAME_WINDOW_SCALE#, (Interface_Text_3), 0, GAME_WINDOW_W/2+(BUTTON_PLACE2#+90)*GAME_WINDOW_SCALE#)
-
+	
+	If Input\Pressed\ActionSkill2 Then 
+		
+		Select Menu\ThemeSelectType
+			Case 0
+				Menu\OptionOrder2=0
+				Menu\ThemeSelectType=1
+				Menu\Option2=1
+			Case 1
+				Menu\ThemeSelectType=0
+				Menu\Option2=1
+				
+				
+		End Select 
+		PlaySmartSound(Sound_MenuMove)
+		Menu\Settings\CustomThemeOn#=Menu\ThemeSelectType
+		Menu_LoadThemes()
+		Menu_Options_Theme_LoadThumbnail()
+	EndIf 	
+	
 	If Input\Pressed\Down Then
 		PlaySmartSound(Sound_MenuMove)
-		If Menu\Option2=7 Then
-			Menu\OptionOrder2=Menu\OptionOrder2+1
-			If (Menu\Option2+Menu\OptionOrder2)>MENU_THEME_AMOUNT# Then
-				Menu\Option2=1
-				Menu\OptionOrder2=0
-			EndIf
-		Else
-			Menu\Option2=Menu\Option2+1
-		EndIf
+		Select Menu\ThemeSelectType
+			Case 0
+				If Menu\Option2=7 Then
+					Menu\OptionOrder2=Menu\OptionOrder2+1
+					If (Menu\Option2+Menu\OptionOrder2)>MENU_THEME_NONMODAMOUNT# Then
+						Menu\Option2=1
+						Menu\OptionOrder2=0
+					EndIf
+				Else
+					Menu\Option2=Menu\Option2+1
+				EndIf
+			Case 1 
+				If Menu\Option2=7 Then
+					Menu\OptionOrder2=Menu\OptionOrder2+1
+					If (Menu\Option2+Menu\OptionOrder2)>MENU_THEME_MODAMOUNT# Then
+						Menu\Option2=1
+						Menu\OptionOrder2=0
+					EndIf
+				Else
+					Menu\Option2=Menu\Option2+1
+				EndIf
+				
+				
+		End Select 
 		Menu_Options_Theme_LoadThumbnail()
 	EndIf
-
+	
 	If Input\Pressed\Up Then
 		PlaySmartSound(Sound_MenuMove)
-		If Menu\Option2=1 Then
-			Menu\OptionOrder2=Menu\OptionOrder2-1
-			If (Menu\Option2+Menu\OptionOrder2)<1 Then
-				Menu\Option2=7
-				Menu\OptionOrder2=MENU_THEME_AMOUNT#-7
-			EndIf
-		Else
-			Menu\Option2=Menu\Option2-1
-		EndIf
+		Select Menu\ThemeSelectType
+			Case 0
+				If Menu\Option2=1 Then
+					Menu\OptionOrder2=Menu\OptionOrder2-1
+					If (Menu\Option2+Menu\OptionOrder2)<1 Then
+						Menu\Option2=7
+						Menu\OptionOrder2=MENU_THEME_NONMODAMOUNT#-7
+					EndIf
+				Else
+					Menu\Option2=Menu\Option2-1
+				EndIf
+			Case 1
+				If Menu\Option2=1 Then
+					Menu\OptionOrder2=Menu\OptionOrder2-1
+					If (Menu\Option2+Menu\OptionOrder2)<1 Then
+						Menu\Option2=7
+						Menu\OptionOrder2=MENU_THEME_MODAMOUNT#-7
+					EndIf
+				Else
+					Menu\Option2=Menu\Option2-1
+				EndIf
+		End Select 
 		Menu_Options_Theme_LoadThumbnail()
 	EndIf
-
-	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+	
+	If Input\Pressed\ActionJump   Then
+		
 		PlaySmartSound(Sound_MenuAccept)
 		Menu\Transition=1
-		Menu\Settings\NewTheme#=Menu\Option2+Menu\OptionOrder2 : Menu\LoadThemeAfterOptions=True
+		Menu\Settings\NewTheme#=Menu\Option2+Menu\OptionOrder2
+		Menu\Settings\CustomThemeOn#=Menu\ThemeSelectType
+		Menu\CloseAfterOptions=True
 		Menu\NewMenu2=0
 	EndIf
-
-	If Input\Pressed\ActionRoll Or Input\Pressed\Back Or Input\Pressed\ActionSkill1 Then
+	
+	If Input\Pressed\actionroll Or (KeyHit(KEY_ESCAPE)) Or Input\Pressed\Back Then
 		PlaySmartSound(Sound_MenuBack)
 		Menu\Transition=1
 		Menu\NewMenu2=0
@@ -502,22 +807,296 @@ Function Menu_Options_Theme_LoadThumbnail()
 		Else
 			themeno = Menu\Option2+Menu\OptionOrder2
 		EndIf
-		If themeno<=MENU_THEME_NONMODAMOUNT# Then
-			If Not(FileType("Interface/Theme"+Int(themeno)+"/Thumbnail.png")=1) Then
-				LoadSmartFastImage("Interface/Theme"+Int(themeno)+"/Sky.png", Interface_StageSelectThumbnails[i], 1440, 900, 0, 1, 2.3, 2.3, False, False, True)
-			Else
-				LoadSmartFastImage("Interface/Theme"+Int(themeno)+"/Thumbnail.png", Interface_StageSelectThumbnails[i], 1440, 900, 0, 1, 2.3, 2.3, False, False, True)
-			EndIf
+		
+		
+		If Not(FileType(THEMEDIR$+Menu\ThemeFolder$[themeno]+"/Interface/Thumbnail.png")=1) Then
+			LoadSmartFastImage("Interface/Thumbnail.png", Interface_StageSelectThumbnails[i], 1440, 900, 0, 1, 2.3, 2.3, False, False, True)
 		Else
-			If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(themeno-MENU_THEME_NONMODAMOUNT#)+"/Interface/Thumbnail.png")=1) Then
-				LoadSmartFastImage("Interface/Theme1/Sky.png", Interface_StageSelectThumbnails[i], 1440, 900, 0, 1, 2.3, 2.3, False, False, True)
-			Else
-				LoadSmartFastImage("Mods/MenuThemes/CustomTheme"+Int(themeno-MENU_THEME_NONMODAMOUNT#)+"/Interface/Thumbnail.png", Interface_StageSelectThumbnails[i], 1440, 900, 0, 1, 2.3, 2.3, False, False, True)
-			EndIf
+			LoadSmartFastImage(THEMEDIR$+Menu\ThemeFolder$[themeno]+"/Interface/Thumbnail.png", Interface_StageSelectThumbnails[i], 1440, 900, 0, 1, 2.3, 2.3, False, False, True)
 		EndIf
+		
 	Next 
 	
 End Function
+Global THEMEDIR$
+Function Menu_LoadThemes()
+	
+	If Menu\Settings\CustomThemeOn#=0 Then 
+		xmlin = xmlLoad("Themes/themes.xml") : THEMEDIR$="Themes/"
+	Else 
+		xmlin = xmlLoad("_Mods/Themes/themes.xml"): THEMEDIR$="_Mods/Themes/"
+	EndIf 
+	
+	
+	For cchild = 1 To xmlNodeChildCount(xmlin)
+		
+		child = xmlNodeChild(xmlin, cchild)
+		
+		If Menu\Settings\CustomThemeOn#=0 Then t=MENU_THEME_NONMODAMOUNT# Else t = MENU_THEME_MODAMOUNT
+		
+		For x = 1 To t
+			Select xmlNodeNameGet$(child)
+				Case "theme"+Str(x):
+					Menu\ThemeFolder$[x] = xmlNodeAttributeValueGet(child, "folder")
+			End Select
+			
+		Next
+		
+	Next
+	
+	xmlNodeDelete(xmlin)
+	
+End Function
+
+
+
+Function Menu_LoadThemeData()
+	
+	
+	
+	
+	If Not(FileType(THEMEDIR$+Menu\ThemeFolder$[Menu\Settings\Theme#]+"/settings.xml")) Then
+		xmlin = xmlLoad("Themes/settings.xml")
+	Else
+		xmlin = xmlLoad(THEMEDIR$+Menu\ThemeFolder$[Menu\Settings\Theme#]+"/settings.xml")
+	EndIf
+	
+	If FileType(THEMEDIR$+Menu\ThemeFolder$[Menu\Settings\Theme#]+"/Interface/BackgroundPlay.png")=1 Then Menu\ThemeBackgroundPlay=1
+	If FileType(THEMEDIR$+Menu\ThemeFolder$[Menu\Settings\Theme#]+"/Interface/BackgroundOptions.png")=1  Then Menu\ThemeBackgroundOptions=1
+	
+	If (xmlErrorCount()>0) Then RuntimeError("Menu_LoadThemeData() : There is a parse error in your theme's settings xml.")
+	
+	
+	
+	;xmlin = xmlLoad("Themes/settings.xml")
+	
+	For cchild = 1 To xmlNodeChildCount(xmlin)
+		
+		child = xmlNodeChild(xmlin, cchild)
+		
+		
+		Select xmlNodeNameGet$(child)
+			Case "theme"
+				Menu\ThemeBase = xmlNodeAttributeValueGet(child, "base")
+			Case "heroes"
+				Menu\ThemeHeroesSpinner = xmlNodeAttributeValueGet(child, "spinner")
+			Case "victory"
+				Menu\ThemeVictoryTimer=0
+				Menu\ThemeVictoryTimer= xmlNodeAttributeValueGet(child, "timer")
+			Case "bubbles" 
+				Menu\ThemeBubbles = xmlNodeAttributeValueGet(child, "on")
+				Menu\ThemeBubbleAmount = xmlNodeAttributeValueGet(child, "amount")
+				Menu\ThemeBubbleChance = xmlNodeAttributeValueGet(child, "chance")
+				Menu\ThemeBubbleSpeed# = Float(xmlNodeAttributeValueGet(child, "speed"))
+			Case "scrolling" 
+				Menu\ThemeScrolls = xmlNodeAttributeValueGet(child, "on")
+				Menu\ThemeScrollSpeed = xmlNodeAttributeValueGet(child, "speed") 
+				Menu\ThemeScrollAlpha#= Float(xmlNodeAttributeValueGet(child, "alpha"))
+			Case "gauge": 
+				Menu\ThemeGaugeR = xmlNodeAttributeValueGet(child, "r") 
+				Menu\ThemeGaugeG = xmlNodeAttributeValueGet(child, "g") 
+				Menu\ThemeGaugeB = xmlNodeAttributeValueGet(child, "b") 
+				Menu\ThemeGaugeFR = xmlNodeAttributeValueGet(child, "fr") 
+				Menu\ThemeGaugeFG = xmlNodeAttributeValueGet(child, "fg") 
+				Menu\ThemeGaugeFB = xmlNodeAttributeValueGet(child, "fb") 
+			Case "sounds":
+				Menu\ThemeLifePause = xmlNodeAttributeValueGet(child, "life-pause") 
+				Menu\ThemeLoopSpin = xmlNodeAttributeValueGet(child, "loop-spin") 
+			Case "team":
+				Menu\ThemeSpinners = xmlNodeAttributeValueGet(child, "spinner") 
+			Case "round"
+				Menu\ThemeRoundTransition= xmlNodeAttributeValueGet(child, "transition")
+			Case "time"
+				Menu\ThemeTimeStyle  = xmlNodeAttributeValueGet(child, "style") 
+				Menu\ThemeTimeIcon  = xmlNodeAttributeValueGet(child, "icon") 
+				Menu\ThemeMinuteVal  = xmlNodeAttributeValueGet(child, "minute") 
+				Menu\ThemeSecondVal  = xmlNodeAttributeValueGet(child, "second") 
+				Menu\ThemeMilliVal  = xmlNodeAttributeValueGet(child, "millisecond") 
+				Menu\ThemeColonVal  = xmlNodeAttributeValueGet(child, "colon") 
+				Menu\ThemeDotVal  = xmlNodeAttributeValueGet(child, "dot") 
+			Case "ring"
+				Menu\ThemeRingStyle = xmlNodeAttributeValueGet(child, "style")
+			Case "score"
+				Menu\ThemeScoreStyle = xmlNodeAttributeValueGet(child, "style")
+				Menu\ThemeScoreIcon = xmlNodeAttributeValueGet(child, "icon")
+			Case "logo"
+				Menu\ThemeLogoStyle  = xmlNodeAttributeValueGet(child, "style")
+			Case "life"
+				Menu\ThemeLifeOffset  = xmlNodeAttributeValueGet(child, "offset")	
+			Case "background"
+				Menu\ThemeResX  = xmlNodeAttributeValueGet(child, "x")
+				Menu\ThemeResY  = xmlNodeAttributeValueGet(child, "y")
+				If Menu\ThemeResX=0 Then Menu\ThemeResX=1440
+				If Menu\ThemeResY=0 Then Menu\ThemeResY=900
+				
+		
+		End Select
+	Next
+	
+	xmlNodeDelete(xmlin)
+	
+End Function
+
+Function Menu_LoadThemeKerning()
+	
+	
+	
+	
+	If Not(FileType(THEMEDIR$+Menu\ThemeFolder$[Menu\Settings\Theme#]+"/kerning.xml")) Then
+		xmlin = xmlLoad("Themes/kerning.xml")
+	Else
+		
+		xmlin = xmlLoad(THEMEDIR$+Menu\ThemeFolder$[Menu\Settings\Theme#]+"/kerning.xml")
+	EndIf
+	
+	
+	If (xmlErrorCount()>0) Then RuntimeError("Menu_LoadThemeKerning() -> Error while parsing xml")
+	
+	
+	
+	;xmlin = xmlLoad("Themes/settings.xml")
+	
+	For cchild = 1 To xmlNodeChildCount(xmlin)
+		
+		child = xmlNodeChild(xmlin, cchild)
+		
+		
+		Select xmlNodeNameGet$(child)
+			Case "A": 
+				Menu\Settings\ThemeKerningCapA = xmlNodeAttributeValueGet(child, "k") 
+			Case "B": 
+				Menu\Settings\ThemeKerningCapB = xmlNodeAttributeValueGet(child, "k") 
+			Case "C": 
+				Menu\Settings\ThemeKerningCapC = xmlNodeAttributeValueGet(child, "k") 
+			Case "D": 
+				Menu\Settings\ThemeKerningCapD = xmlNodeAttributeValueGet(child, "k") 
+			Case "E": 
+				Menu\Settings\ThemeKerningCapE = xmlNodeAttributeValueGet(child, "k") 
+			Case "F": 
+				Menu\Settings\ThemeKerningCapF = xmlNodeAttributeValueGet(child, "k") 
+			Case "G": 
+				Menu\Settings\ThemeKerningCapG = xmlNodeAttributeValueGet(child, "k") 
+			Case "H": 
+				Menu\Settings\ThemeKerningCapH = xmlNodeAttributeValueGet(child, "k") 
+			Case "I": 
+				Menu\Settings\ThemeKerningCapI = xmlNodeAttributeValueGet(child, "k") 
+			Case "J": 
+				Menu\Settings\ThemeKerningCapJ = xmlNodeAttributeValueGet(child, "k") 
+			Case "K": 
+				Menu\Settings\ThemeKerningCapK = xmlNodeAttributeValueGet(child, "k") 
+			Case "L": 
+				Menu\Settings\ThemeKerningCapL = xmlNodeAttributeValueGet(child, "k") 
+			Case "M": 
+				Menu\Settings\ThemeKerningCapM = xmlNodeAttributeValueGet(child, "k") 
+			Case "N": 
+				Menu\Settings\ThemeKerningCapN = xmlNodeAttributeValueGet(child, "k") 
+			Case "O": 
+				Menu\Settings\ThemeKerningCapO = xmlNodeAttributeValueGet(child, "k") 
+			Case "P": 
+				Menu\Settings\ThemeKerningCapP = xmlNodeAttributeValueGet(child, "k") 
+			Case "Q": 
+				Menu\Settings\ThemeKerningCapQ = xmlNodeAttributeValueGet(child, "k") 
+			Case "R": 
+				Menu\Settings\ThemeKerningCapR = xmlNodeAttributeValueGet(child, "k") 
+			Case "S": 
+				Menu\Settings\ThemeKerningCapS = xmlNodeAttributeValueGet(child, "k") 
+			Case "T": 
+				Menu\Settings\ThemeKerningCapT = xmlNodeAttributeValueGet(child, "k") 
+			Case "U": 
+				Menu\Settings\ThemeKerningCapU = xmlNodeAttributeValueGet(child, "k") 
+			Case "V": 
+				Menu\Settings\ThemeKerningCapV = xmlNodeAttributeValueGet(child, "k") 
+			Case "W": 
+				Menu\Settings\ThemeKerningCapW = xmlNodeAttributeValueGet(child, "k") 
+			Case "X": 
+				Menu\Settings\ThemeKerningCapX = xmlNodeAttributeValueGet(child, "k") 
+			Case "Y": 
+				Menu\Settings\ThemeKerningCapY = xmlNodeAttributeValueGet(child, "k") 
+			Case "Z": 
+				Menu\Settings\ThemeKerningCapZ = xmlNodeAttributeValueGet(child, "k") 
+				
+			Case "a": 
+				Menu\Settings\ThemeKerningA = xmlNodeAttributeValueGet(child, "k") 
+			Case "b": 
+				Menu\Settings\ThemeKerningB = xmlNodeAttributeValueGet(child, "k") 
+			Case "c": 
+				Menu\Settings\ThemeKerningC = xmlNodeAttributeValueGet(child, "k") 
+			Case "d": 
+				Menu\Settings\ThemeKerningD = xmlNodeAttributeValueGet(child, "k") 
+			Case "e": 
+				Menu\Settings\ThemeKerningE = xmlNodeAttributeValueGet(child, "k") 
+			Case "f": 
+				Menu\Settings\ThemeKerningF = xmlNodeAttributeValueGet(child, "k") 
+			Case "g": 
+				Menu\Settings\ThemeKerningG = xmlNodeAttributeValueGet(child, "k") 
+			Case "h": 
+				Menu\Settings\ThemeKerningH = xmlNodeAttributeValueGet(child, "k") 
+			Case "i": 
+				Menu\Settings\ThemeKerningI = xmlNodeAttributeValueGet(child, "k") 
+			Case "j": 
+				Menu\Settings\ThemeKerningJ = xmlNodeAttributeValueGet(child, "k") 
+			Case "k": 
+				Menu\Settings\ThemeKerningK = xmlNodeAttributeValueGet(child, "k") 
+			Case "l": 
+				Menu\Settings\ThemeKerningL = xmlNodeAttributeValueGet(child, "k") 
+			Case "m": 
+				Menu\Settings\ThemeKerningM = xmlNodeAttributeValueGet(child, "k") 
+			Case "n": 
+				Menu\Settings\ThemeKerningN = xmlNodeAttributeValueGet(child, "k") 
+			Case "o": 
+				Menu\Settings\ThemeKerningO = xmlNodeAttributeValueGet(child, "k") 
+			Case "p": 
+				Menu\Settings\ThemeKerningP = xmlNodeAttributeValueGet(child, "k") 
+			Case "q": 
+				Menu\Settings\ThemeKerningQ = xmlNodeAttributeValueGet(child, "k") 
+			Case "r": 
+				Menu\Settings\ThemeKerningR = xmlNodeAttributeValueGet(child, "k") 
+			Case "s": 
+				Menu\Settings\ThemeKerningS = xmlNodeAttributeValueGet(child, "k") 
+			Case "t": 
+				Menu\Settings\ThemeKerningT = xmlNodeAttributeValueGet(child, "k") 
+			Case "u": 
+				Menu\Settings\ThemeKerningU = xmlNodeAttributeValueGet(child, "k") 
+			Case "v": 
+				Menu\Settings\ThemeKerningV = xmlNodeAttributeValueGet(child, "k") 
+			Case "w": 
+				Menu\Settings\ThemeKerningW = xmlNodeAttributeValueGet(child, "k") 
+			Case "x": 
+				Menu\Settings\ThemeKerningX = xmlNodeAttributeValueGet(child, "k") 
+			Case "y": 
+				Menu\Settings\ThemeKerningY = xmlNodeAttributeValueGet(child, "k") 
+			Case "z": 
+				Menu\Settings\ThemeKerningZ = xmlNodeAttributeValueGet(child, "k") 
+				
+			Case "1"
+				Menu\Settings\ThemeKerning1 = xmlNodeAttributeValueGet(child, "k") 
+			Case "2"
+				Menu\Settings\ThemeKerning2 = xmlNodeAttributeValueGet(child, "k") 
+			Case "3"
+				Menu\Settings\ThemeKerning3 = xmlNodeAttributeValueGet(child, "k") 
+			Case "4"
+				Menu\Settings\ThemeKerning4 = xmlNodeAttributeValueGet(child, "k") 
+			Case "5"
+				Menu\Settings\ThemeKerning5 = xmlNodeAttributeValueGet(child, "k") 
+			Case "6"
+				Menu\Settings\ThemeKerning6 = xmlNodeAttributeValueGet(child, "k") 
+			Case "7"
+				Menu\Settings\ThemeKerning7 = xmlNodeAttributeValueGet(child, "k") 
+			Case "8"
+				Menu\Settings\ThemeKerning8 = xmlNodeAttributeValueGet(child, "k") 
+			Case "9"
+				Menu\Settings\ThemeKerning9 = xmlNodeAttributeValueGet(child, "k") 
+			Case "0"
+				Menu\Settings\ThemeKerning0 = xmlNodeAttributeValueGet(child, "k") 
+				
+				
+		End Select
+	Next
+	
+	xmlNodeDelete(xmlin)
+	
+End Function
+
 
 ;===============================================================================================================================================================
 
@@ -542,7 +1121,7 @@ Function Menu_Options_Screen_Update()
 		If Menu\Option2<0 Then Menu\Option2=1
 	EndIf
 
-	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+	If Input\Pressed\ActionJump   Then
 		PlaySmartSound(Sound_MenuAccept)
 		Menu\Transition=1
 		If Menu\Option2<>Menu\Settings\ScreenMode# Then Menu\Settings\ScreenModeChanged#=1
@@ -653,7 +1232,7 @@ Function Menu_Options_Resolution_Update()
 		End Select
 	EndIf
 
-	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+	If Input\Pressed\ActionJump   Then
 		PlaySmartSound(Sound_MenuAccept)
 		Menu\Transition=1
 		Menu\Settings\NewResolution#=Menu\Option2 : Menu\CloseAfterOptions=True
@@ -670,13 +1249,13 @@ End Function
 
 ;===============================================================================================================================================================
 
-Function DrawArrow(x#, y#)
-	If Menu\ButtonState2=0 Then Menu\ButtonSize2#=Menu\ButtonSize2#-BUTTON_SCALESPEED#*Game\DeltaTime\Delta# : If Menu\ButtonSize2#<0 Then Menu\ButtonState2=1 : Menu\ButtonSize2#=0
-	If Menu\ButtonState2=1 Then Menu\ButtonSize2#=Menu\ButtonSize2#+BUTTON_SCALESPEED#*Game\DeltaTime\Delta# : If Menu\ButtonSize2#>BUTTON_SCALELIMIT# Then Menu\ButtonState2=0 : Menu\ButtonSize2#=BUTTON_SCALELIMIT#
+Function DrawArrow(x#, y#, arrowtype=1)
+	If Menu\ButtonState2=0 Then Menu\ButtonSize2#=Menu\ButtonSize2#-BUTTON_SCALESPEED#*(Game\DeltaTime\Delta#*0.6) : If Menu\ButtonSize2#<0 Then Menu\ButtonState2=1 : Menu\ButtonSize2#=0
+	If Menu\ButtonState2=1 Then Menu\ButtonSize2#=Menu\ButtonSize2#+BUTTON_SCALESPEED#*(Game\DeltaTime\Delta#*0.6) : If Menu\ButtonSize2#>BUTTON_SCALELIMIT# Then Menu\ButtonState2=0 : Menu\ButtonSize2#=BUTTON_SCALELIMIT#
 	Menu\ButtonSize#=Menu\ButtonSize2#
 
 	SetScale(GAME_WINDOW_SCALE#+Menu\ButtonSize#, GAME_WINDOW_SCALE#+Menu\ButtonSize#)
-	DrawImageEx(INTERFACE(Interface_Icons), x#, y#, 18)
+	DrawImageEx(INTERFACE(Interface_Icons), x#, y#, 17+arrowtype)
 	SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
 End Function
 
@@ -942,7 +1521,7 @@ Function Menu_Options_Controls_Update()
 			End Select
 		EndIf
 
-		If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+		If Input\Pressed\ActionJump   Then
 			PlaySmartSound(Sound_MenuAccept)
 			Menu\ControlsAfterOptions=True
 			Select Menu\OptionOrder2
@@ -1245,7 +1824,7 @@ Function Menu_Options_Controls_Update()
 			End Select
 		EndIf
 
-		If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+		If Input\Pressed\ActionJump   Then
 			oldbuttonchoice = CONTROLS_NEWGAMEPAD(Menu\ButtonThatWasChanged)
 			Select Menu\ButtonIconChoice
 				Case 1: newbuttonchoice=1
@@ -1435,7 +2014,7 @@ Function Menu_Options_Reset_Update()
 		End Select
 	EndIf
 
-	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+	If Input\Pressed\ActionJump   Then
 		PlaySmartSound(Sound_MenuAccept)
 		Menu\Transition=1
 		Menu\CloseAfterOptions=True
@@ -1495,7 +2074,7 @@ Function Menu_Options_Volume_Update()
 	DrawBetterNumber(Menu\Settings\VolumeM#*10, GAME_WINDOW_W/2+(BUTTON_PLACE2#+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+65*GAME_WINDOW_SCALE#, 0, 1)
 	DrawBetterNumber(Menu\Settings\VolumeAmb#*10, GAME_WINDOW_W/2+(BUTTON_PLACE2#+125)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+95*GAME_WINDOW_SCALE#, 0, 1)
 
-	If Input\Pressed\ActionJump Then
+	If Input\Pressed\Right Then
 		PlaySmartSound(Sound_MenuAccept)
 		Select Menu\Option2
 			Case 1: If Menu\Settings\Volume#<1 Then Menu\Settings\Volume#=Menu\Settings\Volume#+0.1
@@ -1507,7 +2086,7 @@ Function Menu_Options_Volume_Update()
 		Menu\SoundVolumeAfterOptions=True
 	EndIf
 
-	If Input\Pressed\ActionSkill2 Then
+	If Input\Pressed\Left Then
 		PlaySmartSound(Sound_MenuAccept)
 		Select Menu\Option2
 			Case 1: If Menu\Settings\Volume#>0 Then Menu\Settings\Volume#=Menu\Settings\Volume#-0.1
@@ -1544,6 +2123,7 @@ Function Menu_Options_Volume_Update()
 	If Menu\Settings\VolumeAmb#<0 Then Menu\Settings\VolumeAmb#=0
 
 	If Input\Pressed\ActionRoll Or Input\Pressed\Back Or Input\Pressed\ActionSkill1 Then
+		
 		PlaySmartSound(Sound_MenuBack)
 		Menu\Transition=1
 		Menu\NewMenu2=0

@@ -1,52 +1,104 @@
 Function DebugSpam_Enable(p.tPlayer)
-	If Input\Pressed\ActionSkill3 Then
-			Select p\DebugSpam
-				Case 0 p\DebugSpamTimer=0.35*secs# : p\DebugSpam=1
-				Case 1 p\DebugSpam=0
-			End Select 
-		EndIf 
-		
-If (Not(p\DebugSpamTimer>0)) And p\DebugSpam=1 Then  Player_Action_Debug_Save(p) : 	p\DebugSpamTimer=0.35*secs#
-
-If Input\Pressed\Back Then Player_Action_Debug_Save(p)
-
-End Function 
-Function DebugSpam_InGameEnable(p.tPlayer)
-	If KeyHit(KEY_F) Then
-			Select p\DebugSpam
-				Case 0 p\DebugSpamTimer=0.25*secs# : p\DebugSpam=1
-				Case 1 p\DebugSpam=0
-			End Select 
-		EndIf 
-		
-If (Not(p\DebugSpamTimer>0)) And p\DebugSpam=1 Then  Player_Action_Debug_SaveNodes(p) : 	p\DebugSpamTimer=0.25*secs#
-
-
-End Function 
-Function AutoPosition_Enable(p.tPlayer)
-	If KeyHit(KEY_U) Then
-			MoveEntity p\Objects\Entity,0,0,Game\Interface\DebugSpeed#
-		EndIf
-		
-		If KeyHit(KEY_J) Then
-			MoveEntity p\Objects\Entity,0,0,-Game\Interface\DebugSpeed#
-		EndIf
-		
-		If KeyHit(KEY_H) Then
-			MoveEntity p\Objects\Entity,-Game\Interface\DebugSpeed#,0,0
-		EndIf
-		
-		If KeyHit(KEY_K) Then
-			MoveEntity p\Objects\Entity,Game\Interface\DebugSpeed#,0,0
-		EndIf
-End Function 
-
+	If KeyDown(KEY_F) Then TempAttribute\yaw#=cam\Rotation\y# : TempAttribute\amountyaw#=cam\Rotation\y#
+	If Input\Pressed\Back Then Player_Action_Debug_Save(p)
+End Function
+Function CycleObject(obj)
+	For p.tPlayer = Each tPlayer
+		Game\Interface\DebugNewObj=obj
+		Player_Action_Debug_ChangeObj(p)
+		p\ObjType=obj
+	Next
+	
+End Function
+	
+Function Player_CycleDebugObjects(p.tPlayer)
+	Select p\ObjType
+		Case OBJTYPE_BOXWOODEN:
+			Game\Interface\DebugNewObj=OBJTYPE_BOXMETAL
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_BOXMETAL
+		Case OBJTYPE_BOXMETAL
+			Game\Interface\DebugNewObj=OBJTYPE_BOXIRON
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_BOXIRON
+		Case OBJTYPE_BOXIRON
+			Game\Interface\DebugNewObj=OBJTYPE_BOXCAGE
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_BOXCAGE
+		Case OBJTYPE_BOXCAGE
+			Game\Interface\DebugNewObj=OBJTYPE_BOXWOODEN
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_BOXWOODEN
+		;translators
+		Case OBJTYPE_HOOP
+			Game\Interface\DebugNewObj=OBJTYPE_THOOP
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_THOOP
+		Case OBJTYPE_THOOP
+			Game\Interface\DebugNewObj=OBJTYPE_HOOP
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_HOOP
+			;plants
+		Case OBJTYPE_TREE1
+			Game\Interface\DebugNewObj=OBJTYPE_TREE2
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_TREE2
+		Case OBJTYPE_TREE2
+			Game\Interface\DebugNewObj=OBJTYPE_TREE3
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_TREE3
+		Case OBJTYPE_TREE3
+			Game\Interface\DebugNewObj=OBJTYPE_TREE4
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_TREE4
+		Case OBJTYPE_TREE4
+			Game\Interface\DebugNewObj=OBJTYPE_TREE5
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_TREE5
+		Case OBJTYPE_TREE5
+			Game\Interface\DebugNewObj=OBJTYPE_TREE6
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_TREE6
+		Case OBJTYPE_TREE6
+			Game\Interface\DebugNewObj=OBJTYPE_TREE1
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_TREE1
+		Case OBJTYPE_SHRUB1
+			Game\Interface\DebugNewObj=OBJTYPE_SHRUB2
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_SHRUB2
+		Case OBJTYPE_SHRUB2
+			Game\Interface\DebugNewObj=OBJTYPE_SHRUB3
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_SHRUB3
+		Case OBJTYPE_SHRUB3
+			Game\Interface\DebugNewObj=OBJTYPE_SHRUB4
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_SHRUB4
+		Case OBJTYPE_SHRUB4
+			Game\Interface\DebugNewObj=OBJTYPE_SHRUB5
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_SHRUB5
+		Case OBJTYPE_SHRUB5
+			Game\Interface\DebugNewObj=OBJTYPE_SHRUB6
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_SHRUB6
+		Case OBJTYPE_SHRUB6
+			Game\Interface\DebugNewObj=OBJTYPE_SHRUB1
+			Player_Action_Debug_ChangeObj(p)
+			p\ObjType=OBJTYPE_SHRUB1
+	End Select 
+	
+	
+	
+End Function
 Function Player_HandleCheats_DebugPlacer(p.tPlayer, mode=1)
 		If Not Game\Victory=0 Then Return
 		PlaySmartSound(Sound_DebugOnOff)
 		If Game\StartoutLock>0 Then Game\StartoutLock=0
 		Select Game\Interface\DebugPlacerOn
 			Case 0:
+				For i = 1 To 9 : Game\Interface\DebugMenuOptionOrder[i]=1 : Next
 				If Game\Interface\DebugSpeed#=0 Then Game\Interface\DebugSpeed#=1
 				If Game\Interface\DebugSpeed2#=0 Then Game\Interface\DebugSpeed2#=1
 				p\Action=ACTION_DEBUG
@@ -54,6 +106,7 @@ Function Player_HandleCheats_DebugPlacer(p.tPlayer, mode=1)
 				p\Objects\Mesh3=CopyEntity(MESHES(Mesh_Empty), Game\Stage\Root)
 				p\Objects\Mesh4=CopyEntity(MESHES(Mesh_Locker), Game\Stage\Root)
 				p\Objects\Mesh5=CopyEntity(MESHES(Mesh_Point), Game\Stage\Root)
+				p\Objects\DebugCube=CopyEntity(MESHES(Mesh_Empty), Game\Stage\Root)
 				Game\Interface\DebugAxesMesh=CopyEntity(MESHES(SmartEntity(Mesh_Axes)), Game\Stage\Root)
 				EntityType(p\Objects\Entity,COLLISION_NONE)
 				EntityRadius(p\Objects\Entity, 0)
@@ -63,11 +116,13 @@ Function Player_HandleCheats_DebugPlacer(p.tPlayer, mode=1)
 				Game\Interface\DebugSpawnedObj=0
 				ResetTempAttribute()
 			Case 1:
-				p\Action=ACTION_FALL
+				p\Action=ACTION_FULLFALL
+				Player_ResetJumpActionStuff(p)
 				FreeEntity p\Objects\Mesh2
 				FreeEntity p\Objects\Mesh3
 				FreeEntity p\Objects\Mesh4
 				FreeEntity p\Objects\Mesh5
+				FreeEntity p\Objects\DebugCube
 				FreeEntity Game\Interface\DebugAxesMesh
 				DeformCharacter(p,True)
 				EntityType(p\Objects\Entity,COLLISION_PLAYER)
@@ -81,11 +136,12 @@ Function Player_HandleCheats_DebugPlacer(p.tPlayer, mode=1)
 		p\Motion\Speed\y#=0
 		p\GoDestination=False
 		Game\CamLock=0
+		Game\TwoDLock=0
 		Game\ControlLock=0
 		Game\RunLock=0
-		Game\TwoDLock=0
 		Game\MachLock=0
 		Game\MachLockTriggered=0
+		Game\DirLock=0
 		Game\Interface\DebugMenu=0
 		Game\Interface\DebugMenuOption=1
 		Game\Vehicle=0
@@ -107,6 +163,7 @@ Function Player_HandleCheats_DebugPlacer(p.tPlayer, mode=1)
 		Game\SmartCameraRangeDontAffectTimer=5*secs#
 		Game\Cheater=1
 End Function
+
 Function Player_Action_Debug(p.tPlayer, d.tDeltaTime)
 
 	Player_SetSpeed(p,0)
@@ -175,26 +232,30 @@ End Function
 ;---------------------------------------------------------------------------------------
 
 Function Player_Action_Debug_ChangeObj(p.tPlayer)
+	TempAttribute\power#=1
 		FreeEntity p\Objects\Mesh
 		FreeEntity p\Objects\Mesh2
 		mesh1=Mesh_Empty : mesh2=Mesh_Empty
 		Select Game\Interface\DebugNewObj
+				
+							
 			Case OBJTYPE_RING:		mesh1=Mesh_Ring
-			Case OBJTYPE_STAGEVISUAL1:		mesh1=Mesh_StageVisual1
-			Case OBJTYPE_STAGEVISUAL2:		mesh1=Mesh_StageVisual2
-			Case OBJTYPE_STAGEVISUAL3:		mesh1=Mesh_StageVisual3
-			Case OBJTYPE_STAGEVISUAL4:		mesh1=Mesh_StageVisual4
-			Case OBJTYPE_STAGEVISUAL5:		mesh1=Mesh_StageVisual5
+			Case OBJTYPE_MISSIONCARD:		mesh1=Mesh_MissionCard
+			Case OBJTYPE_REDRING:		mesh1=Mesh_RedRing
+			Case OBJTYPE_TOKEN:		mesh1=Mesh_Token
+			Case OBJTYPE_TIMER:		mesh1=Mesh_Timer5
+			Case OBJTYPE_WARPRING:		mesh1=Mesh_WarpRing : 
 			Case OBJTYPE_SPRING:		mesh1=Mesh_Spring
 			Case OBJTYPE_PANEL1:		mesh1=Mesh_JumpPanel
-			Case OBJTYPE_PANEL2:		mesh1=Mesh_JumpPanel2
+			Case OBJTYPE_PANEL2,OBJTYPE_PANEL2+1000:		mesh1=Mesh_JumpPanel2
 			Case OBJTYPE_BSPRING:		mesh1=Mesh_BSpring
 			Case OBJTYPE_SPRINGX:		mesh1=Mesh_SpringX
 			Case OBJTYPE_SPRINGTRAP:	mesh1=Mesh_SpringTrap
-			Case OBJTYPE_SPRINGTHORN:	mesh1=Mesh_SpringThorn
 			Case OBJTYPE_SPRINGTRAPX:	mesh1=Mesh_SpringTrapX
 			Case OBJTYPE_PAD:		mesh1=Mesh_DashPanel : mesh2=Mesh_DashPanelPads
+			Case OBJTYPE_RAILPAD:		mesh1=Mesh_GrindBooster : mesh2=Mesh_GrindBoosterPads
 			Case OBJTYPE_RAMP:		mesh1=Mesh_DashRamp : mesh2=Mesh_DashRampPads
+			Case OBJTYPE_TRAMP:		mesh1=Mesh_TrickRamp : mesh2=Mesh_TrickRampPads
 			Case OBJTYPE_HOOP:		mesh1=Mesh_DashHoop : mesh2=Mesh_Locker
 			Case OBJTYPE_THOOP:		mesh1=Mesh_RainbowHoop : mesh2=Mesh_Locker
 			Case OBJTYPE_ACCEL:		mesh1=Mesh_Accelerator : mesh2=Mesh_AcceleratorLight
@@ -253,23 +314,21 @@ Function Player_Action_Debug_ChangeObj(p.tPlayer)
 			Case OBJTYPE_LASERH:		mesh1=Mesh_LaserH : mesh2=Mesh_LaserHX
 			Case OBJTYPE_RINGGATEV:		mesh1=Mesh_Laser2V : mesh2=Mesh_Laser2VX
 			Case OBJTYPE_RINGGATEH:		mesh1=Mesh_Laser2H : mesh2=Mesh_Laser2HX
-			Case OBJTYPE_BOXWOODEN,OBJTYPE_BOXWOODEN+1000,OBJTYPE_BOXWOODEN+2000:
+			Case OBJTYPE_BOXWOODEN
 							mesh1=Mesh_BoxWooden
-			Case OBJTYPE_BOXYELLOW,OBJTYPE_BOXYELLOW+1000,OBJTYPE_BOXYELLOWODEN+2000:
-							mesh1=Mesh_BoxYellow
-			Case OBJTYPE_BOXMETAL,OBJTYPE_BOXMETAL+1000,OBJTYPE_BOXMETAL+2000:
+						Case OBJTYPE_BOXMETAL
 							mesh1=Mesh_BoxMetal
-			Case OBJTYPE_BOXIRON, OBJTYPE_BOXIRON+1000,OBJTYPE_BOXIRON+2000:
+						Case OBJTYPE_BOXIRON
 							mesh1=Mesh_BoxIron
-			Case OBJTYPE_BOXCAGE,OBJTYPE_BOXCAGE+1000,OBJTYPE_BOXCAGE+2000:
+						Case OBJTYPE_BOXCAGE
 							mesh1=Mesh_BoxCage
-			Case OBJTYPE_BOXLIGHT,OBJTYPE_BOXLIGHT+1000,OBJTYPE_BOXLIGHT+2000:
+						Case OBJTYPE_BOXLIGHT
 							mesh1=Mesh_BoxLightOn
-			Case OBJTYPE_BOXTNT,OBJTYPE_BOXTNT+1000,OBJTYPE_BOXTNT+2000:
+						Case OBJTYPE_BOXTNT
 							mesh1=Mesh_BoxTnt
-			Case OBJTYPE_BOXNITRO,OBJTYPE_BOXNITRO+1000,OBJTYPE_BOXNITRO+2000:
+						Case OBJTYPE_BOXNITRO
 							mesh1=Mesh_BoxNitro
-			Case OBJTYPE_BOXFLOAT,OBJTYPE_BOXFLOAT+1000,OBJTYPE_BOXFLOAT+2000:
+						Case OBJTYPE_BOXFLOAT
 							mesh1=Mesh_BoxFloat
 			Case OBJTYPE_BALLBUMPER:	mesh1=Mesh_BallBumperOn
 			Case OBJTYPE_GROUNDBUMPER:	mesh1=Mesh_GroundBumperOn
@@ -284,9 +343,7 @@ Function Player_Action_Debug_ChangeObj(p.tPlayer)
 			Case OBJTYPE_FLAPPERBOMB:	mesh1=Mesh_Enemy_FlapperBomb
 			Case OBJTYPE_FLAPPERNEEDLE:	mesh1=Mesh_Enemy_FlapperNeedle
 			Case OBJTYPE_SPINA:		mesh1=Mesh_Enemy_Spina
-			Case OBJTYPE_SEARCHER:	mesh1=Mesh_Enemy_Searcher
-			Case OBJTYPE_EGGHUNTER:	mesh1=Mesh_Enemy_EggHunter
-
+			Case OBJTYPE_SPUNA:		mesh1=Mesh_Enemy_Spuna
 			Case OBJTYPE_SPANA:		mesh1=Mesh_Enemy_Spana
 			Case OBJTYPE_SPONA:		mesh1=Mesh_Enemy_Spona
 			Case OBJTYPE_MOTOBUG:		mesh1=Mesh_Enemy_Motobug
@@ -301,10 +358,12 @@ Function Player_Action_Debug_ChangeObj(p.tPlayer)
 			Case OBJTYPE_KIKI:		mesh1=Mesh_Enemy_Kiki
 			Case OBJTYPE_COP:		mesh1=Mesh_Enemy_CopSpeeder
 			Case OBJTYPE_COPRACER:		mesh1=Mesh_Enemy_CopRacer1
+			Case OBJTYPE_INACTIVE:		mesh1=Mesh_Enemy_Inactive
 			Case OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD:
-							mesh1=Mesh_Enemy_Hunter
+				mesh1=Mesh_Enemy_Hunter
+			Case OBJTYPE_EGUNNER
+				mesh1=Mesh_Enemy_EggGunner
 			Case OBJTYPE_BEETLE:		mesh1=Mesh_Enemy_Beetle
-			Case OBJTYPE_GUNNER:		mesh1=Mesh_Enemy_Gunner
 			Case OBJTYPE_BEETLEMONO:	mesh1=Mesh_Enemy_BeetleMono
 			Case OBJTYPE_BEETLESPARK:	mesh1=Mesh_Enemy_BeetleSpark
 			Case OBJTYPE_BEETLESPRING:	mesh1=Mesh_Enemy_BeetleSpring
@@ -393,6 +452,8 @@ Function Player_Action_Debug_ChangeObj(p.tPlayer)
 			Case OBJTYPE_OMOCHAO:		mesh1=Mesh_Omochao
 			Case OBJTYPE_CANNON:		mesh1=Mesh_Cannon
 			Case OBJTYPE_PROPELLER:		mesh1=Mesh_Propeller
+			Case OBJTYPE_PULLEYROPE
+				mesh1=Mesh_Point
 			Case OBJTYPE_PULLEY,OBJTYPE_PULLEY+1000:
 							mesh1=Mesh_PulleyBase : mesh2=Mesh_Pulley
 			Case OBJTYPE_ROCKET:		mesh1=Mesh_RocketBase : mesh2=Mesh_Rocket
@@ -416,12 +477,15 @@ Function Player_Action_Debug_ChangeObj(p.tPlayer)
 			Case OBJTYPE_AUTO:			mesh1=Mesh_Car_Sedan1
 			Case OBJTYPE_HINT:		mesh1=Mesh_Hint
 			Case OBJTYPE_COUNTER:		mesh1=Mesh_Counter5
-			Case OBJTYPE_SIGN:		mesh1=Mesh_Sign_fall
-			Case OBJTYPE_SIGN+1000:		mesh1=Mesh_Sign_up
-			Case OBJTYPE_SIGN+2000:		mesh1=Mesh_Sign_down
-			Case OBJTYPE_SIGN+3000:		mesh1=Mesh_Sign_left
-			Case OBJTYPE_SIGN+4000:		mesh1=Mesh_Sign_right
-			Case OBJTYPE_TRIGGER_VEHICLECANCEL,OBJTYPE_TRIGGER_MACH,OBJTYPE_TRIGGER_MACHCANCEL,OBJTYPE_TRIGGER_SKYDIVE,OBJTYPE_TRIGGER_SKYDIVECANCEL,OBJTYPE_TRIGGER_WATER,OBJTYPE_TRIGGER_MUSIC,OBJTYPE_TRIGGER_MUSIC+1000,OBJTYPE_TRIGGER_MUSIC+2000:
+			Case OBJTYPE_SIGN+1000:		mesh1=Mesh_Sign_speed
+			Case OBJTYPE_SIGN+2000:		mesh1=Mesh_Sign_fly
+			Case OBJTYPE_SIGN+3000:		mesh1=Mesh_Sign_power
+			Case OBJTYPE_SIGN+4000:		mesh1=Mesh_Sign_fall
+			Case OBJTYPE_SIGN+5000:		mesh1=Mesh_Sign_up
+			Case OBJTYPE_SIGN+6000:		mesh1=Mesh_Sign_down
+			Case OBJTYPE_SIGN+7000:		mesh1=Mesh_Sign_left
+			Case OBJTYPE_SIGN+8000:		mesh1=Mesh_Sign_right
+			Case OBJTYPE_TRIGGER_VEHICLECANCEL,OBJTYPE_TRIGGER_SHOP,OBJTYPE_TRIGGER_ATM,OBJTYPE_TRIGGER_SOUNDTEST,OBJTYPE_TRIGGER_DEST,OBJTYPE_TRIGGER_MACH,OBJTYPE_TRIGGER_MACHCANCEL,OBJTYPE_TRIGGER_SKYDIVE,OBJTYPE_TRIGGER_SKYDIVECANCEL,OBJTYPE_TRIGGER_WATER,OBJTYPE_TRIGGER_MUSIC,OBJTYPE_TRIGGER_MUSIC+1000,OBJTYPE_TRIGGER_MUSIC+2000:
 							mesh1=Mesh_Point
 			Case OBJTYPE_BELL:		mesh1=Mesh_Bell
 			Case OBJTYPE_SPRINKLER,OBJTYPE_SPRINKLER+1000,OBJTYPE_SPRINKLER+3000,OBJTYPE_SPRINKLER+4000,OBJTYPE_SWITCHWATER+1000:
@@ -518,12 +582,41 @@ Function Player_Action_Debug_ChangeObj(p.tPlayer)
 			Case OBJTYPE_ADABAT3:		mesh1=Mesh_Adabat3Trunk : mesh2=Mesh_Adabat3
 			Case OBJTYPE_ADABAT4:		mesh1=Mesh_Adabat4Trunk : mesh2=Mesh_Adabat4
 			Case OBJTYPE_ADABAT5:		mesh1=Mesh_Adabat5Trunk : mesh2=Mesh_Adabat5
+			Default
+				For vs=1 To VISUAL_AMOUNT
+					Select Game\Interface\DebugNewObj
+						Case OBJTYPE_VISUAL[vs]:		mesh1=Mesh_Visual[vs]
+					End Select
+				Next
 		End Select
 		Select Game\Interface\DebugNewObj
 			Case 0,-1,-2:
 				LoadCharacterMesh(p\RealCharacter,1)
 				p\Objects\Mesh=CopyEntity(CharacterMesh, Game\Stage\Root)
 				DeleteCharacterMesh()
+			Case OBJTYPE_SVISUAL1
+				p\Objects\Mesh= GetMeshEntity(1)
+			Case OBJTYPE_SVISUAL2
+				p\Objects\Mesh= GetMeshEntity(2)
+			Case OBJTYPE_SVISUAL3
+				p\Objects\Mesh= GetMeshEntity(3)
+			Case OBJTYPE_SVISUAL4
+				p\Objects\Mesh= GetMeshEntity(4)
+			Case OBJTYPE_SVISUAL4
+				p\Objects\Mesh= GetMeshEntity(5)
+			Case OBJTYPE_SVISUAL5
+				p\Objects\Mesh= GetMeshEntity(6)
+			Case OBJTYPE_SVISUAL6
+				p\Objects\Mesh= GetMeshEntity(7)
+			Case OBJTYPE_SVISUAL7
+				p\Objects\Mesh= GetMeshEntity(8)
+			Case OBJTYPE_SVISUAL8
+				p\Objects\Mesh= GetMeshEntity(9)
+			Case OBJTYPE_SVISUAL9
+				p\Objects\Mesh= GetMeshEntity(10)
+			Case OBJTYPE_SVISUAL10
+				
+				
 			Default:
 				p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(mesh1)), Game\Stage\Root)
 		End Select
@@ -547,10 +640,6 @@ Function Player_Action_Debug_ChangeObj(p.tPlayer)
 				ScaleEntity p\Objects\Mesh2, 0.3875, 0.3875, 0.3875
 			Case OBJTYPE_TORNADO,OBJTYPE_TORNADO+1000,OBJTYPE_KART,OBJTYPE_KART+1000:
 				ScaleEntity p\Objects\Mesh2, 0.2, 0.2, 0.2
-			Case OBJTYPE_BOXWOODEN+1000, OBJTYPE_BOXYELLOW+1000,OBJTYPE_BOXMETAL+1000,OBJTYPE_BOXIRON+1000,OBJTYPE_BOXCAGE+1000,OBJTYPE_BOXLIGHT+1000,OBJTYPE_BOXTNT+1000,OBJTYPE_BOXNITRO+1000,OBJTYPE_BOXFLOAT+1000:
-				ScaleEntity p\Objects\Mesh, 1.5, 1.5, 1.5
-			Case OBJTYPE_BOXWOODEN+2000,OBJTYPE_BOXMETAL+2000,OBJTYPE_BOXYELLOW+2000,OBJTYPE_BOXIRON+2000,OBJTYPE_BOXCAGE+2000,OBJTYPE_BOXLIGHT+2000,OBJTYPE_BOXTNT+2000,OBJTYPE_BOXNITRO+2000,OBJTYPE_BOXFLOAT+2000:
-				ScaleEntity p\Objects\Mesh, 1.25, 1.25, 1.25
 			Case OBJTYPE_SPRINKLER+2000,OBJTYPE_GARDENPOINT:
 				EntityAlpha(p\Objects\Mesh2,0.5)
 			Case OBJTYPE_EXPLOSION:
@@ -560,20 +649,33 @@ Function Player_Action_Debug_ChangeObj(p.tPlayer)
 		End Select
 		FreeEntity p\Objects\Mesh3
 		Select Game\Interface\DebugNewObj
-			Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTHORN,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE:
+			Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_TRAMP,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE:
 				p\Objects\Mesh3=CopyEntity(MESHES(Mesh_Line), Game\Stage\Root)
 			Default: p\Objects\Mesh3=CopyEntity(MESHES(Mesh_Empty), Game\Stage\Root)
+		End Select
+		
+		FreeEntity(p\Objects\DebugCube)
+		Select Game\Interface\DebugNewObj
+			Case OBJTYPE_TRIGGER_MACH,OBJTYPE_TRIGGER_DEST,OBJTYPE_TRIGGER_MACHCANCEL,OBJTYPE_TRIGGER_SKYDIVE,OBJTYPE_TRIGGER_SKYDIVECANCEL,OBJTYPE_TRIGGER_VEHICLECANCEL,OBJTYPE_TRIGGER_LAPCHECK,OBJTYPE_TRIGGER_LAPSTART
+				p\Objects\DebugCube=CreateCube()
+				ScaleEntity(p\Objects\DebugCube,20,20,20)
+				EntityAlpha(p\Objects\DebugCube,0.75)
+			Case OBJTYPE_NODE,OBJTYPE_RAILNODE,OBJTYPE_NODE2
+				p\Objects\DebugCube=CreateCube()
+				ScaleEntity(p\Objects\DebugCube,8.5,6,8.5)
+				EntityAlpha(p\Objects\DebugCube,0.75)
+			Default: p\Objects\DebugCube=CopyEntity(MESHES(Mesh_Empty), Game\Stage\Root)
 		End Select
 
 		;radius
 		Select Game\Interface\DebugNewObj
-			Case OBJTYPE_RING,OBJTYPE_GARDENPOINT,OBJTYPE_SPRINKLER,OBJTYPE_SPRINKLER+1000,OBJTYPE_SPRINKLER+2000,OBJTYPE_SPRINKLER+4000:
+			Case OBJTYPE_RING,OBJTYPE_TIMER,OBJTYPE_TOKEN,OBJTYPE_GARDENPOINT,OBJTYPE_SPRINKLER,OBJTYPE_SPRINKLER+1000,OBJTYPE_SPRINKLER+2000,OBJTYPE_SPRINKLER+4000:
 				EntityRadius(p\Objects\Entity, 2)
 			Case OBJTYPE_CHECK,OBJTYPE_CHECK+1000,OBJTYPE_CHECK+2000:
 				EntityRadius(p\Objects\Entity, 2)
-			Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTHORN,OBJTYPE_SPRINGTRAPX,OBJTYPE_PROPELLER,OBJTYPE_BUTTERFLY,OBJTYPE_SEAGULL,OBJTYPE_SEAC,OBJTYPE_POLE,OBJTYPE_HANDLE:
+			Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PROPELLER,OBJTYPE_BUTTERFLY,OBJTYPE_SEAGULL,OBJTYPE_SEAC,OBJTYPE_POLE,OBJTYPE_HANDLE:
 				EntityRadius(p\Objects\Entity, 1.75)
-			Case OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_FAN+1000,OBJTYPE_TRIGGER_VEHICLECANCEL,OBJTYPE_TRIGGER_MACH,OBJTYPE_TRIGGER_MACHCANCEL,OBJTYPE_TRIGGER_SKYDIVE,OBJTYPE_TRIGGER_SKYDIVECANCEL,OBJTYPE_TRIGGER_WATER,OBJTYPE_TRIGGER_MUSIC,OBJTYPE_TRIGGER_MUSIC+1000,OBJTYPE_TRIGGER_MUSIC+2000:
+			Case OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_TRAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_FAN+1000,OBJTYPE_TRIGGER_VEHICLECANCEL,OBJTYPE_TRIGGER_MACH,OBJTYPE_TRIGGER_MACHCANCEL,OBJTYPE_TRIGGER_SKYDIVE,OBJTYPE_TRIGGER_SKYDIVECANCEL,OBJTYPE_TRIGGER_WATER,OBJTYPE_TRIGGER_MUSIC,OBJTYPE_TRIGGER_MUSIC+1000,OBJTYPE_TRIGGER_MUSIC+2000:
 				EntityRadius(p\Objects\Entity, 1.85)
 			Case OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
 				EntityRadius(p\Objects\Entity, 10.175)
@@ -591,17 +693,17 @@ Function Player_Action_Debug_ChangeObj(p.tPlayer)
 				EntityRadius(p\Objects\Entity, 4.5)
 			Case OBJTYPE_SPIKEDRILL,OBJTYPE_SPIKETIMED,OBJTYPE_SPIKETRAP,OBJTYPE_SPIKECYLINDER:
 				EntityRadius(p\Objects\Entity, 2.25)
-			Case OBJTYPE_GOAL,OBJTYPE_GOAL2,OBJTYPE_GOAL+1000,OBJTYPE_GOAL2+1000:
+			Case OBJTYPE_GOAL,OBJTYPE_WARPRING,OBJTYPE_GOAL2,OBJTYPE_GOAL+1000,OBJTYPE_GOAL2+1000:
 				EntityRadius(p\Objects\Entity, 12.5)
 			Case OBJTYPE_FLAMESPOUT,OBJTYPE_ICESPOUT,OBJTYPE_SHOCKSPOUT,OBJTYPE_ROCKET,OBJTYPE_ELEVATOR,OBJTYPE_FPLAT:
 				EntityRadius(p\Objects\Entity, 1)
 			Case OBJTYPE_LASERV,OBJTYPE_LASERH,OBJTYPE_RINGGATEV,OBJTYPE_RINGGATEH:
 				EntityRadius(p\Objects\Entity, 6.75)
-			Case -1,-2,OBJTYPE_BOXWOODEN,OBJTYPE_BOXYELLOW,OBJTYPE_BOXMETAL,OBJTYPE_BOXIRON,OBJTYPE_BOXCAGE,OBJTYPE_BOXLIGHT,OBJTYPE_BOXTNT,OBJTYPE_BOXNITRO,OBJTYPE_BOXFLOAT,OBJTYPE_BOXWOODEN+1000,OBJTYPE_BOXYELLOW+1000,OBJTYPE_BOXMETAL+1000,OBJTYPE_BOXIRON+1000,OBJTYPE_BOXCAGE+1000,OBJTYPE_BOXLIGHT+1000,OBJTYPE_BOXTNT+1000,OBJTYPE_BOXNITRO+1000,OBJTYPE_BOXFLOAT+1000,OBJTYPE_BOXWOODEN+2000,OBJTYPE_BOXMETAL+2000,OBJTYPE_BOXIRON+2000,OBJTYPE_BOXCAGE+2000,OBJTYPE_BOXLIGHT+2000,OBJTYPE_BOXYELLOW+2000,OBJTYPE_BOXTNT+2000,OBJTYPE_BOXNITRO+2000,OBJTYPE_BOXFLOAT+2000,OBJTYPE_BOMBER1,OBJTYPE_BOMBER2:
+			Case -1,-2,OBJTYPE_BOXWOODEN,OBJTYPE_BOXMETAL,OBJTYPE_BOXIRON,OBJTYPE_BOXCAGE,OBJTYPE_BOXLIGHT,OBJTYPE_BOXTNT,OBJTYPE_BOXNITRO,OBJTYPE_BOXFLOAT,OBJTYPE_BOXWOODEN+1000,OBJTYPE_BOXMETAL+1000,OBJTYPE_BOXIRON+1000,OBJTYPE_BOXCAGE+1000,OBJTYPE_BOXLIGHT+1000,OBJTYPE_BOXTNT+1000,OBJTYPE_BOXNITRO+1000,OBJTYPE_BOXFLOAT+1000,OBJTYPE_BOXWOODEN+2000,OBJTYPE_BOXMETAL+2000,OBJTYPE_BOXIRON+2000,OBJTYPE_BOXCAGE+2000,OBJTYPE_BOXLIGHT+2000,OBJTYPE_BOXTNT+2000,OBJTYPE_BOXNITRO+2000,OBJTYPE_BOXFLOAT+2000,OBJTYPE_BOMBER1,OBJTYPE_BOMBER2:
 				EntityRadius(p\Objects\Entity, 2.2)
 			Case OBJTYPE_PLATEBUMPER:
 				EntityRadius(p\Objects\Entity, 1.5)
-			Case OBJTYPE_PAWN,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSWORD,OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_SPONA,OBJTYPE_MOTOBUG,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_CHOPPER,OBJTYPE_CRABMEAT,OBJTYPE_JAWS,OBJTYPE_SPINY,OBJTYPE_GRABBER,OBJTYPE_GUNNER,OBJTYPE_KIKI,OBJTYPE_COP,OBJTYPE_COPRACER,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_ACHAOS,OBJTYPE_ACHAOSBLOB,OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES,OBJTYPE_AEROC,OBJTYPE_CHASER,OBJTYPE_FIGHTER,OBJTYPE_EGGROBO,OBJTYPE_CAMERON,OBJTYPE_KLAGEN,OBJTYPE_ORBINAUT,OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_ANTON,OBJTYPE_AQUIS,OBJTYPE_BOMBIE,OBJTYPE_NEWTRON,OBJTYPE_PENGUINATOR,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_SPIKES,OBJTYPE_ASTERON,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_STEELION,OBJTYPE_BOO,OBJTYPE_BOOSCARE,OBJTYPE_GHOST,OBJTYPE_BALKIRY,OBJTYPE_BURROBOT,OBJTYPE_CRAWL,OBJTYPE_DRAGONFLY,OBJTYPE_MANTA,OBJTYPE_MUSHMEANIE,OBJTYPE_OCTUS,OBJTYPE_PATABATA,OBJTYPE_ZOOMER,OBJTYPE_BITER,OBJTYPE_CRAWLER,OBJTYPE_TAKER,OBJTYPE_E1000,OBJTYPE_BALLHOG,OBJTYPE_RHINOTANK,OBJTYPE_TECHNOSQU,OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_OAKSWORD,OBJTYPE_LEECH,OBJTYPE_WING,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_CATAKILLER,OBJTYPE_CLUCKOID,OBJTYPE_MANTIS,OBJTYPE_NEBULA,OBJTYPE_ROLLER,OBJTYPE_SHEEP,OBJTYPE_SNOWY,OBJTYPE_SPLATS,OBJTYPE_TOXO,OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER,OBJTYPE_HAMMERSHIELD,OBJTYPE_WITCH1,OBJTYPE_WITCH2,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
+			Case OBJTYPE_PAWN,OBJTYPE_INACTIVE,OBJTYPE_EGUNNER,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSWORD,OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_SPINA,OBJTYPE_SPUNA,OBJTYPE_SPANA,OBJTYPE_SPONA,OBJTYPE_MOTOBUG,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_CHOPPER,OBJTYPE_CRABMEAT,OBJTYPE_JAWS,OBJTYPE_SPINY,OBJTYPE_GRABBER,OBJTYPE_KIKI,OBJTYPE_COP,OBJTYPE_COPRACER,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_ACHAOS,OBJTYPE_ACHAOSBLOB,OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES,OBJTYPE_AEROC,OBJTYPE_CHASER,OBJTYPE_FIGHTER,OBJTYPE_EGGROBO,OBJTYPE_CAMERON,OBJTYPE_KLAGEN,OBJTYPE_ORBINAUT,OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_ANTON,OBJTYPE_AQUIS,OBJTYPE_BOMBIE,OBJTYPE_NEWTRON,OBJTYPE_PENGUINATOR,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_SPIKES,OBJTYPE_ASTERON,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_STEELION,OBJTYPE_BOO,OBJTYPE_BOOSCARE,OBJTYPE_GHOST,OBJTYPE_BALKIRY,OBJTYPE_BURROBOT,OBJTYPE_CRAWL,OBJTYPE_DRAGONFLY,OBJTYPE_MANTA,OBJTYPE_MUSHMEANIE,OBJTYPE_OCTUS,OBJTYPE_PATABATA,OBJTYPE_ZOOMER,OBJTYPE_BITER,OBJTYPE_CRAWLER,OBJTYPE_TAKER,OBJTYPE_E1000,OBJTYPE_BALLHOG,OBJTYPE_RHINOTANK,OBJTYPE_TECHNOSQU,OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_OAKSWORD,OBJTYPE_LEECH,OBJTYPE_WING,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_CATAKILLER,OBJTYPE_CLUCKOID,OBJTYPE_MANTIS,OBJTYPE_NEBULA,OBJTYPE_ROLLER,OBJTYPE_SHEEP,OBJTYPE_SNOWY,OBJTYPE_SPLATS,OBJTYPE_TOXO,OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER,OBJTYPE_HAMMERSHIELD,OBJTYPE_WITCH1,OBJTYPE_WITCH2,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
 				EntityRadius(p\Objects\Entity, 2.5)
 			Case OBJTYPE_CATERKILLER,OBJTYPE_MADMOLE:
 				EntityRadius(p\Objects\Entity, 1.32)
@@ -627,7 +729,7 @@ Function Player_Action_Debug_ChangeObj(p.tPlayer)
 				EntityRadius(p\Objects\Entity, 5)
 			Case OBJTYPE_CRYSTAL:
 				EntityRadius(p\Objects\Entity, 3.75)
-			Case OBJTYPE_SIGN,OBJTYPE_SIGN+1000,OBJTYPE_SIGN+2000,OBJTYPE_SIGN+3000,OBJTYPE_SIGN+4000:
+			Case OBJTYPE_SIGN,OBJTYPE_SIGN+1000,OBJTYPE_SIGN+2000,OBJTYPE_SIGN+3000,OBJTYPE_SIGN+4000,OBJTYPE_SIGN+5000,OBJTYPE_SIGN+6000,OBJTYPE_SIGN+7000:
 				EntityRadius(p\Objects\Entity, 8.25)
 			Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA:
 				EntityRadius(p\Objects\Entity, 14)
@@ -707,7 +809,7 @@ Function Player_Action_Debug_ChangeObj(p.tPlayer)
 		Field carnival#
 	End Type
 
-Function ResetTempAttribute()
+	Function ResetTempAttribute()
 		TempAttribute\ObjectNo=0
 		TempAttribute\ObjectID=0
 		TempAttribute\ID#=0
@@ -767,37 +869,45 @@ Function ResetTempAttribute()
 	; =========================================================================================================
 	; =========================================================================================================
 
-Function Player_Action_Debug_Save(p.tPlayer)
+	Function Player_Action_Debug_Save(p.tPlayer)
 
 		; Create obj ingame
+		
 		TempAttribute\ObjectNo=p\ObjType
 		Select p\ObjType
-			Case OBJTYPE_CHECK,OBJTYPE_SPIKEBAR,OBJTYPE_ROCK,OBJTYPE_SIGN,OBJTYPE_SPRINKLER,OBJTYPE_SPIKESWING,OBJTYPE_ICICLE,OBJTYPE_ICICLEBIG,OBJTYPE_ICEDECOR:
+			Case OBJTYPE_CHECK,OBJTYPE_SPIKEBAR,OBJTYPE_ROCK,OBJTYPE_SPRINKLER,OBJTYPE_SPIKESWING,OBJTYPE_ICICLE,OBJTYPE_ICICLEBIG,OBJTYPE_ICEDECOR:
 				CreateObject(1)
-			Case OBJTYPE_RINGS+1000,OBJTYPE_LIFE+1000,OBJTYPE_TRAP+1000,OBJTYPE_INVINC+1000,OBJTYPE_SHOES+1000,OBJTYPE_NSHIELD+1000,OBJTYPE_FSHIELD+1000,OBJTYPE_BSHIELD+1000,OBJTYPE_TSHIELD+1000,OBJTYPE_ESHIELD+1000,OBJTYPE_BOMB+1000,OBJTYPE_BOARD+1000,OBJTYPE_GLIDER+1000,OBJTYPE_CAR+1000,OBJTYPE_BIKE+1000,OBJTYPE_BOBSLEIGH+1000,OBJTYPE_TORNADO+1000,OBJTYPE_CYCLONE+1000,OBJTYPE_KART+1000,OBJTYPE_WINGS+1000,OBJTYPE_BOXCAGE+1000,OBJTYPE_BOXIRON+1000,OBJTYPE_BOXMETAL+1000,OBJTYPE_BOXWOODEN+1000,OBJTYPE_BOXYELLOW+1000,OBJTYPE_BOXLIGHT+1000,OBJTYPE_BOXTNT+1000,OBJTYPE_BOXNITRO+1000,OBJTYPE_BOXFLOAT+1000,OBJTYPE_ORCA+1000:
+			Case OBJTYPE_RINGS+1000,OBJTYPE_LIFE+1000,OBJTYPE_TRAP+1000,OBJTYPE_INVINC+1000,OBJTYPE_SHOES+1000,OBJTYPE_NSHIELD+1000,OBJTYPE_FSHIELD+1000,OBJTYPE_BSHIELD+1000,OBJTYPE_TSHIELD+1000,OBJTYPE_ESHIELD+1000,OBJTYPE_BOMB+1000,OBJTYPE_BOARD+1000,OBJTYPE_GLIDER+1000,OBJTYPE_CAR+1000,OBJTYPE_BIKE+1000,OBJTYPE_BOBSLEIGH+1000,OBJTYPE_TORNADO+1000,OBJTYPE_CYCLONE+1000,OBJTYPE_KART+1000,OBJTYPE_WINGS+1000,OBJTYPE_ORCA+1000:
 				TempAttribute\ObjectNo=TempAttribute\ObjectNo-1000
 				CreateObject(1)
-			Case OBJTYPE_CHECK+1000,OBJTYPE_SPIKEBAR+1000,OBJTYPE_ROCK+1000,OBJTYPE_SIGN+1000,OBJTYPE_SPRINKLER+1000,OBJTYPE_SPIKESWING+1000,OBJTYPE_ICICLE+1000,OBJTYPE_ICICLEBIG+1000,OBJTYPE_ICEDECOR+1000:
+			Case OBJTYPE_CHECK+1000,OBJTYPE_SPIKEBAR+1000,OBJTYPE_ROCK+1000,OBJTYPE_SPRINKLER+1000,OBJTYPE_SPIKESWING+1000,OBJTYPE_ICICLE+1000,OBJTYPE_ICICLEBIG+1000,OBJTYPE_ICEDECOR+1000:
 				TempAttribute\ObjectNo=TempAttribute\ObjectNo-1000
 				CreateObject(2)
-			Case OBJTYPE_CHECK+2000,OBJTYPE_SPIKEBAR+2000,OBJTYPE_SIGN+2000,OBJTYPE_SPRINKLER+2000,OBJTYPE_SPIKESWING+2000:
+			Case OBJTYPE_CHECK+2000,OBJTYPE_SPIKEBAR+2000,OBJTYPE_SPRINKLER+2000,OBJTYPE_SPIKESWING+2000:
 				TempAttribute\ObjectNo=TempAttribute\ObjectNo-2000
 				CreateObject(3)
-			Case OBJTYPE_SIGN+3000,OBJTYPE_SPRINKLER+3000:
+			Case OBJTYPE_SPRINKLER+3000:
 				TempAttribute\ObjectNo=TempAttribute\ObjectNo-3000
 				CreateObject(4)
-			Case OBJTYPE_SIGN+4000,OBJTYPE_SPRINKLER+4000:
+			Case OBJTYPE_SPRINKLER+4000:
 				TempAttribute\ObjectNo=TempAttribute\ObjectNo-4000
 				CreateObject(5)
-			Case OBJTYPE_BOXCAGE+2000,OBJTYPE_BOXYELLOW+2000,OBJTYPE_BOXIRON+2000,OBJTYPE_BOXMETAL+2000,OBJTYPE_BOXWOODEN+2000,OBJTYPE_BOXLIGHT+2000,OBJTYPE_BOXTNT+2000,OBJTYPE_BOXNITRO+2000,OBJTYPE_BOXFLOAT+2000:
-				TempAttribute\ObjectNo=TempAttribute\ObjectNo-2000
-				CreateObject(2)
+				
+				
 			Case OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000,OBJTYPE_LOCKER+1000,OBJTYPE_FORCER+1000,OBJTYPE_GOAL+1000,OBJTYPE_GOAL2+1000,OBJTYPE_PULLEY+1000,OBJTYPE_TRIGGER_MUSIC+1000,OBJTYPE_SWITCHWATER+1000:
 				TempAttribute\ObjectNo=TempAttribute\ObjectNo-1000
 				CreateObject(1)
 			Case OBJTYPE_LOCKER+2000,OBJTYPE_TRIGGER_MUSIC+2000:
 				TempAttribute\ObjectNo=TempAttribute\ObjectNo-2000
 				CreateObject(2)
+			Case OBJTYPE_SIGN+1000: CreateObject(1)
+			Case OBJTYPE_SIGN+2000: CreateObject(2)
+			Case OBJTYPE_SIGN+3000: CreateObject(3)
+			Case OBJTYPE_SIGN+4000: CreateObject(4)
+			Case OBJTYPE_SIGN+5000: CreateObject(5)
+			Case OBJTYPE_SIGN+6000: CreateObject(6)
+			Case OBJTYPE_SIGN+7000: CreateObject(7)
+			Case OBJTYPE_SIGN+8000: CreateObject(8)	
 			Default:
 				CreateObject()
 		End Select
@@ -864,98 +974,58 @@ Function Player_Action_Debug_Save(p.tPlayer)
 		Game\Interface\DebugSpawnedObj=1
 
 	End Function
-Function Player_Action_Debug_SaveRings(p.tPlayer)
-		CreateDir("DEBUGXML")
-		If Game\Interface\DebugFileTime=0 Then
-		xmlout = WriteFile("DEBUGXML\RINGS.xml")
-		Else
-		xmlout = WriteFile("DEBUGXML\RINGS"+Game\Interface\DebugFileTime+".xml")
-		EndIf
-		Game\Interface\DebugFileTime=Game\Interface\DebugFileTime+1
 
-			WriteLine(xmlout, "	<object type="+Chr$(34)+"ring"+Chr$(34)+">")
-
-		WriteLine(xmlout, "		<position x="+Chr$(34)+p\Objects\Position\x#+Chr$(34)+" y="+Chr$(34)+p\Objects\Position\y#+Chr$(34)+" z="+Chr$(34)+p\Objects\Position\z#+Chr$(34)+"/>")
-
-			WriteLine(xmlout, "	</object>")
-
-		CloseFile xmlout
-
-	End Function
-	
-Function Player_Action_Debug_SaveNodes(p.tPlayer)
-		CreateDir("DEBUGXML")
-		If Game\Interface\DebugFileTime=0 Then
-		xmlout = WriteFile("DEBUGXML\NODES.xml")
-		Else
-		xmlout = WriteFile("DEBUGXML\NODES"+Game\Interface\DebugFileTime+".xml")
-		EndIf
-		Game\Interface\DebugFileTime=Game\Interface\DebugFileTime+1
-
-			WriteLine(xmlout, "	<object type="+Chr$(34)+"node"+Chr$(34)+">")
-
-		
-		WriteLine(xmlout, "		<position x="+Chr$(34)+p\Objects\Position\x#+Chr$(34)+" y="+Chr$(34)+p\Objects\Position\y#+Chr$(34)+" z="+Chr$(34)+p\Objects\Position\z#+Chr$(34)+"/>")
-		WriteLine(xmlout, "		<rotation pitch="+Chr$(34)+p\Rotation#+Chr$(34)+" yaw="+Chr$(34)+p\Animation\Direction#+Chr$(34)+" roll="+Chr$(34)+"0"+Chr$(34)+"/>")
-		WriteLine(xmlout, "		<cam pitch="+Chr$(34)+p\Rotation#+Chr$(34)+" yaw="+Chr$(34)+p\Animation\Direction#+Chr$(34)+" roll="+Chr$(34)+"0"+Chr$(34)+" zoom="+Chr$(34)+"21"+Chr$(34)+" speed="+Chr$(34)+"30"+Chr$(34)+"/>")
-		WriteLine(xmlout, "		<lock control="+Chr$(34)+"0"+Chr$(34)+" cam="+Chr$(34)+"0"+Chr$(34)+" run="+Chr$(34)+"0"+Chr$(34)+"/>")
-
-			WriteLine(xmlout, "	</object>")
-
-		CloseFile xmlout
-
-	End Function
-Function Player_Action_Debug_SavePlayer(p.tPlayer)
-		CreateDir("DEBUGXML")
-		xmlout = WriteFile("DEBUGXML\DEBUGXML_PLAYER.xml")
-		WriteLine(xmlout, "	<object Type="+Chr$(34)+"player"+Chr$(34)+">")
+	Function Player_Action_Debug_SavePlayer(p.tPlayer)
+		CreateDir("_DEBUGXML")
+		xmlout = WriteFile("_DEBUGXML\DEBUGXML_PLAYER.xml")
+		WriteLine(xmlout, "	<Object Type="+Chr$(34)+"player"+Chr$(34)+">")
 		WriteLine(xmlout, "		<position x="+Chr$(34)+TempAttribute\x#+Chr$(34)+" y="+Chr$(34)+TempAttribute\y#+Chr$(34)+" z="+Chr$(34)+TempAttribute\z#+Chr$(34)+" dir="+Chr$(34)+TempAttribute\yaw#+Chr$(34)+"/>")
-		WriteLine(xmlout, "	</object>")
+		WriteLine(xmlout, "	</Object>")
 		CloseFile xmlout		
 	End Function
-Function Player_Action_Debug_SaveRingPath(p.tPlayer)
-		CreateDir("DEBUGXML")
-		xmlout = WriteFile("DEBUGXML\DEBUGXML_RINGS.xml")
-		WriteLine(xmlout, "	<object Type="+Chr$(34)+"ring"+Chr$(34)+">")
-		WriteLine(xmlout, "		<position x="+Chr$(34)+p\Objects\Position\x#+Chr$(34)+" y="+Chr$(34)+p\Objects\Position\y#+Chr$(34)+" z="+Chr$(34)+p\Objects\Position\z#+Chr$(34)+"/>")
-		WriteLine(xmlout, "	</object>")
-		CloseFile xmlout		
-	End Function
-Function Player_Action_Debug_SaveRival(p.tPlayer)
-		CreateDir("DEBUGXML")
-		xmlout = WriteFile("DEBUGXML\DEBUGXML_RIVAL.xml")
+
+	Function Player_Action_Debug_SaveRival(p.tPlayer)
+		CreateDir("_DEBUGXML")
+		xmlout = WriteFile("_DEBUGXML\DEBUGXML_RIVAL.xml")
 		Select p\ObjType
-		Case -1: WriteLine(xmlout, "	<object Type="+Chr$(34)+"rival"+Chr$(34)+">")
-		Case -2: WriteLine(xmlout, "	<object Type="+Chr$(34)+"rivalrun"+Chr$(34)+">")
+		Case -1: WriteLine(xmlout, "	<Object Type="+Chr$(34)+"rival"+Chr$(34)+">")
+		Case -2: WriteLine(xmlout, "	<Object Type="+Chr$(34)+"rivalrun"+Chr$(34)+">")
 		End Select
 		WriteLine(xmlout, "		<position x="+Chr$(34)+TempAttribute\x#+Chr$(34)+" y="+Chr$(34)+TempAttribute\y#+Chr$(34)+" z="+Chr$(34)+TempAttribute\z#+Chr$(34)+"/>")
 		WriteLine(xmlout, "		<rotation pitch="+Chr$(34)+0+Chr$(34)+" yaw="+Chr$(34)+TempAttribute\yaw#+Chr$(34)+" roll="+Chr$(34)+0+Chr$(34)+"/>")
-		WriteLine(xmlout, "	</object>")
+		WriteLine(xmlout, "	</Object>")
 		CloseFile xmlout		
 	End Function
 
-Function Player_Action_Debug_QuitAndSave(p.tPlayer)
-		CreateDir("DEBUGXML")
+	Function Player_Action_Debug_QuitAndSave(p.tPlayer)
+		CreateDir("_DEBUGXML")
 		If Game\Interface\DebugFileTime=0 Then
-		xmlout = WriteFile("DEBUGXML\DEBUGXML.xml")
+			xmlout = WriteFile("_DEBUGXML\DEBUGXML.xml")
 		Else
-		xmlout = WriteFile("DEBUGXML\DEBUGXML"+Game\Interface\DebugFileTime+".xml")
+			xmlout = WriteFile("_DEBUGXML\DEBUGXML"+Game\Interface\DebugFileTime+".xml")
 		EndIf
 		Game\Interface\DebugFileTime=Game\Interface\DebugFileTime+1
 
 		For TempObject.tTempObject=Each tTempObject
 			Select TempObject\ObjectNo
 				Case OBJTYPE_RING:		objname$ = "ring"
+				Case OBJTYPE_MISSIONCARD: objname$ = "missioncard"
+				Case OBJTYPE_REDRING:		objname$ = "redring"
+				Case OBJTYPE_TIMER:		objname$ = "timer"
+				Case OBJTYPE_TOKEN:		objname$ = "token"
+				Case OBJTYPE_WARPRING:		objname$ = "warpring"
 				Case OBJTYPE_SPRING:		objname$ = "spring"
-				Case OBJTYPE_BSPRING:		objname$ = "bspring"
 				Case OBJTYPE_PANEL1:		objname$ = "jumppanel"
 				Case OBJTYPE_PANEL2:		objname$ = "jumppanel2"
+				Case OBJTYPE_PANEL2+1000:		objname$ = "ijumppanel2"
+				Case OBJTYPE_BSPRING:		objname$ = "bspring"
 				Case OBJTYPE_SPRINGX:		objname$ = "springx"
 				Case OBJTYPE_SPRINGTRAP:	objname$ = "springt"
-				Case OBJTYPE_SPRINGTHORN:	objname$ = "springthorn"
 				Case OBJTYPE_SPRINGTRAPX:	objname$ = "springtx"
 				Case OBJTYPE_PAD:		objname$ = "pad"
+				Case OBJTYPE_RAILPAD:		objname$ = "gpad"
 				Case OBJTYPE_RAMP:		objname$ = "ramp"
+				Case OBJTYPE_TRAMP:		objname$ = "tramp"
 				Case OBJTYPE_HOOP:		objname$ = "hoop"
 				Case OBJTYPE_THOOP:		objname$ = "thoop"
 				Case OBJTYPE_ACCEL:		objname$ = "accel"
@@ -1041,7 +1111,6 @@ Function Player_Action_Debug_QuitAndSave(p.tPlayer)
 				Case OBJTYPE_RINGGATEV:		objname$ = "laser2v"
 				Case OBJTYPE_RINGGATEH:		objname$ = "laser2h"
 				Case OBJTYPE_BOXWOODEN:		objname$ = "wbox"
-				Case OBJTYPE_BOXYELLOW:		objname$ = "vbox"
 				Case OBJTYPE_BOXMETAL:		objname$ = "mbox"
 				Case OBJTYPE_BOXIRON:		objname$ = "ibox"
 				Case OBJTYPE_BOXCAGE:		objname$ = "cbox"
@@ -1049,24 +1118,6 @@ Function Player_Action_Debug_QuitAndSave(p.tPlayer)
 				Case OBJTYPE_BOXTNT:		objname$ = "tntbox"
 				Case OBJTYPE_BOXNITRO:		objname$ = "nbox"
 				Case OBJTYPE_BOXFLOAT:		objname$ = "fbox"
-				Case OBJTYPE_BOXWOODEN+1000:	objname$ = "bwbox"
-				Case OBJTYPE_BOXYELLOW+1000:	objname$ = "bvbox"
-				Case OBJTYPE_BOXMETAL+1000:	objname$ = "bmbox"
-				Case OBJTYPE_BOXIRON+1000:	objname$ = "bibox"
-				Case OBJTYPE_BOXCAGE+1000:	objname$ = "bcbox"
-				Case OBJTYPE_BOXLIGHT+1000:	objname$ = "blbox"
-				Case OBJTYPE_BOXTNT+1000:	objname$ = "btntbox"
-				Case OBJTYPE_BOXNITRO+1000:	objname$ = "bnbox"
-				Case OBJTYPE_BOXFLOAT+1000:	objname$ = "bfbox"
-				Case OBJTYPE_BOXWOODEN+2000:	objname$ = "mwbox"
-				Case OBJTYPE_BOXYELLOW+2000:	objname$ = "mvbox"
-				Case OBJTYPE_BOXMETAL+2000:	objname$ = "mmbox"
-				Case OBJTYPE_BOXIRON+2000:	objname$ = "mibox"
-				Case OBJTYPE_BOXCAGE+2000:	objname$ = "mcbox"
-				Case OBJTYPE_BOXLIGHT+2000:	objname$ = "mlbox"
-				Case OBJTYPE_BOXTNT+2000:	objname$ = "mtntbox"
-				Case OBJTYPE_BOXNITRO+2000:	objname$ = "mnbox"
-				Case OBJTYPE_BOXFLOAT+2000:	objname$ = "mfbox"
 				Case OBJTYPE_BALLBUMPER:	objname$ = "bbump"
 				Case OBJTYPE_GROUNDBUMPER:	objname$ = "gbump"
 				Case OBJTYPE_METROBUMPER:	objname$ = "mbump"
@@ -1083,6 +1134,7 @@ Function Player_Action_Debug_QuitAndSave(p.tPlayer)
 				Case OBJTYPE_FLAPPERNEEDLE:	objname$ = "flapr4"
 				Case OBJTYPE_SPINA:			objname$ = "spina"
 				Case OBJTYPE_SPANA:			objname$ = "spana"
+				Case OBJTYPE_SPUNA:			objname$ = "spuna"
 				Case OBJTYPE_SPONA:			objname$ = "spona"
 				Case OBJTYPE_MOTOBUG:		objname$ = "motobug"
 				Case OBJTYPE_CATERKILLER:	objname$ = "caterkiller"
@@ -1097,10 +1149,9 @@ Function Player_Action_Debug_QuitAndSave(p.tPlayer)
 				Case OBJTYPE_COP:			objname$ = "cop"
 				Case OBJTYPE_COPRACER:		objname$ = "cop2"
 				Case OBJTYPE_HUNTER:		objname$ = "huntr1"
+				Case OBJTYPE_INACTIVE:		objname$ = "inactive"
+				Case OBJTYPE_EGUNNER:		objname$ = "gunr"
 				Case OBJTYPE_HUNTERSHIELD:	objname$ = "huntr2"
-				Case OBJTYPE_GUNNER:		objname$ = "gunr"
-				Case OBJTYPE_SEARCHER:		objname$ = "srch1"
-				Case OBJTYPE_EGGHUNTER:		objname$ = "srch2"
 				Case OBJTYPE_BEETLE:		objname$ = "beetle1"
 				Case OBJTYPE_BEETLEMONO:	objname$ = "beetle2"
 				Case OBJTYPE_BEETLESPARK:	objname$ = "beetle3"
@@ -1186,7 +1237,7 @@ Function Player_Action_Debug_QuitAndSave(p.tPlayer)
 				Case OBJTYPE_BOSSBETA:		objname$ = "bossbeta"
 				Case OBJTYPE_BOSSMECHA:		objname$ = "bossmecha"
 				Case OBJTYPE_BUBBLES:		objname$ = "bubbles"
-				Case OBJTYPE_SHARD:		objname$ = "shard"
+				Case OBJTYPE_SHARD:		objname$ = "Shard"
 				Case OBJTYPE_TELEPORTER:	objname$ = "teleporter"
 				Case OBJTYPE_TELEPORTER2:	objname$ = "hubteleporter"
 				Case OBJTYPE_TELEPORTEREND:	objname$ = "teleporterend"
@@ -1194,6 +1245,7 @@ Function Player_Action_Debug_QuitAndSave(p.tPlayer)
 				Case OBJTYPE_CANNON:		objname$ = "cannon"
 				Case OBJTYPE_PROPELLER:		objname$ = "propeller"
 				Case OBJTYPE_PULLEY:		objname$ = "pulley"
+				Case OBJTYPE_PULLEYROPE:		objname$ = "pulleyrope"
 				Case OBJTYPE_PULLEY+1000:	objname$ = "pulley2"
 				Case OBJTYPE_ROCKET:		objname$ = "rocket"
 				Case OBJTYPE_ELEVATOR:		objname$ = "elev"
@@ -1218,10 +1270,18 @@ Function Player_Action_Debug_QuitAndSave(p.tPlayer)
 				Case OBJTYPE_HINT:		objname$ = "hint"
 				Case OBJTYPE_COUNTER:		objname$ = "counter"
 				Case OBJTYPE_SIGN:		objname$ = "signfall"
-				Case OBJTYPE_SIGN+1000:		objname$ = "signup"
-				Case OBJTYPE_SIGN+2000:		objname$ = "signdown"
-				Case OBJTYPE_SIGN+3000:		objname$ = "signleft"
-				Case OBJTYPE_SIGN+4000:		objname$ = "signright"
+				Case OBJTYPE_SIGN+1000:		objname$ = "signspeed"
+				Case OBJTYPE_SIGN+2000:		objname$ = "signfly"
+				Case OBJTYPE_SIGN+3000:		objname$ = "signpower"
+				Case OBJTYPE_SIGN+4000:		objname$ = "signfall"
+				Case OBJTYPE_SIGN+5000:		objname$ = "signsup"
+				Case OBJTYPE_SIGN+6000:		objname$ = "signdown"
+				Case OBJTYPE_SIGN+7000:		objname$ = "signleft"
+				Case OBJTYPE_SIGN+8000:		objname$ = "signright"
+				Case OBJTYPE_TRIGGER_DEST:		objname$ = "dest"
+				Case OBJTYPE_TRIGGER_SHOP:		objname$ = "shop"
+				Case OBJTYPE_TRIGGER_ATM:		objname$ = "atm"
+				Case OBJTYPE_TRIGGER_SOUNDTEST:		objname$ = "soundtest"
 				Case OBJTYPE_TRIGGER_VEHICLECANCEL:	objname$ = "vehiclecancel"
 				Case OBJTYPE_TRIGGER_MACH:	objname$ = "mach"
 				Case OBJTYPE_TRIGGER_MACHCANCEL:	objname$ = "machcancel"
@@ -1239,11 +1299,6 @@ Function Player_Action_Debug_QuitAndSave(p.tPlayer)
 				Case OBJTYPE_SPRINKLER+4000:	objname$ = "sprinkler1x"
 				Case OBJTYPE_BUTTERFLY:		objname$ = "butterfly"
 				Case OBJTYPE_SEAGULL:		objname$ = "seagull"
-				Case OBJTYPE_STAGEVISUAL1:		objname$ = "visual1"
-				Case OBJTYPE_STAGEVISUAL2:		objname$ = "visual2"
-				Case OBJTYPE_STAGEVISUAL3:		objname$ = "visual3"
-				Case OBJTYPE_STAGEVISUAL4:		objname$ = "visual4"
-				Case OBJTYPE_STAGEVISUAL5:		objname$ = "visual5"
 				Case OBJTYPE_SEAC:		objname$ = "seac"
 				Case OBJTYPE_ORCA:		objname$ = "orca"
 				Case OBJTYPE_ORCA+1000:		objname$ = "dolphin"
@@ -1332,13 +1387,23 @@ Function Player_Action_Debug_QuitAndSave(p.tPlayer)
 				Case OBJTYPE_ADABAT3:		objname$ = "adabat3"
 				Case OBJTYPE_ADABAT4:		objname$ = "adabat4"
 				Case OBJTYPE_ADABAT5:		objname$ = "adabat5"
+				Default
+					For vs = 1 To VISUAL_AMOUNT
+						Select TempObject\ObjectNo
+							Case OBJTYPE_VISUAL[vs]
+								objname$="visual"+Str(vs)
+						End Select
+					Next
 			End Select
-			WriteLine(xmlout, "	<object type="+Chr$(34)+objname$+Chr$(34)+">")
+			WriteLine(xmlout, Lower$("	<Object Type="+Chr$(34)+objname$+Chr$(34)+">"))
 
 			WriteLine(xmlout, "		<position x="+Chr$(34)+TempObject\x#+Chr$(34)+" y="+Chr$(34)+TempObject\y#+Chr$(34)+" z="+Chr$(34)+TempObject\z#+Chr$(34)+"/>")
 
 			Select TempObject\ObjectNo
-				Case OBJTYPE_RING,OBJTYPE_RINGS,OBJTYPE_LIFE,OBJTYPE_TRAP,OBJTYPE_INVINC,OBJTYPE_SHOES,OBJTYPE_NSHIELD,OBJTYPE_FSHIELD,OBJTYPE_BSHIELD,OBJTYPE_TSHIELD,OBJTYPE_ESHIELD,OBJTYPE_BOMB,OBJTYPE_BOARD,OBJTYPE_GLIDER,OBJTYPE_CAR,OBJTYPE_BIKE,OBJTYPE_BOBSLEIGH,OBJTYPE_TORNADO,OBJTYPE_CYCLONE,OBJTYPE_KART,OBJTYPE_WINGS,OBJTYPE_RINGS+1000,OBJTYPE_LIFE+1000,OBJTYPE_TRAP+1000,OBJTYPE_INVINC+1000,OBJTYPE_SHOES+1000,OBJTYPE_NSHIELD+1000,OBJTYPE_FSHIELD+1000,OBJTYPE_BSHIELD+1000,OBJTYPE_TSHIELD+1000,OBJTYPE_ESHIELD+1000,OBJTYPE_BOMB+1000,OBJTYPE_BOARD+1000,OBJTYPE_GLIDER+1000,OBJTYPE_CAR+1000,OBJTYPE_BIKE+1000,OBJTYPE_BOBSLEIGH+1000,OBJTYPE_TORNADO+1000,OBJTYPE_CYCLONE+1000,OBJTYPE_KART+1000,OBJTYPE_WINGS+1000,OBJTYPE_BALLOON,OBJTYPE_GOAL,OBJTYPE_GOAL2,OBJTYPE_GOAL+1000,OBJTYPE_GOAL2+1000,OBJTYPE_BUBBLES,OBJTYPE_SHARD,OBJTYPE_HINT,OBJTYPE_COUNTER,OBJTYPE_BELL,OBJTYPE_SPRINKLER,OBJTYPE_SPRINKLER+1000,OBJTYPE_SPRINKLER+3000,OBJTYPE_SPRINKLER+4000,OBJTYPE_BUTTERFLY,OBJTYPE_SEAGULL,OBJTYPE_SEAC,OBJTYPE_AIRBALLOON,OBJTYPE_CLOUD,OBJTYPE_TRIGGER_VEHICLECANCEL,OBJTYPE_TRIGGER_MACH,OBJTYPE_TRIGGER_MACHCANCEL,OBJTYPE_TRIGGER_SKYDIVE,OBJTYPE_TRIGGER_SKYDIVECANCEL,OBJTYPE_TRIGGER_WATER,OBJTYPE_TRIGGER_MUSIC,OBJTYPE_TRIGGER_MUSIC+1000,OBJTYPE_TRIGGER_MUSIC+2000,OBJTYPE_BOMBER2:
+				Case OBJTYPE_RING,OBJTYPE_REDRING,OBJTYPE_TIMER,OBJTYPE_TOKEN,OBJTYPE_WARPRING,OBJTYPE_RINGS,OBJTYPE_LIFE,OBJTYPE_TRAP,OBJTYPE_INVINC,OBJTYPE_SHOES,OBJTYPE_NSHIELD,OBJTYPE_FSHIELD,OBJTYPE_BSHIELD,OBJTYPE_TSHIELD,OBJTYPE_ESHIELD,OBJTYPE_BOMB,OBJTYPE_BOARD,OBJTYPE_GLIDER,OBJTYPE_CAR,OBJTYPE_BIKE,OBJTYPE_BOBSLEIGH,OBJTYPE_TORNADO,OBJTYPE_CYCLONE,OBJTYPE_KART,OBJTYPE_WINGS,OBJTYPE_RINGS+1000,OBJTYPE_LIFE+1000,OBJTYPE_TRAP+1000,OBJTYPE_INVINC+1000,OBJTYPE_SHOES+1000,OBJTYPE_NSHIELD+1000,OBJTYPE_FSHIELD+1000,OBJTYPE_BSHIELD+1000,OBJTYPE_TSHIELD+1000,OBJTYPE_ESHIELD+1000,OBJTYPE_BOMB+1000,OBJTYPE_BOARD+1000,OBJTYPE_GLIDER+1000,OBJTYPE_CAR+1000,OBJTYPE_BIKE+1000,OBJTYPE_BOBSLEIGH+1000,OBJTYPE_TORNADO+1000,OBJTYPE_CYCLONE+1000,OBJTYPE_KART+1000,OBJTYPE_WINGS+1000,OBJTYPE_BALLOON,OBJTYPE_GOAL,OBJTYPE_GOAL2,OBJTYPE_GOAL+1000,OBJTYPE_GOAL2+1000,OBJTYPE_BUBBLES,OBJTYPE_SHARD,OBJTYPE_HINT,OBJTYPE_COUNTER,OBJTYPE_BELL,OBJTYPE_SPRINKLER,OBJTYPE_SPRINKLER+1000,OBJTYPE_SPRINKLER+3000,OBJTYPE_SPRINKLER+4000,OBJTYPE_BUTTERFLY,OBJTYPE_SEAGULL,OBJTYPE_SEAC,OBJTYPE_AIRBALLOON,OBJTYPE_CLOUD,OBJTYPE_TRIGGER_VEHICLECANCEL,OBJTYPE_TRIGGER_MACH,OBJTYPE_TRIGGER_MACHCANCEL,OBJTYPE_TRIGGER_SKYDIVE,OBJTYPE_TRIGGER_SKYDIVECANCEL,OBJTYPE_TRIGGER_WATER,OBJTYPE_TRIGGER_MUSIC,OBJTYPE_TRIGGER_MUSIC+1000,OBJTYPE_TRIGGER_MUSIC+2000,OBJTYPE_BOMBER2:
+				Case OBJTYPE_MISSIONCARD:
+					WriteLine(xmlout, "        <stage folder="+Chr$(34)+Chr$(34)+" name="+Chr$(34)+Chr$(34)+"/>")
+					
 				Default:
 					WriteLine(xmlout, "		<rotation pitch="+Chr$(34)+TempObject\pitch#+Chr$(34)+" yaw="+Chr$(34)+TempObject\yaw#+Chr$(34)+" roll="+Chr$(34)+TempObject\roll#+Chr$(34)+"/>")
 			End Select
@@ -1370,7 +1435,7 @@ Function Player_Action_Debug_QuitAndSave(p.tPlayer)
 			EndIf
 
 			Select TempObject\ObjectNo
-				Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_PANEL1,OBJTYPE_PANEL2,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTHORN,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000,OBJTYPE_CANNON:
+				Case OBJTYPE_TRIGGER_SHOP,OBJTYPE_TRIGGER_SOUNDTEST,OBJTYPE_SPRING,OBJTYPE_TRAMP,OBJTYPE_PANEL1,OBJTYPE_PANEL2,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_RAILPAD,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_LOCKER+1000,OBJTYPE_LOCKER+2000,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000,OBJTYPE_CANNON:
 					Select TempObject\ObjectNo
 						Case OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
 						Default:
@@ -1389,7 +1454,7 @@ Function Player_Action_Debug_QuitAndSave(p.tPlayer)
 							WriteLine(xmlout, "		<cam pos="+Chr$(34)+TempObject\campos+Chr$(34)+" x="+Chr$(34)+TempObject\camx#+Chr$(34)+" y="+Chr$(34)+TempObject\camy#+Chr$(34)+" z="+Chr$(34)+TempObject\camz#+Chr$(34)+" pitch="+Chr$(34)+TempObject\campitch#+Chr$(34)+" yaw="+Chr$(34)+TempObject\camyaw#+Chr$(34)+" roll="+Chr$(34)+TempObject\camroll#+Chr$(34)+" zoom="+Chr$(34)+TempObject\camzoom#+Chr$(34)+" speed="+Chr$(34)+TempObject\camspeed#+Chr$(34)+"/>")
 						EndIf
 						Select TempObject\ObjectNo
-							Case OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
+							Case OBJTYPE_TRIGGER_SHOP,OBJTYPE_TRIGGER_SOUNDTEST,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW,OBJTYPE_FAN+1000,OBJTYPE_BFAN+1000,OBJTYPE_BFANLOW+1000:
 							Default:
 								If TempObject\hasd=1 Then
 									WriteLine(xmlout, "		<d has="+Chr$(34)+TempObject\hasd+Chr$(34)+" x="+Chr$(34)+TempObject\dx#+Chr$(34)+" y="+Chr$(34)+TempObject\dy#+Chr$(34)+" z="+Chr$(34)+TempObject\dz#+Chr$(34)+"/>")
@@ -1398,13 +1463,18 @@ Function Player_Action_Debug_QuitAndSave(p.tPlayer)
 								EndIf
 						End Select
 					EndIf
-				Case OBJTYPE_TREE1,OBJTYPE_TREE2,OBJTYPE_TREE3,OBJTYPE_TREE4,OBJTYPE_TREE5,OBJTYPE_TREE6,OBJTYPE_SHRUB1,OBJTYPE_SHRUB2,OBJTYPE_SHRUB3,OBJTYPE_SHRUB4,OBJTYPE_SHRUB5,OBJTYPE_SHRUB6,OBJTYPE_BUSH1,OBJTYPE_BUSH2,OBJTYPE_BUSH3,OBJTYPE_BUSH4,OBJTYPE_BUSH5,OBJTYPE_BUSH6,OBJTYPE_BUSH7,OBJTYPE_GRASS1,OBJTYPE_GRASS2,OBJTYPE_GRASS3,OBJTYPE_GRASS4,OBJTYPE_GRASS5,OBJTYPE_GRASS6,OBJTYPE_GRASS7,OBJTYPE_GRASS8,OBJTYPE_GRASS9,OBJTYPE_GRASS10,OBJTYPE_SAKURA1,OBJTYPE_SAKURA2,OBJTYPE_SAKURA3,OBJTYPE_SAKURA4,OBJTYPE_SAKURA5,OBJTYPE_SAKURA6,OBJTYPE_PALM1,OBJTYPE_PALM2,OBJTYPE_PALM3,OBJTYPE_PALM4,OBJTYPE_WILDPALM1,OBJTYPE_WILDPALM2,OBJTYPE_WILDPALM3,OBJTYPE_WILDPALM4,OBJTYPE_WILDPALM5,OBJTYPE_WILDPALM6,OBJTYPE_FLOWER1,OBJTYPE_FLOWER2,OBJTYPE_FLOWER3,OBJTYPE_FLOWER4,OBJTYPE_FLOWER5,OBJTYPE_SNOWY1,OBJTYPE_SNOWY2,OBJTYPE_SNOWY3,OBJTYPE_SNOWY4,OBJTYPE_SNOWY5,OBJTYPE_SNOWY6,OBJTYPE_VINE1,OBJTYPE_DRYTREE1,OBJTYPE_DRYTREE2,OBJTYPE_DRYTREE3,OBJTYPE_ADABAT1,OBJTYPE_ADABAT2,OBJTYPE_ADABAT3,OBJTYPE_ADABAT4,OBJTYPE_ADABAT5:
+				Case OBJTYPE_TRIGGER_DEST
+					If TempObject\hasd=1 Then
+						WriteLine(xmlout, "		<d has="+Chr$(34)+TempObject\hasd+Chr$(34)+" x="+Chr$(34)+TempObject\dx#+Chr$(34)+" y="+Chr$(34)+TempObject\dy#+Chr$(34)+" z="+Chr$(34)+TempObject\dz#+Chr$(34)+"/>")
+					Else
+						WriteLine(xmlout, "		<d has="+Chr$(34)+TempObject\hasd+Chr$(34)+" x="+Chr$(34)+0+Chr$(34)+" y="+Chr$(34)+0+Chr$(34)+" z="+Chr$(34)+0+Chr$(34)+"/>")
+					EndIf
 					WriteLine(xmlout, "		<power is="+Chr$(34)+TempObject\power#+Chr$(34)+"/>")
-				Case OBJTYPE_AIRBALLOON,OBJTYPE_RING,OBJTYPE_TRIGGER_WATER,OBJTYPE_TRIGGER_MUSIC,OBJTYPE_TRIGGER_MUSIC+1000,OBJTYPE_TRIGGER_MUSIC+2000,OBJTYPE_RINGGATEV,OBJTYPE_RINGGATEH,OBJTYPE_CLOUD,OBJTYPE_POLE,OBJTYPE_SWITCHWATER,OBJTYPE_SWITCHWATER+1000:
+				Case OBJTYPE_TRIGGER_ATM,OBJTYPE_TREE1,OBJTYPE_TREE2,OBJTYPE_TREE3,OBJTYPE_TREE4,OBJTYPE_TREE5,OBJTYPE_TREE6,OBJTYPE_SHRUB1,OBJTYPE_SHRUB2,OBJTYPE_SHRUB3,OBJTYPE_SHRUB4,OBJTYPE_SHRUB5,OBJTYPE_SHRUB6,OBJTYPE_BUSH1,OBJTYPE_BUSH2,OBJTYPE_BUSH3,OBJTYPE_BUSH4,OBJTYPE_BUSH5,OBJTYPE_BUSH6,OBJTYPE_BUSH7,OBJTYPE_GRASS1,OBJTYPE_GRASS2,OBJTYPE_GRASS3,OBJTYPE_GRASS4,OBJTYPE_GRASS5,OBJTYPE_GRASS6,OBJTYPE_GRASS7,OBJTYPE_GRASS8,OBJTYPE_GRASS9,OBJTYPE_GRASS10,OBJTYPE_SAKURA1,OBJTYPE_SAKURA2,OBJTYPE_SAKURA3,OBJTYPE_SAKURA4,OBJTYPE_SAKURA5,OBJTYPE_SAKURA6,OBJTYPE_PALM1,OBJTYPE_PALM2,OBJTYPE_PALM3,OBJTYPE_PALM4,OBJTYPE_WILDPALM1,OBJTYPE_WILDPALM2,OBJTYPE_WILDPALM3,OBJTYPE_WILDPALM4,OBJTYPE_WILDPALM5,OBJTYPE_WILDPALM6,OBJTYPE_FLOWER1,OBJTYPE_FLOWER2,OBJTYPE_FLOWER3,OBJTYPE_FLOWER4,OBJTYPE_FLOWER5,OBJTYPE_SNOWY1,OBJTYPE_SNOWY2,OBJTYPE_SNOWY3,OBJTYPE_SNOWY4,OBJTYPE_SNOWY5,OBJTYPE_SNOWY6,OBJTYPE_VINE1,OBJTYPE_DRYTREE1,OBJTYPE_DRYTREE2,OBJTYPE_DRYTREE3,OBJTYPE_ADABAT1,OBJTYPE_ADABAT2,OBJTYPE_ADABAT3,OBJTYPE_ADABAT4,OBJTYPE_ADABAT5:
 					WriteLine(xmlout, "		<power is="+Chr$(34)+TempObject\power#+Chr$(34)+"/>")
-				Case OBJTYPE_STAGEVISUAL1,OBJTYPE_STAGEVISUAL2,OBJTYPE_STAGEVISUAL3,OBJTYPE_STAGEVISUAL4,OBJTYPE_STAGEVISUAL5
+				Case OBJTYPE_MOONRING,OBJTYPE_AIRBALLOON,OBJTYPE_RING,OBJTYPE_REDRING,OBJTYPE_TIMER,OBJTYPE_TOKEN,OBJTYPE_TRIGGER_WATER,OBJTYPE_TRIGGER_MUSIC,OBJTYPE_TRIGGER_MUSIC+1000,OBJTYPE_TRIGGER_MUSIC+2000,OBJTYPE_RINGGATEV,OBJTYPE_RINGGATEH,OBJTYPE_CLOUD,OBJTYPE_POLE,OBJTYPE_SWITCHWATER,OBJTYPE_SWITCHWATER+1000:
 					WriteLine(xmlout, "		<power is="+Chr$(34)+TempObject\power#+Chr$(34)+"/>")
-				Case OBJTYPE_PROPELLER,OBJTYPE_PULLEY,OBJTYPE_PULLEY+1000,OBJTYPE_ROCKET,OBJTYPE_ELEVATOR:
+				Case OBJTYPE_PROPELLER,OBJTYPE_PULLEY,OBJTYPE_PULLEYROPE,OBJTYPE_PULLEY+1000,OBJTYPE_ROCKET,OBJTYPE_ELEVATOR:
 					WriteLine(xmlout, "		<power is="+Chr$(34)+TempObject\power#+Chr$(34)+"/>")
 					WriteLine(xmlout, "		<d has="+Chr$(34)+1+Chr$(34)+" x="+Chr$(34)+TempObject\dx#+Chr$(34)+" y="+Chr$(34)+TempObject\dy#+Chr$(34)+" z="+Chr$(34)+TempObject\dz#+Chr$(34)+"/>")
 			End Select
@@ -1412,30 +1482,42 @@ Function Player_Action_Debug_QuitAndSave(p.tPlayer)
 			Select TempObject\ObjectNo
 				Case OBJTYPE_SWITCH,OBJTYPE_SWITCHAIR,OBJTYPE_SWITCHBASE:
 					WriteLine(xmlout, "		<switch no="+Chr$(34)+TempObject\switch1#+Chr$(34)+" status="+Chr$(34)+TempObject\switchstatus+Chr$(34)+"/>")
-				Case OBJTYPE_SWITCHTOP:
+				Case OBJTYPE_SWITCHTOP,OBJTYPE_MOONRING:
 					WriteLine(xmlout, "		<switch no="+Chr$(34)+TempObject\switch1#+Chr$(34)+"/>")
-				Case OBJTYPE_BOXLIGHT,OBJTYPE_BOXLIGHT+1000,OBJTYPE_BOXLIGHT+2000,OBJTYPE_LASERV,OBJTYPE_LASERH,OBJTYPE_GOAL2,OBJTYPE_GOAL2+1000:
+				Case OBJTYPE_BOXLIGHT,OBJTYPE_LASERV,OBJTYPE_LASERH,OBJTYPE_GOAL2,OBJTYPE_GOAL2+1000:
 					If TempObject\switch2#>0 Or TempObject\switch3#>0 Then
 						WriteLine(xmlout, "		<switch no="+Chr$(34)+TempObject\switch1#+Chr$(34)+" no2="+Chr$(34)+TempObject\switch2#+Chr$(34)+" no3="+Chr$(34)+TempObject\switch3#+Chr$(34)+"/>")
 					Else
 						WriteLine(xmlout, "		<switch no="+Chr$(34)+TempObject\switch1#+Chr$(34)+"/>")
 					EndIf
-				Case OBJTYPE_PAWN,OBJTYPE_GUNNER,OBJTYPE_SEARCHER,OBJTYPE_EGGHUNTER,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSWORD,OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_SPONA,OBJTYPE_MOTOBUG,OBJTYPE_CATERKILLER,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_CHOPPER,OBJTYPE_CRABMEAT,OBJTYPE_JAWS,OBJTYPE_SPINY,OBJTYPE_GRABBER,OBJTYPE_KIKI,OBJTYPE_COP,OBJTYPE_COPRACER,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_ACHAOS,OBJTYPE_ACHAOSBLOB,OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_CHASER,OBJTYPE_FIGHTER,OBJTYPE_EGGROBO,OBJTYPE_CAMERON,OBJTYPE_KLAGEN,OBJTYPE_ORBINAUT,OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_ANTON,OBJTYPE_AQUIS,OBJTYPE_BOMBIE,OBJTYPE_NEWTRON,OBJTYPE_PENGUINATOR,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_SPIKES,OBJTYPE_ASTERON,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_STEELION,OBJTYPE_BOO,OBJTYPE_BOOSCARE,OBJTYPE_GHOST,OBJTYPE_BALKIRY,OBJTYPE_BURROBOT,OBJTYPE_CRAWL,OBJTYPE_DRAGONFLY,OBJTYPE_MADMOLE,OBJTYPE_MANTA,OBJTYPE_MUSHMEANIE,OBJTYPE_OCTUS,OBJTYPE_PATABATA,OBJTYPE_ZOOMER,OBJTYPE_BITER,OBJTYPE_CRAWLER,OBJTYPE_TAKER,OBJTYPE_E1000,OBJTYPE_BALLHOG,OBJTYPE_RHINOTANK,OBJTYPE_TECHNOSQU,OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_OAKSWORD,OBJTYPE_LEECH,OBJTYPE_WING,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_CATAKILLER,OBJTYPE_CLUCKOID,OBJTYPE_MANTIS,OBJTYPE_NEBULA,OBJTYPE_ROLLER,OBJTYPE_SHEEP,OBJTYPE_SNOWY,OBJTYPE_SPLATS,OBJTYPE_TOXO,OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER,OBJTYPE_HAMMERSHIELD,OBJTYPE_WITCH1,OBJTYPE_WITCH2:
+				Case OBJTYPE_COLLECTIBLE,OBJTYPE_RING,OBJTYPE_PAWN,OBJTYPE_INACTIVE,OBJTYPE_EGUNNER,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSWORD,OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_SPONA,OBJTYPE_MOTOBUG,OBJTYPE_CATERKILLER,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_CHOPPER,OBJTYPE_CRABMEAT,OBJTYPE_JAWS,OBJTYPE_SPINY,OBJTYPE_GRABBER,OBJTYPE_KIKI,OBJTYPE_COP,OBJTYPE_COPRACER,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_ACHAOS,OBJTYPE_ACHAOSBLOB,OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_CHASER,OBJTYPE_FIGHTER,OBJTYPE_EGGROBO,OBJTYPE_CAMERON,OBJTYPE_KLAGEN,OBJTYPE_ORBINAUT,OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_ANTON,OBJTYPE_AQUIS,OBJTYPE_BOMBIE,OBJTYPE_NEWTRON,OBJTYPE_PENGUINATOR,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_SPIKES,OBJTYPE_ASTERON,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_STEELION,OBJTYPE_BOO,OBJTYPE_BOOSCARE,OBJTYPE_GHOST,OBJTYPE_BALKIRY,OBJTYPE_BURROBOT,OBJTYPE_CRAWL,OBJTYPE_DRAGONFLY,OBJTYPE_MADMOLE,OBJTYPE_MANTA,OBJTYPE_MUSHMEANIE,OBJTYPE_OCTUS,OBJTYPE_PATABATA,OBJTYPE_ZOOMER,OBJTYPE_BITER,OBJTYPE_CRAWLER,OBJTYPE_TAKER,OBJTYPE_E1000,OBJTYPE_BALLHOG,OBJTYPE_RHINOTANK,OBJTYPE_TECHNOSQU,OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_OAKSWORD,OBJTYPE_LEECH,OBJTYPE_WING,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_CATAKILLER,OBJTYPE_CLUCKOID,OBJTYPE_MANTIS,OBJTYPE_NEBULA,OBJTYPE_ROLLER,OBJTYPE_SHEEP,OBJTYPE_SNOWY,OBJTYPE_SPLATS,OBJTYPE_TOXO,OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER,OBJTYPE_HAMMERSHIELD,OBJTYPE_WITCH1,OBJTYPE_WITCH2:
 					If TempObject\switch1#>0 Then WriteLine(xmlout, "		<switch no="+Chr$(34)+TempObject\switch1#+Chr$(34)+"/>")
+				Default
+					For vs = 1 To VISUAL_AMOUNT
+						Select TempObject\ObjectNo
+							Case OBJTYPE_VISUAL[vs]
+								WriteLine(xmlout,  Lower$("		<mesh Type="+Chr$(34)+Chr$(34)+" speed="+Chr$(34)+Chr$(34)+"/>"))
+						End Select
+					Next
 			End Select
 
 			Select TempObject\ObjectNo
-				Case OBJTYPE_TELEPORTER,OBJTYPE_TELEPORTEREND:
+				Case OBJTYPE_TELEPORTER,OBJTYPE_TELEPORTEREND,OBJTYPE_MOONRING:
 					WriteLine(xmlout, "		<teleporter no="+Chr$(34)+TempObject\teleporterno#+Chr$(34)+"/>")
 				Case OBJTYPE_TELEPORTER2,OBJTYPE_GOAL+1000,OBJTYPE_GOAL2+1000:
 					WriteLine(xmlout, "		<teleporter name="+Chr$(34)+Chr$(34)+"/>")
 				Case OBJTYPE_HINT:
 					WriteLine(xmlout, "		<hint line1="+Chr$(34)+Chr$(34)+" line2="+Chr$(34)+Chr$(34)+"/>")
+				Case OBJTYPE_MOONRING
+					WriteLine(xmlout, "		<hint line1="+Chr$(34)+Chr$(34)+"/>")
+					
+				Case OBJTYPE_WARPRING
+					WriteLine(xmlout, "		<stage name="+Chr$(34)+Chr$(34)+" mission="+Chr$(34)+Chr$(34)+"/>")
 			End Select
 
 			WriteLine(xmlout, "		<ID is="+Chr$(34)+TempObject\ObjectID+Chr$(34)+"/>")
 
-			WriteLine(xmlout, "	</object>")
+			WriteLine(xmlout, Lower$("	</Object>"))
 
 			Delete TempObject
 		Next
@@ -1446,41 +1528,46 @@ Function Player_Action_Debug_QuitAndSave(p.tPlayer)
 
 ;---------------------------------------------------------------------------------------
 ;---------------------------------------------------------------------------------------
-
 Function Player_Action_Debug_DebugSpeedChanging()
-		If Input\Pressed\ActionAct Then
-			Select Game\Interface\DebugSpeed#
-				Case 0.1: Game\Interface\DebugSpeed#=1
-				Case 1: Game\Interface\DebugSpeed#=5
-				Case 5: Game\Interface\DebugSpeed#=10
-				Case 10: Game\Interface\DebugSpeed#=30
-				Case 30: Game\Interface\DebugSpeed#=60
-				Case 60: Game\Interface\DebugSpeed#=0.1
-			End Select
-			PlaySmartSound(Sound_MenuMove)
-		EndIf
-	End Function
+	If Input\Pressed\ActionAct Then
+		Select Game\Interface\DebugSpeed#
+			Case 0.1: Game\Interface\DebugSpeed#=1
+			Case 1: Game\Interface\DebugSpeed#=5
+			Case 5: Game\Interface\DebugSpeed#=10
+			Case 10: Game\Interface\DebugSpeed#=30
+			Case 30: Game\Interface\DebugSpeed#=60
+			Case 60: Game\Interface\DebugSpeed#=0.1
+			Default: Game\Interface\DebugSpeed#=1
+		End Select
+		PlaySmartSound(Sound_MenuMove)
+	EndIf
+End Function
 
 Function Player_Action_Debug_DebugSpeed2Changing()
-		If Input\Pressed\ActionAct Then
-			Select Game\Interface\DebugSpeed2#
-				Case 0.1: Game\Interface\DebugSpeed2#=1
-				Case 1: Game\Interface\DebugSpeed2#=5
-				Case 5: Game\Interface\DebugSpeed2#=0.1
-			End Select
+	If Input\Pressed\ActionAct Then
+		Select Game\Interface\DebugSpeed2#
+			Case 0.1: Game\Interface\DebugSpeed2#=1
+			Case 1: Game\Interface\DebugSpeed2#=5
+			Case 5: Game\Interface\DebugSpeed2#=0.1
+		End Select
+		PlaySmartSound(Sound_MenuMove)
+	EndIf
+End Function
+
+	; =========================================================================================================
+	; =========================================================================================================
+
+	Function Player_Action_Debug_Position(p.tPlayer, d.tDeltaTime)
+
+		If Input\Pressed\ActionSkill2 Then 
+			Select Game\Interface\DebugMoveType
+				Case 0: Game\Interface\DebugMoveType=1
+				Case 1: Game\Interface\DebugMoveType=2
+				Case 2: Game\Interface\DebugMoveType=3
+				Case 3: Game\Interface\DebugMoveType=0
+			End Select	
 			PlaySmartSound(Sound_MenuMove)
 		EndIf
-	End Function
-
-	; =========================================================================================================
-	; =========================================================================================================
-
-Function Player_Action_Debug_Position(p.tPlayer, d.tDeltaTime)
-		
-		DebugSpam_Enable(p)
-		AutoPosition_Enable(p)
-		
-		If Input\Pressed\ActionSkill2 Then Game\Interface\DebugMoveType=Abs(Game\Interface\DebugMoveType-1) : PlaySmartSound(Sound_MenuMove)
 
 		Player_Action_Debug_DebugSpeedChanging()
 
@@ -1499,13 +1586,32 @@ Function Player_Action_Debug_Position(p.tPlayer, d.tDeltaTime)
 				If Input\Hold\Down Then Player_SetSpeed(p,Game\Interface\DebugSpeed#*d\Delta)
 				If Input\Hold\ActionJump Then p\Motion\Speed\y#=Game\Interface\DebugSpeed#*d\Delta
 				If Input\Hold\ActionRoll Then p\Motion\Speed\y#=-Game\Interface\DebugSpeed#*d\Delta
-			Case 1:
+			Case 1
+				
+				If Input\Pressed\Up Then Player_SetSpeed(p,Game\Interface\DebugSpeed#*d\Delta)
+				If Input\Pressed\Down Then Player_SetSpeed(p,-Game\Interface\DebugSpeed#*d\Delta)
+				
+				If Input\Pressed\Right Then TranslateEntity p\Objects\Entity,Cos(TempAttribute\yaw#)*Game\Interface\DebugSpeed#,0,Sin(TempAttribute\yaw#)*Game\Interface\DebugSpeed#
+				If Input\Pressed\Left Then TranslateEntity p\Objects\Entity,-Cos(TempAttribute\yaw#)*Game\Interface\DebugSpeed#,0,-Sin(TempAttribute\yaw#)*Game\Interface\DebugSpeed#
+				
+				If Input\Pressed\ActionJump Then MoveEntity p\Objects\Entity,0,Game\Interface\DebugSpeed#,0
+				If Input\Pressed\ActionRoll Then MoveEntity p\Objects\Entity,0,-Game\Interface\DebugSpeed#,0
+			Case 2:
 				If Input\Hold\Up Then MoveEntity p\Objects\Entity,0,0,Game\Interface\DebugSpeed#*d\Delta
 				If Input\Hold\Down Then MoveEntity p\Objects\Entity,0,0,-Game\Interface\DebugSpeed#*d\Delta
 				If Input\Hold\Left Then MoveEntity p\Objects\Entity,-Game\Interface\DebugSpeed#*d\Delta,0,0
 				If Input\Hold\Right Then MoveEntity p\Objects\Entity,Game\Interface\DebugSpeed#*d\Delta,0,0
+				
 				If Input\Hold\ActionJump Then MoveEntity p\Objects\Entity,0,Game\Interface\DebugSpeed#*d\Delta,0
 				If Input\Hold\ActionRoll Then MoveEntity p\Objects\Entity,0,-Game\Interface\DebugSpeed#*d\Delta,0
+			Case 3
+				If Input\Pressed\Up Then MoveEntity p\Objects\Entity,0,0,Game\Interface\DebugSpeed#
+				If Input\Pressed\Down Then MoveEntity p\Objects\Entity,0,0,-Game\Interface\DebugSpeed#
+				If Input\Pressed\Left Then MoveEntity p\Objects\Entity,-Game\Interface\DebugSpeed#*d\Delta,0,0
+				If Input\Pressed\Right Then MoveEntity p\Objects\Entity,Game\Interface\DebugSpeed#*d\Delta,0,0
+				If Input\Pressed\ActionJump Then MoveEntity p\Objects\Entity,0,Game\Interface\DebugSpeed#,0
+				If Input\Pressed\ActionRoll Then MoveEntity p\Objects\Entity,0,-Game\Interface\DebugSpeed#,0
+				
 		End Select
 
 	End Function
@@ -1513,7 +1619,7 @@ Function Player_Action_Debug_Position(p.tPlayer, d.tDeltaTime)
 	; =========================================================================================================
 	; =========================================================================================================
 
-Function Player_Action_Debug_Rotation(p.tPlayer, d.tDeltaTime)
+	Function Player_Action_Debug_Rotation(p.tPlayer, d.tDeltaTime)
 
 		Player_Action_Debug_DebugSpeedChanging()
 
@@ -1560,89 +1666,113 @@ Function Player_Action_Debug_Rotation(p.tPlayer, d.tDeltaTime)
 	; =========================================================================================================
 	; =========================================================================================================
 
-Function Player_Action_Debug_Power_Limits(p.tPlayer, objtype)
+	Function Player_Action_Debug_Power_Limits(p.tPlayer, objtype)
 		Select objtype
 			Case OBJTYPE_RINGGATEV,OBJTYPE_RINGGATEH:
 				If TempAttribute\power#<0.0 Then TempAttribute\power#=0.0
 			Case OBJTYPE_SWITCHWATER,OBJTYPE_SWITCHWATER+1000:
 			Default:
-				If TempAttribute\power#<1.0 Then TempAttribute\power#=1.0
-				If TempAttribute\power#>20.0 Then TempAttribute\power#=20.0
+;				If TempAttribute\power#<1.0 Then TempAttribute\power#=1.0
+;				If TempAttribute\power#>250.0 Then TempAttribute\power#=250.0
 		End Select
 	End Function
 
 Function Player_Action_Debug_Power(p.tPlayer)
-
-		Player_Action_Debug_Power_Limits(p,p\ObjType)
-
+	
+	Player_Action_Debug_Power_Limits(p,p\ObjType)
+	
+	Select p\ObjType
+		Case OBJTYPE_TREE1,OBJTYPE_TREE2,OBJTYPE_TREE3,OBJTYPE_TREE4,OBJTYPE_TREE5,OBJTYPE_TREE6,OBJTYPE_SHRUB1,OBJTYPE_SHRUB2,OBJTYPE_SHRUB3,OBJTYPE_SHRUB4,OBJTYPE_SHRUB5,OBJTYPE_SHRUB6,OBJTYPE_BUSH1,OBJTYPE_BUSH2,OBJTYPE_BUSH3,OBJTYPE_BUSH4,OBJTYPE_BUSH5,OBJTYPE_BUSH6,OBJTYPE_BUSH7,OBJTYPE_GRASS1,OBJTYPE_GRASS2,OBJTYPE_GRASS3,OBJTYPE_GRASS4,OBJTYPE_GRASS5,OBJTYPE_GRASS6,OBJTYPE_GRASS7,OBJTYPE_GRASS8,OBJTYPE_GRASS9,OBJTYPE_GRASS10,OBJTYPE_SAKURA1,OBJTYPE_SAKURA2,OBJTYPE_SAKURA3,OBJTYPE_SAKURA4,OBJTYPE_SAKURA5,OBJTYPE_SAKURA6,OBJTYPE_PALM1,OBJTYPE_PALM2,OBJTYPE_PALM3,OBJTYPE_PALM4,OBJTYPE_WILDPALM1,OBJTYPE_WILDPALM2,OBJTYPE_WILDPALM3,OBJTYPE_WILDPALM4,OBJTYPE_WILDPALM5,OBJTYPE_WILDPALM6,OBJTYPE_FLOWER1,OBJTYPE_FLOWER2,OBJTYPE_FLOWER3,OBJTYPE_FLOWER4,OBJTYPE_FLOWER5,OBJTYPE_SNOWY1,OBJTYPE_SNOWY2,OBJTYPE_SNOWY3,OBJTYPE_SNOWY4,OBJTYPE_SNOWY5,OBJTYPE_SNOWY6,OBJTYPE_VINE1,OBJTYPE_DRYTREE1,OBJTYPE_DRYTREE2,OBJTYPE_DRYTREE3,OBJTYPE_ADABAT1,OBJTYPE_ADABAT2,OBJTYPE_ADABAT3,OBJTYPE_ADABAT4,OBJTYPE_ADABAT5:
+			ScaleEntity p\Objects\Mesh, 12*TempAttribute\power#, 12*TempAttribute\power#, 12*TempAttribute\power#
+			ScaleEntity p\Objects\Mesh2, 12*TempAttribute\power#, 12*TempAttribute\power#, 12*TempAttribute\power#
+	End Select
+	
+	Player_Action_Debug_DebugSpeed2Changing()
+	
+	If Input\Pressed\ActionDrift Then
 		Select p\ObjType
-			Case OBJTYPE_TREE1,OBJTYPE_TREE2,OBJTYPE_TREE3,OBJTYPE_TREE4,OBJTYPE_TREE5,OBJTYPE_TREE6,OBJTYPE_SHRUB1,OBJTYPE_SHRUB2,OBJTYPE_SHRUB3,OBJTYPE_SHRUB4,OBJTYPE_SHRUB5,OBJTYPE_SHRUB6,OBJTYPE_BUSH1,OBJTYPE_BUSH2,OBJTYPE_BUSH3,OBJTYPE_BUSH4,OBJTYPE_BUSH5,OBJTYPE_BUSH6,OBJTYPE_BUSH7,OBJTYPE_GRASS1,OBJTYPE_GRASS2,OBJTYPE_GRASS3,OBJTYPE_GRASS4,OBJTYPE_GRASS5,OBJTYPE_GRASS6,OBJTYPE_GRASS7,OBJTYPE_GRASS8,OBJTYPE_GRASS9,OBJTYPE_GRASS10,OBJTYPE_SAKURA1,OBJTYPE_SAKURA2,OBJTYPE_SAKURA3,OBJTYPE_SAKURA4,OBJTYPE_SAKURA5,OBJTYPE_SAKURA6,OBJTYPE_PALM1,OBJTYPE_PALM2,OBJTYPE_PALM3,OBJTYPE_PALM4,OBJTYPE_WILDPALM1,OBJTYPE_WILDPALM2,OBJTYPE_WILDPALM3,OBJTYPE_WILDPALM4,OBJTYPE_WILDPALM5,OBJTYPE_WILDPALM6,OBJTYPE_FLOWER1,OBJTYPE_FLOWER2,OBJTYPE_FLOWER3,OBJTYPE_FLOWER4,OBJTYPE_FLOWER5,OBJTYPE_SNOWY1,OBJTYPE_SNOWY2,OBJTYPE_SNOWY3,OBJTYPE_SNOWY4,OBJTYPE_SNOWY5,OBJTYPE_SNOWY6,OBJTYPE_VINE1,OBJTYPE_DRYTREE1,OBJTYPE_DRYTREE2,OBJTYPE_DRYTREE3,OBJTYPE_ADABAT1,OBJTYPE_ADABAT2,OBJTYPE_ADABAT3,OBJTYPE_ADABAT4,OBJTYPE_ADABAT5:
-				ScaleEntity p\Objects\Mesh, 12*TempAttribute\power#, 12*TempAttribute\power#, 12*TempAttribute\power#
-				ScaleEntity p\Objects\Mesh2, 12*TempAttribute\power#, 12*TempAttribute\power#, 12*TempAttribute\power#
+			Case OBJTYPE_SPRING,OBJTYPE_SPRINGTRAP,OBJTYPE_BSPRING,OBJTYPE_ACCEL: TempAttribute\power# = 2
+			Case OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAPX: TempAttribute\power# = 1.2
+			Case OBJTYPE_PAD,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_NODE2: TempAttribute\power# = 4.8
+			Case OBJTYPE_RAMP: TempAttribute\power# = 2.5
+			Case OBJTYPE_HOOP,OBJTYPE_THOOP: TempAttribute\power# = 1.8
+			Case OBJTYPE_CANNON: TempAttribute\power# = 1.5
+			Case OBJTYPE_PROPELLER: TempAttribute\power# = 1.325
+			Case OBJTYPE_PULLEY,OBJTYPE_PULLEY+1000: TempAttribute\power# = 0.75
+			Case OBJTYPE_ROCKET: TempAttribute\power# = 2.5
+			Case OBJTYPE_TRIGGER_WATER,OBJTYPE_TRIGGER_MUSIC,OBJTYPE_TRIGGER_MUSIC+1000,OBJTYPE_TRIGGER_MUSIC+2000: TempAttribute\power# = 20
+			Case OBJTYPE_CLOUD,OBJTYPE_POLE: TempAttribute\power# = 1.5
+			Case OBJTYPE_SWITCHWATER,OBJTYPE_SWITCHWATER+1000: TempAttribute\power# = 0
+			Default: TempAttribute\power# = 1
 		End Select
-
-		Player_Action_Debug_DebugSpeed2Changing()
-
-		If Input\Pressed\ActionDrift Then
-			Select p\ObjType
-				Case OBJTYPE_SPRING,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTHORN,OBJTYPE_BSPRING,OBJTYPE_ACCEL: TempAttribute\power# = 2
-				Case OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAPX: TempAttribute\power# = 1.2
-				Case OBJTYPE_PAD,OBJTYPE_FORCER,OBJTYPE_FORCER+1000,OBJTYPE_NODE,OBJTYPE_NODE2: TempAttribute\power# = 4.8
-				Case OBJTYPE_RAMP: TempAttribute\power# = 2.5
-				Case OBJTYPE_HOOP,OBJTYPE_THOOP: TempAttribute\power# = 1.8
-				Case OBJTYPE_CANNON: TempAttribute\power# = 1.5
-				Case OBJTYPE_PROPELLER: TempAttribute\power# = 1.325
-				Case OBJTYPE_PULLEY,OBJTYPE_PULLEY+1000: TempAttribute\power# = 0.75
-				Case OBJTYPE_ROCKET: TempAttribute\power# = 2.5
-				Case OBJTYPE_TRIGGER_WATER,OBJTYPE_TRIGGER_MUSIC,OBJTYPE_TRIGGER_MUSIC+1000,OBJTYPE_TRIGGER_MUSIC+2000: TempAttribute\power# = 20
-				Case OBJTYPE_CLOUD,OBJTYPE_POLE: TempAttribute\power# = 1.5
-				Case OBJTYPE_SWITCHWATER,OBJTYPE_SWITCHWATER+1000: TempAttribute\power# = 0
-				Default: TempAttribute\power# = 1
-			End Select
-			PlaySmartSound(Sound_MenuMove)
-		EndIf
-
-			Select p\ObjType
-			Case OBJTYPE_RING
-				If Input\Pressed\ActionJump Then 
+		PlaySmartSound(Sound_MenuMove)
+	EndIf
+	
+	
+	Select p\ObjType
+		Case OBJTYPE_RING
+			If Input\Pressed\ActionJump Then 
 				FreeEntity p\Objects\Mesh
-					Select TempAttribute\power#
-						Case 1 : TempAttribute\power#=5 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_BRing5)), Game\Stage\Root)
-						Case 5 : TempAttribute\power#=10 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_BRing10)), Game\Stage\Root)
-						Case 10 : TempAttribute\power#=20 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_BRing20)), Game\Stage\Root)
-						Case 20 : TempAttribute\power#=1 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_Ring)), Game\Stage\Root)
-					End Select 
-				EndIf 
-				If Input\Pressed\ActionRoll Then 
+				Select TempAttribute\power#
+					Case 1 : TempAttribute\power#=5 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_BRing5)), Game\Stage\Root)
+					Case 5 : TempAttribute\power#=10 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_BRing10)), Game\Stage\Root)
+					Case 10 : TempAttribute\power#=20 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_BRing20)), Game\Stage\Root)
+					Case 20 : TempAttribute\power#=1 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_Ring)), Game\Stage\Root)
+					Default: TempAttribute\power#=1 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_Ring)), Game\Stage\Root) 
+				End Select 
+			EndIf 
+			If Input\Pressed\ActionRoll Then 
 				FreeEntity p\Objects\Mesh
-						Select TempAttribute\power# 
-						Case 1 : TempAttribute\power#=20 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_BRing20)), Game\Stage\Root)
-						Case 5 : TempAttribute\power#=1 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_Ring)), Game\Stage\Root)
-						Case 10 : TempAttribute\power#=5 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_BRing5)), Game\Stage\Root)
-						Case 20 : TempAttribute\power#=10: p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_BRing10)), Game\Stage\Root)
-					End Select 
-				EndIf 
-			Case OBJTYPE_STAGEVISUAL1,OBJTYPE_STAGEVISUAL2,OBJTYPE_STAGEVISUAL3,OBJTYPE_STAGEVISUAL4,OBJTYPE_STAGEVISUAL5
-				If Input\Pressed\ActionJump Then TempAttribute\power#=TempAttribute\power#+Game\Interface\DebugSpeed2#
-				If Input\Pressed\ActionRoll Then TempAttribute\power#=TempAttribute\power#-Game\Interface\DebugSpeed2#
-				ScaleEntity(p\Objects\Mesh,TempAttribute\power#,TempAttribute\power#,TempAttribute\power#)
-			Default
-				If Input\Pressed\ActionJump Then TempAttribute\power#=TempAttribute\power#+Game\Interface\DebugSpeed2#
-				If Input\Pressed\ActionRoll Then TempAttribute\power#=TempAttribute\power#-Game\Interface\DebugSpeed2#
-		End Select 
-
-	End Function
+				Select TempAttribute\power# 
+					Case 1 : TempAttribute\power#=20 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_BRing20)), Game\Stage\Root)
+					Case 5 : TempAttribute\power#=1 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_Ring)), Game\Stage\Root)
+					Case 10 : TempAttribute\power#=5 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_BRing5)), Game\Stage\Root)
+					Case 20 : TempAttribute\power#=10: p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_BRing10)), Game\Stage\Root)
+					Default: TempAttribute\power#=1 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_Ring)), Game\Stage\Root)
+				End Select 
+			EndIf 
+		Case OBJTYPE_TIMER
+			If Input\Pressed\ActionJump Then 
+				FreeEntity p\Objects\Mesh
+				Select TempAttribute\power#
+					Case 5 : TempAttribute\power#=10 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_Timer10)), Game\Stage\Root)
+					Case 10 : TempAttribute\power#=20 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_Timer20)), Game\Stage\Root)
+					Case 20 : TempAttribute\power#=5 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_Timer5)), Game\Stage\Root)
+					Default: TempAttribute\power#=5 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_Timer5)), Game\Stage\Root) 
+				End Select 
+			EndIf 
+			If Input\Pressed\ActionRoll Then 
+				FreeEntity p\Objects\Mesh
+				Select TempAttribute\power# 
+					Case 5 : TempAttribute\power#=20 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_Timer20)), Game\Stage\Root)
+					Case 10 : TempAttribute\power#=5 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_Timer5)), Game\Stage\Root)
+					Case 20 : TempAttribute\power#=10: p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_Timer10)), Game\Stage\Root)
+					Default: TempAttribute\power#=5 : p\Objects\Mesh=CopyEntity(MESHES(SmartEntity(Mesh_Ring)), Game\Stage\Root)
+				End Select 
+			EndIf 
+		Default
+			If Input\Pressed\ActionJump Then TempAttribute\power#=TempAttribute\power#+Game\Interface\DebugSpeed2#
+			If Input\Pressed\ActionRoll Then TempAttribute\power#=TempAttribute\power#-Game\Interface\DebugSpeed2#
+			For vs = 1 To VISUAL_AMOUNT
+				Select p\ObjType
+					Case OBJTYPE_VISUAL[vs]
+						ScaleEntity(p\Objects\Mesh,TempAttribute\power#,TempAttribute\power#,TempAttribute\power#)
+				End Select
+			Next
+	End Select
+	
+End Function
 
 	; =========================================================================================================
 	; =========================================================================================================
 
-Function Player_Action_Debug_Locks(p.tPlayer)
+	Function Player_Action_Debug_Locks(p.tPlayer)
 
 		If Input\Pressed\ActionJump Then PlaySmartSound(Sound_MenuMove) : TempAttribute\lockcontrol#=TempAttribute\lockcontrol#+1
 		If Input\Pressed\ActionRoll Then PlaySmartSound(Sound_MenuMove) : TempAttribute\lockcam#=TempAttribute\lockcam#+1
 		If Input\Pressed\ActionSkill2 Then PlaySmartSound(Sound_MenuMove) : TempAttribute\lockrun#=TempAttribute\lockrun#+1
 
-		If TempAttribute\lockcontrol#>6 Then TempAttribute\lockcontrol#=0
+		If TempAttribute\lockcontrol#>9 Then TempAttribute\lockcontrol#=0
 		If TempAttribute\lockcam#>5 Then TempAttribute\lockcam#=0
 		If TempAttribute\lockrun#>3 Then TempAttribute\lockrun#=0
 
@@ -1658,7 +1788,7 @@ Function Player_Action_Debug_Locks(p.tPlayer)
 	; =========================================================================================================
 	; =========================================================================================================
 
-Function Player_Action_Debug_CamPosition(p.tPlayer, d.tDeltaTime)
+	Function Player_Action_Debug_CamPosition(p.tPlayer, d.tDeltaTime)
 
 		PositionEntity p\Objects\Mesh, TempAttribute\x#, TempAttribute\y#, TempAttribute\z#, 1
 		PositionEntity p\Objects\Mesh2, TempAttribute\x#, TempAttribute\y#, TempAttribute\z#, 1
@@ -1718,7 +1848,7 @@ Function Player_Action_Debug_CamPosition(p.tPlayer, d.tDeltaTime)
 	; =========================================================================================================
 	; =========================================================================================================
 
-Function Player_Action_Debug_CamRotation(p.tPlayer, d.tDeltaTime)
+	Function Player_Action_Debug_CamRotation(p.tPlayer, d.tDeltaTime)
 
 		PositionEntity p\Objects\Mesh, TempAttribute\x#, TempAttribute\y#, TempAttribute\z#, 1
 		PositionEntity p\Objects\Mesh2, TempAttribute\x#, TempAttribute\y#, TempAttribute\z#, 1
@@ -1769,14 +1899,14 @@ Function Player_Action_Debug_CamRotation(p.tPlayer, d.tDeltaTime)
 	; =========================================================================================================
 	; =========================================================================================================
 
-Function Player_Action_Debug_CamZoom(p.tPlayer)
+	Function Player_Action_Debug_CamZoom(p.tPlayer)
 
 		PositionEntity p\Objects\Mesh, TempAttribute\x#, TempAttribute\y#, TempAttribute\z#, 1
 		PositionEntity p\Objects\Mesh2, TempAttribute\x#, TempAttribute\y#, TempAttribute\z#, 1
 		PositionEntity p\Objects\Mesh3, TempAttribute\x#, TempAttribute\y#, TempAttribute\z#, 1
 
 		If TempAttribute\camzoom#<0 Then TempAttribute\camzoom#=0
-		If TempAttribute\camzoom#>50 Then TempAttribute\camzoom#=50
+		If TempAttribute\camzoom#>500 Then TempAttribute\camzoom#=500
 
 		Player_Action_Debug_DebugSpeed2Changing()
 
@@ -1793,7 +1923,7 @@ Function Player_Action_Debug_CamZoom(p.tPlayer)
 	; =========================================================================================================
 	; =========================================================================================================
 
-Function Player_Action_Debug_CamSpeed(p.tPlayer)
+	Function Player_Action_Debug_CamSpeed(p.tPlayer)
 
 		PositionEntity p\Objects\Mesh, TempAttribute\x#, TempAttribute\y#, TempAttribute\z#, 1
 		PositionEntity p\Objects\Mesh2, TempAttribute\x#, TempAttribute\y#, TempAttribute\z#, 1
@@ -1817,7 +1947,7 @@ Function Player_Action_Debug_CamSpeed(p.tPlayer)
 	; =========================================================================================================
 	; =========================================================================================================
 
-Function Player_Action_Debug_Amount(p.tPlayer)
+	Function Player_Action_Debug_Amount(p.tPlayer)
 
 		If Game\Interface\DebugAmountAxis<1 Then Game\Interface\DebugAmountAxis=1
 
@@ -1877,7 +2007,7 @@ Function Player_Action_Debug_Amount(p.tPlayer)
 	; =========================================================================================================
 	; =========================================================================================================
 
-Function Player_Action_Debug_AmountRotation(p.tPlayer, d.tDeltaTime)
+	Function Player_Action_Debug_AmountRotation(p.tPlayer, d.tDeltaTime)
 
 		If Input\Pressed\ActionSkillX Then TempAttribute\amountcircle#=Abs(TempAttribute\amountcircle#-1)
 
@@ -1927,7 +2057,7 @@ Function Player_Action_Debug_AmountRotation(p.tPlayer, d.tDeltaTime)
 	; =========================================================================================================
 	; =========================================================================================================
 
-Function Player_Action_Debug_AmountSpace(p.tPlayer)
+	Function Player_Action_Debug_AmountSpace(p.tPlayer)
 
 		If Game\Interface\DebugAmountAxis<1 Then Game\Interface\DebugAmountAxis=1
 
@@ -1989,7 +2119,7 @@ Function Player_Action_Debug_AmountSpace(p.tPlayer)
 	; =========================================================================================================
 	; =========================================================================================================
 
-Function Player_Action_Debug_Switch(p.tPlayer)
+	Function Player_Action_Debug_Switch(p.tPlayer)
 
 		If TempAttribute\switch1#<0 Then TempAttribute\switch1#=0
 		If TempAttribute\switch2#<0 Then TempAttribute\switch2#=0
@@ -1997,7 +2127,7 @@ Function Player_Action_Debug_Switch(p.tPlayer)
 
 		If Input\Pressed\ActionSkill2 Then
 			Select p\ObjType
-				Case OBJTYPE_LASERV,OBJTYPE_LASERH,OBJTYPE_BOXLIGHT,OBJTYPE_BOXLIGHT+1000,OBJTYPE_BOXLIGHT+2000,OBJTYPE_GOAL2,OBJTYPE_GOAL2+1000:
+				Case OBJTYPE_LASERV,OBJTYPE_LASERH,OBJTYPE_BOXLIGHT,OBJTYPE_GOAL2,OBJTYPE_GOAL2+1000:
 					PlaySmartSound(Sound_MenuMove)
 					Game\Interface\DebugWhichSwitch=Game\Interface\DebugWhichSwitch+1
 					If Game\Interface\DebugWhichSwitch>3 Then Game\Interface\DebugWhichSwitch=1
@@ -2005,7 +2135,7 @@ Function Player_Action_Debug_Switch(p.tPlayer)
 		EndIf
 
 		Select p\ObjType
-			Case OBJTYPE_LASERV,OBJTYPE_LASERH,OBJTYPE_BOXLIGHT,OBJTYPE_BOXLIGHT+1000,OBJTYPE_BOXLIGHT+2000,OBJTYPE_GOAL2,OBJTYPE_GOAL2+1000:
+			Case OBJTYPE_LASERV,OBJTYPE_LASERH,OBJTYPE_BOXLIGHT,OBJTYPE_GOAL2,OBJTYPE_GOAL2+1000:
 				If Input\Pressed\ActionJump Then
 					Select Game\Interface\DebugWhichSwitch
 					Case 1: TempAttribute\switch1#=TempAttribute\switch1#+1
@@ -2030,7 +2160,7 @@ Function Player_Action_Debug_Switch(p.tPlayer)
 	; =========================================================================================================
 	; =========================================================================================================
 
-Function Player_Action_Debug_SwitchStatus(p.tPlayer)
+	Function Player_Action_Debug_SwitchStatus(p.tPlayer)
 
 		If Input\Pressed\ActionJump Then PlaySmartSound(Sound_MenuMove) : TempAttribute\switchstatus#=1
 		If Input\Pressed\ActionRoll Then PlaySmartSound(Sound_MenuMove) : TempAttribute\switchstatus#=0
@@ -2040,7 +2170,7 @@ Function Player_Action_Debug_SwitchStatus(p.tPlayer)
 	; =========================================================================================================
 	; =========================================================================================================
 
-Function Player_Action_Debug_Teleporter(p.tPlayer)
+	Function Player_Action_Debug_Teleporter(p.tPlayer)
 
 		If TempAttribute\teleporterno#<0 And Menu\ChaoGarden=0 Then TempAttribute\teleporterno#=0
 
@@ -2054,7 +2184,7 @@ Function Player_Action_Debug_Teleporter(p.tPlayer)
 	; =========================================================================================================
 	; =========================================================================================================
 
-Function Player_Action_Debug_Destination(p.tPlayer, d.tDeltaTime)
+	Function Player_Action_Debug_Destination(p.tPlayer, d.tDeltaTime)
 
 		PositionEntity p\Objects\Mesh, TempAttribute\x#, TempAttribute\y#, TempAttribute\z#, 1
 		PositionEntity p\Objects\Mesh2, TempAttribute\x#, TempAttribute\y#, TempAttribute\z#, 1

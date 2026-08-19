@@ -1,7 +1,7 @@
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_Chao_Create.tObject(x#, y#, z#, yaw#)
+	Function Object_Chao_Create.tObject(x#, y#, z#, yaw#)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_CHAO : o\ID=TempAttribute\ObjectID
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
 		o\AlwaysPresent=True
@@ -19,7 +19,7 @@ Function Object_Chao_Create.tObject(x#, y#, z#, yaw#)
 	
 	; =========================================================================================================
 	
-Function Object_Chao_Update(o.tObject, p.tPlayer)
+	Function Object_Chao_Update(o.tObject, p.tPlayer)
 
 		; Obj pick up
 		If ChaoManager_ChaoAlive(o\ChaoObj\targetcc) Or o\ChaoObj\targetcc\Stats\Age=0 Then Object_EnforceObjPickUp(o,p)
@@ -48,7 +48,7 @@ Function Object_Chao_Update(o.tObject, p.tPlayer)
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_CreateChao(i,Color=0,takepos=False,x#=0,y#=0,z#=0)
+	Function Object_CreateChao(i,color=0,takepos=False,x#=0,y#=0,z#=0)
 		If CHAOSLOTS(1,i)=1 Or (i<=3 And CHAOFIRSTTIMER(1)=0) Then
 			CHAOSLOTS(1,i)=1
 			obj.tObject = Object_Chao_Create(0, 0, 0, 0)
@@ -63,7 +63,7 @@ Function Object_CreateChao(i,Color=0,takepos=False,x#=0,y#=0,z#=0)
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_Fruit_Create.tObject(fruittype, x#, y#, z#, growth=5, throw=False)
+	Function Object_Fruit_Create.tObject(fruittype, x#, y#, z#, growth=5, throw=False)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_FRUIT : o\ID=TempAttribute\ObjectID
 		o\g = Object_Gravity_Create.tGravity() : o\HasGravity=True
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
@@ -94,7 +94,7 @@ Function Object_Fruit_Create.tObject(fruittype, x#, y#, z#, growth=5, throw=Fals
 	
 	; =========================================================================================================
 	
-Function Object_Fruit_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+	Function Object_Fruit_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		; Position mesh
 		PositionEntity o\Entity, o\Position\x#, o\Position\y#, o\Position\z#
@@ -143,7 +143,7 @@ Function Object_Fruit_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_Shell_Create.tObject(x#, y#, z#, yaw#, shelltype, shelltype2, throw=False)
+	Function Object_Shell_Create.tObject(x#, y#, z#, yaw#, shelltype, shelltype2, throw=False)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_SHELL : o\ID=TempAttribute\ObjectID
 		o\g = Object_Gravity_Create.tGravity() : o\HasGravity=True
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
@@ -180,7 +180,7 @@ Function Object_Shell_Create.tObject(x#, y#, z#, yaw#, shelltype, shelltype2, th
 	
 	; =========================================================================================================
 	
-Function Object_Shell_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+	Function Object_Shell_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		; Position mesh
 		PositionEntity o\Entity, o\Position\x#, o\Position\y#, o\Position\z#
@@ -206,7 +206,7 @@ Function Object_Shell_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_Hat_Create.tObject(x#, y#, z#, hattype, throw=False)
+	Function Object_Hat_Create.tObject(x#, y#, z#, hattype, throw=False)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_HAT : o\ID=TempAttribute\ObjectID
 		o\g = Object_Gravity_Create.tGravity() : o\HasGravity=True
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
@@ -235,7 +235,7 @@ Function Object_Hat_Create.tObject(x#, y#, z#, hattype, throw=False)
 	
 	; =========================================================================================================
 	
-Function Object_Hat_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+	Function Object_Hat_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		; Position mesh
 		Select o\ChaoObj\HatType
@@ -266,7 +266,7 @@ Function Object_Hat_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_Toy_Create.tObject(toytype, x#, y#, z#, throw=False)
+	Function Object_Toy_Create.tObject(toytype, x#, y#, z#, throw=False)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_TOY : o\ID=TempAttribute\ObjectID
 		o\g = Object_Gravity_Create.tGravity() : o\HasGravity=True
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
@@ -300,7 +300,7 @@ Function Object_Toy_Create.tObject(toytype, x#, y#, z#, throw=False)
 	
 	; =========================================================================================================
 	
-Function Object_Toy_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+	Function Object_Toy_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		; Position mesh
 		PositionEntity o\Entity, o\Position\x#, o\Position\y#, o\Position\z#
@@ -337,7 +337,7 @@ Function Object_Toy_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_Tropical_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, fruittype=1, isfromseed=False, growth1#=0, growth2#=0, growth3#=0, growth4#=0, treegrowth#=4)
+	Function Object_Tropical_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, fruittype=1, isfromseed=False, growth1#=0, growth2#=0, growth3#=0, growth4#=0, treegrowth#=4)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_TROPICAL : o\ID=TempAttribute\ObjectID
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
 		o\AlwaysPresent=True
@@ -392,7 +392,7 @@ Function Object_Tropical_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#, fruitty
 	
 	; =========================================================================================================
 	
-Function Object_Tropical_Update(o.tObject, p.tPlayer)
+	Function Object_Tropical_Update(o.tObject, p.tPlayer)
 
 		If o\ChaoObj\IsFromSeed=False Or o\ChaoObj\TreeGrowth>=4 Then;!!!
 
@@ -539,7 +539,7 @@ Function Object_Tropical_Update(o.tObject, p.tPlayer)
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_Drive_Create.tObject(drivetype, x#, y#, z#, throw=False)
+	Function Object_Drive_Create.tObject(drivetype, x#, y#, z#, throw=False)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_DRIVE : o\ID=TempAttribute\ObjectID
 		o\g = Object_Gravity_Create.tGravity() : o\HasGravity=True
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
@@ -548,7 +548,7 @@ Function Object_Drive_Create.tObject(drivetype, x#, y#, z#, throw=False)
 
 		If Menu\ChaoGarden=1 Then DRIVESUM(1) = DRIVESUM(1) + 1
 
-		Object_CreateHitBox(HITBOXTYPE_BOX,o,4,4,4)
+		Object_CreateHitBox(HITBOXTYPE_BOX,o,8,8,8)
 
 		Object_Acquire_Position(o,x#,y#,z#)
 		Object_Acquire_Rotation(o,0,Rand(1,360),0)
@@ -558,6 +558,7 @@ Function Object_Drive_Create.tObject(drivetype, x#, y#, z#, throw=False)
 		o\Pivot=CreatePivot()
 		o\Entity = CopyEntity(MESHES(Mesh_Drive1+(drivetype-1)), Game\Stage\Root)
 		o\ChaoObj\DrivePitch=Rand(1,45)
+		ScaleEntity(o\Entity,2.7,2.7,2.7)
 
 		EntityType(o\Pivot,0)
 		RotateEntity o\Pivot, 0, o\InitialRotation\y#, 0
@@ -573,7 +574,7 @@ Function Object_Drive_Create.tObject(drivetype, x#, y#, z#, throw=False)
 	
 	; =========================================================================================================
 	
-Function Object_Drive_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+	Function Object_Drive_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		; Position mesh
 		PositionEntity o\Entity, o\Position\x#, o\Position\y#, o\Position\z#
@@ -600,7 +601,7 @@ Function Object_Drive_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 							MoveEntity(o\Pivot, 0, 0, (EntityDistance(o\Pivot, p\Objects\Entity)/4)*1.2*d\Delta)
 						EndIf
 					Else
-						MoveEntity(o\Pivot, 0, -0.0125*d\Delta, 0)
+						MoveEntity(o\Pivot, 0, -0.1125*d\Delta, 0)
 					EndIf
 
 					; Delete
@@ -635,8 +636,8 @@ Function Object_Drive_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_CreateDriveFromEnemy(objtype, x#, y#, z#)
-		If Not(Object_IsEnemyRobot(objtype)) Then Return
+	Function Object_CreateDriveFromEnemy(objtype, x#, y#, z#)
+		If Not(Object_IsEnemyRobot(objtype)) Or objtype=OBJTYPE_SPUNA Then Return
 		Select(Rand(1,10))
 		Case 1: drivetype=8
 		Case 2: drivetype=9
@@ -665,7 +666,7 @@ Function Object_CreateDriveFromEnemy(objtype, x#, y#, z#)
 				Case OBJTYPE_KIKI:			drivetype = 6
 				Case OBJTYPE_COP:			drivetype = 6
 				Case OBJTYPE_COPRACER:		drivetype = 6
-				Case OBJTYPE_HUNTER:		drivetype = 3
+				Case OBJTYPE_HUNTER, OBJTYPE_INACTIVE, OBJTYPE_EGUNNER:		drivetype = 3
 				Case OBJTYPE_HUNTERSHIELD:	drivetype = 4
 				Case OBJTYPE_BEETLE:		drivetype = 2
 				Case OBJTYPE_BEETLEMONO:	drivetype = 1
@@ -741,7 +742,7 @@ Function Object_CreateDriveFromEnemy(objtype, x#, y#, z#)
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_TrashCan_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#)
+	Function Object_TrashCan_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\g = Object_Gravity_Create.tGravity() : o\HasGravity=True
 
@@ -763,7 +764,7 @@ Function Object_TrashCan_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#)
 	
 	; =========================================================================================================
 	
-Function Object_TrashCan_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+	Function Object_TrashCan_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		; Position mesh
 		PositionEntity o\Entity, o\Position\x#, o\Position\y#, o\Position\z#
@@ -818,7 +819,7 @@ Function Object_TrashCan_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_Sack_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#)
+	Function Object_Sack_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\g = Object_Gravity_Create.tGravity() : o\HasGravity=True
 
@@ -840,7 +841,7 @@ Function Object_Sack_Create.tObject(x#, y#, z#, pitch#, yaw#, roll#)
 	
 	; =========================================================================================================
 	
-Function Object_Sack_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+	Function Object_Sack_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		; Position mesh
 		PositionEntity o\Entity, o\Position\x#, o\Position\y#, o\Position\z#
@@ -897,7 +898,7 @@ Function Object_Sack_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_Breeder_Create.tObject(x#, y#, z#, targetcc.tChaoManager)
+	Function Object_Breeder_Create.tObject(x#, y#, z#, targetcc.tChaoManager)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_BREEDER
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
 		o\AlwaysPresent=True
@@ -916,7 +917,7 @@ Function Object_Breeder_Create.tObject(x#, y#, z#, targetcc.tChaoManager)
 	
 	; =========================================================================================================
 	
-Function Object_Breeder_Update(o.tObject, p.tPlayer)
+	Function Object_Breeder_Update(o.tObject, p.tPlayer)
 
 		; Position
 		PositionEntity o\Entity, o\ChaoObj\targetcc\Position\x#, o\ChaoObj\targetcc\Position\y#-0.25, o\ChaoObj\targetcc\Position\z#, 1
@@ -968,7 +969,7 @@ Function Object_Breeder_Update(o.tObject, p.tPlayer)
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_GardenPoint_Create.tObject(x#, y#, z#, yaw#)
+	Function Object_GardenPoint_Create.tObject(x#, y#, z#, yaw#)
 		o.tObject = New tObject : o\ObjType = TempAttribute\ObjectNo : o\ID=TempAttribute\ObjectID
 		o\AlwaysPresent=True
 
@@ -991,7 +992,7 @@ Function Object_GardenPoint_Create.tObject(x#, y#, z#, yaw#)
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_Whistle_Create.tObject(p.tPlayer)
+	Function Object_Whistle_Create.tObject(p.tPlayer)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_WHISTLE
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
 		o\AlwaysPresent=True
@@ -1010,7 +1011,7 @@ Function Object_Whistle_Create.tObject(p.tPlayer)
 	
 	; =========================================================================================================
 	
-Function Object_Whistle_Update(o.tObject, p.tPlayer)
+	Function Object_Whistle_Update(o.tObject, p.tPlayer)
 
 		; Position
 		PositionEntity o\Entity, p\Objects\Position\x#, p\Objects\Position\y#+7+5*p\ScaleFactor#, p\Objects\Position\z#, 1
@@ -1038,7 +1039,7 @@ Function Object_Whistle_Update(o.tObject, p.tPlayer)
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_Petter_Create.tObject(p.tPlayer)
+	Function Object_Petter_Create.tObject(p.tPlayer)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_PETTER
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
 		o\AlwaysPresent=True
@@ -1073,7 +1074,7 @@ Function Object_Petter_Create.tObject(p.tPlayer)
 	
 	; =========================================================================================================
 	
-Function Object_Petter_Update(o.tObject, p.tPlayer)
+	Function Object_Petter_Update(o.tObject, p.tPlayer)
 
 		; Position
 		PositionEntity o\Entity, o\ChaoObj\targetcc\Position\x#, o\ChaoObj\targetcc\Position\y#+1.75, o\ChaoObj\targetcc\Position\z#, 1
@@ -1098,7 +1099,7 @@ Function Object_Petter_Update(o.tObject, p.tPlayer)
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-Function Object_Seed_Create.tObject(fruittype, x#, y#, z#, throw=False, seedmode=0, growth1#=0, growth2#=0, growth3#=0, growth4#=0, treegrowth#=0)
+	Function Object_Seed_Create.tObject(fruittype, x#, y#, z#, throw=False, seedmode=0, growth1#=0, growth2#=0, growth3#=0, growth4#=0, treegrowth#=0)
 		o.tObject = New tObject : o\ObjType = OBJTYPE_SEED : o\ID=TempAttribute\ObjectID
 		o\g = Object_Gravity_Create.tGravity() : o\HasGravity=True
 		o\ChaoObj = New tObject_ChaoObj : o\HasValuesetChaoObj=True
@@ -1137,7 +1138,7 @@ Function Object_Seed_Create.tObject(fruittype, x#, y#, z#, throw=False, seedmode
 	
 	; =========================================================================================================
 	
-Function Object_Seed_Update(o.tObject, p.tPlayer, d.tDeltaTime)
+	Function Object_Seed_Update(o.tObject, p.tPlayer, d.tDeltaTime)
 
 		Select o\ChaoObj\SeedMode
 			Case 0:

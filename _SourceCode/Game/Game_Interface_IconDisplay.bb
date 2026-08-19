@@ -5,6 +5,7 @@
 		Field Timer
 		Field State
 		Field Alpha#
+		Field Scale#
 	End Type
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
@@ -19,36 +20,39 @@
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
 	; This function returns a new SetupMonitorIcon object.
-Function SetupMonitorIcon.tMonitorIcon()
+	Function SetupMonitorIcon.tMonitorIcon()
 		rd.tMonitorIcon = New tMonitorIcon
 		ResetMonitorIcon(rd)
 		Return rd
 	End Function
 
-Function ReplicateMonitorIcon(rd1.tMonitorIcon,rd2.tMonitorIcon)
+	Function ReplicateMonitorIcon(rd1.tMonitorIcon,rd2.tMonitorIcon)
 		rd1\Draw = rd2\Draw
 		rd1\mType = rd2\mType
 		rd1\Timer = rd2\Timer
 		rd1\State = rd2\State
 		rd1\Alpha# = rd2\Alpha#
+		rd1\Scale# = rd2\Scale#
 	End Function
 
-Function ResetMonitorIcon(rd.tMonitorIcon)
+	Function ResetMonitorIcon(rd.tMonitorIcon)
 		rd\Draw = False
 		rd\mType = 0
 		rd\Timer = 0
 		rd\State = 0
 		rd\Alpha = 0
+		rd\Scale = 0
 	End Function
 
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
 	; Draws the icons. This is still incredibly inefficient and could use improvement!
-Function Update_Monitor_Icons(d.tDeltaTime, height#=40, spacing#=32.5)
+	Function Update_Monitor_Icons(d.tDeltaTime, height#=40, spacing#=32.5)
 
 		For i=1 To 5
 			If MonitorIcon(i)\Draw Then
 				SetAlpha(MonitorIcon(i)\Alpha)
+				SetScale(GAME_WINDOW_SCALE#*MonitorIcon(i)\Scale,GAME_WINDOW_SCALE#*MonitorIcon(i)\Scale)
 				Update_Monitor_Icon_Timer(MonitorIcon(i),i,d)
 				Select i
 					Case 1: position#=0
@@ -59,6 +63,7 @@ Function Update_Monitor_Icons(d.tDeltaTime, height#=40, spacing#=32.5)
 				End Select
 				If Not(Game\Interface\ShowHintTimer>0) Then DrawImageEx(INTERFACE(Interface_Monitors), GAME_WINDOW_W/2+position#*spacing#*GAME_WINDOW_SCALE#, GAME_WINDOW_H-height#*GAME_WINDOW_SCALE#, MonitorIcon(i)\mType-1)
 				SetAlpha(1.0)
+				SetScale(GAME_WINDOW_SCALE#,GAME_WINDOW_SCALE#)
 			End If
 		Next
 		
@@ -67,15 +72,18 @@ Function Update_Monitor_Icons(d.tDeltaTime, height#=40, spacing#=32.5)
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
 	; Updates the timer of the specified icon which effects the alpha (fading)
-Function Update_Monitor_Icon_Timer(rd.tMonitorIcon,num,d.tDeltaTime)
+	Function Update_Monitor_Icon_Timer(rd.tMonitorIcon,num,d.tDeltaTime)
 
 		If rd\Timer>0 Then rd\Timer=rd\Timer-timervalue#
 
 		Select rd\State
 			Case 0:
 				rd\State=1
+				rd\Scale#=0.1
 			Case 1:
+				rd\Scale# = rd\Scale# + 0.1*d\Delta
 				rd\Alpha# = rd\Alpha# + 0.05*d\Delta
+				If (rd\Scale >= 1.0) Then rd\Scale#=1.0
 				If (rd\Alpha >= 1.0) Then
 					rd\Alpha# = 1.0
 					rd\State=2
@@ -85,6 +93,7 @@ Function Update_Monitor_Icon_Timer(rd.tMonitorIcon,num,d.tDeltaTime)
 				If Not(rd\Timer>0) Then rd\State=3
 			Case 3:
 				rd\Alpha# = rd\Alpha# - 0.1*d\Delta
+				rd\Scale#=rd\Scale#-0.1*d\Delta
 				If (rd\Alpha <= 0.0) Then
 					rd\Alpha# = 0.0
 					rd\State=0
@@ -99,7 +108,7 @@ Function Update_Monitor_Icon_Timer(rd.tMonitorIcon,num,d.tDeltaTime)
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
 
-Function MonitorIcon_Draw(mtype#)
+	Function MonitorIcon_Draw(mtype#)
 		hasbeenadded=False
 
 		For i=1 To 5
@@ -134,7 +143,7 @@ Function MonitorIcon_Draw(mtype#)
 
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
-Function Update_ChaoItem_Icons(d.tDeltaTime, fromright#=20, frombottom#=27.5, spacing#=20)
+	Function Update_ChaoItem_Icons(d.tDeltaTime, fromright#=20, frombottom#=27.5, spacing#=20)
 
 		Select Game\Interface\ShowChaoItems
 
@@ -203,7 +212,7 @@ Function Update_ChaoItem_Icons(d.tDeltaTime, fromright#=20, frombottom#=27.5, sp
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
 
-Function DrawChaoIcon(i, x#, y#, alpha#, scale#)
+	Function DrawChaoIcon(i, x#, y#, alpha#, scale#)
 		If Game\Interface\ChaoItemCount>i Then
 			SetAlpha(1.0)
 			SetScale(GAME_WINDOW_SCALE#, GAME_WINDOW_SCALE#)
@@ -217,7 +226,7 @@ Function DrawChaoIcon(i, x#, y#, alpha#, scale#)
 		EndIf
 	End Function
 
-Function ChaoIcon_Draw(num#)
+	Function ChaoIcon_Draw(num#)
 
 		Game\Interface\ChaoItemCount=TOTALCARRIEDITEMS
 		If Game\Interface\ChaoItemCount>10 Then Game\Interface\ChaoItemCount=10
@@ -239,24 +248,987 @@ Function ChaoIcon_Draw(num#)
 	; ---------------------------------------------------------------------------------------------------------
 	; ---------------------------------------------------------------------------------------------------------
 
-Function Rank_Draw(rank, x#, y#)
-
-		Select rank
-		Case 1: SetRotation(0)
-		Case 2: SetRotation(0)
-		Case 3: SetRotation(0)
-		Case 4: SetRotation(0)
-		Case 5: SetRotation(10)
-		Case 6: SetRotation(-20)
-		Case 7: SetRotation(-35)
-	End Select
+	Function Rank_Draw(rank, x#, y#)
+		
 
 		DrawImageEx(INTERFACE(Interface_Ranks), x#, y#, rank-1)
-
-		SetRotation(0)
-		SetColor(255,255,255)
+		
 
 	End Function
+
+
+; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+
+i=1
+Global TIP_MOVE				= i : i=i+1
+Global TIP_CHANGE			= i : i=i+1
+Global TIP_SUPER			= i : i=i+1
+Global TIP_SHIELD			= i : i=i+1
+Global TIP_JUMP				= i : i=i+1
+Global TIP_JUMPHIGHER		= i : i=i+1
+Global TIP_JACHANGE			= i : i=i+1
+Global TIP_STOMP			= i : i=i+1
+Global TIP_BOUNCE			= i : i=i+1
+Global TIP_SPINDASH			= i : i=i+1
+Global TIP_CHARGE			= i : i=i+1
+Global TIP_ROLL				= i : i=i+1
+Global TIP_BREAK			= i : i=i+1
+Global TIP_DRIFT			= i : i=i+1
+Global TIP_LOOK				= i : i=i+1
+Global TIP_PICKINGUP		= i : i=i+1
+Global TIP_PICKUP			= i : i=i+1
+Global TIP_DROP				= i : i=i+1
+Global TIP_INSERT			= i : i=i+1
+Global TIP_THROW			= i : i=i+1
+Global TIP_ASCEND			= i : i=i+1
+Global TIP_DESCEND			= i : i=i+1
+Global TIP_GLIDE			= i : i=i+1
+Global TIP_FLAP				= i : i=i+1
+Global TIP_GRINDFASTER		= i : i=i+1
+Global TIP_SLIDEFASTER		= i : i=i+1
+Global TIP_ACCELERATE		= i : i=i+1
+Global TIP_SKYDIVEFASTER	= i : i=i+1
+Global TIP_SHOOT			= i : i=i+1
+Global TIP_PADDLES			= i : i=i+1
+Global TIP_HOPOFF			= i : i=i+1
+Global TIP_RELEASEINVENTORY	= i : i=i+1
+Global TIP_WHISTLE			= i : i=i+1
+Global TIP_PET				= i : i=i+1
+Global TIP_CHEER			= i : i=i+1
+Global TIP_SHAKETREE		= i : i=i+1
+Global TIP_SHAKEVINE		= i : i=i+1
+Global TIP_DEMOLISH			= i : i=i+1
+Global TIP_BELLYFLOP		= i : i=i+1
+Global TIP_HAMMERDOWN		= i : i=i+1
+Global TIP_TRICK			= i : i=i+1
+Global TIP_BATTLEMODE		= i : i=i+1
+Global TIP_JUMPAMOD		= i : i=i+1
+Global TIP_HOLDJUMPAMOD		= i : i=i+1
+Global TIP_JUMPA[CHAR_NONMODPLAYABLECOUNT]			: For j = 1 To CHAR_NONMODPLAYABLECOUNT : TIP_JUMPA[j] = i : i=i+1 : Next
+Global TIP_STOMPA[CHAR_NONMODPLAYABLECOUNT]			: For j = 1 To CHAR_NONMODPLAYABLECOUNT : TIP_STOMPA[j] = i : i=i+1 : Next
+Global TIP_ShortJUMPA[CHAR_NONMODPLAYABLECOUNT]		: For j = 1 To CHAR_NONMODPLAYABLECOUNT : TIP_ShortJUMPA[j] = i : i=i+1 : Next
+Global TIP_HoldJUMPA[CHAR_NONMODPLAYABLECOUNT]		: For j = 1 To CHAR_NONMODPLAYABLECOUNT : TIP_HoldJUMPA[j] = 0 : Next
+Global TIP_SKILL1[CHAR_NONMODPLAYABLECOUNT]			: For j = 1 To CHAR_NONMODPLAYABLECOUNT : TIP_SKILL1[j] = i : i=i+1 : Next
+Global TIP_SKILL1AIR[CHAR_NONMODPLAYABLECOUNT]		: For j = 1 To CHAR_NONMODPLAYABLECOUNT : TIP_SKILL1AIR[j] = i : i=i+1 : Next
+Global TIP_HoldSKILL1[CHAR_NONMODPLAYABLECOUNT]		: For j = 1 To CHAR_NONMODPLAYABLECOUNT : TIP_HoldSKILL1[j] = 0 : Next
+Global TIP_HoldSKILL1AIR[CHAR_NONMODPLAYABLECOUNT]		: For j = 1 To CHAR_NONMODPLAYABLECOUNT : TIP_HoldSKILL1AIR[j] = 0 : Next
+Global TIP_SKILL2[CHAR_NONMODPLAYABLECOUNT]			: For j = 1 To CHAR_NONMODPLAYABLECOUNT : TIP_SKILL2[j] = i : i=i+1 : Next
+Global TIP_SKILL2AIR[CHAR_NONMODPLAYABLECOUNT]		: For j = 1 To CHAR_NONMODPLAYABLECOUNT : TIP_SKILL2AIR[j] = i : i=i+1 : Next
+Global TIP_HoldSKILL2[CHAR_NONMODPLAYABLECOUNT]		: For j = 1 To CHAR_NONMODPLAYABLECOUNT : TIP_HoldSKILL2[j] = 0 : Next
+Global TIP_HoldSKILL2AIR[CHAR_NONMODPLAYABLECOUNT]		: For j = 1 To CHAR_NONMODPLAYABLECOUNT : TIP_HoldSKILL2AIR[j] = 0 : Next
+Global TIP_SKILL3[CHAR_NONMODPLAYABLECOUNT]			: For j = 1 To CHAR_NONMODPLAYABLECOUNT : TIP_SKILL3[j] = i : i=i+1 : Next
+Global TIP_SKILL3AIR[CHAR_NONMODPLAYABLECOUNT]		: For j = 1 To CHAR_NONMODPLAYABLECOUNT : TIP_SKILL3AIR[j] = i : i=i+1 : Next
+Global TIP_HoldSKILL3[CHAR_NONMODPLAYABLECOUNT]		: For j = 1 To CHAR_NONMODPLAYABLECOUNT : TIP_HoldSKILL3[j] = 0 : Next
+Global TIP_HoldSKILL3AIR[CHAR_NONMODPLAYABLECOUNT]		: For j = 1 To CHAR_NONMODPLAYABLECOUNT : TIP_HoldSKILL3AIR[j] = 0 : Next
+Global TIP_SKILL2X			= i : i=i+1
+;-------------------------------------------------------------------------------------------------------------------------
+Dim CONTROLTIPS$(i-1)
+CONTROLTIPS$(TIP_MOVE)				= "Move"
+CONTROLTIPS$(TIP_CHANGE)			= "Change leader"
+CONTROLTIPS$(TIP_SUPER)				= "Super transform"
+CONTROLTIPS$(TIP_SHIELD)				= "Use shield"
+CONTROLTIPS$(TIP_JUMP)				= "Jump"
+CONTROLTIPS$(TIP_JUMPHIGHER)		= "Jump higher"
+CONTROLTIPS$(TIP_JACHANGE)			= "JA change"
+CONTROLTIPS$(TIP_STOMP)				= "Stomp"
+CONTROLTIPS$(TIP_BOUNCE)			= "Bounce"
+CONTROLTIPS$(TIP_SPINDASH)			= "Spin dash"
+CONTROLTIPS$(TIP_CHARGE)			= "Charge"
+CONTROLTIPS$(TIP_ROLL)				= "Roll"
+CONTROLTIPS$(TIP_BREAK)				= "Break"
+CONTROLTIPS$(TIP_DRIFT)				= "Drift"
+CONTROLTIPS$(TIP_LOOK)				= "Look around"
+CONTROLTIPS$(TIP_PICKINGUP)			= "Picking up"
+CONTROLTIPS$(TIP_PICKUP)			= "Pick up"
+CONTROLTIPS$(TIP_DROP)				= "Drop"
+CONTROLTIPS$(TIP_INSERT)				= "Insert"
+CONTROLTIPS$(TIP_THROW)				= "Throw"
+CONTROLTIPS$(TIP_ASCEND)			= "Ascend"
+CONTROLTIPS$(TIP_DESCEND)			= "Descend"
+CONTROLTIPS$(TIP_GLIDE)				= "Glide"
+CONTROLTIPS$(TIP_FLAP)				= "Flap"
+CONTROLTIPS$(TIP_GRINDFASTER)		= "Grind faster"
+CONTROLTIPS$(TIP_SLIDEFASTER)		= "Slide faster"
+CONTROLTIPS$(TIP_ACCELERATE)		= "Accelerate"
+CONTROLTIPS$(TIP_SKYDIVEFASTER)		= "Skydive faster"
+CONTROLTIPS$(TIP_SHOOT)				= "Shoot"
+CONTROLTIPS$(TIP_PADDLES)			= "Paddles"
+CONTROLTIPS$(TIP_HOPOFF)			= "Hop off"
+CONTROLTIPS$(TIP_RELEASEINVENTORY)	= "Release inventory"
+CONTROLTIPS$(TIP_WHISTLE)			= "Whistle"
+CONTROLTIPS$(TIP_PET)				= "Pet"
+CONTROLTIPS$(TIP_CHEER)				= "Cheer"
+CONTROLTIPS$(TIP_SHAKETREE)			= "Shake tree"
+CONTROLTIPS$(TIP_SHAKEVINE)			= "Shake vine"
+CONTROLTIPS$(TIP_DEMOLISH)			= "Demolish"
+CONTROLTIPS$(TIP_BELLYFLOP)			= "Belly flop"
+CONTROLTIPS$(TIP_HAMMERDOWN)		= "Hammer down"
+CONTROLTIPS$(TIP_TRICK)				= "Trick"
+CONTROLTIPS$(TIP_BATTLEMODE)		= "Battle mode"
+;---------------------------------------------------------------------------
+CONTROLTIPS$(TIP_JUMPA[CHAR_SON])	= "Jump dash"
+CONTROLTIPS$(TIP_JUMPA[CHAR_TAI])	= "Fly"
+CONTROLTIPS$(TIP_JUMPA[CHAR_KNU])	= "Glide, climb" : TIP_HoldJUMPA[CHAR_KNU]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_AMY])	= "Piko twirl"
+CONTROLTIPS$(TIP_JUMPA[CHAR_SHA])	= "Jump dash"
+CONTROLTIPS$(TIP_JUMPA[CHAR_SHN])	= "Jump dash"
+CONTROLTIPS$(TIP_JUMPA[CHAR_ROU])	= "Glide, climb" : TIP_HoldJUMPA[CHAR_ROU]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_CRE])	= "Fly"
+CONTROLTIPS$(TIP_JUMPA[CHAR_BLA])	= "Double jump"
+CONTROLTIPS$(TIP_JUMPA[CHAR_SIL])	= "Levitate" : TIP_HoldJUMPA[CHAR_SIL]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_OME])	= "Hover" : TIP_HoldJUMPA[CHAR_OME]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_ESP])	= "Jump dash"
+CONTROLTIPS$(TIP_JUMPA[CHAR_CHA])	= "Fly"
+CONTROLTIPS$(TIP_JUMPA[CHAR_VEC])	= "Slow glide" : TIP_HoldJUMPA[CHAR_VEC]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_BIG])	= "Slow glide" : TIP_HoldJUMPA[CHAR_BIG]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_MAR])	= "Flutter" : TIP_HoldJUMPA[CHAR_MAR]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_MIG])	= "Jump dash"
+CONTROLTIPS$(TIP_JUMPA[CHAR_RAY])	= "Soar"
+CONTROLTIPS$(TIP_JUMPA[CHAR_CHO])	= "Glide, climb" : TIP_HoldJUMPA[CHAR_CHO]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_TIK])	= "Glide, climb" : TIP_HoldJUMPA[CHAR_TIK]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_NAC])	= "Double jump"
+CONTROLTIPS$(TIP_JUMPA[CHAR_BEA])	= "Double jump, bomb"
+CONTROLTIPS$(TIP_JUMPA[CHAR_BAR])	= "Sleet" : TIP_HoldJUMPA[CHAR_BAR]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_JET])	= "Dive, homing attack"
+CONTROLTIPS$(TIP_JUMPA[CHAR_WAV])	= "Fly"
+CONTROLTIPS$(TIP_JUMPA[CHAR_STO])	= "Hover" : TIP_HoldJUMPA[CHAR_STO]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_TIA])	= "Parachute" : TIP_HoldJUMPA[CHAR_TIA]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_HON])	= "Flutter" : TIP_HoldJUMPA[CHAR_HON]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_SHD])	= "Glide, climb" : TIP_HoldJUMPA[CHAR_SHD]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_MPH])	= "Levitate" : TIP_HoldJUMPA[CHAR_MPH]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_HBO])	= "Hover" : TIP_HoldJUMPA[CHAR_HBO]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_GAM])	= "Hover" : TIP_HoldJUMPA[CHAR_GAM]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_EME])	= "Jump action"
+CONTROLTIPS$(TIP_JUMPA[CHAR_MET])	= "Propel"
+CONTROLTIPS$(TIP_JUMPA[CHAR_TDL])	= "Fly"
+CONTROLTIPS$(TIP_JUMPA[CHAR_MKN])	= "Glide, climb" : TIP_HoldJUMPA[CHAR_MKN]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_EGG])	= "Hover" : TIP_HoldJUMPA[CHAR_EGG]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_BET])	= "Hover" : TIP_HoldJUMPA[CHAR_BET]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_MT3])	= "Levitate" : TIP_HoldJUMPA[CHAR_MT3]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_GME])	= "Jump action"
+CONTROLTIPS$(TIP_JUMPA[CHAR_PRS])	= "Jump dash, homing attack"
+CONTROLTIPS$(TIP_JUMPA[CHAR_COM])	= "Glide, climb" : TIP_HoldJUMPA[CHAR_COM]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_CHW])	= "Hover" : TIP_HoldJUMPA[CHAR_CHW]=1
+CONTROLTIPS$(TIP_JUMPA[CHAR_EGR])	= "Fly"
+CONTROLTIPS$(TIP_JUMPA[CHAR_INF])	= "Levitate" : TIP_HoldJUMPA[CHAR_INF]=1
+For i=1 To CHAR_NONMODPLAYABLECOUNT
+	CONTROLTIPS$(TIP_ShortJUMPA[i]) = CONTROLTIPS$(TIP_JUMPA[i])
+Next
+
+
+
+CONTROLTIPS$(TIP_STOMPA[CHAR_SON])	= ""
+CONTROLTIPS$(TIP_STOMPA[CHAR_TAI])	= ""
+CONTROLTIPS$(TIP_STOMPA[CHAR_KNU])	= "Drill dive"
+CONTROLTIPS$(TIP_STOMPA[CHAR_AMY])	= "Piko crash"
+CONTROLTIPS$(TIP_STOMPA[CHAR_SHA])	= ""
+CONTROLTIPS$(TIP_STOMPA[CHAR_ROU])	= "" 
+CONTROLTIPS$(TIP_STOMPA[CHAR_CRE])	= ""
+CONTROLTIPS$(TIP_STOMPA[CHAR_BLA])	= ""
+CONTROLTIPS$(TIP_STOMPA[CHAR_SIL])	= ""
+CONTROLTIPS$(TIP_STOMPA[CHAR_OME])	= "Power stomp"
+CONTROLTIPS$(TIP_STOMPA[CHAR_ESP])	= ""
+CONTROLTIPS$(TIP_STOMPA[CHAR_CHA])	= "Fly"
+CONTROLTIPS$(TIP_STOMPA[CHAR_VEC])	= "Slow glide"
+CONTROLTIPS$(TIP_STOMPA[CHAR_BIG])	= "Slow glide"
+CONTROLTIPS$(TIP_STOMPA[CHAR_MAR])	= "Flutter" 
+CONTROLTIPS$(TIP_STOMPA[CHAR_MIG])	= ""
+CONTROLTIPS$(TIP_STOMPA[CHAR_RAY])	= ""
+CONTROLTIPS$(TIP_STOMPA[CHAR_CHO])	= "Glide, climb" 
+CONTROLTIPS$(TIP_STOMPA[CHAR_TIK])	= "Glide, climb" 
+CONTROLTIPS$(TIP_STOMPA[CHAR_NAC])	= "Double jump"
+CONTROLTIPS$(TIP_STOMPA[CHAR_BEA])	= "Double jump, bomb"
+CONTROLTIPS$(TIP_STOMPA[CHAR_BAR])	= "Sleet" 
+CONTROLTIPS$(TIP_STOMPA[CHAR_JET])	= "Dive, homing attack"
+CONTROLTIPS$(TIP_STOMPA[CHAR_WAV])	= "Fly"
+CONTROLTIPS$(TIP_STOMPA[CHAR_STO])	= "Hover"
+CONTROLTIPS$(TIP_STOMPA[CHAR_TIA])	= "Parachute"
+CONTROLTIPS$(TIP_STOMPA[CHAR_HON])	= "Flutter" 
+CONTROLTIPS$(TIP_STOMPA[CHAR_SHD])	= "Glide, climb"
+CONTROLTIPS$(TIP_STOMPA[CHAR_MPH])	= "Levitate" 
+CONTROLTIPS$(TIP_STOMPA[CHAR_HBO])	= "Hover" 
+CONTROLTIPS$(TIP_STOMPA[CHAR_GAM])	= ""
+CONTROLTIPS$(TIP_STOMPA[CHAR_EME])	= "Jump action"
+CONTROLTIPS$(TIP_STOMPA[CHAR_MET])	= ""
+CONTROLTIPS$(TIP_STOMPA[CHAR_TDL])	= "Fly"
+CONTROLTIPS$(TIP_STOMPA[CHAR_MKN])	= "Glide, climb" 
+CONTROLTIPS$(TIP_STOMPA[CHAR_EGG])	= "Hover"
+CONTROLTIPS$(TIP_STOMPA[CHAR_BET])	= "Hover" 
+CONTROLTIPS$(TIP_STOMPA[CHAR_MT3])	= "Levitate" 
+CONTROLTIPS$(TIP_STOMPA[CHAR_GME])	= "Jump action"
+CONTROLTIPS$(TIP_STOMPA[CHAR_PRS])	= "Jump dash, homing attack"
+CONTROLTIPS$(TIP_STOMPA[CHAR_COM])	= "Glide, climb"
+CONTROLTIPS$(TIP_STOMPA[CHAR_CHW])	= "Hover"
+CONTROLTIPS$(TIP_STOMPA[CHAR_EGR])	= "Power stomp"
+CONTROLTIPS$(TIP_STOMPA[CHAR_INF])	= "Power stomp"
+;---------------------------------------------------------------------------
+CONTROLTIPS$(TIP_SKILL1[CHAR_SON])	= "Spin kick"
+CONTROLTIPS$(TIP_SKILL1[CHAR_TAI])	= "Tailspin"
+CONTROLTIPS$(TIP_SKILL1[CHAR_KNU])	= "One two punch"
+CONTROLTIPS$(TIP_SKILL1[CHAR_AMY])	= "Hammer spin" : TIP_HoldSKILL1[CHAR_AMY]=1
+CONTROLTIPS$(TIP_SKILL1[CHAR_SHA])	= "One two kick"
+CONTROLTIPS$(TIP_SKILL1[CHAR_ROU])	= "Double kick"
+CONTROLTIPS$(TIP_SKILL1[CHAR_CRE])	= "Cheese"
+CONTROLTIPS$(TIP_SKILL1[CHAR_BLA])	= "Fireclaw" : TIP_HoldSKILL1[CHAR_BLA]=1
+CONTROLTIPS$(TIP_SKILL1[CHAR_SIL])	= "Psychokinesis"
+CONTROLTIPS$(TIP_SKILL1[CHAR_OME])	= "Break and sweep"
+CONTROLTIPS$(TIP_SKILL1[CHAR_ESP])	= "Shuriken (5)"
+CONTROLTIPS$(TIP_SKILL1[CHAR_CHA])	= "Needle dash"
+CONTROLTIPS$(TIP_SKILL1[CHAR_VEC])	= "Mouth punch"
+CONTROLTIPS$(TIP_SKILL1[CHAR_BIG])	= "Umbrella swing"
+CONTROLTIPS$(TIP_SKILL1[CHAR_MAR])	= "Water pulse" : TIP_HoldSKILL1[CHAR_MAR]=1
+CONTROLTIPS$(TIP_SKILL1[CHAR_MIG])	= "Slide"
+CONTROLTIPS$(TIP_SKILL1[CHAR_RAY])	= "Tail swipe"
+CONTROLTIPS$(TIP_SKILL1[CHAR_CHO])	= "Stretch punch"
+CONTROLTIPS$(TIP_SKILL1[CHAR_TIK])	= "Silent palm"
+CONTROLTIPS$(TIP_SKILL1[CHAR_NAC])	= "Shotgun"
+CONTROLTIPS$(TIP_SKILL1[CHAR_BEA])	= "Bomb"
+CONTROLTIPS$(TIP_SKILL1[CHAR_BAR])	= "Punch"
+CONTROLTIPS$(TIP_SKILL1[CHAR_JET])	= "Palm fans"
+CONTROLTIPS$(TIP_SKILL1[CHAR_WAV])	= "Giant wrench" : TIP_HoldSKILL1[CHAR_WAV]=1
+CONTROLTIPS$(TIP_SKILL1[CHAR_STO])	= "Punch, slap"
+CONTROLTIPS$(TIP_SKILL1[CHAR_TIA])	= "Magical beam" : TIP_HoldSKILL1[CHAR_TIA]=1
+CONTROLTIPS$(TIP_SKILL1[CHAR_HON])	= "Kick"
+CONTROLTIPS$(TIP_SKILL1[CHAR_SHD])	= "Blade punch"
+CONTROLTIPS$(TIP_SKILL1[CHAR_MPH])	= "Send minions"
+CONTROLTIPS$(TIP_SKILL1[CHAR_HBO])	= "Explode punch"
+CONTROLTIPS$(TIP_SKILL1[CHAR_GAM])	= "Aim / shoot" : TIP_HoldSKILL1[CHAR_GAM]=1
+CONTROLTIPS$(TIP_SKILL1[CHAR_EME])	= "Attack action"
+CONTROLTIPS$(TIP_SKILL1[CHAR_MET])	= "Claw, swipe & jet"
+CONTROLTIPS$(TIP_SKILL1[CHAR_TDL])	= "Curse"
+CONTROLTIPS$(TIP_SKILL1[CHAR_MKN])	= "Rocket bomb"
+CONTROLTIPS$(TIP_SKILL1[CHAR_EGG])	= "Aim / shoot" : TIP_HoldSKILL1[CHAR_EGG]=1
+CONTROLTIPS$(TIP_SKILL1[CHAR_BET])	= "Shoot"
+CONTROLTIPS$(TIP_SKILL1[CHAR_MT3])	= "Energy shock"
+CONTROLTIPS$(TIP_SKILL1[CHAR_GME])	= "Attack action"
+CONTROLTIPS$(TIP_SKILL1[CHAR_PRS])	= "Spin kick"
+CONTROLTIPS$(TIP_SKILL1[CHAR_COM])	= "Punch"
+CONTROLTIPS$(TIP_SKILL1[CHAR_CHW])	= "Aim / shoot" : TIP_HoldSKILL1[CHAR_CHW]=1
+CONTROLTIPS$(TIP_SKILL1[CHAR_EGR])	= "Triple shots"
+CONTROLTIPS$(TIP_SKILL1[CHAR_INF])	= "Phantom dash"
+CONTROLTIPS$(TIP_SKILL1[CHAR_SHN])	= "One two swipe"
+For i=1 To CHAR_NONMODPLAYABLECOUNT
+	CONTROLTIPS$(TIP_SKILL1AIR[i]) = CONTROLTIPS$(TIP_SKILL1[i])
+	TIP_HoldSKILL1AIR[i] = TIP_HoldSKILL1[i]
+Next
+CONTROLTIPS$(TIP_SKILL1AIR[CHAR_SON])	= "Boom kick"
+CONTROLTIPS$(TIP_SKILL1AIR[CHAR_TAI])	= "Tail swipe"
+CONTROLTIPS$(TIP_SKILL1AIR[CHAR_SHA])	= "Chaos spear"
+CONTROLTIPS$(TIP_SKILL1AIR[CHAR_MET])	= "Rocket flip"
+CONTROLTIPS$(TIP_SKILL1AIR[CHAR_ROU])	= "Air kick"
+CONTROLTIPS$(TIP_SKILL1AIR[CHAR_AMY])	= "Piko spike"
+CONTROLTIPS$(TIP_SKILL1AIR[CHAR_OME])	= "Omega shot"
+CONTROLTIPS$(TIP_SKILL1AIR[CHAR_BLA])	= "Style dash"
+CONTROLTIPS$(TIP_SKILL1AIR[CHAR_SHN])	= "Air kick"
+CONTROLTIPS$(TIP_SKILL1AIR[CHAR_MIG])	= "Air kick"
+;---------------------------------------------------------------------------
+CONTROLTIPS$(TIP_SKILL2[CHAR_SON])	= "Lightspeed dash"
+CONTROLTIPS$(TIP_SKILL2[CHAR_TAI])	= "Cannon shot" 
+CONTROLTIPS$(TIP_SKILL2[CHAR_KNU])	= "Uppercut"
+CONTROLTIPS$(TIP_SKILL2[CHAR_AMY])	= ""
+CONTROLTIPS$(TIP_SKILL2[CHAR_SHA])	= "Lightspeed dash"
+CONTROLTIPS$(TIP_SKILL2[CHAR_ROU])	= "Dodge"
+CONTROLTIPS$(TIP_SKILL2[CHAR_CRE])	= "Chao shield (25)"
+CONTROLTIPS$(TIP_SKILL2[CHAR_BLA])	= "Lightspeed dash"
+CONTROLTIPS$(TIP_SKILL2[CHAR_SIL])	= "Psychic cutter (10)"
+CONTROLTIPS$(TIP_SKILL2[CHAR_OME])	= "Flamethrower"
+CONTROLTIPS$(TIP_SKILL2[CHAR_ESP])	= "Lightspeed dash"
+CONTROLTIPS$(TIP_SKILL2[CHAR_CHA])	= "Flower trap"
+CONTROLTIPS$(TIP_SKILL2[CHAR_VEC])	= ""
+CONTROLTIPS$(TIP_SKILL2[CHAR_BIG])	= "Froggy poison"
+CONTROLTIPS$(TIP_SKILL2[CHAR_MAR])	= "Boomerang"
+CONTROLTIPS$(TIP_SKILL2[CHAR_MIG])	= "Lightspeed dash"
+CONTROLTIPS$(TIP_SKILL2[CHAR_RAY])	= ""
+CONTROLTIPS$(TIP_SKILL2[CHAR_CHO])	= "Water blobs"
+CONTROLTIPS$(TIP_SKILL2[CHAR_TIK])	= "Spiritual form" : TIP_HoldSKILL2[CHAR_TIK]=1
+CONTROLTIPS$(TIP_SKILL2[CHAR_NAC])	= "Tail whip"
+CONTROLTIPS$(TIP_SKILL2[CHAR_BEA])	= "Peck"
+CONTROLTIPS$(TIP_SKILL2[CHAR_BAR])	= "Ice spark"
+CONTROLTIPS$(TIP_SKILL2[CHAR_JET])	= ""
+CONTROLTIPS$(TIP_SKILL2[CHAR_WAV])	= "Explosives"
+CONTROLTIPS$(TIP_SKILL2[CHAR_STO])	= "Hurricane"
+CONTROLTIPS$(TIP_SKILL2[CHAR_TIA])	= "Kick"
+CONTROLTIPS$(TIP_SKILL2[CHAR_HON])	= "Meow sprint"
+CONTROLTIPS$(TIP_SKILL2[CHAR_SHD])	= "Hookshot"
+CONTROLTIPS$(TIP_SKILL2[CHAR_MPH])	= "Teleport dash"
+CONTROLTIPS$(TIP_SKILL2[CHAR_HBO])	= "Giant bombs"
+CONTROLTIPS$(TIP_SKILL2[CHAR_GAM])	= ""
+CONTROLTIPS$(TIP_SKILL2[CHAR_EME])	= ""
+CONTROLTIPS$(TIP_SKILL2[CHAR_MET])	= "Attraction dash"
+CONTROLTIPS$(TIP_SKILL2[CHAR_TDL])	= "Tail swipe" : TIP_HoldSKILL2[CHAR_TDL]=1
+CONTROLTIPS$(TIP_SKILL2[CHAR_MKN])	= "Punch"
+CONTROLTIPS$(TIP_SKILL2[CHAR_EGG])	= "Stretch punch"
+CONTROLTIPS$(TIP_SKILL2[CHAR_BET])	= ""
+CONTROLTIPS$(TIP_SKILL2[CHAR_MT3])	= "Electric dash"
+CONTROLTIPS$(TIP_SKILL2[CHAR_GME])	= "Attack action"
+CONTROLTIPS$(TIP_SKILL2[CHAR_PRS])	= ""
+CONTROLTIPS$(TIP_SKILL2[CHAR_COM])	= "Gun shot"
+CONTROLTIPS$(TIP_SKILL2[CHAR_CHW])	= ""
+CONTROLTIPS$(TIP_SKILL2[CHAR_EGR])	= "Rocket bomb (100)"
+CONTROLTIPS$(TIP_SKILL2[CHAR_INF])	= "Nullify"
+CONTROLTIPS$(TIP_SKILL2[CHAR_SHN])	= "Shadow rifle (50)"
+For i=1 To CHAR_NONMODPLAYABLECOUNT
+	CONTROLTIPS$(TIP_SKILL2AIR[i]) = CONTROLTIPS$(TIP_SKILL2[i])
+	TIP_HoldSKILL2AIR[i] = TIP_HoldSKILL2[i]
+Next
+CONTROLTIPS$(TIP_SKILL2AIR[CHAR_RAY])	= "Curl up"
+CONTROLTIPS$(TIP_SKILL2AIR[CHAR_GAM])	= "Propulsion (15)"
+
+CONTROLTIPS$(TIP_SKILL2AIR[CHAR_STO])	= ""
+CONTROLTIPS$(TIP_SKILL2AIR[CHAR_HBO])	= ""
+CONTROLTIPS$(TIP_SKILL2AIR[CHAR_EGG])	= ""
+CONTROLTIPS$(TIP_SKILL2X)				= "Rocket punch"
+;---------------------------------------------------------------------------
+CONTROLTIPS$(TIP_SKILL3[CHAR_SON])	= "Lightspeed attack (100)"
+CONTROLTIPS$(TIP_SKILL3[CHAR_TAI])	= ""
+CONTROLTIPS$(TIP_SKILL3[CHAR_KNU])	= "Demolition dash"
+CONTROLTIPS$(TIP_SKILL3[CHAR_AMY])	= ""
+CONTROLTIPS$(TIP_SKILL3[CHAR_SHA])	= "Chaos control"
+CONTROLTIPS$(TIP_SKILL3[CHAR_SHN])	= "Gatling gun (5)"
+CONTROLTIPS$(TIP_SKILL3[CHAR_ROU])	= "Screwkick"
+CONTROLTIPS$(TIP_SKILL3[CHAR_CRE])	= "Thundershoot (50)"
+CONTROLTIPS$(TIP_SKILL3[CHAR_BLA])	= "Trailblazer (100)"
+CONTROLTIPS$(TIP_SKILL3[CHAR_SIL])	= "Psychic dash"
+CONTROLTIPS$(TIP_SKILL3[CHAR_OME])	= "Chaingun (5)" : TIP_HoldSKILL3[CHAR_OME]=1
+CONTROLTIPS$(TIP_SKILL3[CHAR_ESP])	= "Kunai Hook"
+CONTROLTIPS$(TIP_SKILL3[CHAR_CHA])	= ""
+CONTROLTIPS$(TIP_SKILL3[CHAR_VEC])	= "Musical blow" : TIP_HoldSKILL3[CHAR_VEC]=1
+CONTROLTIPS$(TIP_SKILL3[CHAR_BIG])	= ""
+CONTROLTIPS$(TIP_SKILL3[CHAR_MAR])	= "Bubble beam"
+CONTROLTIPS$(TIP_SKILL3[CHAR_MIG])	= "Curl up"
+CONTROLTIPS$(TIP_SKILL3[CHAR_RAY])	= ""
+CONTROLTIPS$(TIP_SKILL3[CHAR_CHO])	= "Puddle form" : TIP_HoldSKILL3[CHAR_CHO]=1
+CONTROLTIPS$(TIP_SKILL3[CHAR_TIK])	= "Heaven's justice"
+CONTROLTIPS$(TIP_SKILL3[CHAR_NAC])	= ""
+CONTROLTIPS$(TIP_SKILL3[CHAR_BEA])	= ""
+CONTROLTIPS$(TIP_SKILL3[CHAR_BAR])	= ""
+CONTROLTIPS$(TIP_SKILL3[CHAR_JET])	= "Razor leaf"
+CONTROLTIPS$(TIP_SKILL3[CHAR_WAV])	= "Gear"
+CONTROLTIPS$(TIP_SKILL3[CHAR_STO])	= "Tire"
+CONTROLTIPS$(TIP_SKILL3[CHAR_TIA])	= ""
+CONTROLTIPS$(TIP_SKILL3[CHAR_HON])	= ""
+CONTROLTIPS$(TIP_SKILL3[CHAR_SHD])	= ""
+CONTROLTIPS$(TIP_SKILL3[CHAR_MPH])	= ""
+CONTROLTIPS$(TIP_SKILL3[CHAR_HBO])	= ""
+CONTROLTIPS$(TIP_SKILL3[CHAR_GAM])	= "Swimming propeller"
+CONTROLTIPS$(TIP_SKILL3[CHAR_EME])	= ""
+CONTROLTIPS$(TIP_SKILL3[CHAR_MET])	= ""
+CONTROLTIPS$(TIP_SKILL3[CHAR_TDL])	= ""
+CONTROLTIPS$(TIP_SKILL3[CHAR_MKN])	= "Uppercut"
+CONTROLTIPS$(TIP_SKILL3[CHAR_EGG])	= ""
+CONTROLTIPS$(TIP_SKILL3[CHAR_BET])	= ""
+CONTROLTIPS$(TIP_SKILL3[CHAR_MT3])	= "Black shield" : TIP_HoldSKILL3[CHAR_MT3]=1
+CONTROLTIPS$(TIP_SKILL3[CHAR_GME])	= ""
+CONTROLTIPS$(TIP_SKILL3[CHAR_PRS])	= ""
+CONTROLTIPS$(TIP_SKILL3[CHAR_COM])	= "Uppercut"
+CONTROLTIPS$(TIP_SKILL3[CHAR_CHW])	= ""
+CONTROLTIPS$(TIP_SKILL3[CHAR_EGR])	= ""
+CONTROLTIPS$(TIP_SKILL3[CHAR_INF])	= "Tidal wave"
+For i=1 To CHAR_NONMODPLAYABLECOUNT
+	CONTROLTIPS$(TIP_SKILL3AIR[i]) = CONTROLTIPS$(TIP_SKILL3[i])
+	TIP_HoldSKILL3AIR[i] = TIP_HoldSKILL3[i]
+Next
+CONTROLTIPS$(TIP_SKILL3AIR[CHAR_KNU])	= ""
+CONTROLTIPS$(TIP_SKILL3AIR[CHAR_ROU])	= "Spread wings"
+CONTROLTIPS$(TIP_SKILL3AIR[CHAR_OME])	= ""
+CONTROLTIPS$(TIP_SKILL3AIR[CHAR_VEC])	= ""
+CONTROLTIPS$(TIP_SKILL3AIR[CHAR_BLA])	= "Trick"
+CONTROLTIPS$(TIP_SKILL3AIR[CHAR_CHO])	= "Blob press" : TIP_HoldSKILL3AIR[CHAR_CHO]=0
+CONTROLTIPS$(TIP_SKILL3AIR[CHAR_SHD])	= "Helmet"
+CONTROLTIPS$(TIP_SKILL3AIR[CHAR_GAM])	= "Swimming propeller"
+CONTROLTIPS$(TIP_SKILL3AIR[CHAR_EME])	= "Mode change"
+CONTROLTIPS$(TIP_SKILL3AIR[CHAR_MKN])	= ""
+CONTROLTIPS$(TIP_SKILL3AIR[CHAR_BET])	= "Swimming propeller"
+CONTROLTIPS$(TIP_SKILL3AIR[CHAR_GME])	= "Mode change"
+CONTROLTIPS$(TIP_SKILL3AIR[CHAR_COM])	= ""
+CONTROLTIPS$(TIP_SKILL3AIR[CHAR_SHN])	= "Egg blaster"
+;---------------------------------------------------------------------------
+
+; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+
+Function Interface_ControlTipUpdate(tiptype)
+	Game\Interface\ControlTipType=tiptype
+End Function
+
+Function Interface_ControlTipUpdate_PickUp(tiptype)
+	Game\Interface\ControlTipTypePickUp=tiptype
+	Game\Interface\ControlTipPickUpTimer=0.5*secs#
+End Function
+
+Function Interface_ControlTipDraw_Button(tip$, control, x#, y#, hold=False, nocolor=False)
+	Game\Interface\ControlTip$=tip$
+	DrawRealText(Game\Interface\ControlTip$, x#-12.5*GAME_WINDOW_SCALE#, y#, (Interface_Text_2), 2)
+	DrawSmartKey_Small(control, x#, y#, nocolor)
+	If hold Then DrawImageEx(INTERFACE(Interface_Keys_Small), x#, y#-3.5*GAME_WINDOW_SCALE#, 82)
+End Function
+
+Function Interface_ControlTipDraw_Button2(tip$, control, x#, y#, nocolor=False)
+	Game\Interface\ControlTip$=tip$
+	DrawRealText(Game\Interface\ControlTip$, x#+12.5*GAME_WINDOW_SCALE#, y#, (Interface_Text_2), 0)
+	DrawSmartKey_Small(control, x#, y#, nocolor)
+End Function
+
+Function Interface_ControlTipDraw(p.tPlayer, x#, y#)
+	
+	
+	
+	
+	char=p\Character
+	
+	Select char
+		Case CHAR_TAI
+			If p\Action=ACTION_FLY Then
+				CONTROLTIPS$(TIP_SKILL1AIR[CHAR_TAI])	= "Flight boost (25)" 
+			Else
+				CONTROLTIPS$(TIP_SKILL1AIR[CHAR_TAI])	= "Tail swipe" 
+			EndIf
+		Case CHAR_AMY
+			If p\SpeedLength#>2.85 Then
+				CONTROLTIPS$(TIP_SKILL1[CHAR_AMY])	= "Piko vault"
+				TIP_HoldSKILL1[CHAR_AMY]=1
+			Else
+				CONTROLTIPS$(TIP_SKILL1[CHAR_AMY])	= "Piko smash"
+				TIP_HoldSKILL1[CHAR_AMY]=0
+			EndIf
+	End Select
+	
+	If IsCharMod(p\RealCharacter) Then
+		
+		
+		
+		CONTROLTIPS$(TIP_JUMPAMOD)	= MODCHARS_JUMPACTIONTIP$(p\RealCharacter-CHAR_MOD1+1)
+		TIP_HOLDJUMPAMOD	= MODCHARS_JUMPACTIONHOLD(p\RealCharacter-CHAR_MOD1+1)
+		
+	EndIf
+	
+	
+	
+	i=0
+	If Menu\Members>1 And p\Flags\MayChangeCharacter Then
+		Interface_ControlTipDraw_Button2(CONTROLTIPS$(TIP_CHANGE), INPUT_BUTTON_CHANGE, Abs(x#-GAME_WINDOW_W), GAME_WINDOW_H-(120)*GAME_WINDOW_SCALE#-i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+		i=i+1
+	EndIf
+	
+	If p\ShowShieldTip=1 Then
+	Interface_ControlTipDraw_Button2(CONTROLTIPS$(TIP_SHIELD), INPUT_BUTTON_ACTIONSKILLX, Abs(x#-GAME_WINDOW_W), GAME_WINDOW_H-(120)*GAME_WINDOW_SCALE#-i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+	i=i+1
+EndIf	
+	
+	k=-1
+	
+	If Game\Interface\ControlTipPickUpTimer>0 Then
+		Game\Interface\ControlTipPickUpTimer=Game\Interface\ControlTipPickUpTimer-timervalue#
+		Select Game\Interface\ControlTipTypePickUp
+			Case 1:
+				If p\Action=ACTION_COMMON Then Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_PICKUP), INPUT_BUTTON_ACTIONACT, x#, y#+k*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, False, True)
+			Case 2:
+				Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_THROW), INPUT_BUTTON_ACTIONACT, x#, y#+k*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, False, True)
+			Case 3:
+				Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_DROP), INPUT_BUTTON_ACTIONACT, x#, y#+k*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, False, True)
+			Case 4:
+				Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_INSERT), INPUT_BUTTON_ACTIONACT, x#, y#+k*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, False, True)
+		End Select
+	Else
+		
+		If p\Flags\CanSuperTransform Then
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SUPER), INPUT_BUTTON_ACTIONACT, x#, y#+k*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, False, True)
+		EndIf
+		
+	EndIf
+	
+	i=0
+	Select Game\Interface\ControlTipType
+		Case ACTION_COMMON,ACTION_JUMP,ACTION_HOP,ACTION_JUMPFALL,ACTION_FULLFALL,ACTION_UP,ACTION_FWD,ACTION_LAND,ACTION_CANNON3,ACTION_PUDDLE:
+			If p\Motion\Ground Then
+				Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_JUMP), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+				
+				i=i+1
+				
+				Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_ROLL), INPUT_BUTTON_ACTIONROLL, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+				i=i+1
+			Else
+				If p\Action=ACTION_FULLFALL Then
+					Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_JUMP), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+					i=i+1
+				Else
+					If Menu\Stage>0 Then
+						
+						If IsCharMod(p\RealCharacter) Then
+							Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_JUMPAMOD), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HOLDJUMPAMOD)
+							
+							i=i+1
+						Else
+							Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_ShortJUMPA[char]), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldJUMPA[char])
+							
+							i=i+1	
+						EndIf
+						
+						
+					Else
+						Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_ShortJUMPA[CHAR_SON]), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldJUMPA[CHAR_SON])
+						i=i+1
+					EndIf
+				EndIf
+				
+				Interface_ControlTipDraw_Stomp(p, x#, y#, i) : i=i+1
+			EndIf
+			
+			If p\Motion\Ground Then
+				If Menu\Stage>0 Then
+					Select char
+						Case CHAR_EME,CHAR_GME:
+							Select p\CharacterMode
+								Case CHAR_TAI: Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2[p\CharacterMode]), INPUT_BUTTON_ACTIONSKILL1, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2[p\CharacterMode])
+								Case CHAR_ESP: Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL1[CHAR_SON]), INPUT_BUTTON_ACTIONSKILL1, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL1[CHAR_SON])
+								Case CHAR_OME: Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL1[CHAR_MKN]), INPUT_BUTTON_ACTIONSKILL1, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL1[CHAR_MKN])
+								Default: Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL1[p\CharacterMode]), INPUT_BUTTON_ACTIONSKILL1, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL1[p\CharacterMode])
+							End Select
+							i=i+1
+						Case CHAR_GAM
+							If Game\Gameplay\GaugeEnergy>=15 Then
+								Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL1[char]), INPUT_BUTTON_ACTIONSKILL1, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL1[char])
+								i=i+1
+							EndIf 
+						Case CHAR_CRE
+							If (Not(p\CheeseShieldTimer>0)) Then
+								Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL1[char]), INPUT_BUTTON_ACTIONSKILL1, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL1[char])
+								i=i+1
+							EndIf
+						Default:
+							Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL1[char]), INPUT_BUTTON_ACTIONSKILL1, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL1[char])
+							i=i+1
+					End Select
+					If Len(CONTROLTIPS$(TIP_SKILL2[char]))>0 Then
+						Select char
+							Case CHAR_GME:
+								Select p\CharacterMode
+									Case CHAR_OME:
+										Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL1[CHAR_KNU]), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL1[CHAR_KNU])
+										i=i+1
+								End Select
+							Case CHAR_EGG:
+								If p\Character=CHAR_TMH Then
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2X), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2[char])
+								Else
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2[char]), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2[char])
+								EndIf
+								i=i+1
+							Case CHAR_OME,CHAR_CRE
+								If Game\Gameplay\GaugeEnergy>=25 Then
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2[char]), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2[char])
+									i=i+1
+								EndIf
+							Case CHAR_EGR
+								If Game\Gameplay\GaugeEnergy>=100 Then
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2[char]), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2[char])
+									i=i+1
+								EndIf	
+								
+							Case CHAR_SHN
+								If Game\Gameplay\GaugeEnergy>=50 Then
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2[char]), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2[char])
+									i=i+1
+								EndIf	
+							Case CHAR_SIL
+								If Game\Gameplay\GaugeEnergy>=10 Then
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2[char]), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2[char])
+									i=i+1
+								EndIf	
+							Default:
+								If Player_CanLightDash(p\Character) And (Not(Game\Interface\ControlTipPickUpTimer>0)) Then
+									If p\AroundLightDashTimer>0 Then
+										Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2[char]), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2[char])
+										i=i+1
+									EndIf
+								Else
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2[char]), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2[char])
+									i=i+1
+								EndIf 
+						End Select
+					EndIf
+					If Len(CONTROLTIPS$(TIP_SKILL3[char]))>0 Then
+						Select char
+							Case CHAR_SON
+								If p\AroundEnemyTimer>0 And Game\Gameplay\GaugeEnergy=100 Then
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL3[char]), INPUT_BUTTON_ACTIONSKILL3, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL3[char])
+									i=i+1
+								EndIf 
+							Case CHAR_GAM
+								If p\Objects\Position\y#<Game\Stage\Properties\WaterLevel Then
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL3[char]), INPUT_BUTTON_ACTIONSKILL3, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL3[char])
+									i=i+1
+								EndIf
+							Case CHAR_SHA
+								If Game\Gameplay\GaugeEnergy=100 Then
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL3[char]), INPUT_BUTTON_ACTIONSKILL3, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL3[char])
+									i=i+1
+								EndIf 
+							Case CHAR_CRE
+								If Game\Gameplay\GaugeEnergy>=50 Then
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL3[char]), INPUT_BUTTON_ACTIONSKILL3, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL3[char])
+									i=i+1
+								EndIf 
+							Case CHAR_OME,CHAR_SHN
+								If Game\Gameplay\GaugeEnergy>=5 Then
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL3[char]), INPUT_BUTTON_ACTIONSKILL3, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL3[char])
+									i=i+1
+								EndIf 	
+							Case CHAR_BLA
+								If Game\Gameplay\GaugeEnergy=100 Then 
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL3[char]), INPUT_BUTTON_ACTIONSKILL3, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL3[char])
+									i=i+1
+								EndIf
+							Default:
+								Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL3[char]), INPUT_BUTTON_ACTIONSKILL3, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL3[char])
+								i=i+1
+						End Select
+					EndIf
+				EndIf
+			Else
+				If Menu\Stage>0 Then
+					Select char
+						Case CHAR_EME,CHAR_GME:
+							Select p\CharacterMode
+								Case CHAR_TAI,CHAR_ESP: Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2AIR[p\CharacterMode]), INPUT_BUTTON_ACTIONSKILL1, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2AIR[p\CharacterMode])
+								Case CHAR_OME: Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL1AIR[CHAR_MKN]), INPUT_BUTTON_ACTIONSKILL1, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL1AIR[CHAR_MKN])
+								Default: Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL1AIR[p\CharacterMode]), INPUT_BUTTON_ACTIONSKILL1, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL1AIR[p\CharacterMode])
+							End Select
+							i=i+1
+						Default:
+							Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL1AIR[char]), INPUT_BUTTON_ACTIONSKILL1, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL1AIR[char])
+							i=i+1
+					End Select
+					If Len(CONTROLTIPS$(TIP_SKILL2AIR[char]))>0 Then
+						Select char
+							Case CHAR_GME:
+								Select p\CharacterMode
+									Case CHAR_OME:
+										Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL1AIR[CHAR_KNU]), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL1AIR[CHAR_KNU])
+										i=i+1
+								End Select
+							Case CHAR_EGG:
+								If p\Character=CHAR_TMH Then
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2X), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2AIR[char])
+								Else
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2AIR[char]), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2AIR[char])
+								EndIf
+								i=i+1
+							Case CHAR_OME
+								If Game\Gameplay\GaugeEnergy>=25 Then
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2AIR[char]), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2AIR[char])
+									i=i+1
+								EndIf
+							Case CHAR_GAM
+								If Game\Gameplay\GaugeEnergy>=15 Then
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2AIR[char]), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2[char])
+									i=i+1
+								EndIf	
+							Case CHAR_EGR
+								If Game\Gameplay\GaugeEnergy>=100 Then
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2AIR[char]), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2[char])
+									i=i+1
+								EndIf	
+							Case CHAR_SHN
+								If Game\Gameplay\GaugeEnergy>=50 Then
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2AIR[char]), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2[char])
+									i=i+1
+								EndIf
+							Case CHAR_SIL
+								If Game\Gameplay\GaugeEnergy>=10 Then
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2AIR[char]), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2[char])
+									i=i+1
+								EndIf	
+							Default:
+								If Player_CanLightDash(p\Character) And (Not(Game\Interface\ControlTipPickUpTimer>0)) Then
+									If p\AroundLightDashTimer>0 Then
+										Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2AIR[char]), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2AIR[char])
+										i=i+1
+									EndIf
+								Else
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2AIR[char]), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2AIR[char])
+									i=i+1
+								EndIf 
+						End Select
+					EndIf
+					If Len(CONTROLTIPS$(TIP_SKILL3AIR[char]))>0 Then
+						Select char
+							Case CHAR_SON
+								If p\AroundEnemyTimer>0 And Game\Gameplay\GaugeEnergy=100 Then
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL3[char]), INPUT_BUTTON_ACTIONSKILL3, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL3AIR[char])
+									i=i+1
+								EndIf 
+							Case CHAR_GAM
+								If p\Objects\Position\y#<Game\Stage\Properties\WaterLevel Then
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL3AIR[char]), INPUT_BUTTON_ACTIONSKILL3, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL3AIR[char])
+									i=i+1
+								EndIf 
+							Case CHAR_SHA
+								If p\AroundEnemyTimer>0 And Game\Gameplay\GaugeEnergy=100 Then
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL3AIR[char]), INPUT_BUTTON_ACTIONSKILL3, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL3AIR[char])
+									i=i+1
+								EndIf 
+							Case CHAR_BLA
+								If p\TricksDone<3 Then 
+									Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL3AIR[char]), INPUT_BUTTON_ACTIONSKILL3, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL3AIR[char])
+									i=i+1
+								EndIf
+							Default:
+								Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL3AIR[char]), INPUT_BUTTON_ACTIONSKILL3, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL3AIR[char])
+								i=i+1
+						End Select
+					Else
+						Select char
+							Case CHAR_VEC:
+								Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_HAMMERDOWN), INPUT_BUTTON_ACTIONSKILL3, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, 0)
+								i=i+1
+						End Select
+					EndIf
+				EndIf
+			EndIf
+			
+			
+			If p\Motion\Ground Then
+				If p\SpeedLength#>2 Then Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_DRIFT), INPUT_BUTTON_ACTIONDRIFT, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, True)
+			Else
+				Interface_ControlTipDraw_Bounce(p, x#, y#, i)
+			EndIf
+		Case ACTION_HURT:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_JUMP), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+		Case ACTION_CHARGE:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_CHARGE), INPUT_BUTTON_ACTIONROLL, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, True)
+			i=i+1
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_DRIFT), INPUT_BUTTON_ACTIONDRIFT, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, True)
+		Case ACTION_ROLL:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_BREAK), INPUT_BUTTON_ACTIONROLL, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+			i=i+1
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_DRIFT), INPUT_BUTTON_ACTIONDRIFT, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, True)
+		Case ACTION_DRIFT:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_JUMP), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+			i=i+1
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_DRIFT), INPUT_BUTTON_ACTIONDRIFT, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, True)
+		Case ACTION_GRIND:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_JUMP), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+			i=i+1
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_GRINDFASTER), INPUT_BUTTON_ACTIONROLL, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, True)
+		Case ACTION_FLY:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_ASCEND), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+			i=i+1
+			Interface_ControlTipDraw_Stomp(p, x#, y#, i) : i=i+1
+			Select char
+				Case CHAR_CRE,CHAR_CHA,CHAR_EGR:
+					Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL1AIR[char]), INPUT_BUTTON_ACTIONSKILL1, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL1AIR[char])
+					i=i+1
+				Case CHAR_TAI
+					If Game\Gameplay\GaugeEnergy>=25 Then
+						Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL1AIR[char]), INPUT_BUTTON_ACTIONSKILL1, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL1AIR[char])
+						i=i+1
+					EndIf
+					Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2[char]), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2[char])
+					i=i+1
+				Case CHAR_RAY
+					Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2AIR[char]), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2AIR[char])
+					i=i+1
+			End Select
+			Select char
+				Case CHAR_CHA:
+					Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2[char]), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2AIR[char])
+					i=i+1
+			End Select
+			Interface_ControlTipDraw_Bounce(p, x#, y#, i)
+		Case ACTION_GLIDE,ACTION_SLOWGLIDE:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_GLIDE), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, True)
+			i=i+1
+			Interface_ControlTipDraw_StompAndBounce(p, x#, y#, i)
+		Case ACTION_LEVITATE:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_ShortJUMPA[char]), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, True)
+			i=i+1
+			Interface_ControlTipDraw_Stomp(p, x#, y#, i) : i=i+1
+			Select char
+				Case CHAR_SIL,CHAR_MPH,CHAR_MT3,CHAR_INF:
+					If char=CHAR_SIL Then
+						Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL1[char]), INPUT_BUTTON_ACTIONSKILL1, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL1AIR[char])
+						i=i+1
+					EndIf
+					If Len(CONTROLTIPS$(TIP_SKILL2[char]))>0 Then
+						Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL2[char]), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL2AIR[char])
+						i=i+1
+					EndIf
+					If Len(CONTROLTIPS$(TIP_SKILL3[char]))>0 Then
+						Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL3[char]), INPUT_BUTTON_ACTIONSKILL3, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL3AIR[char])
+						i=i+1
+					EndIf
+			End Select
+			Interface_ControlTipDraw_Bounce(p, x#, y#, i)
+		Case ACTION_HOVER:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_ShortJUMPA[char]), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, True)
+			i=i+1
+			Interface_ControlTipDraw_Stomp(p, x#, y#, i) : i=i+1
+			Select char
+				Case CHAR_OME,CHAR_GAM,CHAR_EGG,CHAR_BET,CHAR_CHW,CHAR_TMH:
+					Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL1[char]), INPUT_BUTTON_ACTIONSKILL1, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL1AIR[char])
+					i=i+1
+			End Select
+			Interface_ControlTipDraw_Bounce(p, x#, y#, i)
+		Case ACTION_FLUTTER:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_ShortJUMPA[char]), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, True)
+			i=i+1
+			Interface_ControlTipDraw_StompAndBounce(p, x#, y#, i)
+		Case ACTION_SOAR:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_ShortJUMPA[CHAR_RAY]), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, True)
+			i=i+1
+			Interface_ControlTipDraw_Stomp(p, x#, y#, i) : i=i+1
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_ASCEND), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+			i=i+1
+			Interface_ControlTipDraw_Bounce(p, x#, y#, i)
+		Case ACTION_SLEET:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_ShortJUMPA[char]), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, True)
+			i=i+1
+			Interface_ControlTipDraw_StompAndBounce(p, x#, y#, i)
+		Case ACTION_CLIMB:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_JUMP), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+		Case ACTION_BUOY:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_JUMP), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+			i=i+1
+			Interface_ControlTipDraw_StompAndBounce(p, x#, y#, i)
+		Case ACTION_HOLD:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_JUMP), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+		Case ACTION_SPRINT:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_JUMP), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+			i=i+1
+			Interface_ControlTipDraw_StompAndBounce(p, x#, y#, i)
+		Case ACTION_CARRY:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_JUMP), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+		Case ACTION_FLOAT:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_JUMP), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+		Case ACTION_CANNON:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SHOOT), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+		Case ACTION_BOARD,ACTION_BOARDDRIFT:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_JUMP), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+			i=i+1
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SLIDEFASTER), INPUT_BUTTON_ACTIONROLL, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, True)
+			i=i+1
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_DRIFT), INPUT_BUTTON_ACTIONDRIFT, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, True)
+			If Game\WholeVehicle=0 Then
+				i=i+1
+				Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_HOPOFF), INPUT_BUTTON_ACTIONACT, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, False, True)
+			EndIf
+		Case ACTION_BOARDJUMP,ACTION_BOARDFALL,ACTION_BOARDTRICK:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SLIDEFASTER), INPUT_BUTTON_ACTIONROLL, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, True)
+			i=i+1
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_TRICK), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+			i=i+1
+			If Game\WholeVehicle=0 Then
+				Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_HOPOFF), INPUT_BUTTON_ACTIONACT, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, False, True)
+			EndIf
+		Case ACTION_BUMPED:
+			If p\BumpedCloudTimer>0 Then
+				If p\Motion\Ground Then
+					Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_JUMP), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+				Else
+					Select char
+						Case CHAR_EME,CHAR_GME:
+							Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_ShortJUMPA[p\CharacterMode]), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldJUMPA[p\CharacterMode])
+							i=i+1
+						Default:
+							
+							Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_ShortJUMPA[char]), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldJUMPA[char])
+							
+							i=i+1
+					End Select
+					Interface_ControlTipDraw_StompAndBounce(p, x#, y#, i)
+				EndIf
+			Else
+				Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_PADDLES), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+			EndIf
+		Case ACTION_SKYDIVE:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKYDIVEFASTER), INPUT_BUTTON_ACTIONROLL, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, True)
+		Case ACTION_GLIDER:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_ASCEND), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, True)
+			i=i+1
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_DESCEND), INPUT_BUTTON_ACTIONROLL, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, True)
+			If Game\WholeVehicle=0 Then
+				i=i+1
+				Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_HOPOFF), INPUT_BUTTON_ACTIONACT, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, False, True)
+			EndIf
+		Case ACTION_PUNCH,ACTION_THRUST:
+			Select char
+				Case CHAR_MET,CHAR_MT3:
+					Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_JUMP), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+					i=i+1
+				Default:
+					If p\Motion\Ground Then Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_JUMP), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+			End Select
+			Interface_ControlTipDraw_StompAndBounce(p, x#, y#, i)
+		Case ACTION_SWIPE,ACTION_CLAW,ACTION_THROW:
+			If p\Motion\Ground Then Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_JUMP), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+			Interface_ControlTipDraw_StompAndBounce(p, x#, y#, i)
+		Case ACTION_CAR,ACTION_CARFALL,ACTION_CARDRIFT:
+			If p\Motion\Ground Then
+				Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_JUMP), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+				i=i+1
+			EndIf
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_ACCELERATE), INPUT_BUTTON_ACTIONROLL, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, True)
+			i=i+1
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_DRIFT), INPUT_BUTTON_ACTIONDRIFT, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, True)
+			If Game\WholeVehicle=0 Then
+				i=i+1
+				Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_HOPOFF), INPUT_BUTTON_ACTIONACT, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, False, True)
+			EndIf
+		Case ACTION_TORNADO:
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_ASCEND), INPUT_BUTTON_ACTIONJUMP, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, True)
+			i=i+1
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_DESCEND), INPUT_BUTTON_ACTIONROLL, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, True)
+			i=i+1
+			If p\HasVehicle=7 Then
+				Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SKILL1[CHAR_GAM]), INPUT_BUTTON_ACTIONSKILL1, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, TIP_HoldSKILL1[CHAR_GAM])
+			Else
+				Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_SHOOT), INPUT_BUTTON_ACTIONSKILL1, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+			EndIf
+			i=i+1
+			Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_BATTLEMODE), INPUT_BUTTON_ACTIONSKILL2, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+			If Game\WholeVehicle=0 Then
+				i=i+1
+				Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_HOPOFF), INPUT_BUTTON_ACTIONACT, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#, False, True)
+			EndIf
+		Default:
+			Interface_ControlTipDraw_StompAndBounce(p, x#, y#, i)
+	End Select				
+End Function
+
+Function Interface_ControlTipDraw_CanStompAndBounce(p.tPlayer)
+	If p\Flags\CanStomp Or (p\Action=ACTION_JUMP Or p\Action=ACTION_HOP) Then Return True Else Return False
+End Function
+
+Function Interface_ControlTipDraw_Stomp(p.tPlayer, x#, y#, i)
+	If Interface_ControlTipDraw_CanStompAndBounce(p) Then
+		Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_STOMP), INPUT_BUTTON_ACTIONROLL, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+	EndIf
+End Function
+
+Function Interface_ControlTipDraw_Bounce(p.tPlayer, x#, y#, i)
+	Select p\Character
+		Case CHAR_SON
+			If Interface_ControlTipDraw_CanStompAndBounce(p) Then Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_BOUNCE), INPUT_BUTTON_ACTIONROLL, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#,True)
+			
+			
+		Default
+			If Interface_ControlTipDraw_CanStompAndBounce(p) Then
+				If Len(CONTROLTIPS$(TIP_STOMPA[p\Character]))>0 Then
+					Interface_ControlTipDraw_Button(CONTROLTIPS$(TIP_STOMPA[p\Character]), INPUT_BUTTON_ACTIONROLL, x#, y#+i*CONTROLINFO_SPACE#*GAME_WINDOW_SCALE#)
+				EndIf
+			EndIf
+	End Select
+End Function
+
+Function Interface_ControlTipDraw_StompAndBounce(p.tPlayer, x#, y#, i)
+	Interface_ControlTipDraw_Stomp(p.tPlayer, x#, y#, i)
+	
+			Interface_ControlTipDraw_Bounce(p.tPlayer, x#, y#, i+1)
+			
+End Function
 
 
 ;~IDEal Editor Parameters:

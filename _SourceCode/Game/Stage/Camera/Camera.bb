@@ -57,6 +57,7 @@
 		Field PosMesh
 		Field PosMeshTarget
 		Field PosTimer
+		Field Fov#
 		Field OutOfLockTimer
 		Field ChaoRaceCamOrder
 		Field ChaoRaceCamTimer
@@ -113,13 +114,7 @@
 				; Setup camera
 				CameraSprite = CreateSprite(c\Entity)
 				CameraZoom(c\Entity, CAMERA_FOV_NORMAL#)
-				Select Menu\Settings\ViewRange#
-					Case 1: Game\Others\CurrentCameraRange=4000
-					Case 2: Game\Others\CurrentCameraRange=8000
-					Case 3: Game\Others\CurrentCameraRange=12000
-					Case 4: Game\Others\CurrentCameraRange=24000
-					Default: Game\Others\CurrentCameraRange=8000
-				End Select
+				Game\Others\CurrentCameraRange=Menu\Settings\MeshViewRange#
 				CameraRange(c\Entity, 1, Game\Others\CurrentCameraRange)
 				CameraFogMode(c\Entity, 1)
 				CameraFogColor(c\Entity, 170, 208, 255)
@@ -163,17 +158,21 @@
 		; When the player pressed left or right, the camera rotates with them
 		If Not(Game\CamLock>0 Or Game\CamLock2>0 Or c\Lock\PosTimer>0) Then
 			c\Lock\CamLockedRightNow=False
-			If (Not(Input\Hold\MouseCamUp Or Input\Hold\MouseCamDown Or Input\Hold\MouseCamLeft Or Input\Hold\MouseCamRight)) And Game\Interface\DebugPlacerOn=0 And Game\CinemaMode=0 And Menu\Settings\AutoCameraDisabled#=0 Then
+			If (Not(Input\Hold\MouseCamUp Or Input\Hold\MouseCamDown Or Input\Hold\MouseCamLeft Or Input\Hold\MouseCamRight Or c\Target\Action=ACTION_GRIND)) And Game\Interface\DebugPlacerOn=0 And Game\CinemaMode=0 And Menu\Settings\AutoCameraDisabled#=0 And c\Target\SpeedLength#>1.4 Then
 				If Not(c\Target\Action=ACTION_CLIMB) Then RotationX# = Cos(Input\Movement_Direction)*Input\Movement_Pressure
 				RotationY# = Sin(Input\Movement_Direction)*Input\Movement_Pressure
-
-				c\TargetRotation\y# = c\TargetRotation\y#-(RotationX#*Gameplay_Camera_RotationSpeedX#*0.45*d\Delta)
-
+				
+				If c\Target\Animation\Animation=ANIMATION_JOG Or c\Target\Animation\Animation=ANIMATION_WALK Then
+					c\TargetRotation\y# = c\TargetRotation\y#-(RotationX#*(Gameplay_Camera_RotationSpeedX#*1.8)*0.45*d\Delta)	
+				Else
+					c\TargetRotation\y# = c\TargetRotation\y#-(RotationX#*Gameplay_Camera_RotationSpeedX#*0.45*d\Delta)
+				EndIf
+				
 				If (RotationY#>0.0) Then c\TargetRotation\y# = c\TargetRotation\y#-(RotationY#*Gameplay_Camera_RotationSpeedX#*0.7*d\Delta)*Sgn(Input\Movement_AnalogX#)
 			Else
-				c\TargetRotation\y# = c\TargetRotation\y#-Input\Camera_MouseAnalogX#*Gameplay_Camera_MouseRotationSpeedX#
-				c\TargetRotation\x# = Clamp#(180+c\TargetRotation\x+Input\Camera_MouseAnalogY#*Gameplay_Camera_MouseRotationSpeedY#, 100, 260)-180
-				c\MouseCameraTimer=0.6*secs#
+				c\TargetRotation\y# = c\TargetRotation\y#-Input\Camera_MouseAnalogX#*(Gameplay_Camera_MouseRotationSpeedX#*Menu\Settings\SensitivityMult#)
+				c\TargetRotation\x# = Clamp#(180+c\TargetRotation\x+Input\Camera_MouseAnalogY#*(Gameplay_Camera_MouseRotationSpeedY#*Menu\Settings\SensitivityMult#), 100, 260)-180
+				c\MouseCameraTimer=0.5*secs#
 			EndIf
 		Else
 			If Not(Game\CamLock2>0) Then c\Lock\CamLockedRightNow=True Else c\Lock\CamLockedRightNow=False
@@ -199,7 +198,19 @@
 
 		Select Game\CinemaMode
 			Case 0: PositionEntity(c\Entity, c\Position\x#, c\Position\y#+c\Target\ScaleFactor#*0.8, c\Position\z#, 1)
-			Default: PositionEntity(c\Entity, c\CinemaX#, c\CinemaY#, c\CinemaZ#, 1)
+			Default: 
+				If Game\CamDest=1 Then
+					If EntityDistance(cam\Lock\PosMesh,cam\Lock\PosMeshTarget)>5 Then
+						PointEntity(cam\Lock\PosMesh,cam\Lock\PosMeshTarget)
+						MoveEntity cam\Lock\PosMesh, 0, 0, 5*d\Delta
+					Else
+						Game\CamDest=0
+					EndIf
+					PositionEntity(c\Entity, EntityX(cam\Lock\PosMesh),EntityY(cam\Lock\PosMesh), EntityZ(cam\Lock\PosMesh), 1)
+					
+				Else
+					PositionEntity(c\Entity, c\CinemaX#, c\CinemaY#, c\CinemaZ#, 1)
+				EndIf
 		End Select
 		If Menu\ChaoGarden=0 Or Menu\Stage=999 Then
 			If Game\CamLock>5*secs# Or Game\RunLock>0 Or c\Target\Action=ACTION_DEBUG Or c\Target\Action=ACTION_GRIND Then
@@ -253,7 +264,7 @@
 
 	End Function
 
-	Function Camera_BossCamera(c.tCamera, p.tPlayer, entity)
+Function Camera_BossCamera(c.tCamera, p.tPlayer, entity)
 		If Game\Victory=0 And (Not(c\Target\Action=ACTION_DIE)) And c\Lock\NoBossCam=0 Then
 			If EntityDistance(entity,p\Objects\Entity)<300 Then
 				Game\CamLock2 = 2*secs#

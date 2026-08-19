@@ -1,5 +1,11 @@
 Function CreateObject(special#=0)
-
+	
+	If TempAttribute\dontcreate=1 Then Return
+	
+	If Game\Interface\DebugPlacerOn=0 Then
+		If TempAttribute\missionno<>Menu\MissionNo Then Return
+	EndIf
+	
 	Repeat
 	If TempAttribute\amountpitch#<-180 Then TempAttribute\amountpitch#=TempAttribute\amountpitch#+360
 	If TempAttribute\amountpitch#>180 Then TempAttribute\amountpitch#=TempAttribute\amountpitch#-360
@@ -124,8 +130,8 @@ Function CreateObject(special#=0)
 End Function
 
 Function CreateObject_Create(x#, y#, z#, pitch#, yaw#, roll#, special#=0)
-
-		Select TempAttribute\ObjectNo
+	
+	Select TempAttribute\ObjectNo
 		Case -10,-20,-11,-21,-12,-22,-13,-23,-14,-24:
 			Select TempAttribute\ObjectNo
 				Case -10: pe.tPlayer = Player_Create(-1, 0, 0)
@@ -144,16 +150,24 @@ Function CreateObject_Create(x#, y#, z#, pitch#, yaw#, roll#, special#=0)
 			pe\Rival\InitialPositionY#=y#
 			pe\Rival\InitialPositionZ#=z#
 			pe\Rival\InitialRotationY#=yaw#
+		Case OBJTYPE_TOKEN:
+			If Menu\TutorialMode=0 And Menu\ChaoGarden=0 Then obj.tObject = Object_Token_Create(x#, y#, z#)
+		Case OBJTYPE_DIAMOND:
+			obj.tObject = Object_Diamond_Create(x#, y#, z#, TempAttribute\power#)
 		Case OBJTYPE_RING:
-			obj.tObject = Object_Ring_Create(x#, y#, z#, TempAttribute\power#)
+			obj.tObject = Object_Ring_Create(x#, y#, z#, TempAttribute\power#,TempAttribute\switch1#, TempAttribute\switch2#, TempAttribute\switch3#, TempAttribute\switchmode)
+		Case OBJTYPE_COLLECTIBLE:
+			obj.tObject = Object_Collectible_Create(x#, y#, z#)
+		Case OBJTYPE_TIMER:
+			obj.tObject = Object_Timer_Create(x#, y#, z#, TempAttribute\power#)
 		Case OBJTYPE_REDRING:
 			obj.tObject = Object_RedRing_Create(x#, y#, z#, TempAttribute\power#)
-		Case OBJTYPE_SPRING,OBJTYPE_SPRINGICE,OBJTYPE_PANEL1,OBJTYPE_PANEL2,OBJTYPE_BSPRING,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTHORN,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_FORCER,OBJTYPE_NODE,OBJTYPE_NODE2,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW:
+		Case OBJTYPE_SPRING,OBJTYPE_BSPRING,OBJTYPE_PANEL1,OBJTYPE_PANEL2,OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAP,OBJTYPE_SPRINGTRAPX,OBJTYPE_PAD,OBJTYPE_RAILPAD,OBJTYPE_RAMP,OBJTYPE_TRAMP,OBJTYPE_HOOP,OBJTYPE_THOOP,OBJTYPE_ACCEL,OBJTYPE_LOCKER,OBJTYPE_FORCER,OBJTYPE_NODE,OBJTYPE_NODE2,OBJTYPE_FAN,OBJTYPE_BFAN,OBJTYPE_BFANLOW:
 			obj.tObject = Object_Translator_Create(x#, y#, z#, pitch#, yaw#, roll#, TempAttribute\power#, special#)
 		Case OBJTYPE_CHECK:
-			obj.tObject = Object_Check_Create(x#, y#, z#, pitch#, yaw#, roll#, special#)
+			If Menu\MissionPerfect=0 Then obj.tObject = Object_Check_Create(x#, y#, z#, pitch#, yaw#, roll#, special#)
 		Case OBJTYPE_RINGS,OBJTYPE_LIFE,OBJTYPE_TRAP,OBJTYPE_INVINC,OBJTYPE_SHOES,OBJTYPE_NSHIELD,OBJTYPE_FSHIELD,OBJTYPE_BSHIELD,OBJTYPE_TSHIELD,OBJTYPE_ESHIELD,OBJTYPE_BOMB,OBJTYPE_BOARD,OBJTYPE_GLIDER,OBJTYPE_CAR,OBJTYPE_BIKE,OBJTYPE_BOBSLEIGH,OBJTYPE_TORNADO,OBJTYPE_CYCLONE,OBJTYPE_KART,OBJTYPE_WINGS:
-			obj.tObject = Object_Monitor_Create(special#, x#, y#, z#,pitch#,yaw#,roll#)
+			obj.tObject = Object_Monitor_Create(special#, x#, y#, z#)
 		Case OBJTYPE_BALLOON:
 			obj.tObject = Object_Balloon_Create(x#, y#, z#)
 		Case OBJTYPE_SPIKEBALL,OBJTYPE_SPIKEBOMB,OBJTYPE_SPIKECRUSHER,OBJTYPE_SPIKEDRILL,OBJTYPE_SPIKETIMED,OBJTYPE_SPIKETRAP,OBJTYPE_SPIKEBAR,OBJTYPE_SPIKECYLINDER,OBJTYPE_SPIKESWINGBALL:
@@ -162,23 +176,26 @@ Function CreateObject_Create(x#, y#, z#, pitch#, yaw#, roll#, special#=0)
 			For i=1 To special#
 				obj.tObject = Object_Spike_Create(x#, y#, z#, pitch#, yaw#+(i-1)*(360/special#), roll#)
 			Next
+		Case OBJTYPE_MOONRING:
+			obj.tObject = Object_MoonRing_Create(x#, y#, z#, TempAttribute\power#, TempAttribute\teleporterno#,TempAttribute\hint1$,TempAttribute\switch1#)
 		Case OBJTYPE_GOAL:
 			obj.tObject = Object_Goal_Create(special#, x#, y#, z#, TempAttribute\teleportername$)
+		Case OBJTYPE_WARPRING:
+			obj.tObject = Object_WarpRing_Create(x#, y#, z#, TempAttribute\stagefolder$,TempAttribute\stagemissionno)
+		Case OBJTYPE_MISSIONCARD
+			obj.tObject = Object_MissionCard_Create(x#, y#, z#, TempAttribute\stagefolder$,TempAttribute\stagemissionno)
 		Case OBJTYPE_GOAL2:
 			obj.tObject = Object_Goal_Create(special#, x#, y#, z#, TempAttribute\teleportername$, TempAttribute\switch1#, TempAttribute\switch2#, TempAttribute\switch3#)
 		Case OBJTYPE_FLAMESPOUT,OBJTYPE_ICESPOUT,OBJTYPE_SHOCKSPOUT:
 			obj.tObject = Object_Spout_Create(x#, y#, z#, pitch#, yaw#, roll#)
 		Case OBJTYPE_LASERV,OBJTYPE_LASERH,OBJTYPE_RINGGATEV,OBJTYPE_RINGGATEH:
 			obj.tObject = Object_Laser_Create(x#, y#, z#, pitch#, yaw#, roll#, TempAttribute\switch1#, TempAttribute\switch2#, TempAttribute\switch3#, TempAttribute\power#)
-		Case OBJTYPE_BOXCAGE,OBJTYPE_BOXYELLOW,OBJTYPE_BOXIRON,OBJTYPE_BOXMETAL,OBJTYPE_BOXWOODEN,OBJTYPE_BOXLIGHT,OBJTYPE_BOXTNT,OBJTYPE_BOXNITRO,OBJTYPE_BOXFLOAT:
-			obj.tObject = Object_Box_Create(special#, x#, y#, z#, pitch#, yaw#, roll#, TempAttribute\switch1#, TempAttribute\switch2#, TempAttribute\switch3#)
+		Case OBJTYPE_BOXCAGE,OBJTYPE_BOXIRON,OBJTYPE_BOXMETAL,OBJTYPE_BOXWOODEN,OBJTYPE_BOXLIGHT,OBJTYPE_BOXTNT,OBJTYPE_BOXNITRO,OBJTYPE_BOXFLOAT:
+			obj.tObject = Object_Box_Create(x#, y#, z#, pitch#, yaw#, roll#, TempAttribute\switch1#, TempAttribute\switch2#, TempAttribute\switch3#)
 		Case OBJTYPE_BALLBUMPER,OBJTYPE_GROUNDBUMPER,OBJTYPE_METROBUMPER,OBJTYPE_PLATEBUMPER,OBJTYPE_TRIANGLEBUMPER,OBJTYPE_PADDLE:
 			obj.tObject = Object_Bumper_Create(x#, y#, z#, pitch#, yaw#, roll#, special#)
-		Case OBJTYPE_PAWN,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSWORD,OBJTYPE_GUNNER,OBJTYPE_SEARCHER,OBJTYPE_EGGHUNTER,OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_SPINA,OBJTYPE_SPANA,OBJTYPE_SPONA,OBJTYPE_MOTOBUG,OBJTYPE_CATERKILLER,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_CHOPPER,OBJTYPE_CRABMEAT,OBJTYPE_JAWS,OBJTYPE_SPINY,OBJTYPE_GRABBER,OBJTYPE_KIKI,OBJTYPE_COP,OBJTYPE_COPRACER,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_ACHAOS,OBJTYPE_ACHAOSBLOB,OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_CHASER,OBJTYPE_FIGHTER,OBJTYPE_EGGROBO,OBJTYPE_CAMERON,OBJTYPE_KLAGEN,OBJTYPE_ORBINAUT,OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_ANTON,OBJTYPE_AQUIS,OBJTYPE_BOMBIE,OBJTYPE_NEWTRON,OBJTYPE_PENGUINATOR,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_SPIKES,OBJTYPE_ASTERON,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_STEELION,OBJTYPE_BOO,OBJTYPE_BOOSCARE,OBJTYPE_GHOST,OBJTYPE_BALKIRY,OBJTYPE_BURROBOT,OBJTYPE_CRAWL,OBJTYPE_DRAGONFLY,OBJTYPE_MADMOLE,OBJTYPE_MANTA,OBJTYPE_MUSHMEANIE,OBJTYPE_OCTUS,OBJTYPE_PATABATA,OBJTYPE_ZOOMER,OBJTYPE_BITER,OBJTYPE_CRAWLER,OBJTYPE_TAKER,OBJTYPE_E1000,OBJTYPE_BALLHOG,OBJTYPE_RHINOTANK,OBJTYPE_TECHNOSQU,OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_OAKSWORD,OBJTYPE_LEECH,OBJTYPE_WING,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_CATAKILLER,OBJTYPE_CLUCKOID,OBJTYPE_MANTIS,OBJTYPE_NEBULA,OBJTYPE_ROLLER,OBJTYPE_SHEEP,OBJTYPE_SNOWY,OBJTYPE_SPLATS,OBJTYPE_TOXO,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE,OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER,OBJTYPE_HAMMERSHIELD,OBJTYPE_WITCH1,OBJTYPE_WITCH2,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
+		Case OBJTYPE_BITER,OBJTYPE_CRAWLER,OBJTYPE_TAKER,OBJTYPE_EGUNNER,OBJTYPE_PAWN,OBJTYPE_HUNTER,OBJTYPE_INACTIVE,OBJTYPE_PAWNSHIELD,OBJTYPE_PAWNGUN,OBJTYPE_PAWNSWORD,OBJTYPE_FLAPPER,OBJTYPE_FLAPPERGUN,OBJTYPE_FLAPPERBOMB,OBJTYPE_FLAPPERNEEDLE,OBJTYPE_SPINA,OBJTYPE_SPUNA,OBJTYPE_SPANA,OBJTYPE_SPONA,OBJTYPE_MOTOBUG,OBJTYPE_CATERKILLER,OBJTYPE_BUZZBOMBER,OBJTYPE_BUZZER,OBJTYPE_CHOPPER,OBJTYPE_CRABMEAT,OBJTYPE_JAWS,OBJTYPE_SPINY,OBJTYPE_GRABBER,OBJTYPE_KIKI,OBJTYPE_COP,OBJTYPE_COPRACER,OBJTYPE_HUNTER,OBJTYPE_HUNTERSHIELD,OBJTYPE_BEETLE,OBJTYPE_BEETLEMONO,OBJTYPE_BEETLESPARK,OBJTYPE_BEETLESPRING,OBJTYPE_ACHAOS,OBJTYPE_ACHAOSBLOB,OBJTYPE_RHINO,OBJTYPE_RHINOSPIKES,OBJTYPE_HORNET3,OBJTYPE_HORNET6,OBJTYPE_AEROC,OBJTYPE_CHASER,OBJTYPE_FIGHTER,OBJTYPE_EGGROBO,OBJTYPE_CAMERON,OBJTYPE_KLAGEN,OBJTYPE_ORBINAUT,OBJTYPE_TYPHOON,OBJTYPE_TYPHOONF,OBJTYPE_ANTON,OBJTYPE_AQUIS,OBJTYPE_BOMBIE,OBJTYPE_NEWTRON,OBJTYPE_PENGUINATOR,OBJTYPE_SLICER,OBJTYPE_SNAILB,OBJTYPE_SPIKES,OBJTYPE_ASTERON,OBJTYPE_BATBOT,OBJTYPE_BUBBLS,OBJTYPE_BUBBLSSPIKES,OBJTYPE_STEELION,OBJTYPE_BOO,OBJTYPE_BOOSCARE,OBJTYPE_GHOST,OBJTYPE_BALKIRY,OBJTYPE_BURROBOT,OBJTYPE_CRAWL,OBJTYPE_DRAGONFLY,OBJTYPE_MADMOLE,OBJTYPE_MANTA,OBJTYPE_MUSHMEANIE,OBJTYPE_OCTUS,OBJTYPE_PATABATA,OBJTYPE_ZOOMER,OBJTYPE_E1000,OBJTYPE_BALLHOG,OBJTYPE_RHINOTANK,OBJTYPE_TECHNOSQU,OBJTYPE_WARRIOR,OBJTYPE_WARRIORGUN1,OBJTYPE_WARRIORGUN2,OBJTYPE_OAKSWORD,OBJTYPE_LEECH,OBJTYPE_WING,OBJTYPE_SOLDIER,OBJTYPE_SOLDIERCAMO,OBJTYPE_CATAKILLER,OBJTYPE_CLUCKOID,OBJTYPE_MANTIS,OBJTYPE_NEBULA,OBJTYPE_ROLLER,OBJTYPE_SHEEP,OBJTYPE_SNOWY,OBJTYPE_SPLATS,OBJTYPE_TOXO,OBJTYPE_SPRINKLR,OBJTYPE_DOOMSEYE,OBJTYPE_HAMMER,OBJTYPE_HAMMERHAMMER,OBJTYPE_HAMMERSHIELD,OBJTYPE_WITCH1,OBJTYPE_WITCH2,OBJTYPE_FCANNON1,OBJTYPE_FCANNON2,OBJTYPE_FCANNON3:
 			obj.tObject = Object_Enemy_Create(x#, y#, z#, pitch#, yaw#, roll#, TempAttribute\switch1#, TempAttribute\carnival#)
-		Case OBJTYPE_WARPRING:
-			obj.tObject = Object_Goal_Create(special#,x#, y#, z#, TempAttribute\teleportername$,0,0,0,TempAttribute\power#)
-			
 		Case OBJTYPE_BUBBLES:
 			obj.tObject = Object_Bubbles_Create(x#, y#, z#, 0)
 		Case OBJTYPE_SHARD:
@@ -188,7 +205,7 @@ Function CreateObject_Create(x#, y#, z#, pitch#, yaw#, roll#, special#=0)
 		Case OBJTYPE_TELEPORTER2:
 			obj.tObject = Object_Teleporter_Create(x#, y#, z#, pitch#, yaw#, roll#, 0, TempAttribute\teleportername$)
 		Case OBJTYPE_OMOCHAO:
-			obj.tObject = Object_Omochao_Create(x#, y#, z#, pitch#, yaw#, roll#,TempAttribute\omovoiceon,TempAttribute\omovoicepath$)
+			obj.tObject = Object_Omochao_Create(x#, y#, z#, pitch#, yaw#, roll#)
 		Case OBJTYPE_CANNON:
 			obj.tObject = Object_Cannon_Create(x#, y#, z#, pitch#, yaw#, roll#, TempAttribute\power#)
 		Case OBJTYPE_PROPELLER,OBJTYPE_PULLEY,OBJTYPE_ROCKET,OBJTYPE_ELEVATOR:
@@ -197,14 +214,14 @@ Function CreateObject_Create(x#, y#, z#, pitch#, yaw#, roll#, special#=0)
 			obj.tObject = Object_Handle_Create(x#, y#, z#, yaw#)
 		Case OBJTYPE_FPLAT:
 			obj.tObject = Object_FPlat_Create(x#, y#, z#, pitch#, yaw#, roll#)
-		Case OBJTYPE_SWITCH,OBJTYPE_SWITCHAIR,OBJTYPE_SWITCHBASE,OBJTYPE_SWITCHWATER:
-			obj.tObject = Object_Switch_Create(x#, y#, z#, pitch#, yaw#, roll#, TempAttribute\switch1#, TempAttribute\switchstatus#, TempAttribute\power#, special#)
+		Case OBJTYPE_SWITCH, OBJTYPE_SWITCHINVIS,OBJTYPE_SWITCHAIR,OBJTYPE_SWITCHBASE,OBJTYPE_SWITCHWATER:
+			obj.tObject = Object_Switch_Create(x#, y#, z#, pitch#, yaw#, roll#, TempAttribute\switch1#, TempAttribute\switchstatus#, TempAttribute\power#, special#,TempAttribute\switchmode,TempAttribute\switchtimer)
 		Case OBJTYPE_SWITCHTOP:
 			obj.tObject = Object_SwitchTop_Create(x#, y#, z#, yaw#, TempAttribute\switch1#)
 		Case OBJTYPE_ROCK,OBJTYPE_CRYSTAL,OBJTYPE_AUTO,OBJTYPE_ICICLE,OBJTYPE_ICICLEBIG,OBJTYPE_ICEDECOR:
 			obj.tObject = Object_Breakable_Create(x#, y#, z#, pitch#, yaw#, roll#, special#)
 		Case OBJTYPE_HINT:
-			obj.tObject = Object_Hint_Create(x#, y#, z#, TempAttribute\hint1$, TempAttribute\hint2$,TempAttribute\power#,TempAttribute\soundpath$)
+			obj.tObject = Object_Hint_Create(x#, y#, z#, TempAttribute\hint1$, TempAttribute\hint2$,TempAttribute\power#,TempAttribute\path$,special,TempAttribute\emittype)
 		Case OBJTYPE_COUNTER:
 			obj.tObject = Object_Counter_Create(x#, y#, z#, special#, TempAttribute\power#)
 		Case OBJTYPE_SIGN:
@@ -235,12 +252,16 @@ Function CreateObject_Create(x#, y#, z#, pitch#, yaw#, roll#, special#=0)
 			For i=1 To j
 				obj.tObject = Object_Visual_Create(x#, y#+2*(i-1), z#, pitch#, yaw#, roll#, TempAttribute\power#, special#)
 			Next
-		Case OBJTYPE_STAGEVISUAL1,OBJTYPE_STAGEVISUAL2,OBJTYPE_STAGEVISUAL3,OBJTYPE_STAGEVISUAL4,OBJTYPE_STAGEVISUAL5
-			obj.tObject = Object_Visual_Create(x#, y#, z#, pitch#, yaw#, roll#, TempAttribute\power#, special#)
-		Case OBJTYPE_TRIGGER_VEHICLECANCEL,OBJTYPE_TRIGGER_MACH,OBJTYPE_TRIGGER_MACHCANCEL,OBJTYPE_TRIGGER_SKYDIVE,OBJTYPE_TRIGGER_SKYDIVECANCEL:
-			obj.tObject = Object_Trigger_Create(x#, y#, z#, special#)
-		Case OBJTYPE_TRIGGER_WATER,OBJTYPE_TRIGGER_MUSIC:
+		Case OBJTYPE_TRIGGER_VEHICLECANCEL,OBJTYPE_TRIGGER_FOG,OBJTYPE_TRIGGER_VOICE,OBJTYPE_TRIGGER_MACH,OBJTYPE_TRIGGER_MACHCANCEL,OBJTYPE_TRIGGER_SKYDIVE,OBJTYPE_TRIGGER_SKYDIVECANCEL:
+			obj.tObject = Object_Trigger_Create(x#, y#, z#, special#,TempAttribute\power#)
+		Case OBJTYPE_TRIGGER_WATER,OBJTYPE_TRIGGER_MUSIC,OBJTYPE_TRIGGER_LAPSTART:
 			obj.tObject = Object_Trigger_Create(x#, y#, z#, special#, TempAttribute\power#)
+		Case OBJTYPE_TRIGGER_DEST:
+			obj.tObject = Object_Trigger_Create(x#, y#, z#, TempAttribute\power#, 7)
+		Case OBJTYPE_TRIGGER_LAPCHECK
+			obj.tObject = Object_Trigger_Create(x#, y#, z#, TempAttribute\teleporterno#, TempAttribute\power#)
+		Case OBJTYPE_TRIGGER_SHOP,OBJTYPE_TRIGGER_SOUNDTEST,OBJTYPE_TRIGGER_ATM
+			obj.tObject = Object_Trigger_Create(x#, y#, z#, special#,TempAttribute\power#)
 		Case OBJTYPE_BOSS,OBJTYPE_BOSS2,OBJTYPE_BOSSRUN,OBJTYPE_BOSSBETA,OBJTYPE_BOSSMECHA:
 			obj.tObject = Object_Enemy_Create(x#, y#, z#, pitch#, yaw#, roll#, TempAttribute\switch1#, 0)
 		Case OBJTYPE_REPEATER:
@@ -253,284 +274,23 @@ Function CreateObject_Create(x#, y#, z#, pitch#, yaw#, roll#, special#=0)
 			obj.tObject = Object_Capsule_Create(x#, y#, z#, yaw#)
 		Case OBJTYPE_BOMBER1,OBJTYPE_BOMBER2:
 			obj.tObject = Object_Bomber_Create(x#, y#, z#, yaw#)
-		End Select
-
-End Function
-
-;___________________________________________________________________________________________________________________________________________________________________________________________________________
-;___________________________________________________________________________________________________________________________________________________________________________________________________________
-;___________________________________________________________________________________________________________________________________________________________________________________________________________
-;___________________________________________________________________________________________________________________________________________________________________________________________________________
-;___________________________________________________________________________________________________________________________________________________________________________________________________________
-
-Function CreateSpecialStageContent_Floor(Path$,length=425)
-
-	Select(Abs(Menu\Stage))
-		Case 1: Game\Stage\Properties\SpecialStageRingGateRequirement=300
-		Case 2: Game\Stage\Properties\SpecialStageRingGateRequirement=300
-		Case 3: Game\Stage\Properties\SpecialStageRingGateRequirement=250
-		Case 4: Game\Stage\Properties\SpecialStageRingGateRequirement=250
-		Case 5: Game\Stage\Properties\SpecialStageRingGateRequirement=200
-		Case 6: Game\Stage\Properties\SpecialStageRingGateRequirement=200
-		Case 7: Game\Stage\Properties\SpecialStageRingGateRequirement=200
-	End Select
-
-	Game\LimitTime=90*secs#
-	Game\IdealTime=80*secs#
-	Game\IdealScore=0
-
-	block = LoadMesh(Path$+"Stage\block.b3d", Game\Stage\Root) : ScaleEntity(block,2,2,2)
-	blockx = LoadMesh(Path$+"Stage\blockx.b3d", Game\Stage\Root) : ScaleEntity(blockx,2,2,2)
-	blockL = LoadMesh(Path$+"Stage\blockL.b3d", Game\Stage\Root) : ScaleEntity(blockL,2,2,2)
-	blockR = LoadMesh(Path$+"Stage\blockR.b3d", Game\Stage\Root) : ScaleEntity(blockR,2,2,2)
-
-	Game\Stage\Properties\SpecialStageTexture=LoadTexture(Path$+"Stage\block.png", 1+2)
-
-	hy=0
-	For j=-80 To length+30
-		If Abs(Menu\Stage)=3 Or Abs(Menu\Stage)=7 Then
-			If Rand(1,20)=1 Then hy=Abs(hy-1)
-		EndIf
-
-		For i=1 To 7
-			h=False
-			h2=False
-			h3=False
-			If j<0 Or j>length Then h2=True
-			If i=1 Or i=7 Then h3=True
-			If h2 Or h3 Then
-				h=True
-			Else
-				h=True
-				If Abs(Menu\Stage)>=4 And Abs(Menu\Stage)<=5 Then
-					If Rand(1,9)=1 Then h=False
-				ElseIf Abs(Menu\Stage)>=6 Then
-					If Rand(1,7)=1 Then h=False
+		Default
+			For vs=1 To VISUAL_AMOUNT
+				
+				If TempAttribute\ObjectNo =OBJTYPE_VISUAL[vs] Then
+					obj.tObject = Object_Visual_Create(x#, y#, z#, pitch#, yaw#, roll#, TempAttribute\power#,0, TempAttribute\switch1#, TempAttribute\switch2#, TempAttribute\switch3#, TempAttribute\switchmode)
 				EndIf
-			EndIf
-
-			m.MeshStructure = New MeshStructure
-
-			Select i
-			Case 1: m\Entity = CopyEntity(blockR, Game\Stage\Root)
-			Case 7: m\Entity = CopyEntity(blockL, Game\Stage\Root)
-			Default: If h Then m\Entity = CopyEntity(block, Game\Stage\Root) Else m\Entity = CopyEntity(blockx, Game\Stage\Root)
-			End Select
-			m\ForSpecialStage=1
-
-			EntityPickMode(m\Entity, 2, True)
-			EntityShininess(m\Entity, 0)
-			If h Then
-				EntityAlpha(m\Entity, 0.75)
-				EntityType(m\Entity, COLLISION_WORLD_POLYGON)
-				EntityTexture(m\Entity, Game\Stage\Properties\SpecialStageTexture)
-				EntityColor(m\Entity, Rand(50,200), Rand(50,200), Rand(50,200))
-			EndIf
-			RotateEntity(m\Entity, 0, 0, 0)
-
-			x#=(i-4)*20 : z#=j*40
-			If h2 Then hy=0
-			y#=0+20*hy
-			PositionEntity(m\Entity, x#, y#, z#)
-			m\InitialPosX#=x# : m\InitialPosY#=y# : m\InitialPosZ#=z#
-
-			If (Not(h2 Or h3)) And h Then
-				Select(Rand(1,3))
-				Case 1,2:
-					Select(Rand(1,30))
-						Case 1: CreateSpecialStageContent_Obj(OBJTYPE_RINGS,x#,y#,z#)
-						Default: CreateSpecialStageContent_Obj(OBJTYPE_RING,x#,y#,z#-20)
-					End Select
-				Case 3:
-					Select(Abs(Menu\Stage))
-						Case 1: CreateSpecialStageContent_Obj(OBJTYPE_SPIKEBOMB,x#,y#,z#)
-						Case 2:
-							Select(Rand(1,3))
-								Case 1: CreateSpecialStageContent_Obj(OBJTYPE_SPIKEBOMB,x#,y#,z#)
-								Case 2: CreateSpecialStageContent_Obj(OBJTYPE_SPIKECRUSHER,x#,y#,z#)
-								Case 3: CreateSpecialStageContent_Obj(OBJTYPE_GROUNDBUMPER,x#,y#,z#)
-							End Select
-						Case 3: CreateSpecialStageContent_Obj(OBJTYPE_SHOCKSPOUT,x#,y#,z#)
-						Case 4:
-							Select(Rand(1,2))
-								Case 1: CreateSpecialStageContent_Obj(OBJTYPE_ORBINAUT,x#,y#,z#)
-								Case 2: CreateSpecialStageContent_Obj(OBJTYPE_BOXNITRO,x#,y#,z#)
-							End Select
-						Case 5:
-							Select(Rand(1,4))
-								Case 1: CreateSpecialStageContent_Obj(OBJTYPE_BOXNITRO,x#,y#,z#)
-								Case 2: CreateSpecialStageContent_Obj(OBJTYPE_SPINA,x#,y#,z#)
-								Case 3: CreateSpecialStageContent_Obj(OBJTYPE_SPRING,x#,y#,z#)
-								Case 4: CreateSpecialStageContent_Obj(OBJTYPE_ICESPOUT,x#,y#,z#)
-							End Select
-						Case 6:
-							Select(Rand(1,4))
-								Case 1: CreateSpecialStageContent_Obj(OBJTYPE_SPIKEBOMB,x#,y#,z#)
-								Case 2: CreateSpecialStageContent_Obj(OBJTYPE_SPIKECRUSHER,x#,y#,z#)
-								Case 3: CreateSpecialStageContent_Obj(OBJTYPE_ORBINAUT,x#,y#,z#)
-								Case 4: CreateSpecialStageContent_Obj(OBJTYPE_GROUNDBUMPER,x#,y#,z#)
-							End Select
-						Case 7:
-							Select(Rand(1,5))
-								Case 1: CreateSpecialStageContent_Obj(OBJTYPE_SPIKEBOMB,x#,y#,z#)
-								Case 2: CreateSpecialStageContent_Obj(OBJTYPE_SPIKECRUSHER,x#,y#,z#)
-								Case 3: CreateSpecialStageContent_Obj(OBJTYPE_SHOCKSPOUT,x#,y#,z#)
-								Case 4: CreateSpecialStageContent_Obj(OBJTYPE_SPRING,x#,y#,z#)
-								Case 5: CreateSpecialStageContent_Obj(OBJTYPE_TRAP,x#,y#,z#)
-							End Select
-					End Select
-				End Select
-			EndIf
-		Next
-	Next
-
-	CreateSpecialStageContent_Obj(OBJTYPE_RINGGATEV,120,0,(length+10)*40)
-	CreateSpecialStageContent_Obj(OBJTYPE_GOAL,0,0,(length+20)*40)
-
-	FreeEntity block
-	FreeEntity blockx
-	FreeEntity blockL
-	FreeEntity blockR
-
-	Game\Stage\Properties\SpecialStageSkydomeTexture=LoadTexture(Path$+"Skydome\sky.png", 1+2)
-	EntityTexture(Game\Stage\Properties\Skydome,Game\Stage\Properties\SpecialStageSkydomeTexture)
-	Game\Stage\Properties\SpecialStageSkydomeTargetR=Rand(50,200)
-	Game\Stage\Properties\SpecialStageSkydomeTargetG=Rand(50,200)
-	Game\Stage\Properties\SpecialStageSkydomeTargetB=Rand(50,200)
-	Game\Stage\Properties\SpecialStageSkydomeR=Game\Stage\Properties\SpecialStageSkydomeTargetR
-	Game\Stage\Properties\SpecialStageSkydomeG=Game\Stage\Properties\SpecialStageSkydomeTargetG
-	Game\Stage\Properties\SpecialStageSkydomeB=Game\Stage\Properties\SpecialStageSkydomeTargetB
-	EntityColor(Game\Stage\Properties\Skydome,Game\Stage\Properties\SpecialStageSkydomeR,Game\Stage\Properties\SpecialStageSkydomeG,Game\Stage\Properties\SpecialStageSkydomeB)
-
-	For h=-1 To 1
-	For j=-80 To length+30
-		If Not h=0 Then
-		For i=1 To Rand(1,5)
-			m.MeshStructure = New MeshStructure
-
-			m\Entity = LoadMesh(Path$+"Stage\prop"+Int(Rand(1,9))+".b3d", Game\Stage\Root) : ScaleEntity(m\Entity,17,17,17)
-			m\ForSpecialStage=2
-			m\ChangeTexOrder=Rand(1,3)
-
-			EntityPickMode(m\Entity, 2, True)
-			EntityShininess(m\Entity, 0)
-			EntityAlpha(m\Entity, 0.75)
-			EntityColor(m\Entity, Rand(50,200), Rand(50,200), Rand(50,200))
-			RotateEntity(m\Entity, Rand(1,360), Rand(1,360), Rand(1,360))
-
-			x#=h*(500+(i-1)*500)+Rand(-300,300) : z#=j*40
-			j=j+Rand(0,20)
-			y#=Rand(-100,300)
-			PositionEntity(m\Entity, x#, y#, z#)
-			m\InitialPosX#=x# : m\InitialPosY#=y# : m\InitialPosZ#=z#
-		Next
-		EndIf
-	Next
-	Next
-
-End Function
-
-;___________________________________________________________________________________________________________________________________________________________________________________________________________
-;___________________________________________________________________________________________________________________________________________________________________________________________________________
-
-Function CreateSpecialStageContent_Obj(objtype,x#,y#,z#)
-
-	TempAttribute\ObjectNo=objtype
-	TempAttribute\x#=x# : TempAttribute\y#=y# : TempAttribute\z#=z#
-	TempAttribute\pitch#=0 : TempAttribute\yaw#=0 : TempAttribute\roll#=0
-	ResetTempAmounts()
-	Select objtype
-		Case OBJTYPE_RING:
-			If Rand(1,5)=1 Then
-				TempAttribute\y#=y#+4.0
-				TempAttribute\amount1# = Rand(3,4)
-				TempAttribute\amountspace1# = 10
-				Select Rand(1,10)
-					Case 1,2,3,4,5,6,7,8,9
-						TempAttribute\power#=1
-					Case 10
-						TempAttribute\power#=Rand(5,10)
-				End Select
-				CreateObject()
-			EndIf
-		Case OBJTYPE_RINGS:
-			If Rand(1,5)=1 Then
-				TempAttribute\y#=y#+6.9
-				CreateObject()
-			EndIf
-		Case OBJTYPE_SPIKEBOMB:
-			If Rand(1,10)=1 Then
-				TempAttribute\y#=y#+6.48
-				CreateObject()
-			EndIf
-		Case OBJTYPE_SPIKECRUSHER:
-			If Rand(1,10)=1 Then
-				TempAttribute\y#=y#+19
-				CreateObject()
-			EndIf
-		Case OBJTYPE_SHOCKSPOUT:
-			If Rand(1,10)=1 Then
-				TempAttribute\y#=y#+2.98
-				CreateObject()
-			EndIf
-		Case OBJTYPE_BOXNITRO:
-			If Rand(1,10)=1 Then
-				TempAttribute\y#=y#+3.1
-				CreateObject()
-			EndIf
-		Case OBJTYPE_SPINA:
-			If Rand(1,10)=1 Then
-				TempAttribute\y#=y#+4.1
-				TempAttribute\yaw#=180
-				CreateObject()
-			EndIf
-		Case OBJTYPE_ORBINAUT:
-			If Rand(1,10)=1 Then
-				TempAttribute\y#=y#+4.1
-				TempAttribute\yaw#=180
-				CreateObject()
-			EndIf
-		Case OBJTYPE_GROUNDBUMPER:
-			If Rand(1,10)=1 Then
-				TempAttribute\y#=y#+1.99
-				CreateObject()
-			EndIf
-		Case OBJTYPE_SPRING:
-			If Rand(1,10)=1 Then
-				TempAttribute\y#=y#+3.64
-				TempAttribute\pitch#=22.5
-				TempAttribute\power#=1.5
-				TempAttribute\lockcontrol#=0
-				TempAttribute\lockcam#=0
-				TempAttribute\lockrun#=0
-				TempAttribute\hasd#=0
-				CreateObject()
-			EndIf
-		Case OBJTYPE_TRAP:
-			If Rand(1,10)=1 Then
-				TempAttribute\y#=y#+6.9
-				CreateObject()
-			EndIf
-		Case OBJTYPE_ICESPOUT:
-			If Rand(1,10)=1 Then
-				TempAttribute\y#=y#+2.98
-				CreateObject()
-			EndIf
-		Case OBJTYPE_RINGGATEV:
-			TempAttribute\y#=y#+8.73
-			TempAttribute\power#=Game\Stage\Properties\SpecialStageRingGateRequirement
-			TempAttribute\amount1# = 13
-			TempAttribute\amount3# = 6
-			TempAttribute\amountyaw# = 90
-			TempAttribute\amountspace1# = 20
-			TempAttribute\amountspace3# = 13.67
-			CreateObject()
-		Case OBJTYPE_GOAL:
-			TempAttribute\y#=y#+15.0
-			CreateObject()
+			Next
 	End Select
-
+	
 End Function
+
+;___________________________________________________________________________________________________________________________________________________________________________________________________________
+;___________________________________________________________________________________________________________________________________________________________________________________________________________
+;___________________________________________________________________________________________________________________________________________________________________________________________________________
+;___________________________________________________________________________________________________________________________________________________________________________________________________________
+;___________________________________________________________________________________________________________________________________________________________________________________________________________
+
 
 Function ResetTempAmounts()
 	TempAttribute\amountcircle# = 0

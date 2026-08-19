@@ -15,7 +15,7 @@
 							switchfound=True
 						EndIf
 					Next
-					If switchfound=False Then o\Switch\SwitchFound=False
+					If switchfound=False Then o\Switch\SwitchFound=False 
 				EndIf
 			Next
 		EndIf
@@ -29,7 +29,8 @@
 		Field Active
 		Field InitialStatus
 	End Type
-
+	
+	
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 	
@@ -44,7 +45,8 @@
 			Case 0:
 				s.tSwitchManager = New tSwitchManager
 				s\No=no
-				s\InitialStatus=status : s\Active=status
+				s\InitialStatus=status : s\Active=status : 	Game\SwitchOn[s\No]=status
+				
 				Return s
 			Default:
 				For s2.tSwitchManager = Each tSwitchManager
@@ -76,3 +78,5 @@
 		Next
 		Return False
 	End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

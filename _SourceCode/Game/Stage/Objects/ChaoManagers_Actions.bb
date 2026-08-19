@@ -461,7 +461,7 @@
 		If ChaoManager_ChaoAlive(cc) And Menu\Stage=999 Then
 			If (Not(cc\GetHungryTimer>0)) And (Not(cc\Action=CHAOACTION_EAT)) Then
 				cc\Stats\Hunger#=cc\Stats\Hunger#+1
-				cc\GetHungryTimer=(100+cc\Stats\Stamina#)*secs#
+				cc\GetHungryTimer=(500+cc\Stats\Stamina#)*secs#
 				If cc\Stats\TooFull#>0 Then cc\Stats\TooFull#=cc\Stats\TooFull#-1
 			EndIf
 			If (Not(cc\GetSleepyTimer>0)) And (Not(cc\Action=CHAOACTION_SLEEP)) Then
@@ -631,9 +631,9 @@
 				cc\WanderDirectionTimer=3.25*secs#
 			EndIf
 			Select cc\Action
-				Case CHAOACTION_SWIM: cc\g\Motion\Speed\z#=0.05+(cc\Stats\Swim#/1000.0)+(Rand(1,4)/100.0)
-				Case CHAOACTION_FLY: cc\g\Motion\Speed\z#=0.05+(cc\Stats\Fly#/1000.0)+(Rand(1,4)/100.0)
-				Default: cc\g\Motion\Speed\z#=0.05+(cc\Stats\Run#/1000.0)+(Rand(1,4)/100.0)
+				Case CHAOACTION_SWIM: cc\g\Motion\Speed\z#=0.05+(cc\Stats\Swim#/750.0)+(Rand(1,4)/100.0)
+				Case CHAOACTION_FLY: cc\g\Motion\Speed\z#=0.05+(cc\Stats\Fly#/750.0)+(Rand(1,4)/100.0)
+				Default: cc\g\Motion\Speed\z#=0.05+(cc\Stats\Run#/100.0)+(Rand(1,4)/100.0)
 			End Select
 			If Not(cc\FollowWhistleTimer>0) Then
 				If cc\g\Motion\Direction#<cc\WanderDirection Then cc\g\Motion\Direction#=cc\g\Motion\Direction#+cc\WanderDirectionSpeed*d\Delta
@@ -688,6 +688,7 @@
 
 		If cc\FoundTarget Then
 			cc\Action=CHAOACTION_COMMON
+			cc\Channel_Swim=EmitSmartSound(Sound_ChaoStatus, cc\Pivot)
 			Select cc\Target\ObjType
 				Case OBJTYPE_FRUIT: ChaoManager_EatorSuck(cc, True)
 				Case OBJTYPE_DRIVE: ChaoManager_EatorSuck(cc, False)
@@ -846,7 +847,7 @@
 
 		;Start thinking
 		If Not(cc\ThinkingTimer>0) Then cc\ThinkingTimer=(10+Rand(1,4))*secs#
-		If cc\WanderTimer<5*secs# And (cc\ThinkingTimer<1*secs# And cc\ThinkingTimer>0*secs#) Then cc\ThinkingTimer=(6+Rand(0,2))*secs : cc\Action=CHAOACTION_THINK
+		If cc\WanderTimer<5*secs# And (cc\ThinkingTimer<1*secs# And cc\ThinkingTimer>0*secs#) Then cc\ThinkingTimer=(6+Rand(0,2))*secs : cc\Channel_Swim=EmitSmartSound(Sound_ChaoStatus, cc\Pivot) : cc\Action=CHAOACTION_THINK
 
 		;Start waiting breed
 		If cc\Stats\MateSeason=1 And cc\FoundTarget=False Then
@@ -912,7 +913,7 @@
 		ChaoManager_Wander(cc,d)
 
 		Chao_Particle_Swim(cc)
-
+		If ChannelPlaying(cc\Channel_Swim)=False Then cc\Channel_Swim=EmitSmartSound(Sound_ChaoSwim,cc\Pivot)
 		If EntityY(cc\Pivot)<Game\Stage\Properties\WaterLevel-0.5 Then cc\g\Motion\Speed\y#=0.05+(cc\Stats\Swim#/1000.0)+(Rand(1,3)/100.0) Else cc\g\Motion\Speed\y#=0
 
 		If EntityY(cc\Pivot)>Game\Stage\Properties\WaterLevel+0.25 Then cc\Action=CHAOACTION_COMMON
@@ -1121,7 +1122,7 @@
 								Else
 									If Not(cc\Stats\Swim#<3) Then cc\Action=CHAOACTION_DRIVEDUCK Else gotit=False
 								EndIf
-					Case TOY_TEDDYBEAR: cc\Action=CHAOACTION_TEDDYBEAR
+					Case TOY_TEDDYBEAR, TOY_SNOOT0: cc\Action=CHAOACTION_TEDDYBEAR
 					Case TOY_MICROPHONE: If cc\Stats\Stamina#>=2 Then cc\Action=CHAOACTION_SING Else gotit=False
 					Case TOY_DUMBBELL1,TOY_DUMBBELL2,TOY_DUMBBELL3,TOY_DUMBBELL4,TOY_DUMBBELL5: If (cc\Stats\Strength#>=(cc\Target\ChaoObj\ToyType-TOY_DUMBBELL1-1)*10) Then cc\Action=CHAOACTION_LIFT Else gotit=False
 					Case TOY_RATTLE: cc\Action=CHAOACTION_RATTLE : Animate cc\Target\Entity,1,0.15,1,10
@@ -1372,9 +1373,8 @@
 	Function ChaoManager_Action_Race_Swim(cc.tChaoManager, d.tDeltaTime)
 
 		ChaoManager_Race_Wander(cc,d)
-
 		Chao_Particle_Swim(cc)
-
+		If ChannelPlaying(cc\Channel_Swim)=False Then cc\Channel_Swim=EmitSmartSound(Sound_ChaoSwim,cc\Pivot)
 		If cc\g\Motion\Ground Then cc\g\Motion\Ground=False
 
 		If EntityY(cc\Pivot)<Game\Stage\Properties\WaterLevel-0.5 Then cc\g\Motion\Speed\y#=0.025+(cc\Stats\Swim#/500.0)+(Rand(1,3)/100.0) Else cc\g\Motion\Speed\y#=0
@@ -1499,6 +1499,8 @@
 						oppcc\Action=CHAOACTION_KARATE_THROWN
 						oppcc\g\Motion\Ground=False : oppcc\g\Motion\Speed\y#=0.2
 						oppcc\HurtTimer=0.365*secs#
+						EmitSmartSound(Sound_Slap, cc\Pivot)
+						;deef Sound_Slap
 						Game\Interface\KarateHealth#[oppcc\Number]=Game\Interface\KarateHealth#[oppcc\Number]-(Rand(0,4)/4.0+0.5+cc\Stats\Strength#/20.0-oppcc\Stats\Swim#/100.0+Game\Interface\KarateZeal#[cc\Number]/60.0)
 					EndIf
 				EndIf
@@ -1517,6 +1519,7 @@
 		cc\g\Motion\Speed\z#=-0.2
 
 		If cc\g\Motion\Ground Then
+			cc\Channel_Swim=EmitSmartSound(Sound_ChaoStatus, cc\Pivot)
 			cc\Action=CHAOACTION_KARATE_HURT
 			cc\HurtTimer=1.2*secs#
 		EndIf

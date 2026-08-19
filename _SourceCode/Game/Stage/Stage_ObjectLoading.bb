@@ -12,7 +12,9 @@ Const ATTRIB_TELEPORTER = 9
 Const ATTRIB_DESTINATION = 10
 Const ATTRIB_HINT = 11
 Const ATTRIB_CARNIVAL = 12
-Const ATTRIB_OMOVOICE=13
+Const ATTRIB_WARP = 13
+Const ATTRIB_VISUAL = 14
+Const ATTRIB_FOG = 15
 
 Type tTempAttribute
 	Field ID#
@@ -20,6 +22,8 @@ Type tTempAttribute
 	Field x#
 	Field y#
 	Field z#
+	
+	Field dontcreate
 
 	Field pitch#
 	Field yaw#
@@ -67,7 +71,17 @@ Type tTempAttribute
 
 	Field hint1$
 	Field hint2$
-	Field hintlength#
+	
+	Field path$
+	
+	
+	Field stagefolder$
+	Field stagemissionno
+	
+	Field emitx#
+	Field emity#
+	Field emitz#
+	Field emittype
 
 	Field carnival#
 
@@ -75,10 +89,35 @@ Type tTempAttribute
 	Field ObjectID
 	Field TempObject
 	
-	Field omovoiceon#
-	Field omovoicepath$
+	Field leaderno
+	Field followerno
+	Field basemesh[10]
 	
-	Field soundpath$
+	Field meshtype$
+	Field animspeed#
+	Field switchmode
+	Field switchtimer
+	
+	Field movetype
+	Field movex#
+	Field movey#
+	Field movez#
+	Field rotx#
+	Field roty#
+	Field rotz#
+	Field movespeed#
+	Field rotspeed#
+	
+	Field fogon
+	Field fogr
+	Field fogg
+	Field fogb
+	Field fogneardist
+	Field fogfardist
+	Field fogchangerate#
+	
+	Field hitboxmult#
+	Field missionno
 End Type
 
 Global TempAttribute.tTempAttribute = New tTempAttribute
@@ -86,7 +125,104 @@ Global TempAttribute.tTempAttribute = New tTempAttribute
 Function GetAttribute(Attribute, Node)
 	; Select the attribute to get, and set the TempAttribute object
 	Select Attribute
+		Case ATTRIB_FOG
+			TempAttribute\fogon = 0
+			TempAttribute\fogr=255
+			TempAttribute\fogg=255
+			TempAttribute\fogb=255
+			TempAttribute\fogneardist=300
+			TempAttribute\fogfardist=2500
+			TempAttribute\fogchangerate#=1
+			
+			SceneFog = xmlNodeFind("fog", Node)
+			If (SceneFog<>0) Then
+				TempAttribute\fogon = xmlNodeAttributeValueGet(SceneFog, "on")
+				TempAttribute\fogr = xmlNodeAttributeValueGet(SceneFog, "r")
+				TempAttribute\fogg = xmlNodeAttributeValueGet(SceneFog, "g")
+				TempAttribute\fogb = xmlNodeAttributeValueGet(SceneFog, "b")
+				TempAttribute\fogneardist = xmlNodeAttributeValueGet(SceneFog, "near")
+				TempAttribute\fogfardist = xmlNodeAttributeValueGet(SceneFog, "far")
+				TempAttribute\fogchangerate# = Float(xmlNodeAttributeValueGet(SceneFog, "rate"))
+				
+			End If
+			
+			
+			
+			
+		Case ATTRIB_VISUAL
+			TempAttribute\animspeed# = 1
+			TempAttribute\meshtype$="normal"
+			TempAttribute\movetype=0
+			TempAttribute\movespeed#=1
+			TempAttribute\rotspeed#=1
+			
+			SceneMesh = xmlNodeFind("mesh", Node)
+			If (SceneMesh<>0) Then
+				TempAttribute\meshtype$ = xmlNodeAttributeValueGet(SceneMesh, "type")
+				TempAttribute\animspeed# = Float(xmlNodeAttributeValueGet(SceneMesh, "speed"))
+				
+			End If
+			
+			SceneMovement = xmlNodeFind("movement", Node)
+			If (SceneMovement<>0) Then
+				TempAttribute\movetype= xmlNodeAttributeValueGet(SceneMovement, "type")
+				
+				TempAttribute\movex#= xmlNodeAttributeValueGet(SceneMovement, "x")
+				TempAttribute\movey#= xmlNodeAttributeValueGet(SceneMovement, "y")
+				TempAttribute\movez#= xmlNodeAttributeValueGet(SceneMovement, "z")
+				
+				TempAttribute\rotx#= xmlNodeAttributeValueGet(SceneMovement, "pitch")
+				TempAttribute\roty#= xmlNodeAttributeValueGet(SceneMovement, "yaw")
+				TempAttribute\rotz#= xmlNodeAttributeValueGet(SceneMovement, "roll")
+				
+				TempAttribute\movespeed#= xmlNodeAttributeValueGet(SceneMovement, "movespeed")
+				TempAttribute\rotspeed#= xmlNodeAttributeValueGet(SceneMovement, "rotspeed")
+				
+				
+			End If
+			
 		Case ATTRIB_POSITION
+			TempAttribute\x# = 0
+			TempAttribute\y# = 0
+			TempAttribute\z# = 0
+			TempAttribute\hitboxmult#=1
+			ScenePosition = xmlNodeFind("position", Node)
+			If (ScenePosition<>0) Then
+				TempAttribute\x# = Float(xmlNodeAttributeValueGet(ScenePosition, "x"))
+				TempAttribute\y# = Float(xmlNodeAttributeValueGet(ScenePosition, "y"))
+				TempAttribute\z# = Float(xmlNodeAttributeValueGet(ScenePosition, "z"))
+				TempAttribute\hitboxmult# = Float(xmlNodeAttributeValueGet(ScenePosition, "hitboxmult"))
+				If TempAttribute\hitboxmult#=0 Then TempAttribute\hitboxmult#=1
+			End If
+			
+			; spawn based on mission no
+			TempAttribute\missionno=Menu\MissionNo
+			SceneMission = xmlNodeFind("mission", Node)
+			If (SceneMission<>0) Then
+				TempAttribute\missionno = xmlNodeAttributeValueGet(SceneMission, "no")
+				
+			End If
+			
+			; spawn based on world token count
+			TempAttribute\dontcreate=0
+			SceneDont = xmlNodeFind("token", Node)
+			
+			If (SceneDont<>0) Then
+				
+				TempAttribute\dontcreate=0
+				tokenmode=(xmlNodeAttributeValueGet(SceneDont, "mode"))
+				Select tokenmode
+					Case 0
+						
+					Case 1
+						If TOKENS>=(xmlNodeAttributeValueGet(SceneDont, "count")) Then TempAttribute\dontcreate=1
+					Case 2
+						If TOKENS<(xmlNodeAttributeValueGet(SceneDont, "count")) Then TempAttribute\dontcreate=1
+				End Select
+				
+			End If
+			
+		Case ATTRIB_FOG
 			TempAttribute\x# = 0
 			TempAttribute\y# = 0
 			TempAttribute\z# = 0
@@ -95,7 +231,11 @@ Function GetAttribute(Attribute, Node)
 				TempAttribute\x# = Float(xmlNodeAttributeValueGet(ScenePosition, "x"))
 				TempAttribute\y# = Float(xmlNodeAttributeValueGet(ScenePosition, "y"))
 				TempAttribute\z# = Float(xmlNodeAttributeValueGet(ScenePosition, "z"))
-			End If
+			End If	
+			
+			
+				
+				
 
 		Case ATTRIB_ROTATION
 			TempAttribute\pitch# = 0
@@ -107,21 +247,12 @@ Function GetAttribute(Attribute, Node)
 				TempAttribute\yaw# = Float(xmlNodeAttributeValueGet(SceneRotation, "yaw"))
 				TempAttribute\roll# = Float(xmlNodeAttributeValueGet(SceneRotation, "roll"))
 			End If
-			
-		Case ATTRIB_OMOVOICE
-			TempAttribute\omovoiceon# = 0
-			TempAttribute\omovoicepath$ = 0
-			SceneOmovoice = xmlNodeFind("omovoice", Node)
-			If (SceneOmovoice<>0) Then
-				TempAttribute\omovoiceon# = Float(xmlNodeAttributeValueGet(SceneOmovoice, "on"))
-				TempAttribute\omovoicepath$ = xmlNodeAttributeValueGet(SceneOmovoice, "path")
-			End If
 
 		Case ATTRIB_POWER
 			TempAttribute\power# = 0
 			ScenePower = xmlNodeFind("power", Node)
 			If (ScenePower<>0) Then
-				TempAttribute\power# = Float(xmlNodeAttributeValueGet(ScenePower, "is"))
+				TempAttribute\power# = Float(xmlNodeAttributeValueGet(ScenePower, "is"))	
 			End If
 			If TempAttribute\power#=0 Then
 				If TempAttribute\ObjectNo<>0 Then
@@ -129,7 +260,7 @@ Function GetAttribute(Attribute, Node)
 						Case OBJTYPE_SPRING,OBJTYPE_SPRINGTRAP,OBJTYPE_BSPRING,OBJTYPE_ACCEL: TempAttribute\power# = 2
 						Case OBJTYPE_SPRINGX,OBJTYPE_SPRINGTRAPX: TempAttribute\power# = 1.2
 						Case OBJTYPE_PAD,OBJTYPE_FORCER,OBJTYPE_NODE,OBJTYPE_NODE2: TempAttribute\power# = 4.8
-						Case OBJTYPE_RAMP: TempAttribute\power# = 2.5
+						Case OBJTYPE_RAMP,OBJTYPE_TRAMP: TempAttribute\power# = 2.5
 						Case OBJTYPE_HOOP,OBJTYPE_THOOP: TempAttribute\power# = 1.8
 						Case OBJTYPE_CANNON: TempAttribute\power# = 1.5
 						Case OBJTYPE_PROPELLER: TempAttribute\power# = 1.325
@@ -139,9 +270,13 @@ Function GetAttribute(Attribute, Node)
 						Case OBJTYPE_CLOUD,OBJTYPE_POLE: TempAttribute\power# = 1.5
 						Case OBJTYPE_SWITCHWATER: TempAttribute\power# = 0
 						Case OBJTYPE_COUNTER: TempAttribute\power# = 5
-						Case OBJTYPE_HINT: TempAttribute\power# = 2
-						Default: TempAttribute\power# = 1
+						Case OBJTYPE_HINT
+							TempAttribute\power#=3
+						Default: 
+							TempAttribute\power# = 1
+							If TempAttribute\ObjectNo>=OBJTYPE_TRIGGER_VEHICLECANCEL And TempAttribute\ObjectNo<=OBJTYPE_TRIGGER_TOTAL Then TempAttribute\power#=10
 					End Select
+					
 				Else
 					TempAttribute\power# = 0
 				EndIf
@@ -273,14 +408,18 @@ Function GetAttribute(Attribute, Node)
 			If (SceneSwitch<>0) Then
 				TempAttribute\switch1# = Float(xmlNodeAttributeValueGet(SceneSwitch, "no"))
 				TempAttribute\switchstatus# = Float(xmlNodeAttributeValueGet(SceneSwitch, "status"))
+				TempAttribute\switchmode= (xmlNodeAttributeValueGet(SceneSwitch, "mode"))
+				TempAttribute\switchtimer= xmlNodeAttributeValueGet(SceneSwitch, "timer")
 			End If
 
 		Case ATTRIB_SWITCHOBJ
 			TempAttribute\switch1# = 0
 			TempAttribute\switch2# = 0
 			TempAttribute\switch3# = 0
+			TempAttribute\switchmode= 0
 			SceneSwitchObj = xmlNodeFind("switch", Node)
 			If (SceneSwitchObj<>0) Then
+				TempAttribute\switchmode= (xmlNodeAttributeValueGet(SceneSwitchObj, "mode"))
 				TempAttribute\switch1# = Float(xmlNodeAttributeValueGet(SceneSwitchObj, "no"))
 				TempAttribute\switch2# = Float(xmlNodeAttributeValueGet(SceneSwitchObj, "no2"))
 				If TempAttribute\switch2#=TempAttribute\switch1# Then TempAttribute\switch2#=0
@@ -296,11 +435,20 @@ Function GetAttribute(Attribute, Node)
 				TempAttribute\teleporterno# = Float(xmlNodeAttributeValueGet(SceneTeleporter, "no"))
 				TempAttribute\teleportername$ = xmlNodeAttributeValueGet(SceneTeleporter, "name")
 			End If
-
+			
+		Case ATTRIB_WARP
+			TempAttribute\stagemissionno = 1
+			TempAttribute\stagefolder$ = 0
+			SceneStage = xmlNodeFind("stage", Node)
+			If (SceneStage<>0) Then
+				TempAttribute\teleportername$= xmlNodeAttributeValueGet(SceneStage, "folder")
+				TempAttribute\stagemissionno = xmlNodeAttributeValueGet(SceneStage, "mission")
+				TempAttribute\stagefolder$ = xmlNodeAttributeValueGet(SceneStage, "name")
+			End If
 		Case ATTRIB_DESTINATION
 			TempAttribute\hasd# = 0
 			TempAttribute\dx# = 0
-			TempAttribute\dy# = 0
+			TempAttribute\dy# = -99999
 			TempAttribute\dz# = 0
 			SceneDestination = xmlNodeFind("d", Node)
 			If (SceneDestination<>0) Then
@@ -313,19 +461,40 @@ Function GetAttribute(Attribute, Node)
 		Case ATTRIB_HINT
 			TempAttribute\hint1$ = ""
 			TempAttribute\hint2$ = ""
-			TempAttribute\soundpath$ = ""
+			TempAttribute\path$ = ""
+			TempAttribute\emittype = 0
+			TempAttribute\emitx# = 0
+			TempAttribute\emity# = 0
+			TempAttribute\emitz# = 0
+			
 			SceneHint = xmlNodeFind("hint", Node)
 			If (SceneHint<>0) Then
 				TempAttribute\hint1$ = xmlNodeAttributeValueGet(SceneHint, "line1")
 				TempAttribute\hint2$ = xmlNodeAttributeValueGet(SceneHint, "line2")
-				TempAttribute\soundpath$ = xmlNodeAttributeValueGet(SceneHint, "soundpath")
+				TempAttribute\path$ = xmlNodeAttributeValueGet(SceneHint, "soundpath")
+				TempAttribute\emittype = Float(xmlNodeAttributeValueGet(SceneHint, "type"))
+				TempAttribute\emitx# = Float(xmlNodeAttributeValueGet(SceneHint, "x"))
+				TempAttribute\emity# = Float(xmlNodeAttributeValueGet(SceneHint, "y"))
+				TempAttribute\emitz# = Float(xmlNodeAttributeValueGet(SceneHint, "z"))
 			End If
 
 		Case ATTRIB_CARNIVAL
 			TempAttribute\carnival# = 0
+			TempAttribute\leaderno=0
+			TempAttribute\followerno =0
 			SceneCarnival = xmlNodeFind("carnival", Node)
 			If (SceneCarnival<>0) Then
 				TempAttribute\carnival# = Float(xmlNodeAttributeValueGet(SceneCarnival, "no"))
+			End If
+			
+			SceneLeader = xmlNodeFind("leader", Node)
+			If (SceneLeader<>0) Then
+				TempAttribute\leaderno = Float(xmlNodeAttributeValueGet(SceneLeader, "no"))
+			End If
+			
+			SceneFollower = xmlNodeFind("follower", Node)
+			If (SceneFollower<>0) Then
+				TempAttribute\followerno = Float(xmlNodeAttributeValueGet(SceneFollower, "no"))
 			End If
 
 	End Select

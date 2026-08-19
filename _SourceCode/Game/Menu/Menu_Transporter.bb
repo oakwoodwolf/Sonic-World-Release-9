@@ -82,16 +82,16 @@ Function Menu_Transporter_Update()
 	If Menu\WentToChaoMenu=1 Then;!
 
 	Select Menu\Menu2
-		Case MENU_TRANSPORTER_MAIN#: Menu_Transporter_Main()
-		Case MENU_TRANSPORTER_NAME#: Menu_Transporter_Name()
-		Case MENU_TRANSPORTER_GOODBYE#: Menu_Transporter_GoodBye()
-		Case MENU_TRANSPORTER_INVENTORY#: Menu_Transporter_Inventory()
-		Case MENU_TRANSPORTER_EXIT#: Menu_Transporter_Exit()
-		Case MENU_TRANSPORTER_STADIUM#: Menu_Transporter_Stadium()
-		Case MENU_TRANSPORTER_RACEEXIT#: Menu_Transporter_RaceExit()
-		Case MENU_TRANSPORTER_RACES#: Menu_Transporter_Races()
-		Case MENU_TRANSPORTER_KARATEEXIT#: Menu_Transporter_KarateExit()
-		Case MENU_TRANSPORTER_DIFFICULTY#: Menu_Transporter_Difficulty()
+		Case Menu_Transporter_Main#: Menu_Transporter_Main()
+		Case Menu_Transporter_Name#: Menu_Transporter_Name()
+		Case Menu_Transporter_Goodbye#: Menu_Transporter_Goodbye()
+		Case Menu_Transporter_Inventory#: Menu_Transporter_Inventory()
+		Case Menu_Transporter_Exit#: Menu_Transporter_Exit()
+		Case Menu_Transporter_Stadium#: Menu_Transporter_Stadium()
+		Case Menu_Transporter_RaceExit#: Menu_Transporter_RaceExit()
+		Case Menu_Transporter_Races#: Menu_Transporter_Races()
+		Case Menu_Transporter_KarateExit#: Menu_Transporter_KarateExit()
+		Case Menu_Transporter_Difficulty#: Menu_Transporter_Difficulty()
 	End Select
 
 	EndIf;!
@@ -137,7 +137,7 @@ Function Menu_Transporter_Main()
 		EndIf
 	EndIf
 
-	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+	If Input\Pressed\ActionJump  Then
 		PlaySmartSound(Sound_MenuAccept)
 		Menu\Transition=1
 		Menu\NewMenu2=Menu\Option
@@ -217,7 +217,7 @@ Function Menu_Transporter_InventoryItem(option)
 
 	If Menu\Option=option Then
 		If (Not(Menu\NewCurrentItem=thisitem)) Then Menu\NewCurrentItem=thisitem
-		If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+		If Input\Pressed\ActionJump  Then
 			PlaySmartSound(Sound_MenuAccept)
 			For ii.tItem=Each tItem
 				If ii\ID=thisitem Then
@@ -269,7 +269,7 @@ Function Menu_Transporter_Goodbye()
 
 		DrawSmartButtonT(1, "Accept", GAME_WINDOW_W/2+(BUTTON_PLACE1#+205)*GAME_WINDOW_SCALE#, GAME_WINDOW_H/2+95*GAME_WINDOW_SCALE#, 1, False, 2)
 
-		If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+		If Input\Pressed\ActionJump  Then
 			PlaySmartSound(Sound_MenuAccept)
 			Menu\OptionOrder2=Menu\OptionOrder2+1
 			If Menu\OptionOrder2=3 Then Menu\ChaoMenuTimer=3.202*secs#
@@ -365,7 +365,7 @@ Function Menu_Transporter_Name()
 		End Select
 	EndIf
 
-	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+	If Input\Pressed\ActionJump  Then
 		Select Menu\Option
 			Case 1:
 				PlaySmartSound(Sound_MenuAccept)
@@ -649,15 +649,15 @@ Function Menu_Transporter_Stadium()
 		Menu\Option=4
 	EndIf
 
-	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+	If Input\Pressed\ActionJump  Then
 		If Menu\Settings\StadiumDifficulty#=0 Then Menu\Settings\StadiumDifficulty#=1
 		PlaySmartSound(Sound_MenuAccept)
 		Menu\Transition=1
 		Select Menu\Option
-			Case 1: Menu\NewMenu2=MENU_TRANSPORTER_RACES# : If Menu\RaceType=0 Then Menu\RaceType=1
-			Case 2: Menu\NewMenu2=MENU_TRANSPORTER_KARATEEXIT# : Menu\RaceType=0 : Menu\Background=3
-			Case 3: Menu\NewMenu2=MENU_TRANSPORTER_EXIT# : Menu\Background=3
-			Case 4: Menu\NewMenu2=MENU_TRANSPORTER_DIFFICULTY#
+			Case 1: Menu\NewMenu2=Menu_Transporter_Races# : If Menu\RaceType=0 Then Menu\RaceType=1
+			Case 2: Menu\NewMenu2=Menu_Transporter_KarateExit# : Menu\RaceType=0 : Menu\Background=3
+			Case 3: Menu\NewMenu2=Menu_Transporter_Exit# : Menu\Background=3
+			Case 4: Menu\NewMenu2=Menu_Transporter_Difficulty#
 		End Select
 		Select Menu\Option
 			Case 1: Menu\NewOption=Menu\RaceType
@@ -692,11 +692,11 @@ Function Menu_Transporter_Races()
 		If Menu\Option<1 Then Menu\Option=4
 	EndIf
 
-	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+	If Input\Pressed\ActionJump  Then
 		PlaySmartSound(Sound_MenuAccept)
 		Menu\Transition=1
 		Menu\RaceType=Menu\Option
-		Menu\NewMenu2=MENU_TRANSPORTER_RACEEXIT#
+		Menu\NewMenu2=Menu_Transporter_RaceExit#
 		Menu\NewOption=1
 		Menu\Background=3
 	EndIf
@@ -771,11 +771,11 @@ Function Menu_Transporter_Difficulty()
 		If Menu\Option<1 Then Menu\Option=5
 	EndIf
 
-	If Input\Pressed\ActionJump Or Input\Pressed\Start Then
+	If Input\Pressed\ActionJump  Then
 		Menu\Settings\StadiumDifficulty#=Menu\Option
 		PlaySmartSound(Sound_MenuAccept)
 		Menu\Transition=1
-		Menu\NewMenu2=MENU_TRANSPORTER_STADIUM#
+		Menu\NewMenu2=Menu_Transporter_Stadium#
 		Menu\NewOption=1
 	EndIf
 

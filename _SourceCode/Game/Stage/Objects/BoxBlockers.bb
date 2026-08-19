@@ -123,7 +123,7 @@
 							Case OBJTYPE_BELL:
 								PositionEntity o\Entity, o\k\Position\x#, o\k\Position\y#-0.2+o\k\BoxSize#/2, o\k\Position\z#
 							Default:
-								PositionEntity o\Entity, o\k\Position\x#, o\k\Position\y#-2.2+o\k\BoxSize#/2, o\k\Position\z#
+								;PositionEntity o\Entity, o\k\Position\x#, o\k\Position\y#-2.2+o\k\BoxSize#/2, o\k\Position\z#
 						End Select
 					EndIf
 				EndIf
@@ -134,3 +134,5 @@
 		EndIf
 
 	End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

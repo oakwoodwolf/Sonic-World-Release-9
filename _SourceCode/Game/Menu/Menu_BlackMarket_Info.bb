@@ -70,10 +70,10 @@ End Function
 
 	Dim ITEM_MAX(6)
 	ITEM_MAX(1)=51
-	ITEM_MAX(2)=64
-	ITEM_MAX(3)=14
+	ITEM_MAX(2)=78
+	ITEM_MAX(3)=28
 	ITEM_MAX(4)=2
-	ITEM_MAX(5)=13
+	ITEM_MAX(5)=14
 	ITEM_MAX(6)=1
 
 ;--------------------------------------------------------------------------------------------------------------------------
@@ -192,6 +192,20 @@ End Function
 	Global CHAOCOLOR_GREY	= fm : fm=fm+1
 	Global CHAOCOLOR_LIME	= fm : fm=fm+1
 	Global CHAOCOLOR_BLACK	= fm : fm=fm+1
+	Global CHAOCOLOR_CELESTE2	= fm : fm=fm+1
+	Global CHAOCOLOR_WHITE2	= fm : fm=fm+1
+	Global CHAOCOLOR_BLUE2	= fm : fm=fm+1
+	Global CHAOCOLOR_RED2	= fm : fm=fm+1
+	Global CHAOCOLOR_YELLOW2	= fm : fm=fm+1
+	Global CHAOCOLOR_ORANGE2	= fm : fm=fm+1
+	Global CHAOCOLOR_AZURE2	= fm : fm=fm+1
+	Global CHAOCOLOR_PINK2	= fm : fm=fm+1
+	Global CHAOCOLOR_PURPLE2	= fm : fm=fm+1
+	Global CHAOCOLOR_GREEN2	= fm : fm=fm+1
+	Global CHAOCOLOR_BROWN2	= fm : fm=fm+1
+	Global CHAOCOLOR_GREY2	= fm : fm=fm+1
+	Global CHAOCOLOR_LIME2	= fm : fm=fm+1
+	Global CHAOCOLOR_BLACK2	= fm : fm=fm+1
 	Global CHAOCOLORS_total = fm-1
 
 	Dim CHAOCOLORS$(ITEM_MAX(3))
@@ -209,6 +223,21 @@ End Function
 	CHAOCOLORS$(CHAOCOLOR_LIME)	= "Lime"
 	CHAOCOLORS$(CHAOCOLOR_PURPLE)	= "Purple"
 	CHAOCOLORS$(CHAOCOLOR_PINK)	= "Pink"
+	CHAOCOLORS$(CHAOCOLOR_CELESTE2)	= "Mono-Celeste"
+	CHAOCOLORS$(CHAOCOLOR_WHITE2)	= "Mono-White"
+	CHAOCOLORS$(CHAOCOLOR_AZURE2)	= "Mono-Azure"
+	CHAOCOLORS$(CHAOCOLOR_BLUE2)	= "Mono-Blue"
+	CHAOCOLORS$(CHAOCOLOR_RED2)	= "Mono-Red"
+	CHAOCOLORS$(CHAOCOLOR_YELLOW2)	= "Mono-Yellow"
+	CHAOCOLORS$(CHAOCOLOR_ORANGE2)	= "Mono-Orange"
+	CHAOCOLORS$(CHAOCOLOR_PINK2)	= "Mono-Pink"
+	CHAOCOLORS$(CHAOCOLOR_PURPLE2)	= "Mono-Purple"
+	CHAOCOLORS$(CHAOCOLOR_GREEN2)	= "Mono-Green"
+	CHAOCOLORS$(CHAOCOLOR_BROWN2)	= "Mono-Brown"
+	CHAOCOLORS$(CHAOCOLOR_GREY2)	= "Mono-Grey"
+	CHAOCOLORS$(CHAOCOLOR_LIME2)	= "Mono-Lime"
+	CHAOCOLORS$(CHAOCOLOR_BLACK2)	= "Mono-Black"
+	
 
 	Global CHAOSHAPE_NORMAL	= 1
 	Global CHAOSHAPE_RUN	= 2
@@ -479,6 +508,20 @@ End Function
 	Global HAT_HEADBAND_2	= fm : fm=fm+1
 	Global HAT_HEADBAND_3	= fm : fm=fm+1
 	Global HAT_HEADBAND_4	= fm : fm=fm+1
+	Global HAT_HOOD_0	= fm : fm=fm+1
+	Global HAT_HOOD_1	= fm : fm=fm+1
+	Global HAT_PUMPKIN_0	= fm : fm=fm+1
+	Global HAT_TURBAN_0	= fm : fm=fm+1
+	Global HAT_EGGMAN_0	= fm : fm=fm+1
+	Global HAT_EGGMAN_1	= fm : fm=fm+1
+	Global HAT_SONICMAN_0	= fm : fm=fm+1
+	Global HAT_SONICMAN_1	= fm : fm=fm+1
+	Global HAT_PRINCIPAL_0	= fm : fm=fm+1
+	Global HAT_PRINCIPAL_1	= fm : fm=fm+1
+	Global HAT_PRINCIPAL_2	= fm : fm=fm+1
+	Global HAT_DEALER_0	= fm : fm=fm+1
+	Global HAT_DEALER_1	= fm : fm=fm+1
+	Global HAT_SNORKEL_0	= fm : fm=fm+1
 
 	Dim HATS$(ITEM_MAX(2))
 	HATS$(HAT_CAT_0)	= "Cat ears"
@@ -545,6 +588,20 @@ End Function
 	HATS$(HAT_HEADBAND_2)	= "Headband"
 	HATS$(HAT_HEADBAND_3)	= "Headband"
 	HATS$(HAT_HEADBAND_4)	= "Headband"
+	HATS$(HAT_HOOD_0)	= "Snow Parka"
+	HATS$(HAT_HOOD_1)	= "Snow Parka"
+	HATS$(HAT_PUMPKIN_0)	= "Pumpkin"
+	HATS$(HAT_TURBAN_0)	= "Turban"
+	HATS$(HAT_EGGMAN_0)	= "Eggman Glasses"
+	HATS$(HAT_EGGMAN_1)	= "Eggman Cosplay"
+	HATS$(HAT_SONICMAN_0)	= "SonicMan Helmet"
+	HATS$(HAT_SONICMAN_1)	= "SonicMan Helmet"
+	HATS$(HAT_PRINCIPAL_0)	= "Principal Cosplay"
+	HATS$(HAT_PRINCIPAL_1)	= "Principal's Beard"
+	HATS$(HAT_PRINCIPAL_2)	= "Principal's Specs"
+	HATS$(HAT_DEALER_0)	= "Dealer's Cosplay"
+	HATS$(HAT_DEALER_1)	= "Face Covering"
+	HATS$(HAT_SNORKEL_0)	= "Snorkel"
 
 	Dim HATS_FILE$(ITEM_MAX(2))
 	HATS_FILE$(HAT_CAT_0)		= "CatEars0"
@@ -611,6 +668,20 @@ End Function
 	HATS_FILE$(HAT_HEADBAND_2)	= "Headband2"
 	HATS_FILE$(HAT_HEADBAND_3)	= "Headband3"
 	HATS_FILE$(HAT_HEADBAND_4)	= "Headband4"
+	HATS_FILE$(HAT_HOOD_0)	= "Hood0"
+	HATS_FILE$(HAT_HOOD_1)	= "Hood1"
+	HATS_FILE$(HAT_TURBAN_0)	= "Turban0"
+	HATS_FILE$(HAT_PUMPKIN_0)	= "Pumpkin0"
+	HATS_FILE$(HAT_EGGMAN_0)	= "EggGlasses0"
+	HATS_FILE$(HAT_EGGMAN_1)	= "EggGlasses1"
+	HATS_FILE$(HAT_SONICMAN_0)	= "Sonicman0"
+	HATS_FILE$(HAT_SONICMAN_1)	= "Sonicman1"
+	HATS_FILE$(HAT_PRINCIPAL_0)	= "Principal0"
+	HATS_FILE$(HAT_PRINCIPAL_1)	= "Principal1"
+	HATS_FILE$(HAT_PRINCIPAL_2)	= "Principal2"
+	HATS_FILE$(HAT_DEALER_0)	= "Dealer0"
+	HATS_FILE$(HAT_DEALER_1)	= "Dealer1"
+	HATS_FILE$(HAT_SNORKEL_0)	= "Snorkel0"
 
 ;--------------------------------------------------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------------
@@ -631,6 +702,8 @@ End Function
 	Global TOY_RATTLE	= fm : fm=fm+1
 	Global TOY_TOYCAR	= fm : fm=fm+1
 	Global TOY_PILLOW	= fm : fm=fm+1
+	Global TOY_SNOOT0	= fm : fm=fm+1
+	
 
 	Dim TOYS$(ITEM_MAX(5))
 	TOYS$(TOY_BEACHBALL)	= "Beach ball"
@@ -646,6 +719,7 @@ End Function
 	TOYS$(TOY_RATTLE)	= "Rattle"
 	TOYS$(TOY_TOYCAR)	= "Toy car"
 	TOYS$(TOY_PILLOW)	= "Pillow"
+	TOYS$(TOY_SNOOT0)	= "Unlicensed Doll"
 
 	Dim TOYS_FILE$(ITEM_MAX(5))
 	TOYS_FILE$(TOY_BEACHBALL)	= "BeachBall"
@@ -661,6 +735,7 @@ End Function
 	TOYS_FILE$(TOY_RATTLE)		= "Rattle"
 	TOYS_FILE$(TOY_TOYCAR)		= "ToyCar"
 	TOYS_FILE$(TOY_PILLOW)		= "Pillow"
+	TOYS_FILE$(TOY_SNOOT0)		= "Snoot0"
 
 ;--------------------------------------------------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------------
@@ -735,6 +810,20 @@ End Function
 	EGGS_PRICES(CHAOCOLOR_LIME)	= 500
 	EGGS_PRICES(CHAOCOLOR_PURPLE)	= 400
 	EGGS_PRICES(CHAOCOLOR_PINK)	= 600
+	EGGS_PRICES(CHAOCOLOR_CELESTE2)	= 3000
+	EGGS_PRICES(CHAOCOLOR_AZURE2)	= 500
+	EGGS_PRICES(CHAOCOLOR_BLUE2)	= 400
+	EGGS_PRICES(CHAOCOLOR_WHITE2)	= 300
+	EGGS_PRICES(CHAOCOLOR_RED2)	= 400
+	EGGS_PRICES(CHAOCOLOR_ORANGE2)	= 500
+	EGGS_PRICES(CHAOCOLOR_YELLOW2)	= 500
+	EGGS_PRICES(CHAOCOLOR_PINK2)	= 600
+	EGGS_PRICES(CHAOCOLOR_PURPLE2)	= 400
+	EGGS_PRICES(CHAOCOLOR_BROWN2)	= 600
+	EGGS_PRICES(CHAOCOLOR_GREEN2)	= 300
+	EGGS_PRICES(CHAOCOLOR_LIME2)	= 500
+	EGGS_PRICES(CHAOCOLOR_GREY2)	= 800
+	EGGS_PRICES(CHAOCOLOR_BLACK2)	= 1000
 
 	Dim SHELLS_PRICES(ITEM_MAX(4))
 	SHELLS_PRICES(SHELL_BOTTOM)	= 15
@@ -805,6 +894,20 @@ End Function
 	HATS_PRICES(HAT_HEADBAND_2)	= 200
 	HATS_PRICES(HAT_HEADBAND_3)	= 200
 	HATS_PRICES(HAT_HEADBAND_4)	= 200
+	HATS_PRICES(HAT_HOOD_0)	= 200
+	HATS_PRICES(HAT_HOOD_1)	= 200
+	HATS_PRICES(HAT_PUMPKIN_0)	= 50
+	HATS_PRICES(HAT_TURBAN_0)	= 200
+	HATS_PRICES(HAT_EGGMAN_0)	= 250
+	HATS_PRICES(HAT_EGGMAN_1)	= 500
+	HATS_PRICES(HAT_SONICMAN_0)	= 250
+	HATS_PRICES(HAT_SONICMAN_1)	= 250
+	HATS_PRICES(HAT_PRINCIPAL_0)	= 200
+	HATS_PRICES(HAT_PRINCIPAL_1)	= 200
+	HATS_PRICES(HAT_PRINCIPAL_2)	= 200
+	HATS_PRICES(HAT_DEALER_0)	= 10
+	HATS_PRICES(HAT_DEALER_1)	= 10
+	HATS_PRICES(HAT_SNORKEL_0)	= 150
 
 	Dim TOYS_PRICES(ITEM_MAX(5))
 	TOYS_PRICES(TOY_BEACHBALL)	= 200
@@ -820,6 +923,7 @@ End Function
 	TOYS_PRICES(TOY_RATTLE)		= 250
 	TOYS_PRICES(TOY_TOYCAR)		= 500
 	TOYS_PRICES(TOY_PILLOW)		= 200
+	TOYS_PRICES(TOY_SNOOT0)	= 150
 
 ;--------------------------------------------------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------------

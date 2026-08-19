@@ -1,252 +1,253 @@
 
-	Dim SOUNDS(SOUNDS_TOTAL)
-	Dim SOUNDS_V(SOUNDS_TOTAL)
-	Dim SOUNDS_EXISTS(SOUNDS_TOTAL)
+; initiate the basica array to store every sound
+Dim SOUNDS(SOUNDS_TOTAL)
 
+; initiate the array to store the type of volume that affects the sound
+Dim SOUNDS_V(SOUNDS_TOTAL)
+
+; initiate the array that checks to see if the sound is currently loaded into memory
+Dim SOUNDS_EXISTS(SOUNDS_TOTAL)
+
+Dim SOUNDS_NAME$(SOUNDS_TOTAL)
+
+; this function checks to see if a specific sound currently exists, and if not, loads the sound into memory
 Function SmartSound(x)
-		If SOUNDS_EXISTS(x)=False Then LoadSmartSound(x)
-		Return x
-	End Function
+	If SOUNDS_EXISTS(x)=False Then LoadSmartSound(x)
+	Return x
+End Function
 
+; this function unloads the specific sound from memory
 Function FreeSmartSound(x)
-		If SOUNDS_EXISTS(x) Then
-			FreeSound SOUNDS(x) : SOUNDS(x)=0 : SOUNDS_V(x)=0
-			SOUNDS_EXISTS(x)=False
-		EndIf
-	End Function
+	If SOUNDS_EXISTS(x) Then
+		FreeSound SOUNDS(x) : SOUNDS(x)=0 : SOUNDS_V(x)=0
+		SOUNDS_EXISTS(x)=False
+	EndIf
+End Function
 
+; this function loads a specific sound into the sounds array
 Function LoadGoodSound(x,mode,directory$,volume=1)
-		FreeSmartSound(x)
-
-		If mode=1 Then
-			SOUNDS(x)=LoadSound(directory$)
-		ElseIf mode=3 Then
-			If Menu\Settings\ThreeDSounds#=1 Then
-				SOUNDS(x)=Load3DSound(directory$)
-			Else
-				SOUNDS(x)=LoadSound(directory$)
-			EndIf
+	
+	; clear the sound from current memory
+	FreeSmartSound(x)
+	
+	
+	
+	; check to see if there is a stage specific sound, and load it instead of the default or theme specific sound
+	; if no specific sound is found in the stage folder then load the sound from either the theme specific folder if it exists or the "Sounds" folder if not.
+	If FileType(Game\Stage\Properties\Path$+directory$)=1 And Menu\Stage<>0 Then
+		pathtosound$=Game\Stage\Properties\Path$+directory$
+	Else
+		If Not(FileType(THEMEDIR$+Menu\ThemeFolder$[Menu\Settings\Theme#]+"/"+directory$)) Then
+			pathtosound$=directory$
+		Else	
+			pathtosound$=(THEMEDIR$+Menu\ThemeFolder$[Menu\Settings\Theme#]+"/"+directory$)
 		EndIf
-
-		Select volume
-			Case 1: SoundVolume(SOUNDS(x),Menu\Settings\VolumeSFX#*Menu\Settings\Volume#)
-			Case 2: SoundVolume(SOUNDS(x),Menu\Settings\VolumeVA#*Menu\Settings\Volume#)
-			Case 3: SoundVolume(SOUNDS(x),Menu\Settings\VolumeM#*Menu\Settings\Volume#)
-			Case 4: SoundVolume(SOUNDS(x),Menu\Settings\VolumeSFX#*Menu\Settings\VolumeAmb#*Menu\Settings\Volume#)
-		End Select
-		SOUNDS_V(x)=volume
-
-		SOUNDS_EXISTS(x)=True
-	End Function
+	EndIf
+	
+	
+	SOUNDS_NAME$(x)=Replace$(Mid$(directory$,8,25),".ogg","")
+	
+	If mode=1 Or mode=4 Then
+		SOUNDS(x)=LoadSound(pathtosound$)
+	ElseIf mode=3 Then
+		If Menu\Settings\ThreeDSounds#=1 Then
+			SOUNDS(x)=Load3DSound(pathtosound$)
+		Else
+			SOUNDS(x)=LoadSound(pathtosound$)
+		EndIf
+	EndIf
+	
+	Select volume
+		Case 1: SoundVolume(SOUNDS(x),Menu\Settings\VolumeSFX#*(Menu\Settings\Volume#*0.175))
+		Case 2: SoundVolume(SOUNDS(x),Menu\Settings\VolumeVA#*(Menu\Settings\Volume#*0.175))
+		Case 3: SoundVolume(SOUNDS(x),Menu\Settings\VolumeM#*(Menu\Settings\Volume#*0.175))
+		Case 4: SoundVolume(SOUNDS(x),Menu\Settings\VolumeSFX#*Menu\Settings\VolumeAmb#*(Menu\Settings\Volume#*0.175))
+	End Select
+	SOUNDS_V(x)=volume
+	
+	SOUNDS_EXISTS(x)=True
+End Function
 
 Function PlaySmartSound(x)
-		Return PlaySound(SOUNDS(SmartSound(x)))
-	End Function
+	Return PlaySound(SOUNDS(SmartSound(x)))	
+End Function
 
 Function EmitSmartSound(x, pivot)
-		Return EmitSound(SOUNDS(SmartSound(x)), pivot)
-	End Function
+	Return EmitSound(SOUNDS(SmartSound(x)), pivot)
+End Function
 
 Function LoadMenuMusic()
-		If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-			LoadGoodSound(Sound_Menu,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/MenuMain.ogg",3)
-			LoadGoodSound(Sound_MenuIntro,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/MenuIntro.ogg",3)
-			LoadGoodSound(Sound_MenuOptions,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/MenuOptions.ogg",3)
-			LoadGoodSound(Sound_MenuCredits,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/MenuCredits.ogg",3)
-		Else
-			LoadGoodSound(Sound_Menu,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/MenuMain.ogg",3)
-			LoadGoodSound(Sound_MenuIntro,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/MenuIntro.ogg",3)
-			LoadGoodSound(Sound_MenuOptions,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/MenuOptions.ogg",3)
-			LoadGoodSound(Sound_MenuCredits,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/MenuCredits.ogg",3)
-		EndIf
-	End Function
+	
+	If Not(FileType(THEMEDIR$+Menu\ThemeFolder$[Menu\Settings\Theme#]+"/"+"Sounds/MenuMusic/MenuMain.ogg")) Then
+		MenuMusic_Main=LoadSound("Sounds/MenuMusic/MenuMain.ogg")
+	Else	
+		MenuMusic_Main=LoadSound(THEMEDIR$+Menu\ThemeFolder$[Menu\Settings\Theme#]+"/"+"Sounds/MenuMusic/MenuMain.ogg")
+	EndIf
+	SoundVolume(MenuMusic_Main,Menu\Settings\VolumeM#*(Menu\Settings\Volume#*0.175))
+	
+	
+	
+	If Not(FileType(THEMEDIR$+Menu\ThemeFolder$[Menu\Settings\Theme#]+"/"+"Sounds/MenuMusic/MenuIntro.ogg")) Then
+		MenuMusic_Intro=LoadSound("Sounds/MenuMusic/MenuIntro.ogg")
+	Else	
+		MenuMusic_Intro=LoadSound(THEMEDIR$+Menu\ThemeFolder$[Menu\Settings\Theme#]+"/"+"Sounds/MenuMusic/MenuIntro.ogg")
+	EndIf
+	SoundVolume(MenuMusic_Intro,Menu\Settings\VolumeM#*(Menu\Settings\Volume#*0.175))
+	
+	If Not(FileType(THEMEDIR$+Menu\ThemeFolder$[Menu\Settings\Theme#]+"/"+"Sounds/MenuMusic/MenuProgress.ogg")) Then
+		MenuMusic_Stats=LoadSound("Sounds/MenuMusic/MenuProgress.ogg")
+	Else	
+		MenuMusic_Stats=LoadSound(THEMEDIR$+Menu\ThemeFolder$[Menu\Settings\Theme#]+"/"+"Sounds/MenuMusic/MenuProgress.ogg")
+	EndIf
+	SoundVolume(MenuMusic_Stats,Menu\Settings\VolumeM#*(Menu\Settings\Volume#*0.175))
+	
+	If Not(FileType(THEMEDIR$+Menu\ThemeFolder$[Menu\Settings\Theme#]+"/"+"Sounds/MenuMusic/MenuCredits.ogg")) Then
+		MenuMusic_Credits=LoadSound("Sounds/MenuMusic/MenuCredits.ogg")
+	Else	
+		MenuMusic_Credits=LoadSound(THEMEDIR$+Menu\ThemeFolder$[Menu\Settings\Theme#]+"/"+"Sounds/MenuMusic/MenuCredits.ogg")
+	EndIf
+	SoundVolume(MenuMusic_Credits,Menu\Settings\VolumeM#*(Menu\Settings\Volume#*0.175))
+	
+	
+	
+	If Not(FileType(THEMEDIR$+Menu\ThemeFolder$[Menu\Settings\Theme#]+"/"+"Sounds/MenuMusic/MenuOptions.ogg")) Then
+		MenuMusic_Options=LoadSound("Sounds/MenuMusic/MenuOptions.ogg")
+	Else	
+		MenuMusic_Options=LoadSound(THEMEDIR$+Menu\ThemeFolder$[Menu\Settings\Theme#]+"/"+"Sounds/MenuMusic/MenuOptions.ogg")
+	EndIf
+	SoundVolume(MenuMusic_Options,Menu\Settings\VolumeM#*(Menu\Settings\Volume#*0.175))
+	
+	If Not(FileType(THEMEDIR$+Menu\ThemeFolder$[Menu\Settings\Theme#]+"/"+"Sounds/MenuMusic/MenuShop.ogg")) Then
+		MenuMusic_Shop=LoadSound("Sounds/MenuMusic/MenuShop.ogg")
+	Else	
+		MenuMusic_Shop=LoadSound(THEMEDIR$+Menu\ThemeFolder$[Menu\Settings\Theme#]+"/"+"Sounds/MenuMusic/MenuShop.ogg")
+	EndIf
+	SoundVolume(MenuMusic_Shop,Menu\Settings\VolumeM#*(Menu\Settings\Volume#*0.175))
+End Function
 
 Function UpdateAllSoundVolumes()
-		For x=1 To SOUNDS_TOTAL
-			Select SOUNDS_V(x)
-				Case 1: SoundVolume(SOUNDS(x),Menu\Settings\VolumeSFX#*Menu\Settings\Volume#)
-				Case 2: SoundVolume(SOUNDS(x),Menu\Settings\VolumeVA#*Menu\Settings\Volume#)
-				Case 3: SoundVolume(SOUNDS(x),Menu\Settings\VolumeM#*Menu\Settings\Volume#)
-				Case 4: SoundVolume(SOUNDS(x),Menu\Settings\VolumeSFX#*Menu\Settings\VolumeAmb#*Menu\Settings\Volume#)
-			End Select
+	For x=1 To SOUNDS_TOTAL
+		Select SOUNDS_V(x)
+			Case 1: SoundVolume(SOUNDS(x),Menu\Settings\VolumeSFX#*(Menu\Settings\Volume#*0.175))
+			Case 2: SoundVolume(SOUNDS(x),Menu\Settings\VolumeVA#*(Menu\Settings\Volume#*0.175))
+			Case 3: SoundVolume(SOUNDS(x),Menu\Settings\VolumeM#*(Menu\Settings\Volume#*0.175))
+			Case 4: SoundVolume(SOUNDS(x),Menu\Settings\VolumeSFX#*Menu\Settings\VolumeAmb#*(Menu\Settings\Volume#*0.175))
+		End Select
+	Next
+End Function
+
+
+
+Function UpdateAllPlayerVolumes()
+	For s = 0 To Sound_JumpX
+		For v=Voice_Attack1 To PLAYER_VOICES
+			For p.tPlayer = Each tPlayer
+				SoundVolume(p\Voice[s],Menu\Settings\VolumeSFX#*(Menu\Settings\Volume#*0.175))
+				SoundVolume(p\Voice[v],Menu\Settings\VolumeVA#*(Menu\Settings\Volume#*0.175))
+			Next
 		Next
-	End Function
+	Next
+End Function
+
+Function MuteEverything()
+	
+	Menu\Settings\PreviousVolume#=Menu\Settings\Volume#
+	Menu\Settings\Volume#=0
+	
+	UpdateAllSoundVolumes()
+	UpdateAllPlayerVolumes()
+	
+End Function
+
+Function UnmuteEverything()
+	
+	Menu\Settings\Volume#=Menu\Settings\PreviousVolume#
+	
+	UpdateAllSoundVolumes()
+	UpdateAllPlayerVolumes()
+End Function
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
 Function LoadStageMusic(Path$)
+	
+	If Menu\TutorialMode=1 Then  
+		FreeSound(StageMusic[0])
+		StageMusic[0] = LoadSound(Path$+"Media/"+(Str(ShortCharNames(Menu\Character[1],1)))+".ogg")
+	Else
+		
 		For i=0 To 2
-			Select i
-				Case 1: no$="2"
-				Case 2: no$="3"
-				Default: no$=""
-			End Select
-			Game\Stage\Properties\Music[i] = 0
+			FreeSound(StageMusic[i])
+			
 			If Menu\ChaoGarden=0 Then
-				Select Menu\Mission
-					Case MISSION_BOSS#:
-						If (Not(Game\Stage\Properties\Music[i]>0)) Then Game\Stage\Properties\Music[i] = LoadSound(Path$+"/Media/boss"+no$+".ogg")
-						If (Not(Game\Stage\Properties\Music[i]>0)) Then Game\Stage\Properties\Music[i] = LoadSound(Path$+"/Media/boss"+no$+".mp3")
-					Case MISSION_RIVAL#:
-						If (Not(Game\Stage\Properties\Music[i]>0)) Then Game\Stage\Properties\Music[i] = LoadSound(Path$+"/Media/rival"+no$+".ogg")
-						If (Not(Game\Stage\Properties\Music[i]>0)) Then Game\Stage\Properties\Music[i] = LoadSound(Path$+"/Media/rival"+no$+".mp3")
+				
+				Select i
+					Case 0: no$=""
+					Case 1: no$="2"
+					Case 2: no$="3"
 				End Select
-
-				For j=0 To 1
-					Select j
-						Case 0:
-							Select(Menu\MissionNo)
-								Case 1: m$="m1"
-								Case 2: m$="m2"
-								Case 3: m$="m3"
-								Case 4: m$="m4"
-								Case 5: m$="m5"
-							End Select
-						Default: m$=""
-					End Select
-
-					Select Game\Stage\Properties\MusicType
-						Case 1:
-							If (Not(Game\Stage\Properties\Music[i]>0)) Then Game\Stage\Properties\Music[i] = LoadSound(Path$+"/Media/hero"+no$+m$+".ogg")
-							If (Not(Game\Stage\Properties\Music[i]>0)) Then Game\Stage\Properties\Music[i] = LoadSound(Path$+"/Media/hero"+no$+m$+".mp3")
-						Case 2:
-							If (Not(Game\Stage\Properties\Music[i]>0)) Then Game\Stage\Properties\Music[i] = LoadSound(Path$+"/Media/dark"+no$+m$+".ogg")
-							If (Not(Game\Stage\Properties\Music[i]>0)) Then Game\Stage\Properties\Music[i] = LoadSound(Path$+"/Media/dark"+no$+m$+".mp3")
-							If (Not(Game\Stage\Properties\Music[i]>0)) Then Game\Stage\Properties\Music[i] = LoadSound(Path$+"/Media/hero"+no$+m$+".ogg")
-							If (Not(Game\Stage\Properties\Music[i]>0)) Then Game\Stage\Properties\Music[i] = LoadSound(Path$+"/Media/hero"+no$+m$+".mp3")
-					End Select
-				Next
+				
+				If FileType(Path$+"/Media/hero"+no$+"m"+Menu\MissionNo+".ogg")=1 Then
+					pathtomusic$=Path$+"/Media/hero"+no$+"m"+Menu\MissionNo+".ogg"
+				Else
+					pathtomusic$=Path$+"/Media/hero"+no$+".ogg"
+				EndIf
+				
+				StageMusic[i] = LoadSound(pathtomusic$)
+				
 			ElseIf i=0 Then
 				Select Menu\Stage
 					Case 999:
-						If (Not(Game\Stage\Properties\Music[i]>0)) Then Game\Stage\Properties\Music[i] = LoadSound(Path$+"/Media/chao"+Rand(1,6)+".ogg")
-						If (Not(Game\Stage\Properties\Music[i]>0)) Then Game\Stage\Properties\Music[i] = LoadSound(Path$+"/Media/chao"+Rand(1,6)+".mp3")
+						StageMusic[i] = LoadSound(Path$+"/Media/chao"+Rand(1,6)+".ogg")
 					Case 998:
-						If (Not(Game\Stage\Properties\Music[i]>0)) Then Game\Stage\Properties\Music[i] = LoadSound("Sounds/ChaoRace.ogg")
+						StageMusic[i] = LoadSound("Sounds/ChaoRace.ogg")
 					Case 997:
-						If (Not(Game\Stage\Properties\Music[i]>0)) Then Game\Stage\Properties\Music[i] = LoadSound("Sounds/ChaoKarate.ogg")
+						StageMusic[i] = LoadSound("Sounds/ChaoKarate.ogg")
 				End Select
 			EndIf
 		Next
-	End Function
+	EndIf
+End Function
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
 Function LoadSmartSound(x)
-
+	
 	Select x
+		Case Sound_ATM:		LoadGoodSound(x,3,"Sounds/ATM.ogg")
+		Case Sound_TitleCardRuby:			LoadGoodSound(x,1,"Sounds/RubySwirl.ogg")
+		Case Sound_Prompt:		LoadGoodSound(x,3,"Sounds/Prompt.ogg")
+		Case Sound_Super:		LoadGoodSound(x,3,"Sounds/Super.ogg")
+		Case Sound_BoostFinish:		LoadGoodSound(x,3,"Sounds/BoostFinish.ogg")
+		Case Sound_SoarUp:		LoadGoodSound(x,3,"Sounds/SoarUp.ogg")
+		Case Sound_SoarDown:		LoadGoodSound(x,3,"Sounds/SoarDown.ogg")
+		Case Sound_DiamondBig:		LoadGoodSound(x,3,"Sounds/DiamondBig.ogg")
+		Case Sound_DiamondBlue1:		LoadGoodSound(x,3,"Sounds/DiamondBlue1.ogg")
+		Case Sound_DiamondBlue2:		LoadGoodSound(x,3,"Sounds/DiamondBlue2.ogg")
+		Case Sound_DiamondRed1:		LoadGoodSound(x,3,"Sounds/DiamondRed1.ogg")
+		Case Sound_DiamondRed2:		LoadGoodSound(x,3,"Sounds/DiamondRed2.ogg")
+		Case Sound_DiamondGreen1:		LoadGoodSound(x,3,"Sounds/DiamondGreen1.ogg")
+		Case Sound_DiamondGreen2:		LoadGoodSound(x,3,"Sounds/DiamondGreen2.ogg")
+		Case Sound_Kunai:		LoadGoodSound(x,3,"Sounds/Kunai.ogg")
+		Case Sound_Quickstep:		LoadGoodSound(x,3,"Sounds/Quickstep.ogg")
 		Case Sound_AmbientAlarm:		LoadGoodSound(x,1,"Sounds/AmbientAlarm.ogg",4)
-		Case Sound_AmbientUnderWater:		LoadGoodSound(x,1,"Sounds/AmbientUnderwater.ogg",4)
-		
-		Case Sound_BoostStart:		LoadGoodSound(x,1,"Sounds/BoostStart.ogg",4)
-		Case Sound_BoostWind:		LoadGoodSound(x,1,"Sounds/BoostWind.ogg",4)
-		Case Sound_BoostCharge:		LoadGoodSound(x,1,"Sounds/BoostCharge.ogg",4)
-;======================================================================
-;======================================================================
-								
-		Case Sound_MenuAccept:
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/MenuAccept.ogg")) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/MenuAccept.ogg")
-				Else	
-					LoadGoodSound(x,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/MenuAccept.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/MenuAccept.ogg")=1) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/MenuAccept.ogg")
-				Else
-					LoadGoodSound(x,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/MenuAccept.ogg")
-				EndIf
-			EndIf 
-
-;======================================================================
-;======================================================================
-		Case Sound_MenuBack:
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/MenuBack.ogg")) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/MenuBack.ogg")
-				Else	
-					LoadGoodSound(x,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/MenuBack.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/MenuBack.ogg")=1) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/MenuBack.ogg")
-				Else
-					LoadGoodSound(x,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/MenuBack.ogg")
-				EndIf
-			EndIf 
-;======================================================================
-;======================================================================
-		Case Sound_MenuMove:
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/MenuMove.ogg")) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/MenuMove.ogg")
-				Else	
-					LoadGoodSound(x,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/MenuMove.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/MenuMove.ogg")=1) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/MenuMove.ogg")
-				Else
-					LoadGoodSound(x,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/MenuMove.ogg")
-				EndIf
-			EndIf 
-;======================================================================
-;======================================================================
-		Case Sound_MenuPause:
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/MenuPause.ogg")) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/MenuPause.ogg")
-				Else	
-					LoadGoodSound(x,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/MenuPause.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/MenuPause.ogg")=1) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/MenuPause.ogg")
-				Else
-					LoadGoodSound(x,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/MenuPause.ogg")
-				EndIf
-			EndIf 
-;======================================================================
-;======================================================================
-		Case Sound_MenuRefuse:
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/MenuRefuse.ogg")) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/MenuRefuse.ogg")
-				Else	
-					LoadGoodSound(x,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/MenuRefuse.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/MenuRefuse.ogg")=1) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/MenuRefuse.ogg")
-				Else
-					LoadGoodSound(x,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/MenuRefuse.ogg")
-				EndIf
-			EndIf 
-
+		Case Sound_MenuAccept:			LoadGoodSound(x,1,"Sounds/MenuAccept.ogg")
+		Case Sound_MenuBegin:			LoadGoodSound(x,1,"Sounds/MenuBegin.ogg")
+		Case Sound_Achievement:			LoadGoodSound(x,1,"Sounds/Achievement.ogg")
+		Case Sound_MenuBack:			LoadGoodSound(x,1,"Sounds/MenuBack.ogg")
+		Case Sound_MenuMove:			LoadGoodSound(x,1,"Sounds/MenuMove.ogg")
+		Case Sound_MenuPause:			LoadGoodSound(x,1,"Sounds/MenuPause.ogg")
+		Case Sound_MenuRefuse:			LoadGoodSound(x,1,"Sounds/MenuRefuse.ogg")
 		Case Sound_1Up:				LoadGoodSound(x,1,"Sounds/1Up.ogg")
 		Case Sound_CharacterChange:		LoadGoodSound(x,3,"Sounds/CharacterChange.ogg")
 		Case Sound_DebugOnOff:			LoadGoodSound(x,1,"Sounds/DebugOnOff.ogg")
 		Case Sound_TitleCard:			LoadGoodSound(x,1,"Sounds/TitleCard.ogg")
 		Case Sound_Emblem:			LoadGoodSound(x,1,"Sounds/Emblem.ogg")
-		Case Sound_GameOver:			;LoadGoodSound(x,1,"Sounds/GameOver.ogg",3)
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/GameOver.ogg")) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/GameOver.ogg")
-				Else	
-					LoadGoodSound(x,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/GameOver.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/GameOver.ogg")=1) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/GameOver.ogg")
-				Else
-					LoadGoodSound(x,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/GameOver.ogg")
-				EndIf
-			EndIf 
+		Case Sound_GameOver:			LoadGoodSound(x,1,"Sounds/GameOver.ogg",3)
 		Case Sound_Unlock:			LoadGoodSound(x,1,"Sounds/Unlock.ogg")
 		Case Sound_AmbientBeach:		LoadGoodSound(x,1,"Sounds/AmbientBeach.ogg",4)
 		Case Sound_AmbientForest:		LoadGoodSound(x,1,"Sounds/AmbientForest.ogg",4)
@@ -254,93 +255,54 @@ Function LoadSmartSound(x)
 		Case Sound_AmbientSnow:			LoadGoodSound(x,1,"Sounds/AmbientSnow.ogg",4)
 		Case Sound_AmbientVoid:			LoadGoodSound(x,1,"Sounds/AmbientVoid.ogg",4)
 		Case Sound_AmbientWind:			LoadGoodSound(x,1,"Sounds/AmbientWind.ogg",4)
-		Case Sound_RedRing:			LoadGoodSound(x,1,"Sounds/RedRing.ogg")
-		Case Sound_JumpPanelExit:		LoadGoodSound(x,3,"Sounds/JumpPanelExit.ogg")
-		Case Sound_JumpPanelLand:		LoadGoodSound(x,3,"Sounds/JumpPanelLand.ogg")
-			
 		Case Sound_Rank:			LoadGoodSound(x,1,"Sounds/Rank.ogg")
 		Case Sound_RankS:			LoadGoodSound(x,1,"Sounds/RankS.ogg")
-		Case Sound_RankScore:	
-			Select Menu\Settings\Theme#
-				Case 3: LoadGoodSound(x,1,"Sounds/Menu/Theme3/RankScore.ogg")
-				Default: LoadGoodSound(x,1,"Sounds/Menu/Theme1/RankScore.ogg")
-			End Select 
-					
-			
+		Case Sound_PunchShadow1:			LoadGoodSound(x,1,"Sounds/PunchShadow1.ogg")
+		Case Sound_PunchShadow2:			LoadGoodSound(x,1,"Sounds/PunchShadow2.ogg")
+		Case Sound_Dodge:			LoadGoodSound(x,1,"Sounds/Dodge.ogg")	
+		Case Sound_RankScore:			LoadGoodSound(x,1,"Sounds/RankScore.ogg")
 		Case Sound_ResultCount:			LoadGoodSound(x,1,"Sounds/ResultCount.ogg")
 		Case Sound_ResultCounting:		LoadGoodSound(x,1,"Sounds/ResultCounting.ogg")
-		;======================================================================
-;======================================================================	
-			Case Sound_Result:
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/Result.ogg")) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/Result.ogg")
-				Else	
-					LoadGoodSound(x,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/Result.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/Result.ogg")=1) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/Result.ogg")
-				Else
-					LoadGoodSound(x,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/Result.ogg")
-				EndIf
-			EndIf 
-	Case Sound_ResultS:
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/ResultS.ogg")) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/ResultS.ogg")
-				Else	
-					LoadGoodSound(x,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/ResultS.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/ResultS.ogg")=1) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/ResultS.ogg")
-				Else
-					LoadGoodSound(x,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/ResultS.ogg")
-				EndIf
-			EndIf 
+		Case Sound_Result:			LoadGoodSound(x,1,"Sounds/Result.ogg")
+		Case Sound_ResultS:			LoadGoodSound(x,1,"Sounds/ResultS.ogg")
 		Case Sound_ResultChao:			LoadGoodSound(x,1,"Sounds/ResultChao.ogg")
+		Case Sound_RankScore:			LoadGoodSound(x,1,"Sounds/RankScore.ogg")
 		Case Sound_Aim:				LoadGoodSound(x,3,"Sounds/Aim.ogg")
 		Case Sound_Balloon:			LoadGoodSound(x,3,"Sounds/Balloon.ogg")
+		Case Sound_BoostStart:		LoadGoodSound(x,1,"Sounds/BoostStart.ogg")
+		Case Sound_BoostWind:		LoadGoodSound(x,1,"Sounds/BoostWind.ogg")
+		Case Sound_BoostCharge:		LoadGoodSound(x,1,"Sounds/BoostCharge.ogg")
+		Case Sound_MetalCharge:		LoadGoodSound(x,1,"Sounds/MetalCharge.ogg")
+		Case Sound_MetalRelease:		LoadGoodSound(x,1,"Sounds/MetalRelease.ogg")
 		Case Sound_BatBomb:			LoadGoodSound(x,3,"Sounds/BatBomb.ogg")
 		Case Sound_Beam:			LoadGoodSound(x,3,"Sounds/Beam.ogg")
+		Case Sound_Spark1:			LoadGoodSound(x,3,"Sounds/Spark1.ogg")
+		Case Sound_Spark2:			LoadGoodSound(x,3,"Sounds/Spark2.ogg")
+		Case Sound_Spark3:			LoadGoodSound(x,3,"Sounds/Spark3.ogg")
+		Case Sound_BoardGrind:			LoadGoodSound(x,3,"Sounds/BoardGrind.ogg")
+		Case Sound_BoardJump:			LoadGoodSound(x,3,"Sounds/BoardJump.ogg")
+		Case Sound_BoardLand:			LoadGoodSound(x,3,"Sounds/BoardLand.ogg")
 		Case Sound_Bell:			LoadGoodSound(x,3,"Sounds/Bell.ogg")
 		Case Sound_Blade:			LoadGoodSound(x,3,"Sounds/Blade.ogg")
 		Case Sound_Board:			LoadGoodSound(x,3,"Sounds/Board.ogg")
 		Case Sound_Bombed:			LoadGoodSound(x,3,"Sounds/Bombed.ogg")
 		Case Sound_Boomerang:			LoadGoodSound(x,3,"Sounds/Boomerang.ogg")
+		Case Sound_Gatling:			LoadGoodSound(x,3,"Sounds/Gatling.ogg")
+		Case Sound_Charged:			LoadGoodSound(x,3,"Sounds/Charged.ogg")
+		Case Sound_Uppercut:			LoadGoodSound(x,3,"Sounds/Uppercut.ogg")
+		Case Sound_Lightattack:			LoadGoodSound(x,3,"Sounds/Lightattack.ogg")
 		Case Sound_Bounce:			LoadGoodSound(x,3,"Sounds/Bounce.ogg")
-		Case Sound_Bounce2:			;LoadGoodSound(x,1,"Sounds/SpeedShoes.ogg")
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/Bounce.ogg")) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/Bounce.ogg")
-				Else	
-					LoadGoodSound(x,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/Bounce.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/Bounce.ogg")=1) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/Bounce.ogg")
-				Else
-					LoadGoodSound(x,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/Bounce.ogg")
-				EndIf
-			EndIf 
-
+		Case Sound_Bounce2:			LoadGoodSound(x,3,"Sounds/Bounce2.ogg")
 		Case Sound_Boxdestroy:			LoadGoodSound(x,3,"Sounds/Boxdestroy.ogg")
-		Case Sound_BoxYellowBreak:			LoadGoodSound(x,3,"Sounds/BoxYellowBreak.ogg")
-		Case Sound_BoxYellowAppear:			LoadGoodSound(x,3,"Sounds/BoxYellowAppear.ogg")
-		Case Sound_Counter:				LoadGoodSound(x,3,"Sounds/Counter.ogg")
-		Case Sound_CounterWrong:		LoadGoodSound(x,3,"Sounds/CounterWrong.ogg")
-		Case Sound_Counter1:			LoadGoodSound(x,3,"Sounds/Counter1.ogg")
-		Case Sound_Counter2:			LoadGoodSound(x,3,"Sounds/Counter2.ogg")
-		Case Sound_Counter3:			LoadGoodSound(x,3,"Sounds/Counter3.ogg")
-		Case Sound_Counter4:			LoadGoodSound(x,3,"Sounds/Counter4.ogg")
-		Case Sound_Counter5:			LoadGoodSound(x,3,"Sounds/Counter5.ogg")
-			
+		Case Sound_BoxdestroyWood1:			LoadGoodSound(x,3,"Sounds/BoxDestroyWood1.ogg")
+		Case Sound_BoxdestroyWood2:			LoadGoodSound(x,3,"Sounds/BoxDestroyWood2.ogg")
+		Case Sound_BoxdestroyWood3:			LoadGoodSound(x,3,"Sounds/BoxDestroyWood3.ogg")
+		Case Sound_BoxdestroyMetal:			LoadGoodSound(x,3,"Sounds/BoxDestroyMetal.ogg")
 		Case Sound_Boxirondestroy:		LoadGoodSound(x,3,"Sounds/Boxirondestroy.ogg")
 		Case Sound_Break:			LoadGoodSound(x,3,"Sounds/Break.ogg")
+		Case Sound_BreakSpin:			LoadGoodSound(x,3,"Sounds/BreakSpin.ogg")
 		Case Sound_Breath:			LoadGoodSound(x,3,"Sounds/Breath.ogg")
 		Case Sound_BreathCount:			LoadGoodSound(x,1,"Sounds/BreathCount.ogg")
-		Case Sound_BreathCountLast:			LoadGoodSound(x,1,"Sounds/BreathCountLast.ogg")
 		Case Sound_BubbleBeam:			LoadGoodSound(x,3,"Sounds/BubbleBeam.ogg")
 		Case Sound_Bumper1:			LoadGoodSound(x,3,"Sounds/Bumper1.ogg")
 		Case Sound_Bumper2:			LoadGoodSound(x,3,"Sounds/Bumper2.ogg")
@@ -353,28 +315,22 @@ Function LoadSmartSound(x)
 		Case Sound_Car4:			LoadGoodSound(x,3,"Sounds/Car4.ogg")
 		Case Sound_Chao:			LoadGoodSound(x,3,"Sounds/Chao.ogg")
 		Case Sound_ChaosControl:		LoadGoodSound(x,3,"Sounds/ChaosControl.ogg")
-		Case Sound_ChaosBoost:		LoadGoodSound(x,3,"Sounds/ChaosBoost.ogg")
 		Case Sound_ChaosDrive:			LoadGoodSound(x,3,"Sounds/ChaosDrive.ogg")
-		Case Sound_CheckEnd:				LoadGoodSound(x,3,"Sounds/CheckEnd.ogg")
-		Case Sound_CheckFlash:				LoadGoodSound(x,3,"Sounds/CheckFlash.ogg")
-		Case Sound_Check:				;LoadGoodSound(x,3,"Sounds/Check.ogg")
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/Check.ogg")) Then
-					LoadGoodSound(x,3,"Sounds/Menu/Theme1/Check.ogg")
-				Else	
-					LoadGoodSound(x,3,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/Check.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/Check.ogg")=1) Then
-					LoadGoodSound(x,3,"Sounds/Menu/Theme1/Check.ogg")
-				Else
-					LoadGoodSound(x,3,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/Check.ogg")
-				EndIf
-			EndIf 
-
+		Case Sound_Check:			LoadGoodSound(x,3,"Sounds/Check.ogg")
 		Case Sound_Climb:			LoadGoodSound(x,3,"Sounds/Climb.ogg")
 		Case Sound_Cloud:			LoadGoodSound(x,3,"Sounds/Cloud.ogg")
-		Case Sound_Counter:			LoadGoodSound(x,3,"Sounds/Counter.ogg")
+		Case Sound_Collectible:			LoadGoodSound(x,1,"Sounds/Collectible.ogg")
+		Case Sound_Counter:				LoadGoodSound(x,3,"Sounds/Counter.ogg")
+		Case Sound_MoonCollect:			LoadGoodSound(x,3,"Sounds/MoonCollect.ogg")
+		Case Sound_MoonAll:			LoadGoodSound(x,3,"Sounds/MoonAll.ogg")	
+		Case Sound_MoonFail:			LoadGoodSound(x,3,"Sounds/MoonFail.ogg")	
+		Case Sound_MoonTimer:			LoadGoodSound(x,3,"Sounds/MoonTimer.ogg")		
+		Case Sound_Counter1:			LoadGoodSound(x,3,"Sounds/Counter1.ogg")
+		Case Sound_Counter2:			LoadGoodSound(x,3,"Sounds/Counter2.ogg")
+		Case Sound_Counter3:			LoadGoodSound(x,3,"Sounds/Counter3.ogg")
+		Case Sound_Counter4:			LoadGoodSound(x,3,"Sounds/Counter4.ogg")
+		Case Sound_Counter5:			LoadGoodSound(x,3,"Sounds/Counter5.ogg")
+		Case Sound_CounterWrong:		LoadGoodSound(x,3,"Sounds/CounterWrong.ogg")
 		Case Sound_Crumble:			LoadGoodSound(x,3,"Sounds/Crumble.ogg")
 		Case Sound_Crusher:			LoadGoodSound(x,3,"Sounds/Crusher.ogg")
 		Case Sound_Curse:			LoadGoodSound(x,3,"Sounds/Curse.ogg")
@@ -383,25 +339,14 @@ Function LoadSmartSound(x)
 		Case Sound_DashElectro:			LoadGoodSound(x,3,"Sounds/DashElectro.ogg")
 		Case Sound_DashPad:			LoadGoodSound(x,3,"Sounds/DashPad.ogg")
 		Case Sound_DashRamp:			LoadGoodSound(x,3,"Sounds/DashRamp.ogg")
+		Case Sound_Deflect:			LoadGoodSound(x,3,"Sounds/Deflect.ogg")
 		Case Sound_Die:				LoadGoodSound(x,3,"Sounds/Die.ogg")
 		Case Sound_Dive:			LoadGoodSound(x,3,"Sounds/Dive.ogg")
 		Case Sound_Drift:			LoadGoodSound(x,3,"Sounds/Drift.ogg")
 		Case Sound_Drop:			LoadGoodSound(x,3,"Sounds/Drop.ogg")
-		Case Sound_Drown:
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/Drown.ogg")) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/Drown.ogg")
-				Else	
-					LoadGoodSound(x,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/Drown.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/Drown.ogg")=1) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/Drown.ogg")
-				Else
-					LoadGoodSound(x,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/Drown.ogg")
-				EndIf
-			EndIf 
-
+		Case Sound_DropDash:			LoadGoodSound(x,3,"Sounds/DropDash.ogg")
+		Case Sound_Flamethrower:			LoadGoodSound(x,3,"Sounds/Flamethrower.ogg")
+		Case Sound_Drown:			LoadGoodSound(x,1,"Sounds/Drown.ogg")
 		Case Sound_Drowned:			LoadGoodSound(x,3,"Sounds/Drowned.ogg")
 		Case Sound_DoubleJump:			LoadGoodSound(x,3,"Sounds/DoubleJump.ogg")
 		Case Sound_EggmanHurt:			LoadGoodSound(x,3,"Sounds/EggmanHurt.ogg")
@@ -424,6 +369,7 @@ Function LoadSmartSound(x)
 		Case Sound_EnemyMagic:			LoadGoodSound(x,3,"Sounds/EnemyMagic.ogg")
 		Case Sound_EnemyMotor:			LoadGoodSound(x,3,"Sounds/EnemyMotor.ogg")
 		Case Sound_EnemyMotor2:			LoadGoodSound(x,3,"Sounds/EnemyMotor2.ogg")
+		Case Sound_EnemyPing:			LoadGoodSound(x,3,"Sounds/EnemyPing.ogg")
 		Case Sound_EnemySearch:			LoadGoodSound(x,3,"Sounds/EnemySearch.ogg")
 		Case Sound_EnemySeen:			LoadGoodSound(x,3,"Sounds/EnemySeen.ogg")
 		Case Sound_EnemyShot:			LoadGoodSound(x,3,"Sounds/EnemyShot.ogg")
@@ -462,8 +408,6 @@ Function LoadSmartSound(x)
 		Case Sound_GlideStart3:			LoadGoodSound(x,3,"Sounds/GlideStart3.ogg")
 		Case Sound_Goal:			LoadGoodSound(x,3,"Sounds/Goal.ogg")
 		Case Sound_GoalIdle:			LoadGoodSound(x,3,"Sounds/GoalIdle.ogg")
-		Case Sound_RubyGoal:			LoadGoodSound(x,3,"Sounds/RubyGoal.ogg")
-		Case Sound_RubyIdle:			LoadGoodSound(x,3,"Sounds/RubyIdle.ogg")
 		Case Sound_Grab:			LoadGoodSound(x,3,"Sounds/Grab.ogg")
 		Case Sound_Grabber:			LoadGoodSound(x,3,"Sounds/Grabber.ogg")
 		Case Sound_Grind:			LoadGoodSound(x,3,"Sounds/Grind.ogg")
@@ -472,38 +416,44 @@ Function LoadSmartSound(x)
 		Case Sound_GroundFlyTails:		LoadGoodSound(x,3,"Sounds/GroundFlyTails.ogg")
 		Case Sound_GroundFlyTailsDoll:		LoadGoodSound(x,3,"Sounds/GroundFlyTailsDoll.ogg")
 		Case Sound_GroundHover:			LoadGoodSound(x,3,"Sounds/GroundHover.ogg")
-		Case Sound_GroundLand:			LoadGoodSound(x,3,"Sounds/GroundLand.ogg")
-		Case Sound_GroundLandMetal:		LoadGoodSound(x,3,"Sounds/GroundLandMetal.ogg")
+		Case Sound_GroundLand:			LoadGoodSound(x,3,"Sounds/Footstep/GroundLandStone.ogg")
+		Case Sound_GroundLandWood:			LoadGoodSound(x,3,"Sounds/Footstep/GroundLandWood.ogg")
+		Case Sound_GroundLandGrass:			LoadGoodSound(x,3,"Sounds/Footstep/GroundLandGrass.ogg")
+		Case Sound_GroundLandDirt:			LoadGoodSound(x,3,"Sounds/Footstep/GroundLandDirt.ogg")
+		Case Sound_GroundLandMetal:		LoadGoodSound(x,3,"Sounds/Footstep/GroundLandMetal.ogg")
 		Case Sound_GroundLandBoard:		LoadGoodSound(x,3,"Sounds/GroundLandBoard.ogg")
 		Case Sound_GroundLandDoll:		LoadGoodSound(x,3,"Sounds/GroundLandDoll.ogg")
 		Case Sound_GroundLandWater:		LoadGoodSound(x,3,"Sounds/GroundLandWater.ogg")
 		Case Sound_GroundShadowStep1:		LoadGoodSound(x,3,"Sounds/GroundShadowStep1.ogg")
 		Case Sound_GroundShadowStep2:		LoadGoodSound(x,3,"Sounds/GroundShadowStep2.ogg")
-		Case Sound_GroundSkid:		;	LoadGoodSound(x,3,"Sounds/GroundSkid.ogg")
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/GroundSkid.ogg")) Then
-					LoadGoodSound(x,3,"Sounds/Menu/Theme1/GroundSkid.ogg")
-				Else	
-					LoadGoodSound(x,3,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/GroundSkid.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/GroundSkid.ogg")=1) Then
-					LoadGoodSound(x,3,"Sounds/Menu/Theme1/GroundSkid.ogg")
-				Else
-					LoadGoodSound(x,3,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/GroundSkid.ogg")
-				EndIf
-			EndIf 
+		Case Sound_GroundSkid:			LoadGoodSound(x,3,"Sounds/GroundSkid.ogg")
 		Case Sound_GroundSkidWater:		LoadGoodSound(x,3,"Sounds/GroundSkidWater.ogg")
-		Case Sound_GroundStep1:			LoadGoodSound(x,3,"Sounds/GroundStep1.ogg")
-		Case Sound_GroundStep2:			LoadGoodSound(x,3,"Sounds/GroundStep2.ogg")
-		Case Sound_GroundStep3:			LoadGoodSound(x,3,"Sounds/GroundStep3.ogg")
-		Case Sound_GroundStep4:			LoadGoodSound(x,3,"Sounds/GroundStep4.ogg")
-		Case Sound_GroundStep5:			LoadGoodSound(x,3,"Sounds/GroundStep5.ogg")
-		Case Sound_GroundStep1Metal:		LoadGoodSound(x,3,"Sounds/GroundStep1Metal.ogg")
-		Case Sound_GroundStep2Metal:		LoadGoodSound(x,3,"Sounds/GroundStep2Metal.ogg")
-		Case Sound_GroundStep3Metal:		LoadGoodSound(x,3,"Sounds/GroundStep3Metal.ogg")
-		Case Sound_GroundStep4Metal:		LoadGoodSound(x,3,"Sounds/GroundStep4Metal.ogg")
-		Case Sound_GroundStep5Metal:		LoadGoodSound(x,3,"Sounds/GroundStep5Metal.ogg")
+		Case Sound_GroundStepPawn:			LoadGoodSound(x,3,"Sounds/GroundStepPawn.ogg")
+		Case Sound_GroundStep1:			LoadGoodSound(x,3,"Sounds/Footstep/GroundStep1Stone.ogg")
+		Case Sound_GroundStep2:			LoadGoodSound(x,3,"Sounds/Footstep/GroundStep2Stone.ogg")
+		Case Sound_GroundStep3:			LoadGoodSound(x,3,"Sounds/Footstep/GroundStep3Stone.ogg")
+		Case Sound_GroundStep4:			LoadGoodSound(x,3,"Sounds/Footstep/GroundStep4Stone.ogg")
+		Case Sound_GroundStep5:			LoadGoodSound(x,3,"Sounds/Footstep/GroundStep5Stone.ogg")
+		Case Sound_GroundStep1Dirt:			LoadGoodSound(x,3,"Sounds/Footstep/GroundStep1Dirt.ogg")
+		Case Sound_GroundStep2Dirt:			LoadGoodSound(x,3,"Sounds/Footstep/GroundStep2Dirt.ogg")
+		Case Sound_GroundStep3Dirt:			LoadGoodSound(x,3,"Sounds/Footstep/GroundStep3Dirt.ogg")
+		Case Sound_GroundStep4Dirt:			LoadGoodSound(x,3,"Sounds/Footstep/GroundStep4Dirt.ogg")
+		Case Sound_GroundStep5Dirt:			LoadGoodSound(x,3,"Sounds/Footstep/GroundStep5Dirt.ogg")
+		Case Sound_GroundStep1Grass:			LoadGoodSound(x,3,"Sounds/Footstep/GroundStep1Grass.ogg")
+		Case Sound_GroundStep2Grass:			LoadGoodSound(x,3,"Sounds/Footstep/GroundStep2Grass.ogg")
+		Case Sound_GroundStep3Grass:			LoadGoodSound(x,3,"Sounds/Footstep/GroundStep3Grass.ogg")
+		Case Sound_GroundStep4Grass:			LoadGoodSound(x,3,"Sounds/Footstep/GroundStep4Grass.ogg")
+		Case Sound_GroundStep5Grass:			LoadGoodSound(x,3,"Sounds/Footstep/GroundStep5Grass.ogg")
+		Case Sound_GroundStep1Wood:			LoadGoodSound(x,3,"Sounds/Footstep/GroundStep1Wood.ogg")
+		Case Sound_GroundStep2Wood:			LoadGoodSound(x,3,"Sounds/Footstep/GroundStep2Wood.ogg")
+		Case Sound_GroundStep3Wood:			LoadGoodSound(x,3,"Sounds/Footstep/GroundStep3Wood.ogg")
+		Case Sound_GroundStep4Wood:			LoadGoodSound(x,3,"Sounds/Footstep/GroundStep4Wood.ogg")
+		Case Sound_GroundStep5Wood:			LoadGoodSound(x,3,"Sounds/Footstep/GroundStep5Wood.ogg")
+		Case Sound_GroundStep1Metal:		LoadGoodSound(x,3,"Sounds/Footstep/GroundStep1Metal.ogg")
+		Case Sound_GroundStep2Metal:		LoadGoodSound(x,3,"Sounds/Footstep/GroundStep2Metal.ogg")
+		Case Sound_GroundStep3Metal:		LoadGoodSound(x,3,"Sounds/Footstep/GroundStep3Metal.ogg")
+		Case Sound_GroundStep4Metal:		LoadGoodSound(x,3,"Sounds/Footstep/GroundStep4Metal.ogg")
+		Case Sound_GroundStep5Metal:		LoadGoodSound(x,3,"Sounds/Footstep/GroundStep5Metal.ogg")
 		Case Sound_GroundStep1Doll:		LoadGoodSound(x,3,"Sounds/GroundStep1Doll.ogg")
 		Case Sound_GroundStep2Doll:		LoadGoodSound(x,3,"Sounds/GroundStep2Doll.ogg")
 		Case Sound_GroundStep3Doll:		LoadGoodSound(x,3,"Sounds/GroundStep3Doll.ogg")
@@ -525,88 +475,28 @@ Function LoadSmartSound(x)
 		Case Sound_Hammer:			LoadGoodSound(x,3,"Sounds/Hammer.ogg")
 		Case Sound_Helicopter:			LoadGoodSound(x,3,"Sounds/Helicopter.ogg")
 		Case Sound_Hint:			LoadGoodSound(x,3,"Sounds/Hint.ogg")
-		Case Sound_HomingAttack:
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/HomingAttack.ogg")) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/HomingAttack.ogg")
-				Else	
-					LoadGoodSound(x,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/HomingAttack.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/HomingAttack.ogg")=1) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/HomingAttack.ogg")
-				Else
-					LoadGoodSound(x,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/HomingAttack.ogg")
-				EndIf
-			EndIf 
-		Case Sound_HomingAttackDeep:
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/HomingAttackDeep.ogg")) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/HomingAttackDeep.ogg")
-				Else	
-					LoadGoodSound(x,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/HomingAttackDeep.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/HomingAttackDeep.ogg")=1) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/HomingAttackDeep.ogg")
-				Else
-					LoadGoodSound(x,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/HomingAttackDeep.ogg")
-				EndIf
-			EndIf 
-
+		Case Sound_HomingAttack:		LoadGoodSound(x,3,"Sounds/HomingAttack.ogg")
+		Case Sound_HomingAttackDeep:		LoadGoodSound(x,3,"Sounds/HomingAttackDeep.ogg")
 		Case Sound_HoopDash:			LoadGoodSound(x,3,"Sounds/HoopDash.ogg")
 		Case Sound_HoopRainbow:			LoadGoodSound(x,3,"Sounds/HoopRainbow.ogg")
 		Case Sound_Hover:			LoadGoodSound(x,3,"Sounds/Hover.ogg")
 		Case Sound_Hurricane:			LoadGoodSound(x,3,"Sounds/Hurricane.ogg")
-		;================================================================
-;================================================================
-		Case Sound_Invincible:			;LoadGoodSound(x,1,"Sounds/SpeedShoes.ogg")
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/Invincible.ogg")) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/Invincible.ogg")
-				Else	
-					LoadGoodSound(x,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/Invincible.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/Invincible.ogg")=1) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/Invincible.ogg")
-				Else
-					LoadGoodSound(x,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/Invincible.ogg")
-				EndIf
-			EndIf 
-;================================================================
-;================================================================
+		Case Sound_Invincible:			LoadGoodSound(x,1,"Sounds/Invincible.ogg")
 		Case Sound_Invisible:			LoadGoodSound(x,3,"Sounds/Invisible.ogg")
+		Case Sound_JumpPanelExit:		LoadGoodSound(x,3,"Sounds/JumpPanelExit.ogg")
+		Case Sound_JumpPanelLand:		LoadGoodSound(x,3,"Sounds/JumpPanelLand.ogg")
 		Case Sound_KnuxStomp:			LoadGoodSound(x,3,"Sounds/KnuxStomp.ogg")
 		Case Sound_LaserCharging:		LoadGoodSound(x,3,"Sounds/LaserCharging.ogg")
+		Case Sound_Lap:				LoadGoodSound(x,1,"Sounds/Lap.ogg")
+		Case Sound_LapLast:				LoadGoodSound(x,1,"Sounds/LapLast.ogg")
 		Case Sound_Levitate:			LoadGoodSound(x,3,"Sounds/Levitate.ogg")
 		Case Sound_Levitate2:			LoadGoodSound(x,3,"Sounds/Levitate2.ogg")
 		Case Sound_LevitateStart:		LoadGoodSound(x,3,"Sounds/LevitateStart.ogg")
 		Case Sound_Minion:			LoadGoodSound(x,3,"Sounds/Minion.ogg")
-		Case Sound_MissionCompleted:		;LoadGoodSound(x,1,"Sounds/MissionCompleted.ogg")
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/MissionCompleted.ogg")) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/MissionCompleted.ogg")
-				Else	
-					LoadGoodSound(x,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/MissionCompleted.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/MissionCompleted.ogg")=1) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/MissionCompleted.ogg")
-				Else
-					LoadGoodSound(x,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/MissionCompleted.ogg")
-				EndIf
-			EndIf 
-
+		Case Sound_MissionCompleted:		LoadGoodSound(x,1,"Sounds/MissionCompleted.ogg")
 		Case Sound_Monitor:			LoadGoodSound(x,3,"Sounds/Monitor.ogg")
-		Case Sound_MonitorRing:			LoadGoodSound(x,3,"Sounds/MonitorRing.ogg")
 		Case Sound_MonitorBalloon:		LoadGoodSound(x,3,"Sounds/MonitorBalloon.ogg")
 		Case Sound_MonitorShield:		LoadGoodSound(x,3,"Sounds/MonitorShield.ogg")
-		Case Sound_MonitorShieldFlame:		LoadGoodSound(x,3,"Sounds/MonitorShieldFlame.ogg")
-Case Sound_MonitorShieldBubble:		LoadGoodSound(x,3,"Sounds/MonitorShieldBubble.ogg")
-Case Sound_MonitorShieldThunder		LoadGoodSound(x,3,"Sounds/MonitorShieldThunder.ogg")
-Case Sound_MonitorShieldEarth:		LoadGoodSound(x,3,"Sounds/MonitorShieldEarth.ogg")
-
 		Case Sound_MonitorTrap:			LoadGoodSound(x,3,"Sounds/MonitorTrap.ogg")
 		Case Sound_MonsterBite:				LoadGoodSound(x,3,"Sounds/MonsterBite.ogg")
 		Case Sound_MonsterDamage:			LoadGoodSound(x,3,"Sounds/MonsterDamage.ogg")
@@ -637,38 +527,15 @@ Case Sound_MonitorShieldEarth:		LoadGoodSound(x,3,"Sounds/MonitorShieldEarth.ogg
 		Case Sound_Punch:			LoadGoodSound(x,3,"Sounds/Punch.ogg")
 		Case Sound_PunchBig:			LoadGoodSound(x,3,"Sounds/PunchBig.ogg")
 		Case Sound_PunchSmall:			LoadGoodSound(x,3,"Sounds/PunchSmall.ogg")
-		Case Sound_Ring:			;LoadGoodSound(x,3,"Sounds/Ring.ogg")
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/Ring.ogg")) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/Ring.ogg")
-				Else	
-					LoadGoodSound(x,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/Ring.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/Ring.ogg")=1) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/Ring.ogg")
-				Else
-					LoadGoodSound(x,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/Ring.ogg")
-				EndIf
-			EndIf 
-		Case Sound_RingSuper:			;LoadGoodSound(x,3,"Sounds/Ring.ogg")
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/RingSuper.ogg")) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/RingSuper.ogg")
-				Else	
-					LoadGoodSound(x,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/RingSuper.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/RingSuper.ogg")=1) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/RingSuper.ogg")
-				Else
-					LoadGoodSound(x,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/RingSuper.ogg")
-				EndIf
-			EndIf 
+		Case Sound_RedRings:			LoadGoodSound(x,3,"Sounds/RedRings.ogg")
+		Case Sound_Ring:			LoadGoodSound(x,3,"Sounds/Ring.ogg")
+		Case Sound_RingRed:			LoadGoodSound(x,3,"Sounds/RingRed.ogg")
+		Case Sound_RingBig:			LoadGoodSound(x,3,"Sounds/RingBig.ogg")
+		Case Sound_RingSuper:			LoadGoodSound(x,3,"Sounds/RingSuper.ogg")
 		Case Sound_RingSparkle1:			LoadGoodSound(x,3,"Sounds/RingSparkle1.ogg")
 		Case Sound_RingSparkle2:			LoadGoodSound(x,3,"Sounds/RingSparkle2.ogg")
 		Case Sound_RingSparkle3:			LoadGoodSound(x,3,"Sounds/RingSparkle3.ogg")
-		Case Sound_RingBig:			LoadGoodSound(x,3,"Sounds/RingBig.ogg")
+		Case Sound_RingSparkle4:			LoadGoodSound(x,3,"Sounds/RingSparkle3.ogg")
 		Case Sound_RingLoss:			LoadGoodSound(x,3,"Sounds/RingLoss.ogg")
 		Case Sound_Robot1:			LoadGoodSound(x,3,"Sounds/Robot1.ogg")
 		Case Sound_Robot2:			LoadGoodSound(x,3,"Sounds/Robot2.ogg")
@@ -682,15 +549,20 @@ Case Sound_MonitorShieldEarth:		LoadGoodSound(x,3,"Sounds/MonitorShieldEarth.ogg
 		Case Sound_Ruby4:			LoadGoodSound(x,3,"Sounds/Ruby4.ogg")
 		Case Sound_Ruby5:			LoadGoodSound(x,3,"Sounds/Ruby5.ogg")
 		Case Sound_Ruby6:			LoadGoodSound(x,3,"Sounds/Ruby6.ogg")
+		Case Sound_RubyIdle:			LoadGoodSound(x,3,"Sounds/RubyIdle.ogg")
 		Case Sound_RubySwirl:		LoadGoodSound(x,3,"Sounds/RubySwirl.ogg")
 		Case Sound_Sack:			LoadGoodSound(x,3,"Sounds/Sack.ogg")
 		Case Sound_Seagull:			LoadGoodSound(x,3,"Sounds/Seagull.ogg")
 		Case Sound_Sheep1:			LoadGoodSound(x,3,"Sounds/Sheep1.ogg")
 		Case Sound_Sheep2:			LoadGoodSound(x,3,"Sounds/Sheep2.ogg")
+		Case Sound_Shield:			LoadGoodSound(x,3,"Sounds/Shield.ogg")
+		Case Sound_ShieldEarth:			LoadGoodSound(x,3,"Sounds/ShieldEarth.ogg")
+		Case Sound_ShieldBubble:			LoadGoodSound(x,3,"Sounds/ShieldBubble.ogg")
+		Case Sound_ShieldFire:			LoadGoodSound(x,3,"Sounds/ShieldFire.ogg")
+		Case Sound_ShieldThunder:			LoadGoodSound(x,3,"Sounds/ShieldThunder.ogg")
 		Case Sound_Shotgun1:			LoadGoodSound(x,3,"Sounds/Shotgun1.ogg")
 		Case Sound_Shotgun2:			LoadGoodSound(x,3,"Sounds/Shotgun2.ogg")
 		Case Sound_Skydive:			LoadGoodSound(x,3,"Sounds/Skydive.ogg")
-		Case Sound_SkydiveFast:			LoadGoodSound(x,3,"Sounds/SkydiveFast.ogg")
 		Case Sound_Slap:			LoadGoodSound(x,3,"Sounds/Slap.ogg")
 		Case Sound_SoldierHurt1:		LoadGoodSound(x,3,"Sounds/SoldierHurt1.ogg")
 		Case Sound_SoldierHurt2:		LoadGoodSound(x,3,"Sounds/SoldierHurt2.ogg")
@@ -703,86 +575,16 @@ Case Sound_MonitorShieldEarth:		LoadGoodSound(x,3,"Sounds/MonitorShieldEarth.ogg
 		Case Sound_SoldierCharge3:		LoadGoodSound(x,3,"Sounds/SoldierCharge3.ogg")
 		Case Sound_SpearImpact:			LoadGoodSound(x,3,"Sounds/SpearImpact.ogg")
 		Case Sound_SpearShoot:			LoadGoodSound(x,3,"Sounds/SpearShoot.ogg")
-		;================================================================
-;================================================================
-		Case Sound_SpeedShoes:			;LoadGoodSound(x,1,"Sounds/SpeedShoes.ogg")
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/SpeedShoes.ogg")) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/SpeedShoes.ogg")
-				Else	
-					LoadGoodSound(x,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/SpeedShoes.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/SpeedShoes.ogg")=1) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/SpeedShoes.ogg")
-				Else
-					LoadGoodSound(x,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/SpeedShoes.ogg")
-				EndIf
-			EndIf 
+		Case Sound_SpeedShoes:			LoadGoodSound(x,1,"Sounds/SpeedShoes.ogg")
 		Case Sound_SpikeDrill1:			LoadGoodSound(x,3,"Sounds/SpikeDrill1.ogg")
 		Case Sound_SpikeDrill2:			LoadGoodSound(x,3,"Sounds/SpikeDrill2.ogg")
 		Case Sound_Spikes:			LoadGoodSound(x,3,"Sounds/Spikes.ogg")
-		Case Sound_Spin:			
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/Spin.ogg")) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/Spin.ogg")
-				Else	
-					LoadGoodSound(x,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/Spin.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/Spin.ogg")=1) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/Spin.ogg")
-				Else
-					LoadGoodSound(x,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/Spin.ogg")
-				EndIf
-			EndIf 
-		Case Sound_SpinDashCharge:		;LoadGoodSound(x,3,"Sounds/SpinDashCharge.ogg")
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/SpinDashCharge.ogg")) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/SpinDashCharge.ogg")
-				Else	
-					LoadGoodSound(x,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/SpinDashCharge.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/SpinDashCharge.ogg")=1) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/SpinDashCharge.ogg")
-				Else
-					LoadGoodSound(x,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/SpinDashCharge.ogg")
-				EndIf
-			EndIf 
-
-		Case Sound_SpinDashRelease:		;LoadGoodSound(x,3,"Sounds/SpinDashRelease.ogg")
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/SpinDashRelease.ogg")) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/SpinDashRelease.ogg")
-				Else	
-					LoadGoodSound(x,1,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/SpinDashRelease.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/SpinDashRelease.ogg")=1) Then
-					LoadGoodSound(x,1,"Sounds/Menu/Theme1/SpinDashRelease.ogg")
-				Else
-					LoadGoodSound(x,1,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/SpinDashRelease.ogg")
-				EndIf
-			EndIf 
-
+		Case Sound_Spin:			LoadGoodSound(x,3,"Sounds/Spin.ogg")
+		Case Sound_SpinDashCharge:		LoadGoodSound(x,3,"Sounds/SpinDashCharge.ogg")
+		Case Sound_SpinDashRelease:		LoadGoodSound(x,3,"Sounds/SpinDashRelease.ogg")
 		Case Sound_SpinKick:			LoadGoodSound(x,3,"Sounds/SpinKick.ogg")
 		Case Sound_Spirit:			LoadGoodSound(x,3,"Sounds/Spirit.ogg")
-		Case Sound_SpringThorn:			LoadGoodSound(x,3,"Sounds/SpringThorn.ogg")
-			Case Sound_Spring:			;LoadGoodSound(x,3,"Sounds/Spring.ogg")
-			If Menu\Settings\Theme#<=MENU_THEME_NONMODAMOUNT# Then
-				If Not(FileType("Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/Spring.ogg")) Then
-					LoadGoodSound(x,3,"Sounds/Menu/Theme1/Spring.ogg")
-				Else	
-					LoadGoodSound(x,3,"Sounds/Menu/Theme"+Int(Menu\Settings\Theme#)+"/Spring.ogg")
-				EndIf
-			Else
-				If Not(FileType("Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/Spring.ogg")=1) Then
-					LoadGoodSound(x,3,"Sounds/Menu/Theme1/Spring.ogg")
-				Else
-					LoadGoodSound(x,3,"Mods/MenuThemes/CustomTheme"+Int(Menu\Settings\Theme#-MENU_THEME_NONMODAMOUNT#)+"/Sounds/Spring.ogg")
-				EndIf
-			EndIf 
+		Case Sound_Spring:			LoadGoodSound(x,3,"Sounds/Spring.ogg")
 		Case Sound_SpringBounce:			LoadGoodSound(x,3,"Sounds/SpringBounce.ogg")
 		Case Sound_SpringTrap:		LoadGoodSound(x,3,"Sounds/SpringTrap.ogg")
 		Case Sound_Sting:			LoadGoodSound(x,3,"Sounds/Sting.ogg")
@@ -791,16 +593,17 @@ Case Sound_MonitorShieldEarth:		LoadGoodSound(x,3,"Sounds/MonitorShieldEarth.ogg
 		Case Sound_Swinger:			LoadGoodSound(x,3,"Sounds/Swinger.ogg")
 		Case Sound_Swipe:			LoadGoodSound(x,3,"Sounds/Swipe.ogg")
 		Case Sound_Switch:			LoadGoodSound(x,3,"Sounds/Switch.ogg")
-		Case Sound_SwitchOn:			LoadGoodSound(x,3,"Sounds/SwitchOn.ogg")
 		Case Sound_SwitchOff:			LoadGoodSound(x,3,"Sounds/SwitchOff.ogg")
 		Case Sound_SwitchAir:			LoadGoodSound(x,3,"Sounds/SwitchAir.ogg")
 		Case Sound_Teleport:			LoadGoodSound(x,1,"Sounds/Teleport.ogg")
 		Case Sound_Throw:			LoadGoodSound(x,3,"Sounds/Throw.ogg")
 		Case Sound_Tinkle:			LoadGoodSound(x,3,"Sounds/Tinkle.ogg")
 		Case Sound_Tnt:				LoadGoodSound(x,3,"Sounds/Tnt.ogg")
+		Case Sound_Token:			LoadGoodSound(x,1,"Sounds/Token.ogg")
 		Case Sound_Trash:			LoadGoodSound(x,3,"Sounds/Trash.ogg")
 		Case Sound_Treasure:			LoadGoodSound(x,1,"Sounds/Treasure.ogg")
 		Case Sound_Trick:			LoadGoodSound(x,3,"Sounds/Trick.ogg")
+			
 		Case Sound_Umbrella:			LoadGoodSound(x,3,"Sounds/Umbrella.ogg")
 		Case Sound_Warp:			LoadGoodSound(x,1,"Sounds/Warp.ogg")
 		Case Sound_WaterBoosting:		LoadGoodSound(x,3,"Sounds/WaterBoosting.ogg")
@@ -818,7 +621,16 @@ Case Sound_MonitorShieldEarth:		LoadGoodSound(x,3,"Sounds/MonitorShieldEarth.ogg
 		Case Sound_LogoHum2:			LoadGoodSound(x,1,"Sounds/LogoHum2.ogg")
 		Case Sound_LogoConnect:			LoadGoodSound(x,1,"Sounds/LogoConnect.ogg")
 	End Select
-
+	
+End Function
+Function Dummy(mode=1)
+	Select mode
+		Case 1
+			PlaySmartSound(Sound_1Up)
+		Case 2
+			PlaySmartSound(Sound_DebugOnOff)
+	End Select
+	
 End Function
 ;~IDEal Editor Parameters:
 ;~C#Blitz3D

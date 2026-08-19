@@ -15,14 +15,17 @@
 	; Player parts
 	Global Mesh_Spark	= cm : cm=cm+1
 	Global Mesh_GrindSpark	= cm : cm=cm+1
+	Global Mesh_OmoLap	= cm : cm=cm+1
 	Global Mesh_JumpBall	= cm : cm=cm+1
-	Global Mesh_BoostBarrier		= cm : cm=cm+1
 	Global Mesh_Stomp	= cm : cm=cm+1
 	Global Mesh_StompTrail	= cm : cm=cm+1
 	Global Mesh_Forth	= cm : cm=cm+1
 	Global Mesh_Razer	= cm : cm=cm+1
 	Global Mesh_Cube	= cm : cm=cm+1
 	Global Mesh_Ice		= cm : cm=cm+1
+	Global Mesh_BoostBarrier	= cm : cm=cm+1
+	
+	Global Mesh_RealJumpball= cm : cm=cm+1
 	Global Mesh_ShieldNormal= cm : cm=cm+1
 	Global Mesh_ShieldFlame	= cm : cm=cm+1
 	Global Mesh_ShieldBubble= cm : cm=cm+1
@@ -34,6 +37,8 @@
 	Global Mesh_Bike	= cm : cm=cm+1
 	Global Mesh_Kart	= cm : cm=cm+1
 	Global Mesh_Bobsleigh= cm : cm=cm+1
+	Global Mesh_PhantomBarrier		= cm : cm=cm+1
+	Global Mesh_DemoBarrier		= cm : cm=cm+1
 	Global Mesh_Tornado1= cm : cm=cm+1
 	Global Mesh_Tornado2= cm : cm=cm+1
 	Global Mesh_Cyclone= cm : cm=cm+1
@@ -43,9 +48,13 @@
 
 	; Bombs
 	Global Mesh_Flower		= cm : cm=cm+1
+	Global Mesh_CannonShot		= cm : cm=cm+1
+	Global Mesh_Nullify		= cm : cm=cm+1
+	Global Mesh_CubePlatform		= cm : cm=cm+1
 	Global Mesh_HeartBomb		= cm : cm=cm+1
 	Global Mesh_NinjaStar		= cm : cm=cm+1
 	Global Mesh_Gum			= cm : cm=cm+1
+	Global Mesh_Flamethrow			= cm : cm=cm+1
 	Global Mesh_Boomerang		= cm : cm=cm+1
 	Global Mesh_Dart1		= cm : cm=cm+1
 	Global Mesh_Dart2		= cm : cm=cm+1
@@ -67,10 +76,10 @@
 	Global Mesh_Leaf		= cm : cm=cm+1
 	Global Mesh_Gear		= cm : cm=cm+1
 	Global Mesh_EnemyMissile_EggMissile4 = cm : cm=cm+1
-	Global Mesh_RockChunk1_brown	= cm : cm=cm+1
-	Global Mesh_RockChunk2_brown	= cm : cm=cm+1
-	Global Mesh_RockChunk3_brown	= cm : cm=cm+1
+	Global Mesh_Kunai = cm:cm=cm+1
+	
 	Global Mesh_Hookshot		= cm : cm=cm+1
+	Global Mesh_LockOn		= cm : cm=cm+1
 
 	; Emeralds
 	Global Mesh_Emerald	= cm : cm=cm+1
@@ -92,10 +101,17 @@
 	Global Mesh_Locker		= cm : cm=cm+1
 	Global Mesh_Locker2		= cm : cm=cm+1
 	Global Mesh_Ring		= cm : cm=cm+1
+	Global Mesh_WarpRing		= cm : cm=cm+1
+	Global Mesh_Timer5		= cm : cm=cm+1
+	Global Mesh_Timer10		= cm : cm=cm+1
+	Global Mesh_Timer20		= cm : cm=cm+1
 	Global Mesh_RedRing		= cm : cm=cm+1
+	Global Mesh_RedRingStar		= cm : cm=cm+1
 	Global Mesh_SpewRing		= cm : cm=cm+1
 	Global Mesh_Shard		= cm : cm=cm+1
 	Global Mesh_SpewShard		= cm : cm=cm+1
+	Global Mesh_KunaiCoil = cm : cm=cm+1
+	Global Mesh_Death = cm : cm=cm+1
 
 	; Enemy missiles
 	Global Mesh_EnemyMissile_BuzzMissile1	= cm : cm=cm+1
@@ -125,8 +141,6 @@
 	Global Mesh_EnemyMissile_ExplosionMissile= cm : cm=cm+1
 	Global Mesh_EnemyMissile_FCannonMissile	= cm : cm=cm+1
 	Global Mesh_EnemyMissile_BomberMissile	= cm : cm=cm+1
-	
-	Global Mesh_CannonShot	= cm : cm=cm+1
 
 	; Chaos drives
 	Global Mesh_Drive1	= cm : cm=cm+1
@@ -151,23 +165,27 @@
 
 	; Omochao
 	Global Mesh_Omochao	= cm : cm=cm+1
-
+	
 	; Objects
 	Global Mesh_Balloon1		= cm : cm=cm+1
+	Global Mesh_Collectible		= cm : cm=cm+1
 	Global Mesh_Balloon2		= cm : cm=cm+1
+	
 	Global Mesh_Balloon3		= cm : cm=cm+1
 	Global Mesh_Balloon4		= cm : cm=cm+1
+	Global Mesh_JumpPanel		= cm : cm=cm+1
+	Global Mesh_JumpPanel2		= cm : cm=cm+1
 	Global Mesh_BoxCage		= cm : cm=cm+1
 	Global Mesh_BoxIron		= cm : cm=cm+1
-	Global Mesh_BoxYellow		= cm : cm=cm+1
 	Global Mesh_BoxMetal		= cm : cm=cm+1
 	Global Mesh_BoxWooden		= cm : cm=cm+1
 	Global Mesh_BoxLightOn		= cm : cm=cm+1
-	Global Mesh_BoxLight		= cm : cm=cm+1
 	Global Mesh_BoxLightOff		= cm : cm=cm+1
 	Global Mesh_BoxTnt		= cm : cm=cm+1
+	Global Mesh_MoonRing		= cm : cm=cm+1
+	
 	Global Mesh_BoxNitro		= cm : cm=cm+1
-	Global Mesh_BoxFloat		= cm : cm=cm+1
+	Global Mesh_MissionCard	= cm : cm=cm+1
 	Global Mesh_BallBumperOn	= cm : cm=cm+1
 	Global Mesh_BallBumperOff	= cm : cm=cm+1
 	Global Mesh_GroundBumperOn	= cm : cm=cm+1
@@ -180,12 +198,8 @@
 	Global Mesh_PlateBumperX	= cm : cm=cm+1
 	Global Mesh_TriangleBumper	= cm : cm=cm+1
 	Global Mesh_Paddle		= cm : cm=cm+1
+	Global Mesh_Token		= cm : cm=cm+1
 	Global Mesh_Paddle2		= cm : cm=cm+1
-	Global Mesh_StageVisual1	= cm : cm=cm+1
-	Global Mesh_StageVisual2	= cm : cm=cm+1
-	Global Mesh_StageVisual3	= cm : cm=cm+1
-	Global Mesh_StageVisual4	= cm : cm=cm+1
-	Global Mesh_StageVisual5	= cm : cm=cm+1
 	Global Mesh_Checkpoint		= cm : cm=cm+1
 	Global Mesh_CheckpointB		= cm : cm=cm+1
 	Global Mesh_CheckpointX		= cm : cm=cm+1
@@ -193,14 +207,16 @@
 	Global Mesh_Checkpoint2B		= cm : cm=cm+1
 	Global Mesh_Checkpoint2X	= cm : cm=cm+1
 	Global Mesh_Checkpoint3		= cm : cm=cm+1
-	Global Mesh_Checkpoint3B		= cm : cm=cm+1
 	Global Mesh_Checkpoint3X	= cm : cm=cm+1
+	Global Mesh_Checkpoint3B		= cm : cm=cm+1
 	Global Mesh_DashPanel		= cm : cm=cm+1
-	Global Mesh_JumpPanel		= cm : cm=cm+1
-	Global Mesh_JumpPanel2		= cm : cm=cm+1
 	Global Mesh_DashPanelPads	= cm : cm=cm+1
+	Global Mesh_GrindBooster		= cm : cm=cm+1
+	Global Mesh_GrindBoosterPads	= cm : cm=cm+1
 	Global Mesh_DashRamp		= cm : cm=cm+1
 	Global Mesh_DashRampPads	= cm : cm=cm+1
+	Global Mesh_TrickRamp		= cm : cm=cm+1
+	Global Mesh_TrickRampPads	= cm : cm=cm+1
 	Global Mesh_Fan			= cm : cm=cm+1
 	Global Mesh_DashHoop		= cm : cm=cm+1
 	Global Mesh_RainbowHoop		= cm : cm=cm+1
@@ -217,9 +233,20 @@
 	Global Mesh_Wings		= cm : cm=cm+1
 	Global Mesh_Shoe		= cm : cm=cm+1
 	Global Mesh_Trap		= cm : cm=cm+1
+	
 	Global Mesh_BRing5		= cm : cm=cm+1
 	Global Mesh_BRing10		= cm : cm=cm+1
 	Global Mesh_BRing20		= cm : cm=cm+1
+	Global Mesh_Diamond		= cm : cm=cm+1
+	Global Mesh_BRing5S		= cm : cm=cm+1
+	Global Mesh_BRing10S	= cm : cm=cm+1
+	Global Mesh_BRing20S		= cm : cm=cm+1
+	
+	Global Mesh_Visual[VISUAL_AMOUNT]
+	For vs=1 To VISUAL_AMOUNT : Mesh_Visual[vs]= cm : cm=cm+1 : Next
+	
+	Global Mesh_BoxFloat		= cm : cm=cm+1
+	
 	Global Mesh_Life		= cm : cm=cm+1
 	Global Mesh_GoalRing		= cm : cm=cm+1
 	Global Mesh_GoalRuby		= cm : cm=cm+1
@@ -243,8 +270,6 @@
 	Global Mesh_SpikeCylinder	= cm : cm=cm+1
 	Global Mesh_SpikeCylinderCube= cm : cm=cm+1
 	Global Mesh_Spring		= cm : cm=cm+1
-	Global Mesh_SpringIce		= cm : cm=cm+1
-	Global Mesh_SpringThorn		= cm : cm=cm+1
 	Global Mesh_BSpring		= cm : cm=cm+1
 	Global Mesh_SpringX		= cm : cm=cm+1
 	Global Mesh_SpringTrap	= cm : cm=cm+1
@@ -329,6 +354,10 @@
 	Global Mesh_Counter3		= cm : cm=cm+1
 	Global Mesh_Counter4		= cm : cm=cm+1
 	Global Mesh_Counter5		= cm : cm=cm+1
+	
+	Global Mesh_Sign_speed		= cm : cm=cm+1
+	Global Mesh_Sign_fly		= cm : cm=cm+1
+	Global Mesh_Sign_power		= cm : cm=cm+1
 	Global Mesh_Sign_fall		= cm : cm=cm+1
 	Global Mesh_Sign_up		= cm : cm=cm+1
 	Global Mesh_Sign_down		= cm : cm=cm+1
@@ -355,7 +384,6 @@
 	Global Mesh_Flicky2		= cm : cm=cm+1
 	Global Mesh_Flicky3		= cm : cm=cm+1
 	Global Mesh_Flicky4		= cm : cm=cm+1
-	Global Mesh_FlickyS		= cm : cm=cm+1
 	Global Mesh_Capsule		= cm : cm=cm+1
 	Global Mesh_WispBlack		= cm : cm=cm+1
 	Global Mesh_WispBlue		= cm : cm=cm+1
@@ -389,6 +417,9 @@
 	Global Mesh_SpikeBombPiece2	= cm : cm=cm+1
 	Global Mesh_SpikeCrusherPiece1	= cm : cm=cm+1
 	Global Mesh_SpikeCrusherPiece2	= cm : cm=cm+1
+	Global Mesh_RockChunk1_brown	= cm : cm=cm+1
+	Global Mesh_RockChunk2_brown	= cm : cm=cm+1
+	Global Mesh_RockChunk3_brown	= cm : cm=cm+1
 	Global Mesh_RockChunk1_grey	= cm : cm=cm+1
 	Global Mesh_RockChunk2_grey	= cm : cm=cm+1
 	Global Mesh_RockChunk3_grey	= cm : cm=cm+1
@@ -512,8 +543,6 @@
 	Global Mesh_Enemy_PawnGun		= cm : cm=cm+1
 	Global Mesh_Enemy_PawnSword		= cm : cm=cm+1
 	Global Mesh_Enemy_PawnShield	= cm : cm=cm+1
-	Global Mesh_Enemy_Searcher	= cm : cm=cm+1
-	Global Mesh_Enemy_EggHunter	= cm : cm=cm+1
 	Global Mesh_Enemy_Pawn			= cm : cm=cm+1
 	Global Mesh_Enemy_Grabber		= cm : cm=cm+1
 	Global Mesh_Enemy_Beetle		= cm : cm=cm+1
@@ -522,10 +551,11 @@
 	Global Mesh_Enemy_BeetleSpring	= cm : cm=cm+1
 	Global Mesh_Enemy_ArtificialChaos= cm : cm=cm+1
 	Global Mesh_Enemy_ArtificialChaos2= cm : cm=cm+1
+	Global Mesh_Enemy_Inactive= cm : cm=cm+1
+	Global Mesh_Enemy_EggGunner= cm : cm=cm+1
 	Global Mesh_Enemy_Hornet		= cm : cm=cm+1
 	Global Mesh_Enemy_HunterShield	= cm : cm=cm+1
 	Global Mesh_Enemy_Hunter		= cm : cm=cm+1
-	Global Mesh_Enemy_Gunner		= cm : cm=cm+1
 	Global Mesh_Enemy_Rhino			= cm : cm=cm+1
 	Global Mesh_Enemy_RhinoSpikes	= cm : cm=cm+1
 	Global Mesh_Enemy_Jaws			= cm : cm=cm+1
@@ -546,6 +576,7 @@
 	Global Mesh_Enemy_Motobug		= cm : cm=cm+1
 	Global Mesh_Enemy_Spana			= cm : cm=cm+1
 	Global Mesh_Enemy_Spina			= cm : cm=cm+1
+	Global Mesh_Enemy_Spuna			= cm : cm=cm+1
 	Global Mesh_Enemy_Spona			= cm : cm=cm+1
 	Global Mesh_Enemy_Spiny			= cm : cm=cm+1
 	Global Mesh_Enemy_EggRobo		= cm : cm=cm+1
@@ -651,5 +682,6 @@
 ;----------------------------------------------------------------------------------------------------------------------
 ;----------------------------------------------------------------------------------------------------------------------
 ;----------------------------------------------------------------------------------------------------------------------
+
 ;~IDEal Editor Parameters:
 ;~C#Blitz3D

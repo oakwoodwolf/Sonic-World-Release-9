@@ -1,5 +1,5 @@
 
-Global SaveDataPath$ = GetEnv$("AppData")+"\Sonic World DX\SaveData\"
+Global SaveDataPath$ = "_SaveData/"
 Global SaveDataFormat$ = ".dat"
 Global SaveDataTmp$ = SaveDataPath$+"tmp"+SaveDataFormat$
 Global CurrentOpenFile

@@ -1,12 +1,12 @@
 
 Function InitializeGeneralLight(lighttype, range, parent)
-
+	
 	Game\Stage\Properties\GeneralLightPivot = CreatePivot(parent)
 	TurnEntity(Game\Stage\Properties\GeneralLightPivot, 0, 180, 0)
 	Game\Stage\Properties\GeneralLight = CreateLight(lighttype, Game\Stage\Properties\GeneralLightPivot)
 	TurnEntity Game\Stage\Properties\GeneralLight, 60, 0, 0
 	LightRange(Game\Stage\Properties\GeneralLight, range)
-
+	
 End Function
 
 ; /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
@@ -21,15 +21,15 @@ End Type
 
 Function Init_CircleShadow(entity,mesh=0, multiply#=1)
 	If mesh<>0 Then
-	x# = 4*multiply#*FindMeshCircumfrence(mesh)/10
-	y# = 4*multiply#*FindMeshCircumfrence(mesh)/10
-	offx# = 2*multiply#*FindMeshCircumfrence(mesh)/10
-	offy# = 2*multiply#*FindMeshCircumfrence(mesh)/10
+		x# = 4*multiply#*FindMeshCircumfrence(mesh)/10
+		y# = 4*multiply#*FindMeshCircumfrence(mesh)/10
+		offx# = 2*multiply#*FindMeshCircumfrence(mesh)/10
+		offy# = 2*multiply#*FindMeshCircumfrence(mesh)/10
 	Else
-	x# = 4*multiply#*FindMeshCircumfrence(entity)/10
-	y# = 4*multiply#*FindMeshCircumfrence(entity)/10
-	offx# = 2*multiply#*FindMeshCircumfrence(entity)/10
-	offy# = 2*multiply#*FindMeshCircumfrence(entity)/10
+		x# = 4*multiply#*FindMeshCircumfrence(entity)/10
+		y# = 4*multiply#*FindMeshCircumfrence(entity)/10
+		offx# = 2*multiply#*FindMeshCircumfrence(entity)/10
+		offy# = 2*multiply#*FindMeshCircumfrence(entity)/10
 	EndIf
 	booz=booz+1
 	Return Create_CircleShadow(entity,x#,y#,offx#,offy#)
@@ -37,12 +37,12 @@ End Function
 
 Function Create_CircleShadow(Parent,x#,y#,offx#,offy#)
 	cshw.tCircleShadow = New tCircleShadow
-		cshw\Parent=Parent
-		cshw\Mesh = CreateQuad(x#, y#, offx#, offy#, Game\Stage\Root)
-		cshw\Texture = LoadTexture("Textures\ShadowCircle.png", 1+2)
-		EntityTexture(cshw\Mesh, cshw\Texture)
-		HideEntity(cshw\Mesh)
-		FreeTexture(cshw\Texture)
+	cshw\Parent=Parent
+	cshw\Mesh = CreateQuad(x#, y#, offx#, offy#, Game\Stage\Root)
+	cshw\Texture = LoadTexture("Textures\ShadowCircle.png", 1+2)
+	EntityTexture(cshw\Mesh, cshw\Texture)
+	HideEntity(cshw\Mesh)
+	FreeTexture(cshw\Texture)
 	Return cshw\Mesh
 	DebugLog("Circle Shadow created")
 End Function
@@ -72,13 +72,15 @@ End Function
 
 
 Function Delete_CircleShadows(cshw.tCircleShadow)
-	If cshw\mesh<>0 Then cshw\Mesh=0
+	If cshw\Mesh<>0 Then cshw\Mesh=0
 	If cshw\Parent<>0 Then cshw\Parent=0
 	Delete cshw
 	Return
 End Function
 
 Function FindMeshCircumfrence(mesh)
-	circ# = Sqr#(MeshWidth(mesh)^2+MeshHeight(Mesh)^2+MeshDepth(mesh)^2)
+	circ# = Sqr#(MeshWidth(mesh)^2+MeshHeight(mesh)^2+MeshDepth(mesh)^2)
 	Return circ#
 End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D

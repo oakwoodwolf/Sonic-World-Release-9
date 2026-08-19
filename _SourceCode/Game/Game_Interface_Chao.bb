@@ -41,22 +41,28 @@ Function DrawChaoStats(cc.tChaoManager, x#, y#)
 	DrawRealText(cc\Name$, x#-58*GAME_WINDOW_SCALE#, y#-26*GAME_WINDOW_SCALE#, Interface_TextTitleChao_1, 0, 0, 63, 63, 63, 1.65)
 	For i = 1 To 7
 		Select i
-		Case 1: DrawStatsBox("Run:",cc\Stats\Skills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
-		Case 2: DrawStatsBox("Swim:",cc\Stats\Skills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
-		Case 3: DrawStatsBox("Fly:",cc\Stats\Skills[i],x#,y#+(+boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
-		Case 4: DrawStatsBox("Strength:",cc\Stats\Skills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
-		Case 5: DrawStatsBox("Stamina:",cc\Stats\Skills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
-		Case 6: DrawStatsBox("Intelligence:",cc\Stats\Skills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
-		Case 7: DrawStatsBox("Luck:",cc\Stats\Skills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
+			Case 1: DrawStatsBox("Run:",cc\Stats\Skills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
+			Case 2: DrawStatsBox("Swim:",cc\Stats\Skills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
+			Case 3: DrawStatsBox("Fly:",cc\Stats\Skills[i],x#,y#+(+boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
+			Case 4: DrawStatsBox("Strength:",cc\Stats\Skills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
+			Case 5: DrawStatsBox("Stamina:",cc\Stats\Skills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
+			Case 6: DrawStatsBox("Intelligence:",cc\Stats\Skills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
+			Case 7: DrawStatsBox("Luck:",cc\Stats\Skills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
 		End Select
 		DrawStats(cc\Stats\CurrentSkills[i], x#-47*GAME_WINDOW_SCALE#, y#+(6.5+boxspacing#*(i-1))*GAME_WINDOW_SCALE#, i)
 	Next
+	;Alignment
 	j# = (cc\Stats\HeroLove#-cc\Stats\DarkLove#+100)/200.0
 	SetColor(255*j#,255*j#,255*j#)
 	DrawImageEx(INTERFACE(Interface_Icons), x#-45*GAME_WINDOW_SCALE#, y#+(boxspacing#*7)*GAME_WINDOW_SCALE#, 30)
+	;Affection
 	j# = (cc\Stats\Happiness#+100)/200.0
 	SetColor(255*j#,255*j#,255*j#)
 	DrawImageEx(INTERFACE(Interface_Icons), x#-22.5*GAME_WINDOW_SCALE#, y#+(boxspacing#*7)*GAME_WINDOW_SCALE#, 31)
+	;Hunger
+	j# = (cc\Stats\Hunger#+1)
+	SetColor(255/j#,255/j#,255/j#)
+	DrawImageEx(INTERFACE(Interface_Icons2), x#+5*GAME_WINDOW_SCALE#, y#+(boxspacing#*7)*GAME_WINDOW_SCALE#, 31)
 	SetColor(255,255,255)
 End Function
 
@@ -65,13 +71,13 @@ Function DrawChaoStats_Menu(x#, y#)
 	DrawRealText(Menu\HeldChaoName$, x#-58*GAME_WINDOW_SCALE#, y#-26*GAME_WINDOW_SCALE#, Interface_TextTitleChao_1, 0, 0, 63, 63, 63, 1.65)
 	For i = 1 To 7
 		Select i
-		Case 1: DrawStatsBox("Run:",Menu\HeldChaoSkills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
-		Case 2: DrawStatsBox("Swim:",Menu\HeldChaoSkills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
-		Case 3: DrawStatsBox("Fly:",Menu\HeldChaoSkills[i],x#,y#+(+boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
-		Case 4: DrawStatsBox("Strength:",Menu\HeldChaoSkills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
-		Case 5: DrawStatsBox("Stamina:",Menu\HeldChaoSkills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
-		Case 6: DrawStatsBox("Intelligence:",Menu\HeldChaoSkills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
-		Case 7: DrawStatsBox("Luck:",Menu\HeldChaoSkills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
+			Case 1: DrawStatsBox("Run:",Menu\HeldChaoSkills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
+			Case 2: DrawStatsBox("Swim:",Menu\HeldChaoSkills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
+			Case 3: DrawStatsBox("Fly:",Menu\HeldChaoSkills[i],x#,y#+(+boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
+			Case 4: DrawStatsBox("Strength:",Menu\HeldChaoSkills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
+			Case 5: DrawStatsBox("Stamina:",Menu\HeldChaoSkills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
+			Case 6: DrawStatsBox("Intelligence:",Menu\HeldChaoSkills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
+			Case 7: DrawStatsBox("Luck:",Menu\HeldChaoSkills[i],x#,y#+(boxspacing#*(i-1))*GAME_WINDOW_SCALE#)
 		End Select
 		DrawStats(Menu\HeldChaoCurrentSkills[i], x#-47*GAME_WINDOW_SCALE#, y#+(6.5+boxspacing#*(i-1))*GAME_WINDOW_SCALE#, i)
 	Next
@@ -164,113 +170,113 @@ End Function
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Function DrawKarateHealth(health, x#, y#, backwards=False)
-
+	
 	If health<0 Then health=0
-
+	
 	spacefactor#=0.90909
 	If backwards Then spacefactor#=-spacefactor#
-
+	
 	For i=health+1 To 250
 		Select backwards
-		Case False:
-			Select i
-			Case 1: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+1-1)
-			Case 2: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+2-1)
-			Case 3: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+3-1)
-			Case 4: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+4-1)
-			Case 5: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+5-1)
-			Case 6: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+6-1)
-			Case 250-5: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+1-1)
-			Case 250-4: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+2-1)
-			Case 250-3: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+3-1)
-			Case 250-2: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+4-1)
-			Case 250-1: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+5-1)
-			Case 250-0: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+6-1)
-			Default: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7-1)
-			End Select
-		Case True:
-			Select i
-			Case 250-5: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+6-1)
-			Case 250-4: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+5-1)
-			Case 250-3: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+4-1)
-			Case 250-2: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+3-1)
-			Case 250-1: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+2-1)
-			Case 250-0: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+1-1)
-			Case 1: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+6-1)
-			Case 2: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+5-1)
-			Case 3: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+4-1)
-			Case 4: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+3-1)
-			Case 5: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+2-1)
-			Case 6: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+1-1)
-			Default: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7-1)
-			End Select
+			Case False:
+				Select i
+					Case 1: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+1-1)
+					Case 2: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+2-1)
+					Case 3: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+3-1)
+					Case 4: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+4-1)
+					Case 5: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+5-1)
+					Case 6: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+6-1)
+					Case 250-5: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+1-1)
+					Case 250-4: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+2-1)
+					Case 250-3: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+3-1)
+					Case 250-2: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+4-1)
+					Case 250-1: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+5-1)
+					Case 250-0: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+6-1)
+					Default: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7-1)
+				End Select
+			Case True:
+				Select i
+					Case 250-5: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+6-1)
+					Case 250-4: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+5-1)
+					Case 250-3: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+4-1)
+					Case 250-2: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+3-1)
+					Case 250-1: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+2-1)
+					Case 250-0: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+1-1)
+					Case 1: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+6-1)
+					Case 2: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+5-1)
+					Case 3: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+4-1)
+					Case 4: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+3-1)
+					Case 5: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+2-1)
+					Case 6: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7+1-1)
+					Default: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 13+7-1)
+				End Select
 		End Select
 	Next
-
+	
 	If health>0 Then
-	For i=1 To health
-		Select backwards
-		Case False:
-			Select i
-			Case 1: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 1-1)
-			Case 2: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 2-1)
-			Case 3: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 3-1)
-			Case 4: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 4-1)
-			Case 5: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 5-1)
-			Case 6: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 6-1)
-			Case 250-5: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+1-1)
-			Case 250-4: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+2-1)
-			Case 250-3: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+3-1)
-			Case 250-2: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+4-1)
-			Case 250-1: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+5-1)
-			Case 250-0: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+6-1)
-			Default: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7-1)
+		For i=1 To health
+			Select backwards
+				Case False:
+					Select i
+						Case 1: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 1-1)
+						Case 2: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 2-1)
+						Case 3: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 3-1)
+						Case 4: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 4-1)
+						Case 5: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 5-1)
+						Case 6: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 6-1)
+						Case 250-5: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+1-1)
+						Case 250-4: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+2-1)
+						Case 250-3: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+3-1)
+						Case 250-2: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+4-1)
+						Case 250-1: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+5-1)
+						Case 250-0: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+6-1)
+						Default: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7-1)
+					End Select
+				Case True:
+					Select i
+						Case 250-5: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 6-1)
+						Case 250-4: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 5-1)
+						Case 250-3: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 4-1)
+						Case 250-2: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 3-1)
+						Case 250-1: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 2-1)
+						Case 250-0: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 1-1)
+						Case 1: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+6-1)
+						Case 2: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+5-1)
+						Case 3: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+4-1)
+						Case 4: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+3-1)
+						Case 5: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+2-1)
+						Case 6: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+1-1)
+						Default: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7-1)
+					End Select
 			End Select
-		Case True:
-			Select i
-			Case 250-5: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 6-1)
-			Case 250-4: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 5-1)
-			Case 250-3: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 4-1)
-			Case 250-2: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 3-1)
-			Case 250-1: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 2-1)
-			Case 250-0: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 1-1)
-			Case 1: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+6-1)
-			Case 2: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+5-1)
-			Case 3: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+4-1)
-			Case 4: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+3-1)
-			Case 5: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+2-1)
-			Case 6: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7+1-1)
-			Default: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 7-1)
-			End Select
-		End Select
-	Next
+		Next
 	EndIf
-
+	
 End Function
 
 Function DrawKarateZeal(zeal, x#, y#, backwards=False)
-
+	
 	If zeal<0 Then zeal=0
-
+	
 	spacefactor#=0.90909
 	If backwards Then spacefactor#=-spacefactor#
-
+	
 	For i=zeal+1 To 285
 		Select backwards
-		Case False: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 41+((i-1) Mod 15))
-		Case True: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 30+41+Abs(15-((i) Mod 15)))
+			Case False: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 41+((i-1) Mod 15))
+			Case True: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 30+41+Abs(15-((i) Mod 15)))
 		End Select
 	Next
-
+	
 	If zeal>0 Then
-	For i=1 To zeal
-		Select backwards
-		Case False: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 26+((i-1) Mod 15))
-		Case True: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 30+26+Abs(15-((i) Mod 15)))
-		End Select
-	Next
+		For i=1 To zeal
+			Select backwards
+				Case False: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 26+((i-1) Mod 15))
+				Case True: DrawImageEx(INTERFACE(Interface_KarateBars), x#+spacefactor#*i*GAME_WINDOW_SCALE#, y#, 30+26+Abs(15-((i) Mod 15)))
+			End Select
+		Next
 	EndIf
-
+	
 End Function
 
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -278,29 +284,29 @@ End Function
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Function Interface_Render_Stage_Chao(p.tPlayer,d.tDeltatime)
-
+	
 	;show stats
 	If Game\Interface\ShowChaoTimer>0 Then
 		For cc.tChaoManager=Each tChaoManager
-		If cc\Number=Game\Interface\ShowChaoNumber Then
-			If ChaoManager_ChaoAlive(cc) Then DrawChaoStats(cc,130*GAME_WINDOW_SCALE#,75*GAME_WINDOW_SCALE#)
-			If Game\Interface\ShowFPS=1 Then
-				Select cc\Stats\Age
-					Case 0: DrawRealText("Shell grit: "+cc\Stats\ShellGrit, 80*GAME_WINDOW_SCALE#,330*GAME_WINDOW_SCALE#, (Interface_Text_2))
-					Default: DrawRealText("Happiness: "+cc\Stats\Happiness, 80*GAME_WINDOW_SCALE#,330*GAME_WINDOW_SCALE#, (Interface_Text_2))
-				End Select
+			If cc\Number=Game\Interface\ShowChaoNumber Then
+				If ChaoManager_ChaoAlive(cc) Then DrawChaoStats(cc,130*GAME_WINDOW_SCALE#,75*GAME_WINDOW_SCALE#)
+				If Game\Interface\ShowFPS=1 Then
+					Select cc\Stats\Age
+						Case 0: DrawRealText("Shell grit: "+cc\Stats\ShellGrit, 80*GAME_WINDOW_SCALE#,330*GAME_WINDOW_SCALE#, (Interface_Text_2))
+						Default: DrawRealText("Happiness: "+cc\Stats\Happiness, 80*GAME_WINDOW_SCALE#,330*GAME_WINDOW_SCALE#, (Interface_Text_2))
+					End Select
+				EndIf
 			EndIf
-		EndIf
 		Next
 	EndIf
-
+	
 	; auto saving
 	If Game\Interface\AutoSaveShowTimer>0 Then
 		DrawImageEx(INTERFACE(Interface_Saving), 18*GAME_WINDOW_SCALE#, 18*GAME_WINDOW_SCALE#)
 		DrawRealText("Auto-saving...", 32*GAME_WINDOW_SCALE#, 22*GAME_WINDOW_SCALE#, (Interface_Text_2))
 		Game\Interface\AutoSaveShowTimer=Game\Interface\AutoSaveShowTimer-timervalue#
 	EndIf
-
+	
 	;chaomsg system
 	If Menu\Stage=999 Then
 		For chaomsg.tGame_Interface_ChaoMsg = Each tGame_Interface_ChaoMsg
@@ -310,7 +316,7 @@ Function Interface_Render_Stage_Chao(p.tPlayer,d.tDeltatime)
 			If chaomsg\timer>0 Then chaomsg\timer=chaomsg\timer-timervalue# Else Interface_DeleteChaoMsg(chaomsg)
 		Next
 	EndIf
-
+	
 	;garden action system
 	gardenactionposy#=0
 	For i=1 To 3
@@ -343,7 +349,7 @@ Function Interface_Render_Stage_Chao(p.tPlayer,d.tDeltatime)
 			Game\Interface\GardenActionOverlapping[i]=0
 		EndIf
 	Next
-
+	
 	;race
 	If Menu\Stage=998 And Game\Interface\RaceEnded=False Then
 		ChaoManager_Race_GetChaoOrder()
@@ -354,7 +360,7 @@ Function Interface_Render_Stage_Chao(p.tPlayer,d.tDeltatime)
 			Else
 				racechaoy#=(285-(i-1)*35)*GAME_WINDOW_SCALE#
 			EndIf
-
+			
 			If Game\Interface\RaceChaoOrder[i]=1 Then
 				If Menu\ButtonState1=0 Then Menu\ButtonSize1#=Menu\ButtonSize1#-BUTTON_SCALESPEED#*Game\DeltaTime\Delta# : If Menu\ButtonSize1#<0 Then Menu\ButtonState1=1 : Menu\ButtonSize1#=0
 				If Menu\ButtonState1=1 Then Menu\ButtonSize1#=Menu\ButtonSize1#+BUTTON_SCALESPEED#*Game\DeltaTime\Delta# : If Menu\ButtonSize1#>BUTTON_SCALELIMIT# Then Menu\ButtonState1=0 : Menu\ButtonSize1#=BUTTON_SCALELIMIT#
@@ -365,14 +371,14 @@ Function Interface_Render_Stage_Chao(p.tPlayer,d.tDeltatime)
 			EndIf
 			DrawImageEx(INTERFACE(Interface_Race), racechaox#, racechaoy#, Game\Interface\RaceChaoOrder[i])
 		Next
-
+		
 		If Game\Interface\RaceTime>0 Then Game\Interface\RaceTime=Game\Interface\RaceTime-timervalue#
 		SetColor(255,251,219)
 		DrawRealText("TIME", GAME_WINDOW_W/2-50*GAME_WINDOW_SCALE#, GAME_WINDOW_H-28*GAME_WINDOW_SCALE#, Interface_Text_3, 1)
 		SetColor(255,255,255)
 		DrawRealText(Int(Game\Interface\RaceTime/secs#), GAME_WINDOW_W/2, GAME_WINDOW_H-28*GAME_WINDOW_SCALE#, Interface_TextButtons_1, 1)
 	EndIf
-
+	
 	;karate
 	If Menu\Stage=997 And Game\Interface\RaceEnded=False Then
 		DrawImageEx(INTERFACE(Interface_Karate), GAME_WINDOW_W/2, 40*GAME_WINDOW_SCALE#, 0)
@@ -383,14 +389,18 @@ Function Interface_Render_Stage_Chao(p.tPlayer,d.tDeltatime)
 		DrawRealText(Int(Game\Interface\RaceTime/secs#), GAME_WINDOW_W/2, 47*GAME_WINDOW_SCALE#, Interface_TextButtons_1, 1)
 		DrawKarateHealth(Game\Interface\KarateHealth#[1]*12.5, GAME_WINDOW_W/2-36*GAME_WINDOW_SCALE#, 31*GAME_WINDOW_SCALE#, True)
 		DrawKarateHealth(Game\Interface\KarateHealth#[2]*12.5, GAME_WINDOW_W/2+36*GAME_WINDOW_SCALE#, 31*GAME_WINDOW_SCALE#, False)
-
+		
 		DrawImageEx(INTERFACE(Interface_Karate), GAME_WINDOW_W/2, GAME_WINDOW_H-26*GAME_WINDOW_SCALE#, 1)
 		DrawRealText("Zeal", GAME_WINDOW_W/2, GAME_WINDOW_H-18.5*GAME_WINDOW_SCALE#, Interface_Text_2, 1)
 		DrawKarateZeal(Game\Interface\KarateZeal#[1]*3.8, GAME_WINDOW_W/2-29.25*GAME_WINDOW_SCALE#, GAME_WINDOW_H-19*GAME_WINDOW_SCALE#, True)
 		DrawKarateZeal(Game\Interface\KarateZeal#[2]*3.8, GAME_WINDOW_W/2+29.25*GAME_WINDOW_SCALE#, GAME_WINDOW_H-19*GAME_WINDOW_SCALE#, False)
 	EndIf
-
+	
 	;race results
 	If Game\Interface\RaceEnded Then Interface_Render_Result(p,d,True) : p\MayNotCheerTimer=0.5*secs#
-
+	
 End Function
+;~IDEal Editor Parameters:
+;~C#Blitz3D
+;~IDEal Editor Parameters:
+;~C#Blitz3D

@@ -1,15 +1,50 @@
 
 Global UNLOCKEDCHAR[CHAR_NORMALCOUNT]
 Global UNLOCKEDTEAM[TEAM_TEAMCOUNT]
-Global UNLOCKEDSPECIALSTAGES[0]
 Global UNLOCKEDEMERALDS[7]
+Global UNLOCKEDSUPERS=0
+
+Global TOUNLOCKCHAR[CHAR_NORMALCOUNT]
+Global TOUNLOCKTEAM[TEAM_TEAMCOUNT]
+
+For c=1 To CHAR_NORMALCOUNT
+	Select c
+		Case CHAR_SON,CHAR_TAI,CHAR_KNU,CHAR_AMY,CHAR_CRE: 			TOUNLOCKCHAR[c]=0 : UNLOCKEDCHAR[c]=1
+		Case CHAR_SHA,CHAR_SIL: TOUNLOCKCHAR[c]=5
+		Case CHAR_OME: TOUNLOCKCHAR[c]=10
+		Case CHAR_ROU: TOUNLOCKCHAR[c]=15
+		Case CHAR_ESP: TOUNLOCKCHAR[c]=20
+		Case CHAR_MIG: TOUNLOCKCHAR[c]=25	
+		Case CHAR_RAY: TOUNLOCKCHAR[c]=30
+		Case CHAR_BLA: TOUNLOCKCHAR[c]=35
+		Case CHAR_GAM: TOUNLOCKCHAR[c]=40
+		Case CHAR_MET: TOUNLOCKCHAR[c]=45
+		Case CHAR_INF: TOUNLOCKCHAR[c]=50
+		Default: TOUNLOCKCHAR[c]=999999 : UNLOCKEDCHAR[c]=0
+	End Select
+Next
+
+For c=1 To TEAM_TEAMCOUNT
+	Select c
+		Case 3: TOUNLOCKTEAM[c]=10
+			
+		Default: TOUNLOCKTEAM[c]=0 : UNLOCKEDTEAM[c]=1
+	End Select
+Next
 
 Global StageAmountPossible
 GetStageAmount()
 Global StageAmount
+Global NonModStageAmount
 Dim StagePath$(StageAmountPossible)
 Dim StageName$(StageAmountPossible)
 Dim MarathonStage(StageAmountPossible-1)
+Dim StageLocked(StageAmountPossible)
+Dim UnlockReq$(StageAmountPossible)
+
+
+
+Global StageOrigin[5]
 Global StageMission[5]
 Global StageMissionTime[5]
 Global StageMissionMach[5]
@@ -19,15 +54,14 @@ Global JUMPAMODE[CHAR_PLAYABLECOUNT]
 
 Dim EMBLEMS1(5,StageAmountPossible)
 Dim EMBLEMS2(5,StageAmountPossible)
-Global EMBLEMS
-
-Dim REDRING1(StageAmountPossible)
-Dim REDRING2(StageAmountPossible)
-Dim REDRING3(StageAmountPossible)
-Dim REDRING4(StageAmountPossible)
-Dim REDRING5(StageAmountPossible)
+Dim REDRING(5,StageAmountPossible)
 Dim ALLREDRING(StageAmountPossible)
+Dim RANK(5,StageAmountPossible)
+
+Global EMBLEMS
 Global REDRINGS
+Global TOKENS
+
 
 Global RECORDS_CURRENT
 Dim RECORDS_NAME$(1)
@@ -55,58 +89,158 @@ Dim SEEDSUM(1)
 
 Function LoadStageList()
 	StageAmount=0
-	LoadStageList_Individual("StagesOfficial")
-	LoadStageList_Individual("Stages")
 
-	For i=1 To StageAmount
-	LoadGame_Emblems(i)
+	IndividualStages("Stages")
+	LoadStageFolders()
+	
+	For i = 1 To StageAmount
+		If StageName$(i)="Worst Cave" Then 
+			StageLocked(i)=1
+			UnlockReq$(i)="Beat all Encores"
+		EndIf
 	Next
+	
+	If Menu_AllEncoresBeaten() And StageLocked(NonModStageAmount)=1 Then
+		StageLocked(NonModStageAmount)=0
+		
+	EndIf
+	
+	
+	If EMBLEMS2(1,NonModStageAmount)=1 And EMBLEMS2(2,NonModStageAmount)=1 And EMBLEMS2(3,NonModStageAmount)=1 And EMBLEMS2(4,NonModStageAmount)=1 And EMBLEMS2(5,NonModStageAmount)=1 Then UNLOCKEDCHAR[CHAR_EGR]=1
 End Function
-
-Function LoadStageList_Individual(stagesxml$)
-	StageListRoot = xmlLoad(stagesxml$+"/Stages.xml")
+Function LoadStageFolders()
+	StageListRoot = xmlLoad("_Mods/stagefolders.xml")
 	If (xmlErrorCount()>0) Then RuntimeError("Game_Startup() -> Error while parsing 'Stages.xml'")
 	For i=1 To xmlNodeChildCount(StageListRoot)
 		Child = xmlNodeChild(StageListRoot, i)
 		Select xmlNodeNameGet$(Child)
 			Case "stage":
-				StageAmount=StageAmount+1
-				StagePath$(StageAmount) = stagesxml$+"/"+xmlNodeAttributeValueGet(Child, "name")
-				StageName$(StageAmount) = xmlNodeAttributeValueGet(Child, "name")
+				IndividualStages("_Mods/"+xmlNodeAttributeValueGet(Child, "folder")) 
+			Case "drive":
+				IndividualStages(xmlNodeAttributeValueGet(Child, "folder")) 
 		End Select
 	Next
 	xmlNodeDelete(StageListRoot)
+End Function
+Function IndividualStages(folder$,mode=0)
+	
+	If FileType(folder$+"/stages.xml") Then mode=mode+2
+	
+	Select mode
+		Case 0,1
+			StageDir=ReadDir(folder$)
+			file$=""
+			Repeat 
+				file$=NextFile$(StageDir)
+				If (Not(file$="." Or file$=".." Or file$="" Or Right$(file,4)=".zip"  Or Right$(file,4)=".rar")) Then
+					If FileType(folder$+"\"+file$) = 2 Then
+						Select mode
+							Case 0
+								For i = 1 To StageAmount
+									If file$=StageName$(i) Then RuntimeError(folder$+" contains a stage name that is already in the game")
+								Next
+								If folder$="Stages" Then NonModStageAmount=NonModStageAmount+1
+								StageAmount=StageAmount+1
+								StagePath$(StageAmount) = folder$+"/"+file$
+								StageName$(StageAmount) = file$
+								LoadGame_Emblems(StageAmount,file$)
+								
+						;StageName$(StageAmount) = Mid$(file$,3,16)
+							Case 1
+								StageAmountPossible=StageAmountPossible+1
+						End Select
+					EndIf
+				EndIf
+			Until file$=""
+			
+			CloseDir StageDir
+		Case 2,3
+			StageListRoot = xmlLoad(folder$+"/stages.xml")
+			If (xmlErrorCount()>0) Then RuntimeError("Game_Startup() -> Error while parsing 'Stages.xml'")
+			For i=1 To xmlNodeChildCount(StageListRoot)
+				Child = xmlNodeChild(StageListRoot, i)
+				Select xmlNodeNameGet$(Child)
+					Case "stage":
+						Select mode
+							Case 2
+								For i = 1 To StageAmount
+									If file$=StageName$(i) Then RuntimeError(folder$+"/stages.xml contains a stage name that is already in the game")
+								Next
+								If folder$="Stages" Then NonModStageAmount=NonModStageAmount+1
+								StageAmount=StageAmount+1
+								StagePath$(StageAmount) = folder$+"/"+xmlNodeAttributeValueGet(Child, "name")
+								StageName$(StageAmount) = xmlNodeAttributeValueGet(Child, "name")
+								LoadGame_Emblems(StageAmount,xmlNodeAttributeValueGet(Child, "name"))
+							Case 3
+								StageAmountPossible=StageAmountPossible+1
+						End Select
+						
+				End Select
+			Next
+			xmlNodeDelete(StageListRoot)
+	End Select
 End Function
 
 Function GetStageAmount()
 	StageAmountPossible = 0
-	GetStageAmount_Individual("StagesOfficial")
-	GetStageAmount_Individual("Stages")
-End Function
-
-Function GetStageAmount_Individual(stagesxml$)
-	StageListRoot = xmlLoad(stagesxml$+"/Stages.xml")
+	IndividualStages("Stages",1)
+	
+	StageListRoot = xmlLoad("_Mods/stagefolders.xml")
 	If (xmlErrorCount()>0) Then RuntimeError("Game_Startup() -> Error while parsing 'Stages.xml'")
 	For i=1 To xmlNodeChildCount(StageListRoot)
 		Child = xmlNodeChild(StageListRoot, i)
 		Select xmlNodeNameGet$(Child)
 			Case "stage":
-				StageAmountPossible=StageAmountPossible+1
+				IndividualStages("_Mods/"+xmlNodeAttributeValueGet(Child, "folder"),1) 
+			Case "absolute":
+				IndividualStages(xmlNodeAttributeValueGet(Child, "folder"),1) 
 		End Select
 	Next
 	xmlNodeDelete(StageListRoot)
 End Function
 
+Function SaveGame_Controls(reset=False)
+	
+	If reset Then
+		ResetOptions_ResetKeyboard()
+		ResetOptions_ResetGamepad()
+	EndIf
+	
+	;controls
+	CurrentOpenFile=WriteFile(SaveDataPath$+"CONTROLS.xml")
+	
+	WriteLine(CurrentOpenFile,"<?xml version="+Chr$(34)+"1.0"+Chr$(34)+"?>")
+	WriteLine(CurrentOpenFile,"<controls>")
+	
+	
+	For i=0 To 17
+		WriteLine(CurrentOpenFile,"<control no="+Chr$(34)+i+Chr$(34)+" control1="+Chr$(34)+CONTROLS(1,i)+Chr$(34)+" control2="+Chr$(34)+CONTROLS(2,i)+Chr$(34)+" gamepad="+Chr$(34)+CONTROLS_GAMEPAD(i)+Chr$(34)+"/>")
+	Next
+	
+	WriteLine(CurrentOpenFile,"</controls>")
+	
+	CloseFile(CurrentOpenFile)
+	
+End Function
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Function SaveGame(saveemblems=True)
-
-	WriteFileWithEncryption("SETTINGS")
-
+	
+	;settings
+	CurrentOpenFile=WriteFile(SaveDataPath$+"SETTINGS.xml")
+	WriteLine(CurrentOpenFile,"<!-- Only edit these if you know what you are doing -->")
+	WriteLine(CurrentOpenFile,"<?xml version="+Chr$(34)+"1.0"+Chr$(34)+"?>")
+	
+	WriteLine(CurrentOpenFile,"<settings>")
+	
+	WriteLine(CurrentOpenFile,"<mesh_view_range is="+Chr$(34)+Menu\Settings\MeshViewRange#+Chr$(34)+"/>")
+	WriteLine(CurrentOpenFile,"<object_update_range is="+Chr$(34)+Menu\Settings\ObjectUpdateRange#+Chr$(34)+"/>")
+	WriteLine(CurrentOpenFile,"<object_view_range is="+Chr$(34)+Menu\Settings\ObjectViewRange#+Chr$(34)+"/>")
+	
 	WriteLine(CurrentOpenFile,"<firsttime is="+Chr$(34)+Menu\FirstTime+Chr$(34)+"/>")
-
+	
 	WriteLine(CurrentOpenFile,"<resolution setting="+Chr$(34)+Menu\Settings\Resolution#+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<screen setting="+Chr$(34)+Menu\Settings\ScreenMode#+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<debug setting="+Chr$(34)+Menu\Settings\Debug#+Chr$(34)+"/>")
@@ -119,176 +253,236 @@ Function SaveGame(saveemblems=True)
 	WriteLine(CurrentOpenFile,"<dof setting="+Chr$(34)+Menu\Settings\DepthOfField#+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<shadows setting="+Chr$(34)+Menu\Settings\Shadows#+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<blur setting="+Chr$(34)+Menu\Settings\MotionBlur#+Chr$(34)+"/>")
-	WriteLine(CurrentOpenFile,"<srays setting="+Chr$(34)+Menu\Settings\SunRays#+Chr$(34)+"/>")
+	WriteLine(CurrentOpenFile,"<srays setting="+Chr$(34)+Menu\Settings\sunrays#+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<sounds setting="+Chr$(34)+Menu\Settings\ThreeDSounds#+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<theme setting="+Chr$(34)+Menu\Settings\Theme#+Chr$(34)+"/>")
+	WriteLine(CurrentOpenFile,"<custom on="+Chr$(34)+Menu\Settings\CustomThemeOn#+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<bumpmaps setting="+Chr$(34)+Menu\Settings\BumpMaps#+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<stadium setting="+Chr$(34)+Menu\Settings\StadiumDifficulty#+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<plants setting="+Chr$(34)+Menu\Settings\DisablePlants#+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<mods setting="+Chr$(34)+Menu\Settings\Mods#+Chr$(34)+"/>")
-	WriteLine(CurrentOpenFile,"<tips setting="+Chr$(34)+Menu\Settings\ControlTips#+Chr$(34)+"/>")
+	WriteLine(CurrentOpenFile,"<tips setting="+Chr$(34)+Menu\Settings\CONTROLTIPS#+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<layout setting="+Chr$(34)+Menu\Settings\ControllerLayout#+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<autocam setting="+Chr$(34)+Menu\Settings\AutoCameraDisabled#+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<vsync setting="+Chr$(34)+Menu\Settings\VSync#+Chr$(34)+"/>")
-	WriteLine(CurrentOpenFile,"<viewrange setting="+Chr$(34)+Menu\Settings\ViewRange#+Chr$(34)+"/>")
-
-	For i=0 To 17
-	WriteLine(CurrentOpenFile,"<control no="+Chr$(34)+i+Chr$(34)+" control1="+Chr$(34)+CONTROLS(1,i)+Chr$(34)+" control2="+Chr$(34)+CONTROLS(2,i)+Chr$(34)+" gamepad="+Chr$(34)+CONTROLS_GAMEPAD(i)+Chr$(34)+"/>")
+	WriteLine(CurrentOpenFile,"<sens setting="+Chr$(34)+Menu\Settings\SensitivityMult#+Chr$(34)+"/>")
+	WriteLine(CurrentOpenFile,"<controller setting="+Chr$(34)+Menu\Settings\ControllerSupport#+Chr$(34)+"/>")
+	
+	WriteLine(CurrentOpenFile,"<difficulty setting="+Chr$(34)+Menu\Settings\Difficulty#+Chr$(34)+"/>")
+	WriteLine(CurrentOpenFile,"<hide achievements="+Chr$(34)+Menu\Settings\HideAchievements#+Chr$(34)+"/>")
+	
+	For j=1 To 9
+		WriteLine(CurrentOpenFile,"<favourite command="+Chr$(34)+(j)+Chr$(34)+" is="+Chr$(34)+Menu\Settings\FavouriteCommand$[j]+Chr$(34)+"/>")
 	Next
-
+	
+	WriteLine(CurrentOpenFile,"</settings>")
+	
+	CloseFile(CurrentOpenFile)
+	
+	
+	;unlocks
+	WriteFileWithEncryption("UNLOCKS")
+	
 	For c=1 To CHAR_NORMALCOUNT
-	WriteLine(CurrentOpenFile,"<char no="+Chr$(34)+(c)+Chr$(34)+" unlocked="+Chr$(34)+UNLOCKEDCHAR[c]+Chr$(34)+"/>")
+		WriteLine(CurrentOpenFile,"<char no="+Chr$(34)+(c)+Chr$(34)+" unlocked="+Chr$(34)+UNLOCKEDCHAR[c]+Chr$(34)+"/>")
 	Next
-	For c=1 To TEAM_TEAMCOUNT
-	WriteLine(CurrentOpenFile,"<team no="+Chr$(34)+(c)+Chr$(34)+" unlocked="+Chr$(34)+UNLOCKEDTEAM[c]+Chr$(34)+"/>")
-	Next
-	WriteLine(CurrentOpenFile,"<specialstages unlocked="+Chr$(34)+UNLOCKEDSPECIALSTAGES[0]+Chr$(34)+"/>")
-	For c=1 To 7
-	WriteLine(CurrentOpenFile,"<emerald no="+Chr$(34)+(c)+Chr$(34)+" unlocked="+Chr$(34)+UNLOCKEDEMERALDS[c]+Chr$(34)+"/>")
-	Next
-
-	For c=1 To CHAR_PLAYABLECOUNT
-	WriteLine(CurrentOpenFile,"<jumpamode no="+Chr$(34)+(c)+Chr$(34)+" is="+Chr$(34)+JUMPAMODE[c]+Chr$(34)+"/>")
-	Next
-
+	
+	WriteLine(CurrentOpenFile,"<supers got="+Chr$(34)+UNLOCKEDSUPERS+Chr$(34)+"/>")
+	WriteLine(CurrentOpenFile,"<emblems got="+Chr$(34)+EMBLEMS+Chr$(34)+"/>")
+	WriteLine(CurrentOpenFile,"<redrings got="+Chr$(34)+REDRINGS+Chr$(34)+"/>")
+		
+	
+	
 	CloseWrittenFileWithEncryption()
-
-	If saveemblems Then
-		For i=1 To StageAmount
-		SaveGame_Emblems(i)
-		Next
-	EndIf
-
+	
+	
+	
+	SaveGame_Controls()
 	SaveGame_Inventory()
-
+	
 End Function
 
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Function LoadGame(loademblems=True)
-
-	LoadFileWithEncryption("SETTINGS") : xmlin = xmlLoad(SaveDataTmp$)
-
+	
+	;controls
+	xmlin = xmlLoad(SaveDataPath$+"CONTROLS.xml")
 	For cchild = 1 To xmlNodeChildCount(xmlin)
-
-	child = xmlNodeChild(xmlin, cchild)
-
-	Select xmlNodeNameGet$(child)
-		Case "firsttime": Menu\FirstTime = xmlNodeAttributeValueGet(child, "is")
-
-		Case "resolution": Menu\Settings\Resolution# = xmlNodeAttributeValueGet(child, "setting")
-		Case "screen": Menu\Settings\ScreenMode# = xmlNodeAttributeValueGet(child, "setting")
-		Case "debug": Menu\Settings\Debug# = xmlNodeAttributeValueGet(child, "setting")
-		Case "debugnodes": Menu\Settings\DebugNodes# = xmlNodeAttributeValueGet(child, "setting")
-		Case "volume": Menu\Settings\Volume# = xmlNodeAttributeValueGet(child, "setting")
-		Case "volumesfx": Menu\Settings\VolumeSFX# = xmlNodeAttributeValueGet(child, "setting")
-		Case "volumeva": Menu\Settings\VolumeVA# = xmlNodeAttributeValueGet(child, "setting")
-		Case "volumem": Menu\Settings\VolumeM# = xmlNodeAttributeValueGet(child, "setting")
-		Case "volumeamb": Menu\Settings\VolumeAmb# = xmlNodeAttributeValueGet(child, "setting")
-		Case "dof": Menu\Settings\DepthOfField# = xmlNodeAttributeValueGet(child, "setting")
-		Case "shadows": Menu\Settings\Shadows# = xmlNodeAttributeValueGet(child, "setting")
-		Case "blur": Menu\Settings\MotionBlur# = xmlNodeAttributeValueGet(child, "setting")
-		Case "srays": Menu\Settings\SunRays# = xmlNodeAttributeValueGet(child, "setting")
-		Case "sounds": Menu\Settings\ThreeDSounds# = xmlNodeAttributeValueGet(child, "setting")
-		Case "theme": Menu\Settings\Theme# = xmlNodeAttributeValueGet(child, "setting")
-		Case "bumpmaps": Menu\Settings\BumpMaps# = xmlNodeAttributeValueGet(child, "setting")
-		Case "stadium": Menu\Settings\StadiumDifficulty# = xmlNodeAttributeValueGet(child, "setting")
-		Case "plants": Menu\Settings\DisablePlants# = xmlNodeAttributeValueGet(child, "setting")
-		Case "mods": Menu\Settings\Mods# = xmlNodeAttributeValueGet(child, "setting")
-		Case "tips": Menu\Settings\ControlTips# = xmlNodeAttributeValueGet(child, "setting")
-		Case "layout": Menu\Settings\ControllerLayout# = xmlNodeAttributeValueGet(child, "setting")
-		Case "autocam": Menu\Settings\AutoCameraDisabled# = xmlNodeAttributeValueGet(child, "setting")
-		Case "vsync": Menu\Settings\VSync# = xmlNodeAttributeValueGet(child, "setting")
-		Case "viewrange": Menu\Settings\ViewRange# = xmlNodeAttributeValueGet(child, "setting")
-
-		Case "control": controlno = xmlNodeAttributeValueGet(child, "no") : CONTROLS(1,controlno) = xmlNodeAttributeValueGet(child, "control1") : CONTROLS(2,controlno) = xmlNodeAttributeValueGet(child, "control2") : CONTROLS_GAMEPAD(controlno) = xmlNodeAttributeValueGet(child, "gamepad")
-
-		Case "char": i = xmlNodeAttributeValueGet(child, "no") : If i<=CHAR_NORMALCOUNT Then UNLOCKEDCHAR[i] = xmlNodeAttributeValueGet(child, "unlocked")
-		Case "team": i = xmlNodeAttributeValueGet(child, "no") : If i<=TEAM_TEAMCOUNT Then UNLOCKEDTEAM[i] = xmlNodeAttributeValueGet(child, "unlocked")
-		Case "specialstages": UNLOCKEDSPECIALSTAGES[0] = xmlNodeAttributeValueGet(child, "unlocked")
-		Case "emerald": i = xmlNodeAttributeValueGet(child, "no") : If i<=7 Then UNLOCKEDEMERALDS[i] = xmlNodeAttributeValueGet(child, "unlocked")
-
-		Case "jumpamode": i = xmlNodeAttributeValueGet(child, "no") : If i<=CHAR_PLAYABLECOUNT Then JUMPAMODE[i] = xmlNodeAttributeValueGet(child, "is")
-
-	End Select
-
+		
+		child = xmlNodeChild(xmlin, cchild)
+		
+		Select xmlNodeNameGet$(child)
+			Case "control": controlno = xmlNodeAttributeValueGet(child, "no") : CONTROLS(1,controlno) = xmlNodeAttributeValueGet(child, "control1") : CONTROLS(2,controlno) = xmlNodeAttributeValueGet(child, "control2") : CONTROLS_GAMEPAD(controlno) = xmlNodeAttributeValueGet(child, "gamepad")
+				
+		End Select
+		
 	Next
-
+	
+	xmlNodeDelete(xmlin) 
+	
+	;unlocks
+	LoadFileWithEncryption("UNLOCKS") : xmlin = xmlLoad(SaveDataTmp$)
+	For cchild = 1 To xmlNodeChildCount(xmlin)
+		
+		child = xmlNodeChild(xmlin, cchild)
+		
+		Select xmlNodeNameGet$(child)
+			Case "emblems":EMBLEMS = xmlNodeAttributeValueGet(child, "got")
+			Case "supers":UNLOCKEDSUPERS = xmlNodeAttributeValueGet(child, "got")
+			Case "redrings":REDRINGS = xmlNodeAttributeValueGet(child, "got")
+			Case "char": i = xmlNodeAttributeValueGet(child, "no") : UNLOCKEDCHAR[i] = xmlNodeAttributeValueGet(child, "unlocked")
+		End Select
+		
+	Next
+	
 	xmlNodeDelete(xmlin) : CloseLoadedFileWithEncryption()
-
-	If loademblems Then
-		For i=1 To StageAmount
-		LoadGame_Emblems(i)
-		Next
-	EndIf
-
+	
+	;settings
+	xmlin = xmlLoad(SaveDataPath$+"SETTINGS.xml")
+	
+	For cchild = 1 To xmlNodeChildCount(xmlin)
+		
+		child = xmlNodeChild(xmlin, cchild)
+		
+		Select xmlNodeNameGet$(child)
+			Case "object_view_range": Menu\Settings\ObjectViewRange# = xmlNodeAttributeValueGet(child, "is")
+			Case "object_update_range": Menu\Settings\ObjectUpdateRange# = xmlNodeAttributeValueGet(child, "is")
+			Case "mesh_view_range": Menu\Settings\MeshViewRange# = xmlNodeAttributeValueGet(child, "is")
+				
+			Case "controller": Menu\Settings\ControllerSupport# = xmlNodeAttributeValueGet(child, "setting")		
+			Case "firsttime": Menu\FirstTime = xmlNodeAttributeValueGet(child, "is")
+			Case "sens": Menu\Settings\SensitivityMult# = xmlNodeAttributeValueGet(child, "setting")	
+			Case "resolution": Menu\Settings\Resolution# = xmlNodeAttributeValueGet(child, "setting")
+			Case "screen": Menu\Settings\ScreenMode# = xmlNodeAttributeValueGet(child, "setting")
+			Case "debug": Menu\Settings\Debug# = xmlNodeAttributeValueGet(child, "setting")
+			Case "debugnodes": Menu\Settings\DebugNodes# = xmlNodeAttributeValueGet(child, "setting")
+			Case "volume": Menu\Settings\Volume# = xmlNodeAttributeValueGet(child, "setting")
+			Case "volumesfx": Menu\Settings\VolumeSFX# = xmlNodeAttributeValueGet(child, "setting")
+			Case "volumeva": Menu\Settings\VolumeVA# = xmlNodeAttributeValueGet(child, "setting")
+			Case "volumem": Menu\Settings\VolumeM# = xmlNodeAttributeValueGet(child, "setting")
+			Case "volumeamb": Menu\Settings\VolumeAmb# = xmlNodeAttributeValueGet(child, "setting")
+			Case "dof": Menu\Settings\DepthOfField# = xmlNodeAttributeValueGet(child, "setting")
+			Case "shadows": Menu\Settings\Shadows# = xmlNodeAttributeValueGet(child, "setting")
+			Case "blur": Menu\Settings\MotionBlur# = xmlNodeAttributeValueGet(child, "setting")
+			Case "srays": Menu\Settings\sunrays# = xmlNodeAttributeValueGet(child, "setting")
+			Case "sounds": Menu\Settings\ThreeDSounds# = xmlNodeAttributeValueGet(child, "setting")
+			Case "theme": Menu\Settings\Theme# = xmlNodeAttributeValueGet(child, "setting")
+			Case "bumpmaps": Menu\Settings\BumpMaps# = xmlNodeAttributeValueGet(child, "setting")
+			Case "stadium": Menu\Settings\StadiumDifficulty# = xmlNodeAttributeValueGet(child, "setting")
+			Case "plants": Menu\Settings\DisablePlants# = xmlNodeAttributeValueGet(child, "setting")
+			Case "mods": Menu\Settings\Mods# = xmlNodeAttributeValueGet(child, "setting")
+			Case "tips": Menu\Settings\CONTROLTIPS# = xmlNodeAttributeValueGet(child, "setting")
+			Case "layout": Menu\Settings\ControllerLayout# = xmlNodeAttributeValueGet(child, "setting")
+			Case "autocam": Menu\Settings\AutoCameraDisabled# = xmlNodeAttributeValueGet(child, "setting")
+			Case "vsync": Menu\Settings\VSync# = xmlNodeAttributeValueGet(child, "setting")
+			Case "viewrange": Menu\Settings\ViewRange# = xmlNodeAttributeValueGet(child, "setting")
+			Case "custom": Menu\Settings\CustomThemeOn# = xmlNodeAttributeValueGet(child, "on")
+			Case "difficulty": Menu\Settings\Difficulty# = xmlNodeAttributeValueGet(child, "setting")
+			Case "hide": Menu\Settings\HideAchievements# = xmlNodeAttributeValueGet(child, "achievements")
+				
+				
+			Case "favourite": i = xmlNodeAttributeValueGet(child, "command") : If i<=9 Then Menu\Settings\FavouriteCommand$[i] = xmlNodeAttributeValueGet(child, "is")
+				
+		End Select
+		
+	Next
+	
+	xmlNodeDelete(xmlin) 
+	
+	
 	LoadGame_Inventory()
-
+	
 End Function
 
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Function SaveGame_Emblems(i,reset=False)
-
+Function SaveGame_Emblems(stage$,reset=False)
+	i=Menu\Stage
+	
 	If i<0 Then Return
 
-	If reset Then SaveGame_Emblems_Reset(i)
+	If reset Then
+		For h=1 To 5
+			EMBLEMS1(h,i)=0
+			EMBLEMS2(h,i)=0
+			REDRING(h,i)=0
+		Next
+	EndIf
 
-	WriteFileWithEncryption("EMBLEMS"+i)
+	WriteFileWithEncryption("Stage/EMBLEMS"+stage$)
 
 	For h=1 To 5
-	WriteLine(CurrentOpenFile,"<emblems"+(h)+" 1="+Chr$(34)+EMBLEMS1(h,i)+Chr$(34)+" 2="+Chr$(34)+EMBLEMS2(h,i)+Chr$(34)+"/>")
-Next
-
-WriteLine(CurrentOpenFile,"<redrings 1="+Chr$(34)+REDRING1(i)+Chr$(34)+" 2="+Chr$(34)+REDRING2(i)+Chr$(34)+" 3="+Chr$(34)+REDRING3(i)+Chr$(34)+" 4="+Chr$(34)+REDRING4(i)+Chr$(34)+" 5="+Chr$(34)+REDRING5(i)+Chr$(34)+" all="+Chr$(34)+ALLREDRING(i)+Chr$(34)+"/>")
-
+		WriteLine(CurrentOpenFile,"<emblems"+(h)+" 1="+Chr$(34)+EMBLEMS1(h,i)+Chr$(34)+" 2="+Chr$(34)+EMBLEMS2(h,i)+Chr$(34)+"/>")
+		WriteLine(CurrentOpenFile,"<redring"+(h)+" collected="+Chr$(34)+REDRING(h,i)+Chr$(34)+"/>")
+		WriteLine(CurrentOpenFile,"<rank"+(h)+" is="+Chr$(34)+RANK(h,i)+Chr$(34)+"/>")
+		
+	Next
+	
+	WriteLine(CurrentOpenFile,"<all redrings="+Chr$(34)+ALLREDRING(i)+Chr$(34)+"/>")
+	
+	
 
 	CloseWrittenFileWithEncryption()
 
 End Function
 
-Function LoadGame_Emblems(i)
-
+Function LoadGame_Emblems(i,stage$)
+	
 	If i<0 Then Return
-
-	If Not(FileType(SaveDataPath$+"EMBLEMS"+i+SaveDataFormat$)=1) Then ;!
-
-		SaveGame_Emblems(i,True)
-
+	
+	If Not(FileType(SaveDataPath$+"Stage/EMBLEMS"+stage$+SaveDataFormat$)=1) Then ;!
+		
+		SaveGame_Emblems(stage$,True)
+		
 	Else ;!
-
-	LoadFileWithEncryption("EMBLEMS"+i) : xmlin = xmlLoad(SaveDataTmp$)
-
-	For cchild = 1 To xmlNodeChildCount(xmlin)
-
-	child = xmlNodeChild(xmlin, cchild)
-
-	Select xmlNodeNameGet$(child)
-
-		;mission1-------------------------------------------------------------------------------
-		Case "emblems1": LoadGame_Emblems_individual(child,1,i)
-		;mission2-------------------------------------------------------------------------------
-		Case "emblems2": LoadGame_Emblems_individual(child,2,i)
-		;mission3-------------------------------------------------------------------------------
-		Case "emblems3": LoadGame_Emblems_individual(child,3,i)
-		;mission4-------------------------------------------------------------------------------
-		Case "emblems4": LoadGame_Emblems_individual(child,4,i)
-		;mission5-------------------------------------------------------------------------------
-		Case "emblems5": LoadGame_Emblems_individual(child,5,i)
+		
+		LoadFileWithEncryption("Stage/EMBLEMS"+stage$) : xmlin = xmlLoad(SaveDataTmp$)
+		
+		For cchild = 1 To xmlNodeChildCount(xmlin)
 			
-		;redrings------------------------------------------------------------------
-		Case "redrings": LoadGame_RedRings_individual(child,i)
+			child = xmlNodeChild(xmlin, cchild)
 			
-	End Select
-
-	Next
-
-	xmlNodeDelete(xmlin) : CloseLoadedFileWithEncryption()
-
+			Select xmlNodeNameGet$(child)
+					
+					;mission1-------------------------------------------------------------------------------
+				Case "emblems1": LoadGame_Emblems_individual(child,1,i)
+					;mission2-------------------------------------------------------------------------------
+				Case "emblems2": LoadGame_Emblems_individual(child,2,i)
+					;mission3-------------------------------------------------------------------------------
+				Case "emblems3": LoadGame_Emblems_individual(child,3,i)
+					;mission4-------------------------------------------------------------------------------
+				Case "emblems4": LoadGame_Emblems_individual(child,4,i)
+					;mission5-------------------------------------------------------------------------------
+				Case "emblems5": LoadGame_Emblems_individual(child,5,i)
+					
+				;red rings
+					
+				Case "redring1": LoadGame_RedRings_individual(child,1,i)
+					
+				Case "redring2": LoadGame_RedRings_individual(child,2,i)
+					
+				Case "redring3": LoadGame_RedRings_individual(child,3,i)
+					
+				Case "redring4": LoadGame_RedRings_individual(child,4,i)
+					
+				Case "redring5": LoadGame_RedRings_individual(child,5,i)
+				Case "rank1","rank2","rank3","rank4","rank5"
+					j=Mid$(xmlNodeNameGet$(child),5,1)
+					RANK(j,i)=xmlNodeAttributeValueGet(child, "is")
+				Case "all"
+					ALLREDRING(i)=xmlNodeAttributeValueGet(child, "redrings")
+					
+			End Select
+			
+		Next
+		
+		xmlNodeDelete(xmlin) : CloseLoadedFileWithEncryption()
+		
 	EndIf;!
-
+	
 End Function
 
 Function LoadGame_Emblems_individual(child,h,i)
@@ -296,43 +490,25 @@ Function LoadGame_Emblems_individual(child,h,i)
 	EMBLEMS2(h,i)=xmlNodeAttributeValueGet(child, "2")
 End Function
 
-Function LoadGame_RedRings_individual(child,i)
-	REDRING1(i)=xmlNodeAttributeValueGet(child, "1")
-	REDRING2(i)=xmlNodeAttributeValueGet(child, "2")
-	REDRING3(i)=xmlNodeAttributeValueGet(child, "3")
-	REDRING4(i)=xmlNodeAttributeValueGet(child, "4")
-	REDRING5(i)=xmlNodeAttributeValueGet(child, "5")
-	ALLREDRING(i)=xmlNodeAttributeValueGet(child, "all")
+Function LoadGame_RedRings_individual(child,h,i)
+	REDRING(h,i)=xmlNodeAttributeValueGet(child, "collected")
+End Function
+
+
+
+;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Function SaveGame_Records(stage$,reset=False)
+
+	If reset Then SaveGame_Records_Reset(stage$)
 	
-End Function
+	WriteFileWithEncryption("Stage/RECORDS"+stage$)
 
-Function SaveGame_Emblems_Reset(i)
-	For h=1 To 5
-	EMBLEMS1(h,i)=0
-	EMBLEMS2(h,i)=0
-Next
-
-REDRING1(i)=0
-REDRING2(i)=0
-REDRING3(i)=0
-REDRING4(i)=0
-REDRING5(i)=0
-ALLREDRING(i)=0
-End Function
-
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Function SaveGame_Records(i,reset=False)
-
-	If reset Then SaveGame_Records_Reset(i)
-
-	WriteFileWithEncryption("RECORDS"+i)
-
-	RECORDS_NAME(1)=SaveGame_Records_GetStageName(i)
-	WriteLine(CurrentOpenFile,"<stage name="+Chr$(34)+RECORDS_NAME(1)+Chr$(34)+"/>")
-
+	RECORDS_NAME(1)=stage$
+	WriteLine(CurrentOpenFile,"<stage name="+Chr$(34)+stage$+Chr$(34)+"/>")
+	
 	For r=0 To 4
 	For h=1 To 5
 	WriteLine(CurrentOpenFile,"<records"+(h)+"-"+(r)+" rings="+Chr$(34)+RECORDS_RINGS(h,r)+Chr$(34)+" enemies="+Chr$(34)+RECORDS_ENEMIES(h,r)+Chr$(34)+" time="+Chr$(34)+RECORDS_TIME(h,r)+Chr$(34)+" score="+Chr$(34)+RECORDS_SCORE(h,r)+Chr$(34)+" rank="+Chr$(34)+RECORDS_RANK(h,r)+Chr$(34)+"/>")
@@ -343,24 +519,24 @@ Function SaveGame_Records(i,reset=False)
 
 End Function
 
-Function LoadGame_Records(i)
+Function LoadGame_Records(stage$)
 
-	RECORDS_CURRENT=i
+	RECORDS_CURRENT=Menu\Option
 
-	If Not(FileType(SaveDataPath$+"RECORDS"+i+SaveDataFormat$)=1) Then ;!
+	If Not(FileType(SaveDataPath$+"Stage/RECORDS"+stage$+SaveDataFormat$)=1) Then ;!
 
-		SaveGame_Records(i,True)
+		SaveGame_Records(stage$,True)
 
 	Else ;!
 
-	LoadFileWithEncryption("RECORDS"+i) : xmlin = xmlLoad(SaveDataTmp$)
+		LoadFileWithEncryption("Stage/RECORDS"+stage$) : xmlin = xmlLoad(SaveDataTmp$)
 
 	For cchild = 1 To xmlNodeChildCount(xmlin)
 
 	child = xmlNodeChild(xmlin, cchild)
 
 	Select xmlNodeNameGet$(child)
-		Case "stage": RECORDS_NAME(1) = xmlNodeAttributeValueGet(child, "name")
+		Case "stage": RECORDS_NAME$(1) = xmlNodeAttributeValueGet(child, "name")
 		;mission1-------------------------------------------------------------------------------
 		Case "records1-0": LoadGame_Records_individual(child,1,0)
 		Case "records1-1": LoadGame_Records_individual(child,1,1)
@@ -413,16 +589,12 @@ Function SaveGame_Records_GetStageName$(i)
 	If i<=StageAmount And i>0 Then
 		Return StageName$(i)
 	Else
-		If i<0 Then
-			Return "Special Stage "+Int(Abs(i))
-		Else
-			Return ""
-		EndIf
+		Return ""
 	EndIf
 End Function
 
-Function SaveGame_Records_Reset(i)
-	RECORDS_NAME(1)=SaveGame_Records_GetStageName$(i)
+Function SaveGame_Records_Reset(stage$)
+	RECORDS_NAME$(1)=stage$
 	For h=1 To 5
 	RECORDS_RINGS(h,0)=0
 	RECORDS_ENEMIES(h,0)=0
@@ -445,11 +617,9 @@ End Function
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Function SaveGame_ResetAndSaveStageRecordsAndEmblems(i)
-	If i<=StageAmount Then
-		SaveGame_Emblems(i,True)
-		SaveGame_Records(i,True)
-	EndIf
+Function SaveGame_ResetAndSaveStageRecordsAndEmblems(stage$)
+	SaveGame_Emblems(stage$,True)
+	SaveGame_Records(stage$,True)
 End Function
 
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -523,18 +693,22 @@ Function ResetOptions_Values()
 	Menu\Settings\DepthOfField#=0
 	Menu\Settings\Shadows#=0
 	Menu\Settings\MotionBlur#=0
-	Menu\Settings\SunRays#=0
+	Menu\Settings\sunrays#=0
 	Menu\Settings\ThreeDSounds#=1
 	Menu\Settings\Theme#=1
 	Menu\Settings\BumpMaps#=0
 	Menu\Settings\StadiumDifficulty#=1
 	Menu\Settings\DisablePlants#=0
 	Menu\Settings\Mods#=0
-	Menu\Settings\ControlTips#=1
-	Menu\Settings\ControllerLayout#=1
+	Menu\Settings\CONTROLTIPS#=1
+	Menu\Settings\ControllerLayout#=2
 	Menu\Settings\AutoCameraDisabled#=0
 	Menu\Settings\VSync#=0
 	Menu\Settings\ViewRange#=0
+	Menu\Settings\ObjectUpdateRange#=80
+	Menu\Settings\MeshViewRange#=10000
+	Menu\Settings\ObjectViewRange#=500
+	Menu\Settings\SensitivityMult#=1.0
 
 	ResetOptions_ResetKeyboard()
 	ResetOptions_ResetGamepad()
@@ -551,24 +725,24 @@ Function ResetOptions()
 End Function
 
 Function ResetOptions_ResetKeyboard()
-	CONTROLS(1,INPUT_BUTTON_UP)=KEY_ARROW_UP
-	CONTROLS(1,INPUT_BUTTON_DOWN)=KEY_ARROW_DOWN
-	CONTROLS(1,INPUT_BUTTON_LEFT)=KEY_ARROW_LEFT
-	CONTROLS(1,INPUT_BUTTON_RIGHT)=KEY_ARROW_RIGHT
-	CONTROLS(1,INPUT_BUTTON_CHANGE)=KEY_CTRL_RIGHT
-	CONTROLS(1,INPUT_BUTTON_ACTIONJUMP)=KEY_A
-	CONTROLS(1,INPUT_BUTTON_ACTIONROLL)=KEY_X
-	CONTROLS(1,INPUT_BUTTON_ACTIONDRIFT)=KEY_TAB
+	CONTROLS(1,INPUT_BUTTON_UP)=KEY_W
+	CONTROLS(1,INPUT_BUTTON_DOWN)=KEY_S
+	CONTROLS(1,INPUT_BUTTON_LEFT)=KEY_A
+	CONTROLS(1,INPUT_BUTTON_RIGHT)=KEY_D
+	CONTROLS(1,INPUT_BUTTON_CHANGE)=KEY_CTRL_LEFT
+	CONTROLS(1,INPUT_BUTTON_ACTIONJUMP)=KEY_MOUSE_LEFT
+	CONTROLS(1,INPUT_BUTTON_ACTIONROLL)=KEY_MOUSE_RIGHT
+	CONTROLS(1,INPUT_BUTTON_ACTIONDRIFT)=KEY_SPACE
 	CONTROLS(1,INPUT_BUTTON_ACTIONSKILL1)=KEY_C
-	CONTROLS(1,INPUT_BUTTON_ACTIONSKILL2)=KEY_S
-	CONTROLS(1,INPUT_BUTTON_ACTIONSKILL3)=KEY_D
-	CONTROLS(1,INPUT_BUTTON_ACTIONSKILLX)=KEY_Q
-	CONTROLS(1,INPUT_BUTTON_ACTIONACT)=KEY_Z
+	CONTROLS(1,INPUT_BUTTON_ACTIONSKILL2)=KEY_Q
+	CONTROLS(1,INPUT_BUTTON_ACTIONSKILL3)=KEY_R
+	CONTROLS(1,INPUT_BUTTON_ACTIONSKILLX)=KEY_SHIFT_LEFT
+	CONTROLS(1,INPUT_BUTTON_ACTIONACT)=KEY_E
 	CONTROLS(1,INPUT_BUTTON_START)=KEY_ENTER
-	CONTROLS(1,INPUT_BUTTON_BACK)=KEY_CTRL_LEFT
-	CONTROLS(1,INPUT_BUTTON_CAM_LEFT)=KEY_SHIFT_LEFT
-	CONTROLS(1,INPUT_BUTTON_CAM_RIGHT)=KEY_SHIFT_RIGHT
-	CONTROLS(1,INPUT_BUTTON_CAM_CENTER)=KEY_ALT_LEFT
+	CONTROLS(1,INPUT_BUTTON_BACK)=KEY_Z
+	CONTROLS(1,INPUT_BUTTON_CAM_LEFT)=KEY_O
+	CONTROLS(1,INPUT_BUTTON_CAM_RIGHT)=KEY_P
+	CONTROLS(1,INPUT_BUTTON_CAM_CENTER)=KEY_MOUSE_MIDDLE
 End Function
 
 Function ResetOptions_ResetGamepadButtons()
@@ -576,17 +750,18 @@ Function ResetOptions_ResetGamepadButtons()
 	CONTROLS(2,INPUT_BUTTON_DOWN)=KEY_GAMEPAD_Y_PLUS
 	CONTROLS(2,INPUT_BUTTON_LEFT)=KEY_GAMEPAD_X_MINUS
 	CONTROLS(2,INPUT_BUTTON_RIGHT)=KEY_GAMEPAD_X_PLUS
-	CONTROLS(2,INPUT_BUTTON_CHANGE)=KEY_GAMEPAD_BUTTON7
-	CONTROLS(2,INPUT_BUTTON_ACTIONJUMP)=KEY_GAMEPAD_BUTTON3
-	CONTROLS(2,INPUT_BUTTON_ACTIONROLL)=KEY_GAMEPAD_BUTTON4
-	CONTROLS(2,INPUT_BUTTON_ACTIONDRIFT)=KEY_GAMEPAD_BUTTON6
-	CONTROLS(2,INPUT_BUTTON_ACTIONSKILL1)=KEY_GAMEPAD_BUTTON2
-	CONTROLS(2,INPUT_BUTTON_ACTIONSKILL2)=KEY_GAMEPAD_BUTTON1
-	CONTROLS(2,INPUT_BUTTON_ACTIONSKILL3)=KEY_GAMEPAD_BUTTON8
-	CONTROLS(2,INPUT_BUTTON_ACTIONSKILLX)=KEY_GAMEPAD_BUTTON12
-	CONTROLS(2,INPUT_BUTTON_ACTIONACT)=KEY_GAMEPAD_BUTTON9
-	CONTROLS(2,INPUT_BUTTON_START)=KEY_GAMEPAD_BUTTON10
-	CONTROLS(2,INPUT_BUTTON_BACK)=KEY_GAMEPAD_BUTTON5
+	CONTROLS(2,INPUT_BUTTON_ACTIONJUMP)=KEY_GAMEPAD_BUTTON1
+	CONTROLS(2,INPUT_BUTTON_ACTIONROLL)=KEY_GAMEPAD_BUTTON2
+	CONTROLS(2,INPUT_BUTTON_ACTIONSKILL1)=KEY_GAMEPAD_BUTTON3
+	CONTROLS(2,INPUT_BUTTON_ACTIONSKILL2)=KEY_GAMEPAD_BUTTON4
+	CONTROLS(2,INPUT_BUTTON_ACTIONSKILL3)=KEY_GAMEPAD_BUTTON5
+	CONTROLS(2,INPUT_BUTTON_ACTIONACT)=KEY_GAMEPAD_BUTTON6
+	CONTROLS(2,INPUT_BUTTON_BACK)=KEY_GAMEPAD_BUTTON7
+	CONTROLS(2,INPUT_BUTTON_START)=KEY_GAMEPAD_BUTTON8
+	CONTROLS(2,INPUT_BUTTON_CHANGE)=KEY_GAMEPAD_BUTTON9
+	CONTROLS(2,INPUT_BUTTON_CAM_CENTER)=KEY_GAMEPAD_BUTTON10
+	CONTROLS(2,INPUT_BUTTON_ACTIONDRIFT)=906
+	CONTROLS(2,INPUT_BUTTON_ACTIONSKILLX)=905
 	Select JoyType(g)
 		Case 1:
 			CONTROLS(2,INPUT_BUTTON_CAM_LEFT)=KEY_GAMEPAD_P_MINUS
@@ -595,7 +770,7 @@ Function ResetOptions_ResetGamepadButtons()
 			CONTROLS(2,INPUT_BUTTON_CAM_LEFT)=KEY_GAMEPAD_R_MINUS
 			CONTROLS(2,INPUT_BUTTON_CAM_RIGHT)=KEY_GAMEPAD_R_PLUS
 	End Select
-	CONTROLS(2,INPUT_BUTTON_CAM_CENTER)=KEY_GAMEPAD_BUTTON11
+	
 End Function
 
 Function ResetOptions_ResetGamepad()
@@ -605,20 +780,20 @@ Function ResetOptions_ResetGamepad()
 	CONTROLS_GAMEPAD(INPUT_BUTTON_DOWN)=12
 	CONTROLS_GAMEPAD(INPUT_BUTTON_LEFT)=13
 	CONTROLS_GAMEPAD(INPUT_BUTTON_RIGHT)=14
-	CONTROLS_GAMEPAD(INPUT_BUTTON_CHANGE)=20
+	CONTROLS_GAMEPAD(INPUT_BUTTON_CHANGE)=24
+	CONTROLS_GAMEPAD(INPUT_BUTTON_ACTIONDRIFT)=22
 	CONTROLS_GAMEPAD(INPUT_BUTTON_ACTIONJUMP)=1
-	CONTROLS_GAMEPAD(INPUT_BUTTON_ACTIONROLL)=2
-	CONTROLS_GAMEPAD(INPUT_BUTTON_ACTIONDRIFT)=23
-	CONTROLS_GAMEPAD(INPUT_BUTTON_ACTIONSKILL1)=3
+	CONTROLS_GAMEPAD(INPUT_BUTTON_ACTIONROLL)=3
+	CONTROLS_GAMEPAD(INPUT_BUTTON_ACTIONSKILL1)=2
 	CONTROLS_GAMEPAD(INPUT_BUTTON_ACTIONSKILL2)=4
-	CONTROLS_GAMEPAD(INPUT_BUTTON_ACTIONSKILL3)=21
-	CONTROLS_GAMEPAD(INPUT_BUTTON_ACTIONSKILLX)=25
-	CONTROLS_GAMEPAD(INPUT_BUTTON_ACTIONACT)=26
+	CONTROLS_GAMEPAD(INPUT_BUTTON_ACTIONSKILL3)=20
+	CONTROLS_GAMEPAD(INPUT_BUTTON_ACTIONSKILLX)=23
+	CONTROLS_GAMEPAD(INPUT_BUTTON_ACTIONACT)=21
 	CONTROLS_GAMEPAD(INPUT_BUTTON_START)=27
-	CONTROLS_GAMEPAD(INPUT_BUTTON_BACK)=22
+	CONTROLS_GAMEPAD(INPUT_BUTTON_BACK)=26
+	CONTROLS_GAMEPAD(INPUT_BUTTON_CAM_CENTER)=25
 	CONTROLS_GAMEPAD(INPUT_BUTTON_CAM_LEFT)=18
 	CONTROLS_GAMEPAD(INPUT_BUTTON_CAM_RIGHT)=19
-	CONTROLS_GAMEPAD(INPUT_BUTTON_CAM_CENTER)=24
 End Function
 
 Function ResetOptions_ResetNewGamepad()
@@ -628,58 +803,64 @@ Function ResetOptions_ResetNewGamepad()
 	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_DOWN)=12
 	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_LEFT)=13
 	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_RIGHT)=14
-	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_CHANGE)=20
-	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_ACTIONJUMP)=1
-	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_ACTIONROLL)=2
-	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_ACTIONDRIFT)=23
-	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_ACTIONSKILL1)=3
-	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_ACTIONSKILL2)=4
-	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_ACTIONSKILL3)=21
-	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_ACTIONSKILLX)=25
-	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_ACTIONACT)=26
-	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_START)=27
-	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_BACK)=22
 	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_CAM_LEFT)=18
 	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_CAM_RIGHT)=19
-	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_CAM_CENTER)=24
+	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_CHANGE)=24
+	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_ACTIONDRIFT)=22
+	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_ACTIONJUMP)=1
+	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_ACTIONROLL)=3
+	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_ACTIONSKILL1)=2
+	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_ACTIONSKILL2)=4
+	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_ACTIONSKILL3)=20
+	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_ACTIONSKILLX)=23
+	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_ACTIONACT)=21
+	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_START)=27
+	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_BACK)=26
+	CONTROLS_NEWGAMEPAD(INPUT_BUTTON_CAM_CENTER)=25
 End Function
 
 Function ResetGame()
-
-	Menu\SavedLives=5
+	
+	Menu\SavedLives=3
 	Menu\Wallet=0
-
+	
+	REDRINGS=0
+	EMBLEMS=0
+	TOKENS=0
+	
+	
+	
 	For c=1 To CHAR_NORMALCOUNT
-	Select c
-		Case CHAR_MIG,CHAR_RAY,CHAR_CHO,CHAR_NAC,CHAR_BEA,CHAR_BAR,CHAR_JET,CHAR_WAV,CHAR_STO,CHAR_TIA,CHAR_MPH,CHAR_MET,CHAR_TDL,CHAR_MKN,CHAR_TIK,CHAR_HBO,CHAR_HON,CHAR_SHD,CHAR_GAM,CHAR_EME,CHAR_EGG,CHAR_BET,CHAR_MT3,CHAR_GME,CHAR_PRS,CHAR_COM,CHAR_CHW,CHAR_EGR,CHAR_INF:
-			UNLOCKEDCHAR[c]=0
-		Default:
-			UNLOCKEDCHAR[c]=1
-	End Select
+		Select c
+			Case CHAR_SON,CHAR_TAI,CHAR_KNU,CHAR_AMY,CHAR_CRE
+				UNLOCKEDCHAR[c]=1
+			Default
+				UNLOCKEDCHAR[c]=0
+		End Select
 	Next
 	For c=1 To TEAM_TEAMCOUNT
-	Select c
-		Case TEAM_TEAMCOUNT,TEAM_OLDIES,TEAM_HOOLIGAN,TEAM_BABYLON,TEAM_RELIC,TEAM_ROBOTNIK:
-			UNLOCKEDTEAM[c]=0
-		Default:
-			UNLOCKEDTEAM[c]=1
-	End Select
+		Select c
+			Case TEAM_TEAMCOUNT
+				UNLOCKEDTEAM[c]=0
+			Default:
+				UNLOCKEDTEAM[c]=1
+		End Select
 	Next
-	UNLOCKEDSPECIALSTAGES[0]=0
-	For c=1 To 7
-		UNLOCKEDEMERALDS[c]=0
+	
+	For i = 1 To StageAmountPossible
+		ALLREDRING(i)=0
 	Next
-
+	
 	SaveGame(False)
-
+	
 	DeleteMarathonList()
-
+	
 End Function
 
 Function ResetRecords()
 
 	For i=1 To StageAmount
-		SaveGame_ResetAndSaveStageRecordsAndEmblems(i)
+		SaveGame_ResetAndSaveStageRecordsAndEmblems(StageName$(i))
 	Next
 
 End Function
@@ -688,61 +869,6 @@ End Function
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Global TOUNLOCKCHAR[CHAR_NORMALCOUNT]
-Global TOUNLOCKTEAM[TEAM_TEAMCOUNT]
-Global TOUNLOCKSPECIALSTAGES[0]
-
-	For c=1 To CHAR_NORMALCOUNT
-	Select c
-		Case CHAR_MET,CHAR_TDL,CHAR_MKN:			TOUNLOCKCHAR[c]=15
-		Case CHAR_MIG,CHAR_RAY,CHAR_HBO:			TOUNLOCKCHAR[c]=20
-		Case CHAR_NAC,CHAR_BEA,CHAR_BAR:			TOUNLOCKCHAR[c]=25
-		Case CHAR_JET,CHAR_WAV,CHAR_STO:			TOUNLOCKCHAR[c]=30
-		Case CHAR_SHD,CHAR_TIK,CHAR_CHO:			TOUNLOCKCHAR[c]=35
-		Case CHAR_TIA,CHAR_HON:						TOUNLOCKCHAR[c]=40
-		Case CHAR_GAM,CHAR_EME,CHAR_BET,CHAR_GME:	TOUNLOCKCHAR[c]=45
-		Case CHAR_EGG,CHAR_MT3,CHAR_MPH:			TOUNLOCKCHAR[c]=50
-		Case CHAR_PRS,CHAR_COM:						TOUNLOCKCHAR[c]=55
-		Case CHAR_CHW:								TOUNLOCKCHAR[c]=60
-		Case CHAR_EGR:								TOUNLOCKCHAR[c]=65
-		Case CHAR_INF:								TOUNLOCKCHAR[c]=70
-		Default: TOUNLOCKCHAR[c]=0 : UNLOCKEDCHAR[c]=1
-	End Select
-	Next
-
-	For c=1 To TEAM_TEAMCOUNT
-	Select c
-		Case TEAM_TEAMCOUNT: TOUNLOCKTEAM[c]=5
-		Case TEAM_ROBOTNIK: TOUNLOCKTEAM[c]=15
-		Case TEAM_OLDIES: TOUNLOCKTEAM[c]=20
-		Case TEAM_HOOLIGAN: TOUNLOCKTEAM[c]=25
-		Case TEAM_BABYLON: TOUNLOCKTEAM[c]=30
-		Case TEAM_RELIC: TOUNLOCKTEAM[c]=35
-		Default: TOUNLOCKTEAM[c]=0 : UNLOCKEDTEAM[c]=1
-	End Select
-	Next
-
-	TOUNLOCKSPECIALSTAGES[0]=10
-
-Function CountEmblems()
-	EMBLEMS=0
-	REDRINGS=0
-	For h=1 To 5
-	For i=1 To StageAmount
-		If EMBLEMS1(h,i)=1 Then EMBLEMS=EMBLEMS+1
-		If EMBLEMS2(h,i)=1 Then EMBLEMS=EMBLEMS+1
-	Next
-Next
-
-For i=1 To StageAmount
-	If REDRING1(i)=1 Then REDRINGS=REDRINGS+1
-	If REDRING2(i)=1 Then REDRINGS=REDRINGS+1
-	If REDRING3(i)=1 Then REDRINGS=REDRINGS+1
-	If REDRING4(i)=1 Then REDRINGS=REDRINGS+1
-	If REDRING5(i)=1 Then REDRINGS=REDRINGS+1
-Next
-
-End Function
 
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -971,36 +1097,37 @@ Function SaveGame_ChaoGarden()
 	WriteLine(CurrentOpenFile,"<daytime cycle="+Chr$(34)+Game\Stage\Properties\SkyCycle+Chr$(34)+" timer="+Chr$(34)+Game\Stage\Properties\SkyCycleTimer+Chr$(34)+"/>")
 
 	For o.tObject=Each tObject
-	Select o\ObjType
-
-		Case OBJTYPE_FRUIT:
-		If o\ChaoObj\EatCycle>0 Then
-		WriteLine(CurrentOpenFile,"<fruit type="+Chr$(34)+o\ChaoObj\FruitType+Chr$(34)+" growth="+Chr$(34)+o\ChaoObj\EatCycle+Chr$(34)+" x="+Chr$(34)+o\Position\x#+Chr$(34)+" y="+Chr$(34)+o\Position\y#+Chr$(34)+" z="+Chr$(34)+o\Position\z#+Chr$(34)+"/>")
+		If o\Position\y>-50 Then 
+			Select o\ObjType
+				Case OBJTYPE_FRUIT:
+				If o\ChaoObj\EatCycle>0 Then
+				WriteLine(CurrentOpenFile,"<fruit type="+Chr$(34)+o\ChaoObj\FruitType+Chr$(34)+" growth="+Chr$(34)+o\ChaoObj\EatCycle+Chr$(34)+" x="+Chr$(34)+o\Position\x#+Chr$(34)+" y="+Chr$(34)+o\Position\y#+Chr$(34)+" z="+Chr$(34)+o\Position\z#+Chr$(34)+"/>")
+				EndIf
+		
+				Case OBJTYPE_SHELL:
+				WriteLine(CurrentOpenFile,"<shell type="+Chr$(34)+o\ChaoObj\ShellType+Chr$(34)+" type2="+Chr$(34)+o\ChaoObj\ShellType2+Chr$(34)+" x="+Chr$(34)+o\Position\x#+Chr$(34)+" y="+Chr$(34)+o\Position\y#+Chr$(34)+" z="+Chr$(34)+o\Position\z#+Chr$(34)+" dir="+Chr$(34)+o\Rotation\y#+Chr$(34)+"/>")
+		
+				Case OBJTYPE_HAT:
+				WriteLine(CurrentOpenFile,"<hat type="+Chr$(34)+o\ChaoObj\HatType+Chr$(34)+" x="+Chr$(34)+o\Position\x#+Chr$(34)+" y="+Chr$(34)+o\Position\y#+Chr$(34)+" z="+Chr$(34)+o\Position\z#+Chr$(34)+"/>")
+		
+				Case OBJTYPE_TOY:
+				WriteLine(CurrentOpenFile,"<toy type="+Chr$(34)+o\ChaoObj\ToyType+Chr$(34)+" x="+Chr$(34)+o\Position\x#+Chr$(34)+" y="+Chr$(34)+o\Position\y#+Chr$(34)+" z="+Chr$(34)+o\Position\z#+Chr$(34)+"/>")
+		
+				Case OBJTYPE_TROPICAL:
+				If o\ChaoObj\IsFromSeed=False Then WriteLine(CurrentOpenFile,"<tree id="+Chr$(34)+o\ID+Chr$(34)+" growth1="+Chr$(34)+o\ChaoObj\FruitGrowth[1]+Chr$(34)+" growth2="+Chr$(34)+o\ChaoObj\FruitGrowth[2]+Chr$(34)+" growth3="+Chr$(34)+o\ChaoObj\FruitGrowth[3]+Chr$(34)+" growth4="+Chr$(34)+o\ChaoObj\FruitGrowth[4]+Chr$(34)+"/>")
+		
+				Case OBJTYPE_DRIVE:
+				WriteLine(CurrentOpenFile,"<drive type="+Chr$(34)+o\ChaoObj\DriveType+Chr$(34)+" x="+Chr$(34)+o\Position\x#+Chr$(34)+" y="+Chr$(34)+o\Position\y#+Chr$(34)+" z="+Chr$(34)+o\Position\z#+Chr$(34)+"/>")
+		
+				Case OBJTYPE_SEED:
+				If o\ChaoObj\SeedMode>0 Then
+					WriteLine(CurrentOpenFile,"<seed type="+Chr$(34)+o\ChaoObj\FruitType+Chr$(34)+" x="+Chr$(34)+o\Position\x#+Chr$(34)+" y="+Chr$(34)+o\Position\y#+Chr$(34)+" z="+Chr$(34)+o\Position\z#+Chr$(34)+" mode="+Chr$(34)+1+Chr$(34)+" growth1="+Chr$(34)+o\ChaoObj\FruitGrowth[1]+Chr$(34)+" growth2="+Chr$(34)+o\ChaoObj\FruitGrowth[2]+Chr$(34)+" growth3="+Chr$(34)+o\ChaoObj\FruitGrowth[3]+Chr$(34)+" growth4="+Chr$(34)+o\ChaoObj\FruitGrowth[4]+Chr$(34)+" treegrowth="+Chr$(34)+o\ChaoObj\TreeGrowth+Chr$(34)+"/>")
+				Else
+					WriteLine(CurrentOpenFile,"<seed type="+Chr$(34)+o\ChaoObj\FruitType+Chr$(34)+" x="+Chr$(34)+o\Position\x#+Chr$(34)+" y="+Chr$(34)+o\Position\y#+Chr$(34)+" z="+Chr$(34)+o\Position\z#+Chr$(34)+" mode="+Chr$(34)+0+Chr$(34)+" growth1="+Chr$(34)+o\ChaoObj\FruitGrowth[1]+Chr$(34)+" growth2="+Chr$(34)+o\ChaoObj\FruitGrowth[2]+Chr$(34)+" growth3="+Chr$(34)+o\ChaoObj\FruitGrowth[3]+Chr$(34)+" growth4="+Chr$(34)+o\ChaoObj\FruitGrowth[4]+Chr$(34)+" treegrowth="+Chr$(34)+o\ChaoObj\TreeGrowth+Chr$(34)+"/>")
+				EndIf
+		
+			End Select
 		EndIf
-
-		Case OBJTYPE_SHELL:
-		WriteLine(CurrentOpenFile,"<shell type="+Chr$(34)+o\ChaoObj\ShellType+Chr$(34)+" type2="+Chr$(34)+o\ChaoObj\ShellType2+Chr$(34)+" x="+Chr$(34)+o\Position\x#+Chr$(34)+" y="+Chr$(34)+o\Position\y#+Chr$(34)+" z="+Chr$(34)+o\Position\z#+Chr$(34)+" dir="+Chr$(34)+o\Rotation\y#+Chr$(34)+"/>")
-
-		Case OBJTYPE_HAT:
-		WriteLine(CurrentOpenFile,"<hat type="+Chr$(34)+o\ChaoObj\HatType+Chr$(34)+" x="+Chr$(34)+o\Position\x#+Chr$(34)+" y="+Chr$(34)+o\Position\y#+Chr$(34)+" z="+Chr$(34)+o\Position\z#+Chr$(34)+"/>")
-
-		Case OBJTYPE_TOY:
-		WriteLine(CurrentOpenFile,"<toy type="+Chr$(34)+o\ChaoObj\ToyType+Chr$(34)+" x="+Chr$(34)+o\Position\x#+Chr$(34)+" y="+Chr$(34)+o\Position\y#+Chr$(34)+" z="+Chr$(34)+o\Position\z#+Chr$(34)+"/>")
-
-		Case OBJTYPE_TROPICAL:
-		If o\ChaoObj\IsFromSeed=False Then WriteLine(CurrentOpenFile,"<tree id="+Chr$(34)+o\ID+Chr$(34)+" growth1="+Chr$(34)+o\ChaoObj\FruitGrowth[1]+Chr$(34)+" growth2="+Chr$(34)+o\ChaoObj\FruitGrowth[2]+Chr$(34)+" growth3="+Chr$(34)+o\ChaoObj\FruitGrowth[3]+Chr$(34)+" growth4="+Chr$(34)+o\ChaoObj\FruitGrowth[4]+Chr$(34)+"/>")
-
-		Case OBJTYPE_DRIVE:
-		WriteLine(CurrentOpenFile,"<drive type="+Chr$(34)+o\ChaoObj\DriveType+Chr$(34)+" x="+Chr$(34)+o\Position\x#+Chr$(34)+" y="+Chr$(34)+o\Position\y#+Chr$(34)+" z="+Chr$(34)+o\Position\z#+Chr$(34)+"/>")
-
-		Case OBJTYPE_SEED:
-		If o\ChaoObj\SeedMode>0 Then
-			WriteLine(CurrentOpenFile,"<seed type="+Chr$(34)+o\ChaoObj\FruitType+Chr$(34)+" x="+Chr$(34)+o\Position\x#+Chr$(34)+" y="+Chr$(34)+o\Position\y#+Chr$(34)+" z="+Chr$(34)+o\Position\z#+Chr$(34)+" mode="+Chr$(34)+1+Chr$(34)+" growth1="+Chr$(34)+o\ChaoObj\FruitGrowth[1]+Chr$(34)+" growth2="+Chr$(34)+o\ChaoObj\FruitGrowth[2]+Chr$(34)+" growth3="+Chr$(34)+o\ChaoObj\FruitGrowth[3]+Chr$(34)+" growth4="+Chr$(34)+o\ChaoObj\FruitGrowth[4]+Chr$(34)+" treegrowth="+Chr$(34)+o\ChaoObj\TreeGrowth+Chr$(34)+"/>")
-		Else
-			WriteLine(CurrentOpenFile,"<seed type="+Chr$(34)+o\ChaoObj\FruitType+Chr$(34)+" x="+Chr$(34)+o\Position\x#+Chr$(34)+" y="+Chr$(34)+o\Position\y#+Chr$(34)+" z="+Chr$(34)+o\Position\z#+Chr$(34)+" mode="+Chr$(34)+0+Chr$(34)+" growth1="+Chr$(34)+o\ChaoObj\FruitGrowth[1]+Chr$(34)+" growth2="+Chr$(34)+o\ChaoObj\FruitGrowth[2]+Chr$(34)+" growth3="+Chr$(34)+o\ChaoObj\FruitGrowth[3]+Chr$(34)+" growth4="+Chr$(34)+o\ChaoObj\FruitGrowth[4]+Chr$(34)+" treegrowth="+Chr$(34)+o\ChaoObj\TreeGrowth+Chr$(34)+"/>")
-		EndIf
-
-	End Select
 	Next
 
 	CloseWrittenFileWithEncryption()
@@ -1047,16 +1174,16 @@ Function LoadGame_ChaoGarden()
 		Stage_ForceUpdateCyclingSkyBox()
 
 		Case "fruit":
-		obj.tObject = Object_Fruit_Create(xmlNodeAttributeValueGet(child, "type"), xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y"), xmlNodeAttributeValueGet(child, "z"), xmlNodeAttributeValueGet(child, "growth"))
+			obj.tObject = Object_Fruit_Create(xmlNodeAttributeValueGet(child, "type"), xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y")+25, xmlNodeAttributeValueGet(child, "z"), xmlNodeAttributeValueGet(child, "growth"))
 
 		Case "shell":
-		obj.tObject = Object_Shell_Create(xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y"), xmlNodeAttributeValueGet(child, "z"), xmlNodeAttributeValueGet(child, "dir"), xmlNodeAttributeValueGet(child, "type"), xmlNodeAttributeValueGet(child, "type2"))
+			obj.tObject = Object_Shell_Create(xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y")+25, xmlNodeAttributeValueGet(child, "z"), xmlNodeAttributeValueGet(child, "dir"), xmlNodeAttributeValueGet(child, "type"), xmlNodeAttributeValueGet(child, "type2"))
 
 		Case "hat":
-		obj.tObject = Object_Hat_Create(xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y"), xmlNodeAttributeValueGet(child, "z"), xmlNodeAttributeValueGet(child, "type"))
+			obj.tObject = Object_Hat_Create(xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y")+25, xmlNodeAttributeValueGet(child, "z"), xmlNodeAttributeValueGet(child, "type"))
 
 		Case "toy":
-		obj.tObject = Object_Toy_Create(xmlNodeAttributeValueGet(child, "type"), xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y"), xmlNodeAttributeValueGet(child, "z"))
+			obj.tObject = Object_Toy_Create(xmlNodeAttributeValueGet(child, "type"), xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y")+25, xmlNodeAttributeValueGet(child, "z"))
 
 		Case "tree":
 		For o.tObject = Each tObject
@@ -1070,10 +1197,10 @@ Function LoadGame_ChaoGarden()
 		Next
 
 		Case "drive":
-		obj.tObject = Object_Drive_Create(xmlNodeAttributeValueGet(child, "type"), xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y"), xmlNodeAttributeValueGet(child, "z"))
+			obj.tObject = Object_Drive_Create(xmlNodeAttributeValueGet(child, "type"), xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y")+25, xmlNodeAttributeValueGet(child, "z"))
 
 		Case "seed":
-		obj.tObject = Object_Seed_Create(xmlNodeAttributeValueGet(child, "type"), xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y"), xmlNodeAttributeValueGet(child, "z"), False, xmlNodeAttributeValueGet(child, "mode"), xmlNodeAttributeValueGet(child, "growth1"), xmlNodeAttributeValueGet(child, "growth2"), xmlNodeAttributeValueGet(child, "growth3"), xmlNodeAttributeValueGet(child, "growth4"), xmlNodeAttributeValueGet(child, "treegrowth"))
+			obj.tObject = Object_Seed_Create(xmlNodeAttributeValueGet(child, "type"), xmlNodeAttributeValueGet(child, "x"), xmlNodeAttributeValueGet(child, "y")+35, xmlNodeAttributeValueGet(child, "z"), False, xmlNodeAttributeValueGet(child, "mode"), xmlNodeAttributeValueGet(child, "growth1"), xmlNodeAttributeValueGet(child, "growth2"), xmlNodeAttributeValueGet(child, "growth3"), xmlNodeAttributeValueGet(child, "growth4"), xmlNodeAttributeValueGet(child, "treegrowth"))
 
 	End Select
 
@@ -1101,9 +1228,27 @@ End Function
 Function SaveGame_Inventory()
 
 	WriteFileWithEncryption("INVENTORY")
-
+	WriteLine(CurrentOpenFile,"<menuskill enabled="+Chr$(34)+Menu\SkillEnabled+Chr$(34)+"/>")
+	WriteLine(CurrentOpenFile,"<active abilities="+Chr$(34)+Menu\ActiveAbilities+Chr$(34)+" handicaps="+Chr$(34)+Menu\ActiveHandicaps+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<lives saved="+Chr$(34)+Menu\SavedLives+Chr$(34)+"/>")
 	WriteLine(CurrentOpenFile,"<wallet saved="+Chr$(34)+Menu\Wallet+Chr$(34)+"/>")
+	WriteLine(CurrentOpenFile,"<tokens saved="+Chr$(34)+TOKENS+Chr$(34)+"/>")
+	
+	For i = 1 To SHOPITEM_TOTAL(SHOPMENU_ABILITY)
+		WriteLine(CurrentOpenFile,"<ability no="+Chr$(34)+i+Chr$(34)+" purchased="+Chr$(34)+SHOPITEM_UNLOCKED(SHOPMENU_ABILITY,i)+Chr$(34)+" enabled="+Chr$(34)+SHOPITEM_ENABLED(SHOPMENU_ABILITY,i)+Chr$(34)+"/>")
+	Next
+	
+	For i = 1 To SHOPITEM_TOTAL(SHOPMENU_SKILL)
+		WriteLine(CurrentOpenFile,"<skill no="+Chr$(34)+i+Chr$(34)+" purchased="+Chr$(34)+SHOPITEM_UNLOCKED(SHOPMENU_SKILL,i)+Chr$(34)+" enabled="+Chr$(34)+SHOPITEM_ENABLED(SHOPMENU_SKILL,i)+Chr$(34)+"/>")
+	Next
+	
+	For i = 1 To SHOPITEM_TOTAL(SHOPMENU_COSMETIC)
+		WriteLine(CurrentOpenFile,"<cosmetic no="+Chr$(34)+i+Chr$(34)+" purchased="+Chr$(34)+SHOPITEM_UNLOCKED(SHOPMENU_COSMETIC,i)+Chr$(34)+" enabled="+Chr$(34)+SHOPITEM_ENABLED(SHOPMENU_COSMETIC,i)+Chr$(34)+"/>")
+	Next
+	
+	For i = 1 To SHOPITEM_TOTAL(SHOPMENU_HANDICAP)
+		WriteLine(CurrentOpenFile,"<handicap no="+Chr$(34)+i+Chr$(34)+" purchased="+Chr$(34)+SHOPITEM_UNLOCKED(SHOPMENU_HANDICAP,i)+Chr$(34)+" enabled="+Chr$(34)+SHOPITEM_ENABLED(SHOPMENU_HANDICAP,i)+Chr$(34)+"/>")
+	Next
 
 	For ii.tItem=Each tItem
 		For n=1 To TOTALITEMS
@@ -1122,37 +1267,61 @@ Function SaveGame_Inventory()
 End Function
 
 Function LoadGame_Inventory()
-
+	
 	LoadFileWithEncryption("INVENTORY") : xmlin = xmlLoad(SaveDataTmp$)
-
+	
 	For ii.tItem=Each tItem
 		Delete ii
 	Next
 	TOTALITEMS=0
-
+	
 	For cii.tCarriedItem=Each tCarriedItem
 		Delete cii
 	Next
 	TOTALCARRIEDITEMS=0
-
+	
 	For cchild = 1 To xmlNodeChildCount(xmlin)
-
-	child = xmlNodeChild(xmlin, cchild)
-
-	Select xmlNodeNameGet$(child)
-		Case "lives":	Menu\SavedLives = xmlNodeAttributeValueGet(child, "saved") : If Menu\SavedLives>99 Then Menu\SavedLives=99
+		
+		child = xmlNodeChild(xmlin, cchild)
+		
+		Select xmlNodeNameGet$(child)
+			Case "score":	SCORE = xmlNodeAttributeValueGet(child, "saved")
+			Case "menuskill": 	Menu\SkillEnabled=xmlNodeAttributeValueGet(child, "enabled")
+			Case "active": 	Menu\ActiveAbilities=xmlNodeAttributeValueGet(child, "abilities") : 	Menu\ActiveHandicaps=xmlNodeAttributeValueGet(child, "handicaps")
+			Case "tokens":	TOKENS = xmlNodeAttributeValueGet(child, "saved")
+			Case "lives":	Menu\SavedLives = xmlNodeAttributeValueGet(child, "saved")
 				If Menu\SavedLives<0 Then Menu\SavedLives=0
-		Case "wallet":	Menu\Wallet = xmlNodeAttributeValueGet(child, "saved")
-				If Menu\Wallet>99999 Then Menu\Wallet=99999
+			Case "wallet":	Menu\Wallet = xmlNodeAttributeValueGet(child, "saved")
 				If Menu\Wallet<0 Then Menu\Wallet=0
-		Case "item":	ii.tItem = Item_Create(xmlNodeAttributeValueGet(child, "id"), xmlNodeAttributeValueGet(child, "type1"), xmlNodeAttributeValueGet(child, "type2"), xmlNodeAttributeValueGet(child, "type3"))
-		Case "citem": 	If Menu\GameStarted=1 Then cii.tCarriedItem = CarriedItem_Create(xmlNodeAttributeValueGet(child, "id"), xmlNodeAttributeValueGet(child, "type1"), xmlNodeAttributeValueGet(child, "type2"))
-	End Select
-
+			Case "item":	ii.tItem = Item_Create(xmlNodeAttributeValueGet(child, "id"), xmlNodeAttributeValueGet(child, "type1"), xmlNodeAttributeValueGet(child, "type2"), xmlNodeAttributeValueGet(child, "type3"))
+			Case "citem": 	If Menu\GameStarted=1 Then cii.tCarriedItem = CarriedItem_Create(xmlNodeAttributeValueGet(child, "id"), xmlNodeAttributeValueGet(child, "type1"), xmlNodeAttributeValueGet(child, "type2"))
+			Case "cosmetic"
+				For i = 1 To SHOPITEM_TOTAL(SHOPMENU_COSMETIC)
+					SHOPITEM_UNLOCKED(SHOPMENU_COSMETIC,xmlNodeAttributeValueGet(child, "no")) = xmlNodeAttributeValueGet(child, "purchased")
+					SHOPITEM_ENABLED(SHOPMENU_COSMETIC,xmlNodeAttributeValueGet(child, "no")) = xmlNodeAttributeValueGet(child, "enabled")
+					
+				Next	
+			Case "ability"
+				For i = 1 To SHOPITEM_TOTAL(SHOPMENU_ABILITY)
+					SHOPITEM_UNLOCKED(SHOPMENU_ABILITY,xmlNodeAttributeValueGet(child, "no")) = xmlNodeAttributeValueGet(child, "purchased")
+					SHOPITEM_ENABLED(SHOPMENU_ABILITY,xmlNodeAttributeValueGet(child, "no")) = xmlNodeAttributeValueGet(child, "enabled")
+				Next
+			Case "handicap"
+				For i = 1 To SHOPITEM_TOTAL(SHOPMENU_HANDICAP)
+					SHOPITEM_UNLOCKED(SHOPMENU_HANDICAP,xmlNodeAttributeValueGet(child, "no")) = xmlNodeAttributeValueGet(child, "purchased")
+					SHOPITEM_ENABLED(SHOPMENU_HANDICAP,xmlNodeAttributeValueGet(child, "no")) = xmlNodeAttributeValueGet(child, "enabled")
+				Next	
+			Case "skill"
+				For i = 1 To SHOPITEM_TOTAL(SHOPMENU_SKILL)
+					SHOPITEM_UNLOCKED(SHOPMENU_SKILL,xmlNodeAttributeValueGet(child, "no")) = xmlNodeAttributeValueGet(child, "purchased")
+					SHOPITEM_ENABLED(SHOPMENU_SKILL,xmlNodeAttributeValueGet(child, "no")) = xmlNodeAttributeValueGet(child, "enabled")
+				Next	
+		End Select
+		
 	Next
-
+	
 	xmlNodeDelete(xmlin) : CloseLoadedFileWithEncryption()
-
+	
 End Function
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1244,66 +1413,62 @@ End Function
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Function SaveMarathonList()
-
+	
 	WriteFileWithEncryption("MARATHON","marathon")
-
+	
 	WriteLine(CurrentOpenFile,"<random is="+Chr$(34)+Menu\MarathonRandom+Chr$(34)+"/>")
-
+	
 	WriteLine(CurrentOpenFile,"<last was="+Chr$(34)+Menu\MarathonStage+Chr$(34)+"/>")
-
+	
 	WriteLine(CurrentOpenFile,"<length is="+Chr$(34)+StageAmount+Chr$(34)+"/>")
-
-	For i=1 To StageAmount-1
-	WriteLine(CurrentOpenFile,"<stage no="+Chr$(34)+(i)+Chr$(34)+" stageno="+Chr$(34)+MarathonStage(i)+Chr$(34)+"/>")
-	Next
-
+	
+	
 	CloseWrittenFileWithEncryption("marathon")
-
+	
 End Function
 
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Function LoadMarathonList()
-
+	
 	j=0
-
+	
 	If Not(FileType(SaveDataPath$+"MARATHON"+SaveDataFormat$)=1) Then
 		Menu\MarathonExists=0
 	Else
 		LoadFileWithEncryption("MARATHON") : xmlin = xmlLoad(SaveDataTmp$)
-
+		
 		For cchild = 1 To xmlNodeChildCount(xmlin)
-
-		child = xmlNodeChild(xmlin, cchild)
-
-		Select xmlNodeNameGet$(child)
-			Case "random": Menu\MarathonRandom = xmlNodeAttributeValueGet(child, "is")
-
-			Case "last": Menu\MarathonStage = xmlNodeAttributeValueGet(child, "was")
-
-			Case "length": j = xmlNodeAttributeValueGet(child, "is")
-
-			Case "stage": i = xmlNodeAttributeValueGet(child, "no") : If i<=StageAmount-1 Then MarathonStage(i) = xmlNodeAttributeValueGet(child, "stageno")
-		End Select
-
+			
+			child = xmlNodeChild(xmlin, cchild)
+			
+			Select xmlNodeNameGet$(child)
+				Case "random": Menu\MarathonRandom = xmlNodeAttributeValueGet(child, "is")
+					
+				Case "last": Menu\MarathonStage = xmlNodeAttributeValueGet(child, "was")
+					
+				Case "length": j = xmlNodeAttributeValueGet(child, "is")
+					
+			End Select
+			
 		Next
-
+		
 		xmlNodeDelete(xmlin) : CloseLoadedFileWithEncryption()
-
+		
 		If j<>StageAmount Then Menu\MarathonExists=0 Else Menu\MarathonExists=1
 	EndIf
-
+	
 End Function
 
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Function DeleteMarathonList()
-
+	
 	If (FileType(SaveDataPath$+"MARATHON"+SaveDataFormat$)=1) Then
 		Menu\MarathonExists=0
 		DeleteFile(SaveDataPath$+"MARATHON"+SaveDataFormat$)
 	EndIf
-
+	
 End Function
 
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

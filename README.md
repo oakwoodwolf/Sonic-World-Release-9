@@ -1,9 +1,9 @@
-# Sonic World DX - SAGE Demo
+# Sonic World DX - Version 1.0
 
 Blitz Sonic Engine code
 
-THIS IS A CODE OF SONIC WORLD DX ENGINE SAGE DEMO, a fork of BlitzSonic, containing 3 characters and a Chao Garden.
-This was built off the master branch and released in September 4 2020, almost 2 years after Release 9
+THIS IS A CODE OF SONIC WORLD DX ENGINE VERSION 1, a fork of BlitzSonic, containing 17 characters and a Chao Garden.
+This was built off the master branch and released in September 4 2022, 2 years after the SAGE Demo.
 
 ## Requirements
 
@@ -27,7 +27,7 @@ Assets are not included and need to be provided. See Assets heading to see how t
 3. Drag all the assets into this folder for the game.
 4. Copy all of the `.dll` and `.decl` files into Blitz3D's install directory into a `userlibs` folder.
 5. You can delete the `.decl` files in the game's folder as they only need to be read by Blitz3D.
-6. Open `Sonic World DX.bb` in Blitz3D or your IDE (I recommend [IDEaL](http://www.fungamesfactory.com/download.php?get=IDEalSetup_0.8.87.exe))
+6. Open `Sonic World DX.bb` in Blitz3D
 7. Go to Program/Run Program. If everything's placed correctly the game should run.
 
 ## Building
@@ -40,9 +40,11 @@ Assets are not included and need to be provided. See Assets heading to see how t
 
 ## Assets
 
-This repository ONLY includes the code for the game. Assets will need to be retrieved from a [compiled version of Sonic World DX - Sage Demo](https://drive.google.com/file/d/1FUKL7sEGaXmF5hNYCR0bSx0K4eet6fau/view?usp=sharing).
+This repository ONLY includes the code for the game. Assets will need to be retrieved from a [compiled version of Sonic World DX - Version 1.0](https://mega.nz/file/1opn2JAJ#Ek6AcdVANddA_f8g8ONq1exKZuaaL8HsAX5Cy9L1xiQ).
 The game assets are encrypted using Molebox, so you need [De-Mole-ition](https://lifeinhex.com/updated-molebox-unpacker/), to extract the assets contained in GameArchive.swarc.
 The extracted folders should all be placed in the game's main directory (i.e. Characters should be in the same folder as Mods, and _SourceCode)
+
+Assets from later versions might NOT work without modifications.
 
 ## Contributions
 
